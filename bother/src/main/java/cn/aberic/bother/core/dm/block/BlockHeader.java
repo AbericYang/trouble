@@ -29,16 +29,24 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * 事务/交易/业务对象——数据操作层-data manipulation
- *
- * 作者：Aberic on 2018/8/20 21:28
+ * 区块头部信息——数据操作层-data manipulation
+ * <p>
+ * 作者：Aberic on 2018/8/23 21:43
  * 邮箱：abericyang@gmail.com
  */
 @Setter
 @Getter
-public class Transaction {
+public class BlockHeader {
 
-    /**发起方*/
-    private String creator;
+    /** 当前区块hash */
+    private String currentDataHash;
+    /** 上一区块hash */
+    private String previousDataHash;
+    /** 是否由第一顺位节点出块 */
+    private boolean smoothlyOut;
+    /** 参与本次区块打包的投票节点个数 */
+    private int consentNodeCount;
+    /** 当前区块生成时间戳 */
+    private long timestamp;
 
 }

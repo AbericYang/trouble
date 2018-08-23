@@ -23,22 +23,54 @@
  *
  */
 
-package cn.aberic.bother.core.dm.block;
+package cn.aberic.bother.eac;
 
-import lombok.Getter;
-import lombok.Setter;
+import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.lang3.StringUtils;
 
 /**
- * 事务/交易/业务对象——数据操作层-data manipulation
- *
- * 作者：Aberic on 2018/8/20 21:28
+ * MD5——加密算法组合-encryption algorithm combination
+ * <p>
+ * 作者：Aberic on 2018/8/20 20:25
  * 邮箱：abericyang@gmail.com
  */
-@Setter
-@Getter
-public class Transaction {
+public class MD5Utils {
 
-    /**发起方*/
-    private String creator;
+    /**
+     * 将字符串md5散列值16位
+     *
+     * @param content 散列值内容
+     *
+     * @return 散列值结果
+     */
+    public static String md516(String content) {
+        String str = md5(content);
+        return str.substring(8, 24);
+    }
+
+    /**
+     * MD5方法
+     *
+     * @param text 明文
+     *
+     * @return 密文
+     */
+    public static String md5(String text) {
+        return DigestUtils.md5Hex(text);
+    }
+
+    /**
+     * MD5验证方法
+     * <p>
+     * 根据传入的密钥进行验证
+     *
+     * @param text 明文
+     * @param md5  密文
+     *
+     * @return true/false
+     */
+    public static boolean verify(String text, String md5) {
+        return StringUtils.equalsIgnoreCase(md5, md5(text));
+    }
 
 }

@@ -25,19 +25,38 @@
 
 package cn.aberic.bother.core.dm.block;
 
+import cn.aberic.bother.eac.MD5Utils;
+import lombok.Getter;
+import lombok.Setter;
+
 /**
- * 区块对象
- *
+ * 区块对象——数据操作层-data manipulation
+ * <p>
  * 作者：Aberic on 2018/8/20 21:21
  * 邮箱：abericyang@gmail.com
  */
+@Setter
+@Getter
 public class Block {
 
-    /**当前区块hash*/
-    private String currentDataHash;
-    /**上一区块hash*/
-    private String previousDataHash;
-    /**当前区块生成时间戳*/
-    private long timestamp;
+    /** 区块头部信息 */
+    private BlockHeader header;
+    /** 区块数据体 */
+    private BlockBody body;
+
+    public Block(BlockHeader header, BlockBody body) {
+        header.setCurrentDataHash(calculateHash());
+        this.header = header;
+        this.body = body;
+    }
+
+    /** 得到当前区块hash */
+    private String calculateHash() {
+        return MD5Utils.md5(String.format("%s%s%s%s",
+                header.getPreviousDataHash(),
+                header.getConsentNodeCount(),
+                Long.toString(header.getTimestamp()),
+                body.bodyString()));
+    }
 
 }
