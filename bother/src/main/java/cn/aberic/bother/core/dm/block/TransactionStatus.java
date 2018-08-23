@@ -25,30 +25,41 @@
 
 package cn.aberic.bother.core.dm.block;
 
-import com.alibaba.fastjson.JSON;
-import lombok.Getter;
-import lombok.Setter;
-
-import java.util.List;
-
 /**
- * 区块数据体——数据操作层-data manipulation
+ * 交易状态
  * <p>
- * 作者：Aberic on 2018/8/23 21:49
+ * 作者：Aberic on 2018/8/23 23:01
  * 邮箱：abericyang@gmail.com
  */
-@Setter
-@Getter
-public class BlockBody {
+public enum TransactionStatus {
 
-    /** 交易数量 */
-    private int txCount;
-    /** 交易集合 */
-    private List<Transaction> transactions;
+    /** 交易成功 */
+    SUCCESS("Success", 200),
+    /** 交易失败 */
+    FAIL("Fail", 9999);
 
-    /** 获取当前数据体字符串信息 */
-    String bodyString() {
-        return String.format("%s%s", txCount, JSON.toJSONString(transactions));
+    private String key;
+    private int value;
+
+    TransactionStatus(String key, int value) {
+        this.key = key;
+        this.value = value;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
+    }
+
+    public int getValue() {
+        return value;
+    }
+
+    public void setValue(int value) {
+        this.value = value;
     }
 
 }

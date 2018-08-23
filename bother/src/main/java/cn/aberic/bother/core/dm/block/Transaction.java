@@ -30,7 +30,7 @@ import lombok.Setter;
 
 /**
  * 事务/交易/业务对象——数据操作层-data manipulation
- *
+ * <p>
  * 作者：Aberic on 2018/8/20 21:28
  * 邮箱：abericyang@gmail.com
  */
@@ -38,7 +38,15 @@ import lombok.Setter;
 @Getter
 public class Transaction {
 
-    /**发起方*/
+    /** 发起方 */
     private String creator;
+    /** 发起方签名 */
+    private String sign;
+    /** 交易时间戳 */
+    private Long timestamp;
+    /** 交易状态 */
+    private TransactionStatus status = TransactionStatus.SUCCESS;
+    /** 交易错误信息 */
+    private String errorMessage;
 
 }
