@@ -22,13 +22,12 @@
  * SOFTWARE.
  */
 
-package cn.aberic.bother.block;
+package cn.aberic.bother.dm.block;
 
 import cn.aberic.bother.SystemOut;
 import cn.aberic.bother.core.dm.block.*;
 import cn.aberic.bother.core.dm.exec.BlockFile;
 
-import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -38,9 +37,6 @@ import java.util.List;
  * 邮箱：abericyang@gmail.com
  */
 public class BlockFileTest {
-
-    @Resource
-    private BlockFile blockFile;
 
     public static void main(String[] args) {
         SystemOut.println("================= block file test start =================");
