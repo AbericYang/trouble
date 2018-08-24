@@ -8,7 +8,6 @@
 out
 gen
 /bother/target/
-/bother/src/test/
 /bother/mvnw
 /bother/mvnw.cmd
 /bother/.mvn/
