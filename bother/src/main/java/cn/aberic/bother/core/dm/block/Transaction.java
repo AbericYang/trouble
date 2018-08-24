@@ -44,10 +44,8 @@ public class Transaction {
     private String creator;
     /** 发起方签名 */
     private String sign;
-    /** 交易读集 */
-    private List<ReadValue> readSet;
-    /** 交易写集 */
-    private List<WriteValue> writeSet;
+    /** 交易读写集 */
+    private List<RWSet> rwSets;
     /** 交易时间戳 */
     private Long timestamp;
     /**

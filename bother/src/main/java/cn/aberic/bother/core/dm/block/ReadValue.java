@@ -40,8 +40,6 @@ public class ReadValue {
 
     /** 本次读取值编号，与写入值编号对应 */
     private int number;
-    /** 本次读取值所在通道名称 */
-    private String channelName;
     /** 本次读取值所用合约名称 */
     private String contractName;
     /** 本次读取值所用合约版本 */

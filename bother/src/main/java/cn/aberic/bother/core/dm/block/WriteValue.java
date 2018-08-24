@@ -40,8 +40,6 @@ public class WriteValue {
 
     /** 本次写入值编号，与读取值编号对应 */
     private int number;
-    /** 本次写入值所在通道名称 */
-    private String channelName;
     /** 本次写入值所用合约名称 */
     private String contractName;
     /** 本次写入值所用合约版本 */

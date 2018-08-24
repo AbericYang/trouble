@@ -28,12 +28,15 @@ import cn.aberic.bother.common.Common;
 import cn.aberic.bother.core.dm.block.Block;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
+import com.google.common.base.Preconditions;
+import com.google.common.io.Files;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.charset.Charset;
 
 /**
  * 区块文件本地读写——数据操作层-data manipulation
@@ -68,11 +71,9 @@ class BlockFile {
     boolean create(int height, Block block) {
         File blockFile = new File(String.format("%s/block_file_%s.block", Common.BLOCK_FILE_DIR, height));
         try {
-            if (!blockFile.getParentFile().exists() && !blockFile.getParentFile().mkdirs()) {
-                return false;
-            }
-            if (!blockFile.exists() && !blockFile.createNewFile()) {
-                return false;
+            Files.createParentDirs(blockFile);
+            if (!blockFile.exists()) {
+                Preconditions.checkArgument(blockFile.createNewFile(), "block file can't be created");
             }
             FileOutputStream fos = new FileOutputStream(blockFile);
             byte[] bytes = JSON.toJSONString(block).getBytes();
@@ -98,15 +99,8 @@ class BlockFile {
             if (!blockFile.exists()) {
                 return null;
             }
-            FileInputStream fis = new FileInputStream(blockFile);
-            int length;
-            byte[] bytes = new byte[1024];
-            StringBuilder read = new StringBuilder();
-            while ((length = fis.read(bytes)) != -1) {
-                read.append(new String(bytes, 0, length));
-            }
-            fis.close();
-            return JSON.parseObject(read.toString(), new TypeReference<Block>() {});
+            String result = Files.asCharSource(blockFile, Charset.forName("UTF-8")).read();
+            return JSON.parseObject(result, new TypeReference<Block>() {});
         } catch (IOException e) {
             log.error(String.format("block file read failed, %s", e.getMessage()));
         }

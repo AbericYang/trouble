@@ -47,7 +47,8 @@ public class BlockFileTest {
         header.setPreviousDataHash("1234567");
         header.setConsentNodeCount(120);
         header.setSmoothlyOut(true);
-        header.setTimestamp(new Date().getTime());
+        // header.setTimestamp(new Date().getTime());
+        header.setTimestamp(123);
         header.setHeight(height);
 
         BlockBody body = new BlockBody();
@@ -58,7 +59,8 @@ public class BlockFileTest {
             transaction.setErrorMessage(String.format("error message %s", i));
             transaction.setSign(String.format("sign %s", i));
             transaction.setStatus(TransactionStatus.SUCCESS);
-            transaction.setTimestamp(new Date().getTime());
+            // transaction.setTimestamp(new Date().getTime());
+            transaction.setTimestamp(123L);
             transactions.add(transaction);
         }
         body.setTxCount(transactions.size());

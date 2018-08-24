@@ -25,9 +25,11 @@
 
 package cn.aberic.bother.core.dm.block;
 
-import cn.aberic.bother.eac.MD5Utils;
+import com.google.common.hash.Hashing;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.nio.charset.Charset;
 
 /**
  * 区块对象——数据操作层-data manipulation
@@ -52,11 +54,11 @@ public class Block {
 
     /** 得到当前区块hash */
     private String calculateHash() {
-        return MD5Utils.md5(String.format("%s%s%s%s",
+        return Hashing.sha256().hashString(String.format("%s%s%s%s",
                 header.getPreviousDataHash(),
                 header.getConsentNodeCount(),
                 Long.toString(header.getTimestamp()),
-                body.bodyString()));
+                body.bodyString()), Charset.forName("UTF-8")).toString();
     }
 
 }

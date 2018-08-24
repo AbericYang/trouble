@@ -78,13 +78,13 @@ public class BlockStorage {
                     block.getHeader().getCurrentDataHash(),
                     blockFromFile.getHeader().getCurrentDataHash())) {
                 return true;
-            } else { // 两者当前区块hash值不匹配，主动发起共识，共识级别为中间区块冲突
+            } else { // 两者当前区块hash值不匹配，<--主动发起共识-->，共识级别为中间区块冲突
                 proactive().verifyBlock(height, ConsensusStatus.BLOCK_CLASH_IN_MIDDLE);
                 return false;
             }
         } else { // 如果两者上一区块hash不匹配，则根据上一区块的hash值继续判断两者的有效性
             int lastHeight = height - 1;
-            // 如果当前区块即初始区块（低概率事件，除非恶意节点故意串联），主动发起共识，共识级别为初始区块冲突
+            // 如果当前区块即初始区块（低概率事件，除非恶意节点故意串联），<--主动发起共识-->，共识级别为初始区块冲突
             if (lastHeight < 0) {
                 proactive().verifyBlock(height, ConsensusStatus.BLOCK_CLASH_IN_FIRST);
                 return false;
@@ -99,7 +99,7 @@ public class BlockStorage {
                     blockFromFile.getHeader().getPreviousDataHash(),
                     blockFromPreFile.getHeader().getCurrentDataHash())) {
                 return true;
-            } else { // 两者上一区块hash与本地上一区块当前hash都不一致，则表示本地区块有被篡改可能
+            } else { // 两者上一区块hash与本地上一区块当前hash都不一致，则表示本地区块有被篡改可能，<--主动发起共识-->，共识级别为相同账本下中间区块冲突
                 proactive().verifyBlock(height, ConsensusStatus.BLOCK_TAMPERING_IN_MIDDLE);
                 return false;
             }
