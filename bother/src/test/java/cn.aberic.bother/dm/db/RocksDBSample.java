@@ -233,15 +233,15 @@ public class RocksDBSample {
                 assert (len == RocksDB.NOT_FOUND);
 
                 // repeat the test with WriteOptions
-                try (final WriteOptions writeOpts = new WriteOptions()) {
-                    writeOpts.setSync(true);
-                    writeOpts.setDisableWAL(true);
-                    db.put(writeOpts, testKey, testValue);
-                    len = db.get(testKey, enoughArray);
-                    assert (len == testValue.length);
-                    assert (new String(testValue).equals(
-                            new String(enoughArray, 0, len)));
-                }
+//                try (final WriteOptions writeOpts = new WriteOptions()) {
+//                    writeOpts.setSync(true);
+//                    writeOpts.setDisableWAL(true);
+//                    db.put(writeOpts, testKey, testValue);
+//                    len = db.get(testKey, enoughArray);
+//                    assert (len == testValue.length);
+//                    assert (new String(testValue).equals(
+//                            new String(enoughArray, 0, len)));
+//                }
 
                 try {
                     for (final TickerType statsType : TickerType.values()) {
