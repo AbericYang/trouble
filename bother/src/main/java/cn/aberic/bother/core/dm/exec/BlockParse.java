@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2018. Aberic Yang
+ * Copyright (c) 2018 Aberic Yang
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,22 +22,13 @@
  * SOFTWARE.
  */
 
-package cn.aberic.bother.common;
+package cn.aberic.bother.core.dm.exec;
 
 /**
- * 公共方法包
- * <p>
- * 作者：Aberic on 2018/8/20 20:24
+ * 解析区块文件——数据操作层-data manipulation
+ *
+ * 作者：Aberic on 2018/08/24 11:27
  * 邮箱：abericyang@gmail.com
  */
-public class Common {
-
-    /** 区块文件存储路径 测试/生产 */
-    public final static String BLOCK_FILE_DIR = "/Users/Aberic/Documents/tmp/trouble/blockfile";
-    // public final static String BLOCK_FILE_DIR = "/data/trouble/blockfile";
-
-    /** RocksDB存储路径 测试/生产 */
-    public final static String ROCKS_DB_FILE_DIR = "/Users/Aberic/Documents/tmp/trouble/rocksdb";
-    // public final static String ROCKS_DB_FILE_DIR = "/data/trouble/rocksdb";
-
+public class BlockParse {
 }
