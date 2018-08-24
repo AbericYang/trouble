@@ -86,12 +86,12 @@ public class BlockFile {
             FileInputStream fis = new FileInputStream(blockFile);
             int length;
             byte[] bytes = new byte[1024];
-            String read = "";
+            StringBuilder read = new StringBuilder();
             while ((length = fis.read(bytes)) != -1) {
-                read = new String(bytes, 0, length);
+                read.append(new String(bytes, 0, length));
             }
             fis.close();
-            return JSON.parseObject(read, new TypeReference<Block>() {});
+            return JSON.parseObject(read.toString(), new TypeReference<Block>() {});
         } catch (IOException e) {
             log.error(String.format("block file read failed, %s", e.getMessage()));
         }
