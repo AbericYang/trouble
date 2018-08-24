@@ -37,7 +37,7 @@ import java.io.IOException;
 
 /**
  * 区块文件本地读写——数据操作层-data manipulation
- *
+ * <p>
  * 作者：Aberic on 2018/08/24 11:44
  * 邮箱：abericyang@gmail.com
  */
@@ -60,11 +60,11 @@ public class BlockFile {
     public boolean create(int height, Block block) {
         File blockFile = new File(String.format("%s/block_file_%s.block", Common.BLOCK_FILE_DIR, height));
         try {
-            if (!blockFile.getParentFile().exists()) {
-                blockFile.getParentFile().mkdirs();
+            if (!blockFile.getParentFile().exists() && !blockFile.getParentFile().mkdirs()) {
+                return false;
             }
-            if (!blockFile.exists()) {
-                blockFile.createNewFile();
+            if (!blockFile.exists() && !blockFile.createNewFile()) {
+                return false;
             }
             FileOutputStream fos = new FileOutputStream(blockFile);
             byte[] bytes = JSON.toJSONString(block).getBytes();
