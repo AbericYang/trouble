@@ -23,42 +23,22 @@
  *
  */
 
-package cn.aberic.bother.core.dm.block;
+package cn.aberic.bother.common;
 
-import lombok.Getter;
-import lombok.Setter;
+import com.alibaba.fastjson.JSONObject;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 
-import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
- * 事务/交易/业务对象——数据操作层-data manipulation
- * <p>
- * 作者：Aberic on 2018/8/20 21:28
+ * 缓存——公共方法包
+ *
+ * 作者：Aberic on 2018/8/24 23:31
  * 邮箱：abericyang@gmail.com
  */
-@Setter
-@Getter
-public class Transaction {
+public class CacheTool {
 
-    /** 发起方 */
-    private String creator;
-    /** 发起方签名 */
-    private String sign;
-    /** 交易读集 */
-    private List<ReadValue> readSet;
-    /** 交易写集 */
-    private List<WriteValue> writeSet;
-    /** 交易时间戳 */
-    private Long timestamp;
-    /**
-     * 交易hash
-     * <p>
-     * 为creator、sign、JSON.toJSONString(readSet)、JSON.toJSONString(writeSet)及timestamp拼接后md5
-     */
-    private String hash;
-    /** 交易状态 */
-    private TransactionStatus status = TransactionStatus.SUCCESS;
-    /** 交易错误信息 */
-    private String errorMessage;
-
+    private static Cache<String, JSONObject> cacheJSONObject = CacheBuilder.newBuilder().maximumSize(1000)
+            .expireAfterAccess(12, TimeUnit.HOURS).build();
 }

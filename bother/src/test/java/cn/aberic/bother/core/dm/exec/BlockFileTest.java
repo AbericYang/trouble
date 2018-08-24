@@ -20,13 +20,13 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
+ *
  */
 
-package cn.aberic.bother.dm.block;
+package cn.aberic.bother.core.dm.exec;
 
 import cn.aberic.bother.SystemOut;
 import cn.aberic.bother.core.dm.block.*;
-import cn.aberic.bother.core.dm.exec.BlockFile;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -44,7 +44,7 @@ public class BlockFileTest {
         int height = 10;
 
         BlockHeader header = new BlockHeader();
-        header.setPreviousDataHash("123456");
+        header.setPreviousDataHash("1234567");
         header.setConsentNodeCount(120);
         header.setSmoothlyOut(true);
         header.setTimestamp(new Date().getTime());
@@ -52,7 +52,7 @@ public class BlockFileTest {
 
         BlockBody body = new BlockBody();
         List<Transaction> transactions = new ArrayList<>();
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 8; i++) {
             Transaction transaction = new Transaction();
             transaction.setCreator(String.format("haha%s", i));
             transaction.setErrorMessage(String.format("error message %s", i));

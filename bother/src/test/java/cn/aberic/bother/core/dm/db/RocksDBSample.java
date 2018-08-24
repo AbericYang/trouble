@@ -23,7 +23,7 @@
  *
  */
 
-package cn.aberic.bother.dm.db;
+package cn.aberic.bother.core.dm.db;
 
 import java.lang.IllegalArgumentException;
 import java.util.Arrays;

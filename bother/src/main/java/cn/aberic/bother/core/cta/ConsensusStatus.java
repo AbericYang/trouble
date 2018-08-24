@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2018. Aberic Yang
+ * Copyright (c) 2018 Aberic Yang
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,15 +20,45 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
+ *
  */
 
-package cn.aberic.bother.core.dm;
+package cn.aberic.bother.core.cta;
+
+import lombok.Getter;
 
 /**
- * 数据操作层-data manipulation
+ * 共识状态/等级——共识实现层-cta to achieve
  * <p>
- * 作者：Aberic on 2018/8/20 20:15
+ * 作者：Aberic on 2018/8/24 21:22
  * 邮箱：abericyang@gmail.com
  */
-public class Data {
+@Getter
+public enum ConsensusStatus {
+
+    /** 相同账本下第一区块出现恶意节点 */
+    BLOCK_CLASH_IN_FIRST("相同账本下第一区块出现恶意节点", 100),
+    /** 相同账本下中间区块出现恶意节点 */
+    BLOCK_CLASH_IN_MIDDLE("相同账本下中间区块出现恶意节点", 98),
+    /** 相同账本下中间区块被篡改 */
+    BLOCK_TAMPERING_IN_MIDDLE("相同账本下中间区块被篡改", 99),
+    /** 相同账本下正常区块校验 */
+    BLOCK_CLASH_VERIFY("相同账本下正常区块校验", 1);
+
+    /** 共识状态原因 */
+    private String reason;
+    /** 共识状态级别 */
+    private int level;
+
+    /**
+     * 当前共识状态
+     *
+     * @param reason 共识状态原因
+     * @param level  共识状态级别
+     */
+    ConsensusStatus(String reason, int level) {
+        this.reason = reason;
+        this.level = level;
+    }
+
 }

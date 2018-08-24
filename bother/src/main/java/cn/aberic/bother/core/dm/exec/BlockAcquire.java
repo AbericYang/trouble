@@ -20,45 +20,18 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- *
  */
 
-package cn.aberic.bother.core.dm.block;
-
-import lombok.Getter;
-import lombok.Setter;
-
-import java.util.List;
+package cn.aberic.bother.core.dm.exec;
 
 /**
- * 事务/交易/业务对象——数据操作层-data manipulation
- * <p>
- * 作者：Aberic on 2018/8/20 21:28
+ * 获取区块文件——数据操作层-data manipulation
+ *
+ * 作者：Aberic on 2018/08/24 11:27
  * 邮箱：abericyang@gmail.com
  */
-@Setter
-@Getter
-public class Transaction {
+public class BlockAcquire {
 
-    /** 发起方 */
-    private String creator;
-    /** 发起方签名 */
-    private String sign;
-    /** 交易读集 */
-    private List<ReadValue> readSet;
-    /** 交易写集 */
-    private List<WriteValue> writeSet;
-    /** 交易时间戳 */
-    private Long timestamp;
-    /**
-     * 交易hash
-     * <p>
-     * 为creator、sign、JSON.toJSONString(readSet)、JSON.toJSONString(writeSet)及timestamp拼接后md5
-     */
-    private String hash;
-    /** 交易状态 */
-    private TransactionStatus status = TransactionStatus.SUCCESS;
-    /** 交易错误信息 */
-    private String errorMessage;
+
 
 }

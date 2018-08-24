@@ -42,11 +42,11 @@ import java.io.IOException;
  * 邮箱：abericyang@gmail.com
  */
 @Slf4j
-public class BlockFile {
+class BlockFile {
 
     volatile private static BlockFile instance;
 
-    public static BlockFile obtain() {
+    static BlockFile obtain() {
         if (null == instance) {
             synchronized (BlockFile.class) {
                 if (null == instance) {
@@ -57,7 +57,15 @@ public class BlockFile {
         return instance;
     }
 
-    public boolean create(int height, Block block) {
+    /**
+     * 创建并存储区块文件，如已存在，则覆盖
+     *
+     * @param height 当前待存储区块高度
+     * @param block  区块对象
+     *
+     * @return 成功与否
+     */
+    boolean create(int height, Block block) {
         File blockFile = new File(String.format("%s/block_file_%s.block", Common.BLOCK_FILE_DIR, height));
         try {
             if (!blockFile.getParentFile().exists() && !blockFile.getParentFile().mkdirs()) {
@@ -77,7 +85,14 @@ public class BlockFile {
         return true;
     }
 
-    public Block read(int height) {
+    /**
+     * 根据区块高度读取区块对象
+     *
+     * @param height 当前待读取区块高度
+     *
+     * @return 区块对象
+     */
+    Block read(int height) {
         File blockFile = new File(String.format("%s/block_file_%s.block", Common.BLOCK_FILE_DIR, height));
         try {
             if (!blockFile.exists()) {
@@ -96,6 +111,10 @@ public class BlockFile {
             log.error(String.format("block file read failed, %s", e.getMessage()));
         }
         return null;
+    }
+
+    private void createTransactionIndexFile() {
+
     }
 
 }

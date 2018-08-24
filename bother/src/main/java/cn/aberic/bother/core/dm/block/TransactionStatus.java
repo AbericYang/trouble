@@ -25,12 +25,15 @@
 
 package cn.aberic.bother.core.dm.block;
 
+import lombok.Getter;
+
 /**
  * 交易状态
  * <p>
  * 作者：Aberic on 2018/8/23 23:01
  * 邮箱：abericyang@gmail.com
  */
+@Getter
 public enum TransactionStatus {
 
     /** 交易成功 */
@@ -38,28 +41,20 @@ public enum TransactionStatus {
     /** 交易失败 */
     FAIL("Fail", 9999);
 
-    private String key;
-    private int value;
+    /** 交易结果信息 */
+    private String msg;
+    /** 交易结果码 */
+    private int code;
 
-    TransactionStatus(String key, int value) {
-        this.key = key;
-        this.value = value;
-    }
-
-    public String getKey() {
-        return key;
-    }
-
-    public void setKey(String key) {
-        this.key = key;
-    }
-
-    public int getValue() {
-        return value;
-    }
-
-    public void setValue(int value) {
-        this.value = value;
+    /**
+     * 当前交易状态
+     *
+     * @param msg  交易结果信息
+     * @param code 交易结果码
+     */
+    TransactionStatus(String msg, int code) {
+        this.msg = msg;
+        this.code = code;
     }
 
 }
