@@ -38,6 +38,8 @@ import lombok.Setter;
 @Getter
 public class BlockHeader {
 
+    /** 区块高度 */
+    private int height;
     /** 当前区块hash */
     private String currentDataHash;
     /** 上一区块hash */

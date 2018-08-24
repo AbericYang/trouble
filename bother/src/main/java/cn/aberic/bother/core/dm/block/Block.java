@@ -45,9 +45,9 @@ public class Block {
     private BlockBody body;
 
     public Block(BlockHeader header, BlockBody body) {
-        header.setCurrentDataHash(calculateHash());
         this.header = header;
         this.body = body;
+        this.header.setCurrentDataHash(calculateHash());
     }
 
     /** 得到当前区块hash */
