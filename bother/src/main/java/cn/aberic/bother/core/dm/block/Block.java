@@ -28,6 +28,7 @@ package cn.aberic.bother.core.dm.block;
 import com.google.common.hash.Hashing;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.nio.charset.Charset;
 
@@ -39,6 +40,7 @@ import java.nio.charset.Charset;
  */
 @Setter
 @Getter
+@ToString
 public class Block {
 
     /** 区块头部信息 */

@@ -20,38 +20,59 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
+ *
  */
 
-package cn.aberic.bother.core.dm.exec;
-
-import cn.aberic.bother.core.dm.block.Block;
+package cn.aberic.bother.common;
 
 /**
- * 获取区块文件——数据操作层-data manipulation
+ * 转换工具——公共方法包
  *
- * 作者：Aberic on 2018/08/24 11:27
+ * 作者：Aberic on 2018/8/25 15:57
  * 邮箱：abericyang@gmail.com
  */
-public class BlockAcquire {
+public class TransformTool {
 
     /**
-     * 获取本地区块文件个数
+     * 字符串转换成为16进制
      *
-     * @return 区块文件个数
+     * @param str 字符串
+     *
+     * @return 16进制字符串
      */
-    public int getBlockFileCount() {
-        return BlockFile.obtain().getBlockFileCount();
+    public static String str2HexStr(String str) {
+        char[] chars = "0123456789ABCDEF".toCharArray();
+        StringBuilder sb = new StringBuilder("");
+        byte[] bs = str.getBytes();
+        int bit;
+        for (byte b : bs) {
+            bit = (b & 0x0f0) >> 4;
+            sb.append(chars[bit]);
+            bit = b & 0x0f;
+            sb.append(chars[bit]);
+            // sb.append(' ');
+        }
+        return sb.toString().trim();
     }
 
     /**
-     * 根据区块高度获取区块对象
+     * 16进制转字符串
      *
-     * @param height 区块高度
+     * @param hexStr 16进制字符串
      *
-     * @return 区块对象
+     * @return 字符串
      */
-    public Block getBlockByHeight(int height) {
-        return BlockFile.obtain().getBlockByHeight(height);
+    public static String hexStr2Str(String hexStr) {
+        String str = "0123456789ABCDEF";
+        char[] hexs = hexStr.toCharArray();
+        byte[] bytes = new byte[hexStr.length() / 2];
+        int n;
+        for (int i = 0; i < bytes.length; i++) {
+            n = str.indexOf(hexs[2 * i]) * 16;
+            n += str.indexOf(hexs[2 * i + 1]);
+            bytes[i] = (byte) (n & 0xff);
+        }
+        return new String(bytes);
     }
 
 }

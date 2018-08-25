@@ -29,7 +29,6 @@ import cn.aberic.bother.SystemOut;
 import cn.aberic.bother.core.dm.block.*;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -41,38 +40,68 @@ public class BlockFileTest {
     public static void main(String[] args) {
         SystemOut.println("================= block file test start =================");
 
-        int height = 10;
+        SystemOut.println("================= getBlockFileCount =================" + BlockFile.obtain().getBlockFileCount());
 
-        BlockHeader header = new BlockHeader();
-        header.setPreviousDataHash("1234567");
-        header.setConsentNodeCount(120);
-        header.setSmoothlyOut(true);
-        // header.setTimestamp(new Date().getTime());
-        header.setTimestamp(123);
-        header.setHeight(height);
+//        writeBlock();
 
-        BlockBody body = new BlockBody();
-        List<Transaction> transactions = new ArrayList<>();
-        for (int i = 0; i < 8; i++) {
-            Transaction transaction = new Transaction();
-            transaction.setCreator(String.format("haha%s", i));
-            transaction.setErrorMessage(String.format("error message %s", i));
-            transaction.setSign(String.format("sign %s", i));
-            transaction.setStatus(TransactionStatus.SUCCESS);
-            // transaction.setTimestamp(new Date().getTime());
-            transaction.setTimestamp(123L);
-            transactions.add(transaction);
-        }
-        body.setTxCount(transactions.size());
-        body.setTransactions(transactions);
-
-        Block block = new Block(header, body);
-
-        if (BlockFile.obtain().create(height, block)) {
-            Block newBlock = BlockFile.obtain().read(height);
-            SystemOut.println(newBlock.getHeader().getCurrentDataHash());
-        }
+        Block block = BlockFile.obtain().getBlockByHeight(0);
+        SystemOut.println(block.toString());
 
         SystemOut.println("=================  block file test end  =================");
     }
+
+    private static void writeBlock() {
+        for (int height = 0; height < 99; height++) {
+            BlockHeader header = new BlockHeader();
+            header.setPreviousDataHash("1234567");
+            header.setConsentNodeCount(120);
+            header.setSmoothlyOut(true);
+            // header.setTimestamp(new Date().getTime());
+            header.setTimestamp(123);
+            header.setHeight(height);
+
+            BlockBody body = new BlockBody();
+            List<Transaction> transactions = new ArrayList<>();
+            for (int i = 0; i < 8; i++) {
+                Transaction transaction = new Transaction();
+                transaction.setCreator(String.format("haha%s", i));
+                transaction.setErrorMessage(String.format("error message %s", i));
+                transaction.setSign(String.format("sign %s", i));
+                transaction.setStatus(TransactionStatus.SUCCESS);
+                // transaction.setTimestamp(new Date().getTime());
+                transaction.setTimestamp(123L);
+
+                List<RWSet> rwSets = new ArrayList<>();
+                for (int j = 0; j < 3; j++) {
+                    RWSet rwSet = new RWSet();
+
+                    ReadValue readValue = new ReadValue();
+                    readValue.setNumber(i + j);
+                    readValue.setContractName(String.format("contract_%s", i + j));
+                    readValue.setContractVersion(String.format("v_%s", i + j));
+                    readValue.setStrings(new String[]{String.valueOf(i), String.valueOf(j)});
+
+                    WriteValue writeValue = new WriteValue();
+                    writeValue.setNumber(i + j);
+                    writeValue.setContractName(String.format("contract_%s", i + j));
+                    writeValue.setContractVersion(String.format("v_%s", i + j));
+                    writeValue.setStrings(new String[]{String.valueOf(i), String.valueOf(j)});
+
+                    rwSet.setReadValue(readValue);
+                    rwSet.setWriteValue(writeValue);
+
+                    rwSets.add(rwSet);
+                }
+                transaction.setRwSets(rwSets);
+
+                transactions.add(transaction);
+            }
+            body.setTxCount(transactions.size());
+            body.setTransactions(transactions);
+
+            Block block = new Block(header, body);
+            BlockFile.obtain().createOrWrite(block);
+        }
+    }
+
 }

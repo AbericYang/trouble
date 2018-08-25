@@ -51,6 +51,11 @@
             <artifactId>guava-gwt</artifactId>
             <version>26.0-jre</version>
         </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.6</version>
+        </dependency>
 
         <!-- slf4j核心包-->
         <dependency>
