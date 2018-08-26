@@ -29,6 +29,7 @@ import cn.aberic.bother.SystemOut;
 import cn.aberic.bother.core.dm.block.*;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -44,14 +45,16 @@ public class BlockFileTest {
 
 //        writeBlock();
 
-        Block block = BlockFile.obtain().getBlockByHeight(0);
-        SystemOut.println(block.toString());
+        BlockAcquire acquire = new BlockAcquire();
+        long time = new Date().getTime();
+        Block block = acquire.getBlockByHeight(92000);
+        SystemOut.println("处理时长 = " + (new Date().getTime() - time) + " | block hash = " + block.getHeader().getCurrentDataHash());
 
         SystemOut.println("=================  block file test end  =================");
     }
 
     private static void writeBlock() {
-        for (int height = 0; height < 99; height++) {
+        for (int height = 0; height < 1200000; height++) {
             BlockHeader header = new BlockHeader();
             header.setPreviousDataHash("1234567");
             header.setConsentNodeCount(120);
@@ -94,13 +97,13 @@ public class BlockFileTest {
                 }
                 transaction.setRwSets(rwSets);
 
-                transactions.add(transaction);
+                transactions.add(transaction.build());
             }
             body.setTxCount(transactions.size());
             body.setTransactions(transactions);
 
             Block block = new Block(header, body);
-            BlockFile.obtain().createOrWrite(block);
+            BlockFile.obtain().createOrUpdate(block);
         }
     }
 

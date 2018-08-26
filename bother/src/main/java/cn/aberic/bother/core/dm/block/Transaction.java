@@ -25,9 +25,12 @@
 
 package cn.aberic.bother.core.dm.block;
 
+import com.alibaba.fastjson.JSON;
+import com.google.common.hash.Hashing;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.nio.charset.Charset;
 import java.util.List;
 
 /**
@@ -58,5 +61,11 @@ public class Transaction {
     private TransactionStatus status = TransactionStatus.SUCCESS;
     /** 交易错误信息 */
     private String errorMessage;
+
+    public Transaction build() {
+        hash = Hashing.sha256().hashString(String.format("%s%s%s%s",
+                creator, sign, JSON.toJSONString(rwSets), timestamp), Charset.forName("UTF-8")).toString();
+        return this;
+    }
 
 }

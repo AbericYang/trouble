@@ -20,38 +20,62 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
+ *
  */
 
-package cn.aberic.bother.core.dm.exec;
+package cn.aberic.bother.common;
 
 import cn.aberic.bother.core.dm.block.Block;
+import cn.aberic.bother.core.dm.call.CallableSearchBlock;
+
+import java.util.concurrent.*;
 
 /**
- * 获取区块——数据操作层-data manipulation
- *
- * 作者：Aberic on 2018/08/24 11:27
- * 邮箱：abericyang@gmail.com
+ * 开启一个线程池——公共方法包
+ *  * <p>
+ *  * 作者：Aberic on 2018/08/24 11:44
+ *  * 邮箱：abericyang@gmail.com
  */
-public class BlockAcquire {
+public class ThreadTroublePool {
 
-    /**
-     * 获取本地区块文件个数
-     *
-     * @return 区块文件个数
-     */
-    public int getBlockFileCount() {
-        return BlockFile.obtain().getBlockFileCount();
-    }
+	/** 无界线程池，可以进行自动线程回收 */
+	private ExecutorService mCacheThreadPool;
 
-    /**
-     * 根据区块高度获取区块对象
-     *
-     * @param height 区块高度
-     *
-     * @return 区块对象
-     */
-    public Block getBlockByHeight(int height) {
-        return BlockFile.obtain().getBlockByHeight(height);
-    }
+	private static ThreadTroublePool instance = null;
+
+	public static ThreadTroublePool obtain() {
+		if (null == instance) {
+			synchronized (ThreadTroublePool.class) {
+				if (null == instance) {
+					instance = new ThreadTroublePool();
+				}
+			}
+		}
+		return instance;
+	}
+
+	private ThreadTroublePool() {
+		mCacheThreadPool = Executors.newCachedThreadPool();
+	}
+
+	/**
+	 * 执行定长核心线程池
+	 *
+	 * @param runnable
+	 *            执行线程
+	 */
+	public void submitFixed(Runnable runnable) {
+		mCacheThreadPool.execute(runnable);
+	}
+
+	/**
+	 * 执行定长核心线程池
+	 *
+	 * @param callable
+	 *            执行线程
+	 */
+	public Future<Block> submitFixed(CallableSearchBlock callable) {
+		return mCacheThreadPool.submit(callable);
+	}
 
 }

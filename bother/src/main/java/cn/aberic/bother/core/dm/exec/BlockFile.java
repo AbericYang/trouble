@@ -25,7 +25,9 @@
 package cn.aberic.bother.core.dm.exec;
 
 import cn.aberic.bother.common.Common;
+import cn.aberic.bother.common.ThreadTroublePool;
 import cn.aberic.bother.core.dm.block.Block;
+import cn.aberic.bother.core.dm.call.CallableSearchBlock;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import com.google.common.base.Preconditions;
@@ -42,6 +44,9 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.FutureTask;
 
 /**
  * 区块文件本地读写——数据操作层-data manipulation
@@ -66,34 +71,44 @@ class BlockFile {
     }
 
     /**
-     * 创建并存储区块文件，如已存在且大小超过64M，则覆盖，否则追加行
+     * 创建并存储区块文件，如已存在且大小超过64M，则覆盖，否则下一行追加更新
      *
      * @param block 区块对象
      *
      * @return 成功与否
      */
-    boolean createOrWrite(Block block) {
+    boolean createOrUpdate(Block block) {
+        String jsonStringBlock = JSON.toJSONString(block);
+        long blockSize = jsonStringBlock.getBytes().length;
         // 获取最新写入的区块文件
         File blockFile = getLastBlockFile();
         try {
             // 如果最新写入的区块文件为null，则从0开始重新写入
             if (null == blockFile) {
                 // 定义新的区块文件
-                blockFile = new File(String.format("%s/block_file_0.block", Common.BLOCK_FILE_DIR));
+                blockFile = new File(String.format("%s/%s0.block", Common.BLOCK_FILE_DIR, Common.BLOCK_FILE_NAME_START));
                 // 创建新区块文件的父目录
                 Files.createParentDirs(blockFile);
                 // 创建新区块文件
                 Preconditions.checkArgument(blockFile.createNewFile(), "block file can't be created");
                 // 如果区块文件和待写入对象之和已经大于或等于64MB，则开辟新区块文件写入区块对象
-            } else if (blockFile.length() >= 64 * 1024 * 1024) {
+            } else if (blockFile.length() + blockSize >= 64 * 1000 * 1000) {
+                log.debug(String.format("block file size great than 64MB, now size = %s", blockFile.length()));
+                System.out.println(String.format("block file size great than 64MB, now size = %s", blockFile.length()));
                 blockFile = getNextBlockFile(blockFile);
+                log.debug(String.format("next block file name = %s", blockFile.getName()));
+                System.out.println(String.format("next block file name = %s", blockFile.getName()));
             }
             // 向区块文件中追加写入区块对象并换行
-            Files.asCharSink(blockFile, Charset.forName("UTF-8"), FileWriteMode.APPEND).write(String.format("%s\r\n", JSON.toJSONString(block)));
+            Files.asCharSink(blockFile, Charset.forName("UTF-8"), FileWriteMode.APPEND).write(String.format("%s\r\n", jsonStringBlock));
         } catch (IOException e) {
             e.printStackTrace();
         }
         return true;
+    }
+
+    private void createOrUpdateBlockIndexByTransaction() {
+
     }
 
     /**
@@ -104,26 +119,47 @@ class BlockFile {
      * @return 区块对象
      */
     Block getBlockByHeight(int height) {
-        Block[] blocks = {null};
+        List<Future<Block>> futures = new ArrayList<>();
         Iterable<File> files = Files.fileTraverser().breadthFirst(new File(Common.BLOCK_FILE_DIR));
         files.forEach(file -> {
-            if (!StringUtils.equalsIgnoreCase(file.getName(), "blockfile")) {
-                try (LineIterator it = FileUtils.lineIterator(file, "UTF-8")) {
-                    while (it.hasNext()) {
-                        String line = it.nextLine();
-                        if (StringUtils.isNotEmpty(line)) {
-                            Block block = JSON.parseObject(line, new TypeReference<Block>() {});
-                            if (block.getHeader().getHeight() == height) {
-                                blocks[0] = block;
-                            }
-                        }
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+            if (StringUtils.containsIgnoreCase(file.getName(), Common.BLOCK_FILE_NAME_START)) {
+                Future<Block> future = ThreadTroublePool.obtain().submitFixed(new CallableSearchBlock(height, file, getBlockNum(file.getName())));
+                futures.add(future);
+//                try (LineIterator it = FileUtils.lineIterator(file, "UTF-8")) {
+//                    while (it.hasNext()) {
+//                        String line = it.nextLine();
+//                        if (StringUtils.isNotEmpty(line)) {
+//                            Block block = JSON.parseObject(line, new TypeReference<Block>() {});
+//                            if (block.getHeader().getHeight() == height) {
+//                                blocks[0] = block;
+//                            }
+//                        }
+//                    }
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
             }
         });
-        return blocks[0];
+        for (Future<Block> blockFuture: futures) {
+            Block block = null;
+            try {
+                block = blockFuture.get();
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
+                log.error(String.format("blockFuture.get() block failed as reason : %s", e.getMessage()));
+            }
+            if (null != block) {
+                return block;
+            }
+        }
+        return null;
+    }
+
+    private Block d(int height, File file, int blockFileNum) throws ExecutionException, InterruptedException {
+        CallableSearchBlock searchBlock = new CallableSearchBlock(height, file, blockFileNum);
+        FutureTask<Block> task = new FutureTask<>(searchBlock);
+        new Thread(task).start();
+        return task.get();
     }
 
     /**
@@ -159,7 +195,7 @@ class BlockFile {
         Iterable<File> files = Files.fileTraverser().breadthFirst(new File(Common.BLOCK_FILE_DIR));
         final int[] lastBlockFileNum = {-1};
         files.forEach(file -> {
-            if (!StringUtils.equalsIgnoreCase(file.getName(), "blockfile")) {
+            if (StringUtils.containsIgnoreCase(file.getName(), Common.BLOCK_FILE_NAME_START)) {
                 String fileName = file.getName();
                 int fileNum = getBlockNum(fileName);
                 if (lastBlockFileNum[0] < fileNum) {
@@ -168,8 +204,6 @@ class BlockFile {
                 }
             }
         });
-        log.debug(String.format("last file number is %s", lastBlockFileNum[0]));
-        System.out.println(String.format("last file number is %s", lastBlockFileNum[0]));
         return lastBlockFile[0];
     }
 
@@ -181,14 +215,7 @@ class BlockFile {
      * @return 区块编号
      */
     private int getBlockNum(String blockFileName) {
-        log.debug(String.format("file name is %s", blockFileName));
-        System.out.println(String.format("file name is %s", blockFileName));
-
-        String fileNumStr = blockFileName.substring(11, blockFileName.lastIndexOf(".block"));
-        log.debug(String.format("file number is %s", fileNumStr));
-        System.out.println(String.format("file number is %s", fileNumStr));
-
-        return Ints.tryParse(fileNumStr);
+        return Ints.tryParse(blockFileName.substring(11, blockFileName.lastIndexOf(".block")));
     }
 
     /**
@@ -246,11 +273,7 @@ class BlockFile {
      * @return 区块文件名
      */
     private String getBlockFileNameByNum(int num) {
-        return String.format("block_file_%s.block", num);
-    }
-
-    private void createTransactionIndexFile() {
-
+        return String.format("%s%s.block", Common.BLOCK_FILE_NAME_START, num);
     }
 
 }

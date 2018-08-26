@@ -32,6 +32,8 @@ package cn.aberic.bother.common;
  */
 public class Common {
 
+    public final static String BLOCK_FILE_NAME_START = "block_file_";
+
     /** 区块文件存储索引路径 测试/生产 */
     public final static String BLOCK_INDEX_FILE_DIR = "/Users/Aberic/Documents/tmp/trouble/blockfile/index";
     // public final static String BLOCK_INDEX_FILE_DIR = "/data/trouble/blockfile/index";

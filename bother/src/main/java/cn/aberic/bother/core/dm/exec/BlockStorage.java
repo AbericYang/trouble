@@ -30,7 +30,7 @@ import cn.aberic.bother.core.dm.block.Block;
 import org.apache.commons.lang3.StringUtils;
 
 /**
- * 存储区块文件——数据操作层-data manipulation
+ * 存储区块——数据操作层-data manipulation
  * <p>
  * 作者：Aberic on 2018/08/24 11:27
  * 邮箱：abericyang@gmail.com
@@ -53,7 +53,7 @@ public class BlockStorage {
         // 根据高度查询是否已存在本地区块对象
         Block blockFromFile = BlockFile.obtain().getBlockByHeight(height);
         if (null == blockFromFile) { // 如果不存在，则执行存储操作
-            return BlockFile.obtain().createOrWrite(block);
+            return BlockFile.obtain().createOrUpdate(block);
         } else { // 如果存在，则进入下一步判断两者区块有效性
             return checkVerify(height, block, blockFromFile);
         }
@@ -94,7 +94,7 @@ public class BlockStorage {
             if (StringUtils.equalsIgnoreCase(
                     block.getHeader().getPreviousDataHash(),
                     blockFromPreFile.getHeader().getCurrentDataHash())) {
-                return BlockFile.obtain().createOrWrite(block);
+                return BlockFile.obtain().createOrUpdate(block);
             } else if (StringUtils.equalsIgnoreCase( // 如果本地已存在区块上一hash与上一区块的当前hash相同
                     blockFromFile.getHeader().getPreviousDataHash(),
                     blockFromPreFile.getHeader().getCurrentDataHash())) {
