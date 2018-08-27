@@ -20,41 +20,34 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- *
  */
 
 package cn.aberic.bother.core.dm.block;
 
 import lombok.Getter;
+import lombok.Setter;
+
+import java.util.List;
 
 /**
- * 交易状态
+ * 区块在区块文件中的基本信息——数据操作层-data manipulation
  * <p>
- * 作者：Aberic on 2018/8/23 23:01
+ * 作者：Aberic on 2018/08/27 17:29
  * 邮箱：abericyang@gmail.com
  */
+@Setter
 @Getter
-public enum TransactionStatus {
+public class BlockInfo {
 
-    /** 交易成功 */
-    SUCCESS("Success", 200),
-    /** 交易失败 */
-    FAIL("Fail", 9999);
-
-    /** 交易结果信息 */
-    private String msg;
-    /** 交易结果码 */
-    private int code;
-
-    /**
-     * 当前交易状态
-     *
-     * @param msg  交易结果信息
-     * @param code 交易结果码
-     */
-    TransactionStatus(String msg, int code) {
-        this.msg = msg;
-        this.code = code;
-    }
+    /** 区块高度 */
+    private int height;
+    /** 区块hash */
+    private String blockHash;
+    /** 区块中交易hash */
+    private List<String> transactionHashs;
+    /** 区块所在区块文件编号 */
+    private int num;
+    /** 区块所在区块文件中的行号 */
+    private int line;
 
 }

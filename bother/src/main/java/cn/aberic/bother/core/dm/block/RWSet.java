@@ -38,7 +38,7 @@ import lombok.Setter;
 public class RWSet {
 
     /** 交易读内容 */
-    private ReadValue readValue;
+    private ValueRead valueRead;
     /** 交易写内容 */
-    private WriteValue writeValue;
+    private ValueWrite valueWrite;
 }

@@ -1,0 +1,131 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) 2018 Aberic Yang
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
+package cn.aberic.bother.core.dm.block;
+
+import cn.aberic.bother.common.Common;
+import lombok.Getter;
+import org.apache.commons.lang3.StringUtils;
+
+/**
+ * 区块及区块索引文件可操作组件——数据操作层-data manipulation
+ * <p>
+ * 作者：Aberic on 2018/08/27 14:31
+ * 邮箱：abericyang@gmail.com
+ */
+@Getter
+public class FileComponent {
+
+    /** 文件固定格式开头字符串 */
+    private String start;
+    /** 文件固定格式结尾字符串 */
+    private String end;
+    /** 文件所存储目录 */
+    private String dir;
+
+    /**
+     * 当前文件组件
+     *
+     * @param start 文件固定格式开头字符串
+     * @param end   文件固定格式结尾字符串
+     * @param dir   文件所存储目录
+     */
+    private FileComponent(String start, String end, String dir) {
+        this.start = start;
+        this.end = end;
+        this.dir = dir;
+    }
+
+    /** 获取默认区块文件可操作状态 */
+    public static FileComponent getBlockFileComponentDefault() {
+        return new FileComponent(Common.BLOCK_FILE_START, Common.BLOCK_FILE_END, Common.BLOCK_FILE_DIR);
+    }
+
+    /** 获取默认区块索引文件可操作状态 */
+    public static FileComponent getBlockIndexFileComponentDefault() {
+        return new FileComponent(Common.BLOCK_INDEX_START, Common.BLOCK_INDEX_DIR, Common.BLOCK_INDEX_END);
+    }
+
+    /** 获取默认区块索引文件可操作状态 */
+    public static FileComponent getBlockTransactionIndexFileComponentDefault() {
+        return new FileComponent(Common.BLOCK_TRANSACTION_INDEX_START, Common.BLOCK_TRANSACTION_INDEX_DIR, Common.BLOCK_TRANSACTION_INDEX_CUSTOM_DIR);
+    }
+
+    /**
+     * 获取指定智能合约hash的区块文件可操作状态
+     *
+     * @param contractHash 智能合约hash
+     */
+    public static FileComponent getBlockFileComponent(String contractHash) {
+        if (StringUtils.isEmpty(contractHash)) {
+            throw new NullPointerException("smart contract hash can't be empty");
+        }
+        return new FileComponent(
+                Common.BLOCK_FILE_START,
+                Common.BLOCK_FILE_END,
+                getCustomDirByContractHash(Common.BLOCK_FILE_CUSTOM_DIR, contractHash));
+    }
+
+    /**
+     * 获取指定智能合约hash的区块索引文件可操作状态
+     *
+     * @param contractHash 智能合约hash
+     */
+    public static FileComponent getBlockIndexFileComponent(String contractHash) {
+        if (StringUtils.isEmpty(contractHash)) {
+            throw new NullPointerException("smart contract hash can't be empty");
+        }
+        return new FileComponent(
+                Common.BLOCK_INDEX_START,
+                Common.BLOCK_INDEX_END,
+                getCustomDirByContractHash(Common.BLOCK_INDEX_CUSTOM_DIR, contractHash));
+    }
+
+    /**
+     * 获取指定智能合约hash的区块索引文件可操作状态
+     *
+     * @param contractHash 智能合约hash
+     */
+    public static FileComponent getBlockTransactionIndexFileComponent(String contractHash) {
+        if (StringUtils.isEmpty(contractHash)) {
+            throw new NullPointerException("smart contract hash can't be empty");
+        }
+        return new FileComponent(
+                Common.BLOCK_TRANSACTION_INDEX_START,
+                Common.BLOCK_TRANSACTION_INDEX_END,
+                getCustomDirByContractHash(Common.BLOCK_TRANSACTION_INDEX_CUSTOM_DIR, contractHash));
+    }
+
+    /**
+     * 根据待操作文件固定目录及智能合约hash得到当前文件操作目录
+     *
+     * @param dir          文件固定目录
+     * @param contractHash 智能合约hash
+     * @return 当前文件操作目录
+     */
+    private static String getCustomDirByContractHash(String dir, String contractHash) {
+        return String.format("%s/%s", dir, contractHash);
+    }
+
+}

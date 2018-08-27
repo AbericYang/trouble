@@ -20,46 +20,40 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- *
  */
 
-package cn.aberic.bother.core.dm.block;
+package cn.aberic.bother.core.dm.status;
 
-import com.google.common.hash.Hashing;
 import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
-
-import java.nio.charset.Charset;
 
 /**
- * 区块对象——数据操作层-data manipulation
+ * 交易状态
  * <p>
- * 作者：Aberic on 2018/8/20 21:21
+ * 作者：Aberic on 2018/8/23 23:01
  * 邮箱：abericyang@gmail.com
  */
-@Setter
 @Getter
-@ToString
-public class Block {
+public enum TransactionStatus {
 
-    /** 区块头部信息 */
-    private BlockHeader header;
-    /** 区块数据体 */
-    private BlockBody body;
+    /** 交易成功 */
+    SUCCESS("Success", 200),
+    /** 交易失败 */
+    FAIL("Fail", 9999);
 
-    public Block(BlockHeader header, BlockBody body) {
-        this.header = header;
-        this.body = body;
-    }
+    /** 交易结果信息 */
+    private String msg;
+    /** 交易结果码 */
+    private int code;
 
-    /** 得到当前区块hash */
-    public String calculateHash() {
-        return Hashing.sha256().hashString(String.format("%s%s%s%s",
-                header.getPreviousDataHash(),
-                header.getConsentNodeCount(),
-                Long.toString(header.getTimestamp()),
-                body.bodyString()), Charset.forName("UTF-8")).toString();
+    /**
+     * 当前交易状态
+     *
+     * @param msg  交易结果信息
+     * @param code 交易结果码
+     */
+    TransactionStatus(String msg, int code) {
+        this.msg = msg;
+        this.code = code;
     }
 
 }

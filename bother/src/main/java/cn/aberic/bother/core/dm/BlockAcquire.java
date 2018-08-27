@@ -20,34 +20,43 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- *
  */
 
-package cn.aberic.bother.core.dm.block;
+package cn.aberic.bother.core.dm;
 
-import lombok.Getter;
-import lombok.Setter;
+import cn.aberic.bother.common.Common;
+import cn.aberic.bother.core.dm.block.Block;
+import cn.aberic.bother.core.dm.exec.ExecObtain;
+import cn.aberic.bother.core.dm.exec.BlockExec;
 
 /**
- * 一笔操作的写入值对象——数据操作层-data manipulation
+ * 获取区块——数据操作层-data manipulation
  *
- * 作者：Aberic on 2018/8/24 23:02
+ * 作者：Aberic on 2018/08/24 11:27
  * 邮箱：abericyang@gmail.com
  */
-@Setter
-@Getter
-public class WriteValue {
+public class BlockAcquire {
 
-    /** 本次写入值编号，与读取值编号对应 */
-    private int number;
-    /** 本次写入值所用合约名称 */
-    private String contractName;
-    /** 本次写入值所用合约版本 */
-    private String contractVersion;
     /**
-     * 本次写入值参数；
-     * <p>
-     * 参数格式为：参数组个数，参数个数，参数…组成
+     * 获取本地区块文件个数
+     *
+     * @return 区块文件个数
      */
-    private String[] strings;
+    public int getBlockFileCount() {
+        BlockExec blockExec = ExecObtain.getBlockExec(Common.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH);
+        return blockExec.getFileCount();
+    }
+
+    /**
+     * 根据区块高度获取区块对象
+     *
+     * @param height 区块高度
+     *
+     * @return 区块对象
+     */
+    public Block getBlockByHeight(int height) {
+        BlockExec blockExec = ExecObtain.getBlockExec(Common.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH);
+        return blockExec.getBlockByHeight(height);
+    }
+
 }

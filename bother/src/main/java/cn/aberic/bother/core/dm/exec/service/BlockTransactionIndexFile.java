@@ -22,36 +22,26 @@
  * SOFTWARE.
  */
 
-package cn.aberic.bother.core.dm.exec;
+package cn.aberic.bother.core.dm.exec.service;
 
-import cn.aberic.bother.core.dm.block.Block;
+import cn.aberic.bother.core.dm.block.BlockInfo;
 
 /**
- * 获取区块——数据操作层-data manipulation
- *
- * 作者：Aberic on 2018/08/24 11:27
+ * 区块交易索引文件本地读写——数据操作层-data manipulation
+ * <p>
+ * 作者：Aberic on 2018/08/27 17:51
  * 邮箱：abericyang@gmail.com
  */
-public class BlockAcquire {
+public interface BlockTransactionIndexFile extends FileService<BlockInfo> {
 
     /**
-     * 获取本地区块文件个数
+     * 创建并存储区块文件，如已存在且大小超过24M，则覆盖，否则下一行追加更新
      *
-     * @return 区块文件个数
+     * @param blockInfo 区块索引对象
      */
-    public int getBlockFileCount() {
-        return BlockFile.obtain().getBlockFileCount();
-    }
-
-    /**
-     * 根据区块高度获取区块对象
-     *
-     * @param height 区块高度
-     *
-     * @return 区块对象
-     */
-    public Block getBlockByHeight(int height) {
-        return BlockFile.obtain().getBlockByHeight(height);
+    @Override
+    default BlockInfo createOrUpdate(BlockInfo blockInfo) {
+        return null;
     }
 
 }

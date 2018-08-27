@@ -32,18 +32,43 @@ package cn.aberic.bother.common;
  */
 public class Common {
 
-    public final static String BLOCK_FILE_NAME_START = "block_file_";
-
-    /** 区块文件存储索引路径 测试/生产 */
-    public final static String BLOCK_INDEX_FILE_DIR = "/Users/Aberic/Documents/tmp/trouble/blockfile/index";
-    // public final static String BLOCK_INDEX_FILE_DIR = "/data/trouble/blockfile/index";
-
-    /** 区块文件存储路径 测试/生产 */
-    public final static String BLOCK_FILE_DIR = "/Users/Aberic/Documents/tmp/trouble/blockfile";
-    // public final static String BLOCK_FILE_DIR = "/data/trouble/blockfile";
-
     /** RocksDB存储路径 测试/生产 */
     public final static String ROCKS_DB_FILE_DIR = "/Users/Aberic/Documents/tmp/trouble/rocksdb";
     // public final static String ROCKS_DB_FILE_DIR = "/data/trouble/rocksdb";
+
+    public final static String BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH = "default_system_contract_hash";
+
+    /** 默认区块文件前缀 */
+    public final static String BLOCK_FILE_START = "block_file_";
+    /** 默认区块文件后缀 */
+    public final static String BLOCK_FILE_END = ".block";
+    /** 默认区块文件存储路径 测试/生产 */
+    public final static String BLOCK_FILE_DIR = "/Users/Aberic/Documents/tmp/trouble/bf";
+    // public final static String BLOCK_FILE_DIR = "/data/trouble/blockfile";
+    /** 自定义合约区块文件存储路径 测试/生产 */
+    public final static String BLOCK_FILE_CUSTOM_DIR = "/Users/Aberic/Documents/tmp/trouble/bfs";
+    // public final static String BLOCK_FILE_CUSTOM_DIR = "/data/trouble/blockfile";
+
+    /** 默认区块索引文件前缀 */
+    public final static String BLOCK_INDEX_START = "block_index_file_";
+    /** 默认区块索引文件后缀 */
+    public final static String BLOCK_INDEX_END = ".index";
+    /** 默认区块文件存储索引路径 测试/生产 */
+    public final static String BLOCK_INDEX_DIR = "/Users/Aberic/Documents/tmp/trouble/bif";
+    // public final static String BLOCK_INDEX_DIR = "/data/trouble/blocktxindex";
+    /** 自定义合约区块文件存储索引路径 测试/生产 */
+    public final static String BLOCK_INDEX_CUSTOM_DIR = "/Users/Aberic/Documents/tmp/trouble/bifs";
+    // public final static String BLOCK_INDEX_CUSTOM_DIR = "/data/trouble/blocktxindex";
+
+    /** 默认区块交易索引文件前缀 */
+    public final static String BLOCK_TRANSACTION_INDEX_START = "block_transaction_index_file_";
+    /** 默认区块交易索引文件后缀 */
+    public final static String BLOCK_TRANSACTION_INDEX_END = ".index";
+    /** 默认区块文件中交易存储索引路径 测试/生产 */
+    public final static String BLOCK_TRANSACTION_INDEX_DIR = "/Users/Aberic/Documents/tmp/trouble/btif";
+    // public final static String BLOCK_INDEX_DIR = "/data/trouble/blocktxindex";
+    /** 自定义合约区块文件中交易存储索引路径 测试/生产 */
+    public final static String BLOCK_TRANSACTION_INDEX_CUSTOM_DIR = "/Users/Aberic/Documents/tmp/trouble/btifs";
+    // public final static String BLOCK_INDEX_CUSTOM_DIR = "/data/trouble/blocktxindex";
 
 }

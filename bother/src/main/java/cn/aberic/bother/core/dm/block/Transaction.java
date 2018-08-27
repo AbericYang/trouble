@@ -25,6 +25,7 @@
 
 package cn.aberic.bother.core.dm.block;
 
+import cn.aberic.bother.core.dm.status.TransactionStatus;
 import com.alibaba.fastjson.JSON;
 import com.google.common.hash.Hashing;
 import lombok.Getter;

@@ -20,46 +20,28 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- *
  */
 
-package cn.aberic.bother.core.dm.block;
+package cn.aberic.bother.core.dm.exec.service;
 
-import com.google.common.hash.Hashing;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
-
-import java.nio.charset.Charset;
+import cn.aberic.bother.core.dm.block.BlockInfo;
 
 /**
- * 区块对象——数据操作层-data manipulation
+ * 区块索引文件本地读写——数据操作层-data manipulation
  * <p>
- * 作者：Aberic on 2018/8/20 21:21
+ * 作者：Aberic on 2018/08/27 16:54
  * 邮箱：abericyang@gmail.com
  */
-@Setter
-@Getter
-@ToString
-public class Block {
+public interface BlockIndexFile extends FileService<BlockInfo> {
 
-    /** 区块头部信息 */
-    private BlockHeader header;
-    /** 区块数据体 */
-    private BlockBody body;
-
-    public Block(BlockHeader header, BlockBody body) {
-        this.header = header;
-        this.body = body;
-    }
-
-    /** 得到当前区块hash */
-    public String calculateHash() {
-        return Hashing.sha256().hashString(String.format("%s%s%s%s",
-                header.getPreviousDataHash(),
-                header.getConsentNodeCount(),
-                Long.toString(header.getTimestamp()),
-                body.bodyString()), Charset.forName("UTF-8")).toString();
+    /**
+     * 创建并存储区块文件，如已存在且大小超过24M，则覆盖，否则下一行追加更新
+     *
+     * @param  blockInfo 区块索引对象
+     */
+    @Override
+    default BlockInfo createOrUpdate(BlockInfo blockInfo) {
+        return null;
     }
 
 }

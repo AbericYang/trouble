@@ -25,41 +25,30 @@
 
 package cn.aberic.bother.core.dm.block;
 
-import com.google.common.hash.Hashing;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
-
-import java.nio.charset.Charset;
 
 /**
- * 区块对象——数据操作层-data manipulation
+ * 一笔操作的读取值对象——数据操作层-data manipulation
  * <p>
- * 作者：Aberic on 2018/8/20 21:21
+ * 作者：Aberic on 2018/8/24 23:01
  * 邮箱：abericyang@gmail.com
  */
 @Setter
 @Getter
-@ToString
-public class Block {
+public class ValueRead {
 
-    /** 区块头部信息 */
-    private BlockHeader header;
-    /** 区块数据体 */
-    private BlockBody body;
-
-    public Block(BlockHeader header, BlockBody body) {
-        this.header = header;
-        this.body = body;
-    }
-
-    /** 得到当前区块hash */
-    public String calculateHash() {
-        return Hashing.sha256().hashString(String.format("%s%s%s%s",
-                header.getPreviousDataHash(),
-                header.getConsentNodeCount(),
-                Long.toString(header.getTimestamp()),
-                body.bodyString()), Charset.forName("UTF-8")).toString();
-    }
+    /** 本次读取值编号，与写入值编号对应 */
+    private int number;
+    /** 本次读取值所用合约名称 */
+    private String contractName;
+    /** 本次读取值所用合约版本 */
+    private String contractVersion;
+    /**
+     * 本次读取值参数；
+     * <p>
+     * 参数格式为：参数组个数，参数个数，参数…组成
+     */
+    private String[] strings;
 
 }

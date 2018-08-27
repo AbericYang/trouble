@@ -51,4 +51,43 @@ public class BlockHeader {
     /** 当前区块生成时间戳 */
     private long timestamp;
 
+    private BlockHeader(){}
+
+    public static BlockHeader newInstance() {
+        return new BlockHeader();
+    }
+
+    /**
+     * 创建新区快头部构造
+     *
+     * @param smoothlyOut      是否由第一顺位节点出块
+     * @param consentNodeCount 参与本次区块打包的投票节点个数
+     * @param timestamp        当前区块生成时间戳
+     */
+    public BlockHeader create(boolean smoothlyOut, int consentNodeCount, long timestamp) {
+        this.smoothlyOut = smoothlyOut;
+        this.consentNodeCount = consentNodeCount;
+        this.timestamp = timestamp;
+        return this;
+    }
+
+    /**
+     * 同步新区快头部构造
+     *
+     * @param height           区块高度
+     * @param currentDataHash  当前区块hash
+     * @param previousDataHash 上一区块hash
+     * @param smoothlyOut      是否由第一顺位节点出块
+     * @param consentNodeCount 参与本次区块打包的投票节点个数
+     * @param timestamp        当前区块生成时间戳
+     */
+    public BlockHeader sync(int height, String currentDataHash, String previousDataHash, boolean smoothlyOut, int consentNodeCount, long timestamp) {
+        this.height = height;
+        this.currentDataHash = currentDataHash;
+        this.previousDataHash = previousDataHash;
+        this.smoothlyOut = smoothlyOut;
+        this.consentNodeCount = consentNodeCount;
+        this.timestamp = timestamp;
+        return this;
+    }
 }

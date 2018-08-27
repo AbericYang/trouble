@@ -29,26 +29,25 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * 一笔操作的读取值对象——数据操作层-data manipulation
- * <p>
- * 作者：Aberic on 2018/8/24 23:01
+ * 一笔操作的写入值对象——数据操作层-data manipulation
+ *
+ * 作者：Aberic on 2018/8/24 23:02
  * 邮箱：abericyang@gmail.com
  */
 @Setter
 @Getter
-public class ReadValue {
+public class ValueWrite {
 
-    /** 本次读取值编号，与写入值编号对应 */
+    /** 本次写入值编号，与读取值编号对应 */
     private int number;
-    /** 本次读取值所用合约名称 */
+    /** 本次写入值所用合约名称 */
     private String contractName;
-    /** 本次读取值所用合约版本 */
+    /** 本次写入值所用合约版本 */
     private String contractVersion;
     /**
-     * 本次读取值参数；
+     * 本次写入值参数；
      * <p>
      * 参数格式为：参数组个数，参数个数，参数…组成
      */
     private String[] strings;
-
 }
