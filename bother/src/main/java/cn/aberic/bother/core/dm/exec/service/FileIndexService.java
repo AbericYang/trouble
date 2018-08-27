@@ -53,7 +53,7 @@ public interface FileIndexService extends FileService<BlockInfo> {
             if (null == indexFile) {
                 // 定义新的区块文件
                 indexFile = createFirstFile();
-                wirteFisrtLine(indexFile, jsonStringBlock);
+                writeFirstLine(indexFile, jsonStringBlock);
             } else {
                 // 计算该内容的字节长度
                 long blockIndexSize = jsonStringBlock.getBytes().length;
@@ -62,9 +62,9 @@ public interface FileIndexService extends FileService<BlockInfo> {
                     System.out.println(String.format("block index file size great than 24MB, now size = %s", indexFile.length()));
                     indexFile = getNextFileByCurrentFile(indexFile);
                     System.out.println(String.format("next block index file name = %s", indexFile.getName()));
-                    wirteFisrtLine(indexFile, jsonStringBlock);
+                    writeFirstLine(indexFile, jsonStringBlock);
                 } else {
-                    wirteAppendLine(indexFile, jsonStringBlock);
+                    writeAppendLine(indexFile, jsonStringBlock);
                 }
             }
         } catch (IOException e) {

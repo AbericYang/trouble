@@ -24,6 +24,17 @@
 
 package cn.aberic.bother.core.dm.exec.service;
 
+import cn.aberic.bother.core.dm.block.Block;
+import cn.aberic.bother.core.dm.block.BlockInfo;
+import cn.aberic.bother.core.dm.exec.BlockExec;
+import cn.aberic.bother.core.dm.exec.ExecObtain;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
+import com.google.common.io.Files;
+import org.apache.commons.lang3.StringUtils;
+
+import java.io.*;
+
 /**
  * 区块交易索引文件本地读写接口——数据操作层-data manipulation
  * <p>
@@ -35,5 +46,40 @@ public interface BlockTransactionIndexFile extends FileIndexService {
     @Override
     default String[] jsonStringByPropertyPreFilter() {
         return new String[]{"transactionHashList", "num", "line"};
+    }
+
+    /**
+     * 根据交易hash获取区块对象
+     *
+     * @param transactionHash 交易hash
+     *
+     * @return 区块对象
+     */
+    default Block getByTransactionHash(String transactionHash) {
+        Block[] blocks = new Block[]{null};
+        Iterable<File> files = Files.fileTraverser().breadthFirst(new File(getFileStatus().getDir()));
+        files.forEach(file -> {
+            if (StringUtils.startsWith(file.getName(), getFileStatus().getStart())) {
+                try (BufferedInputStream fis = new BufferedInputStream(new FileInputStream(file));
+                     // 用5M的缓冲读取文本文件
+                     BufferedReader reader = new BufferedReader(new InputStreamReader(fis, "utf-8"), 5 * 1024 * 1024)) {
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        BlockInfo blockInfo = JSON.parseObject(line, new TypeReference<BlockInfo>() {});
+                        if (null != blockInfo) {
+                            for (String transaction : blockInfo.getTransactionHashList()) {
+                                if (StringUtils.equalsIgnoreCase(transaction, transactionHash)) {
+                                    BlockExec blockExec = ExecObtain.getBlockExec(getContractHash());
+                                    blocks[0] = blockExec.getByNumAndLine(blockInfo.getNum(), blockInfo.getLine());
+                                }
+                            }
+                        }
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        return blocks[0];
     }
 }

@@ -24,22 +24,15 @@
 
 package cn.aberic.bother.core.dm.exec.service;
 
-import cn.aberic.bother.common.Common;
-import cn.aberic.bother.common.ThreadTroublePool;
 import cn.aberic.bother.core.dm.block.Block;
 import cn.aberic.bother.core.dm.block.BlockInfo;
 import cn.aberic.bother.core.dm.block.Transaction;
-import cn.aberic.bother.core.dm.call.CallableSearchBlock;
 import com.alibaba.fastjson.JSON;
-import com.google.common.io.Files;
-import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 
 /**
  * 区块文件本地读写接口——数据操作层-data manipulation
@@ -72,7 +65,7 @@ public interface BlockFile extends FileService<Block> {
                 currentDataHash = block.calculateHash();
                 block.getHeader().setCurrentDataHash(currentDataHash); // 第一区块当前hash
                 jsonStringBlock = JSON.toJSONString(block);
-                wirteFisrtLine(blockFile, jsonStringBlock);
+                writeFirstLine(blockFile, jsonStringBlock);
             } else {
                 // 获取当前区块文件中的总行数，其值即为上一区块的行数
                 line = getFileLineCountIfBigCharLine(blockFile);
@@ -95,9 +88,9 @@ public interface BlockFile extends FileService<Block> {
                     System.out.println(String.format("block file size great than 24MB, now size = %s", blockFile.length()));
                     blockFile = getNextFileByCurrentFile(blockFile);
                     System.out.println(String.format("next block file name = %s", blockFile.getName()));
-                    wirteFisrtLine(blockFile, jsonStringBlock);
+                    writeFirstLine(blockFile, jsonStringBlock);
                 } else {
-                    wirteAppendLine(blockFile, jsonStringBlock);
+                    writeAppendLine(blockFile, jsonStringBlock);
                 }
             }
             List<String> transactionHashList = new ArrayList<>();
@@ -129,48 +122,6 @@ public interface BlockFile extends FileService<Block> {
             // 返回上一区块高度
             return preBlock.getHeader().getHeight();
         }
-    }
-
-    /**
-     * 根据区块高度获取区块对象
-     *
-     * @param height 区块高度
-     * @return 区块对象
-     */
-    default Block getBlockByHeight(int height) {
-        List<Future<Block>> futures = new ArrayList<>();
-        Iterable<File> files = Files.fileTraverser().breadthFirst(new File(Common.BLOCK_FILE_DIR));
-        files.forEach(file -> {
-            if (StringUtils.containsIgnoreCase(file.getName(), Common.BLOCK_FILE_START)) {
-                Future<Block> future = ThreadTroublePool.obtain().submitFixed(new CallableSearchBlock(height, file, getNumByFileName(file.getName())));
-                futures.add(future);
-//                try (LineIterator it = FileUtils.lineIterator(file, "UTF-8")) {
-//                    while (it.hasNext()) {
-//                        String line = it.nextLine();
-//                        if (StringUtils.isNotEmpty(line)) {
-//                            Block block = JSON.parseObject(line, new TypeReference<Block>() {});
-//                            if (block.getHeader().getHeight() == height) {
-//                                blocks[0] = block;
-//                            }
-//                        }
-//                    }
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-            }
-        });
-        for (Future<Block> blockFuture : futures) {
-            Block block = null;
-            try {
-                block = blockFuture.get();
-            } catch (InterruptedException | ExecutionException e) {
-                e.printStackTrace();
-            }
-            if (null != block) {
-                return block;
-            }
-        }
-        return null;
     }
 
 }

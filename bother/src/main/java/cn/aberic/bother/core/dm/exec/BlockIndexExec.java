@@ -51,6 +51,11 @@ public class BlockIndexExec implements BlockIndexFile {
     }
 
     @Override
+    public String getContractHash() {
+        return contractHash;
+    }
+
+    @Override
     public FileComponent getFileStatus() {
         if (StringUtils.equals(contractHash, Common.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH)) {
             return FileComponent.getBlockIndexFileComponentDefault();

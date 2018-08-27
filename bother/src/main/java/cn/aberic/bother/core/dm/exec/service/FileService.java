@@ -52,12 +52,17 @@ import java.nio.charset.Charset;
  */
 public interface FileService<T> {
 
+    /** 获取合约hash */
+    String getContractHash();
+
+    /** 获取文件对应组件属性 */
     FileComponent getFileStatus();
 
     /**
      * 根据{@link T}对象创建或更新后存储{@link T}文件
      *
      * @param t {@link T}对象
+     *
      * @return 成功与否
      */
     BlockInfo createOrUpdate(T t);
@@ -67,6 +72,7 @@ public interface FileService<T> {
      *
      * @param num  文件编号
      * @param line 区块文件中的行号
+     *
      * @return {@link T}对象
      */
     default T getByNumAndLine(int num, int line) {
@@ -78,6 +84,7 @@ public interface FileService<T> {
      *
      * @param file 文件
      * @param line 在区块文件中的行号
+     *
      * @return {@link T}对象
      */
     @SuppressWarnings("unchecked")
@@ -111,18 +118,10 @@ public interface FileService<T> {
     }
 
     /**
-     * 获取本地目录下文件个数
-     *
-     * @return 文件个数
-     */
-    default int getFileCount() {
-        return getFileCount(getFileStatus().getDir());
-    }
-
-    /**
      * 根据当前区块文件获取下一区块文件，如果下一区块不存在，则直接返回新创建的下一区块文件
      *
      * @param file 当前区块文件
+     *
      * @return 下一区块文件
      */
     default File getNextFileByCurrentFile(File file) {
@@ -169,6 +168,7 @@ public interface FileService<T> {
      * 根据{@link T}文件名获取当前文件编号
      *
      * @param fileName {@link T}文件名
+     *
      * @return 文件编号
      */
     default int getNumByFileName(String fileName) {
@@ -179,6 +179,7 @@ public interface FileService<T> {
      * 根据{@link T}文件编号获取当前文件名，编号从0开始计算
      *
      * @param num {@link T}文件编号
+     *
      * @return 文件名
      */
     default String getFileNameByNum(int num) {
@@ -189,6 +190,7 @@ public interface FileService<T> {
      * 根据{@link T}文件编号读取文件，如果文件不存在，则直接返回新创建的{@link T}文件
      *
      * @param num 当前待读取{@link T}文件编号
+     *
      * @return {@link T}文件
      */
     default File getFileByNum(int num) {
@@ -207,13 +209,14 @@ public interface FileService<T> {
     /**
      * 获取本地目录下文件个数
      *
-     * @param fileDir 本地目录
      * @return 文件个数
      */
-    default int getFileCount(String fileDir) {
+    default int getFileCount() {
         int count = 0;
-        for (File ignored : Files.fileTraverser().breadthFirst(new File(fileDir))) {
-            count++;
+        for (File file : Files.fileTraverser().breadthFirst(new File(getFileStatus().getDir()))) {
+            if (StringUtils.startsWith(file.getName(), getFileStatus().getStart())) {
+                count++;
+            }
         }
         return count;
     }
@@ -222,6 +225,7 @@ public interface FileService<T> {
      * 获取指定文件编号文件中的总行数，适合单行内容较多较长的情况
      *
      * @param num 文件编号
+     *
      * @return 文件总行数
      */
     default int getFileLineCountIfBigCharLine(int num) {
@@ -232,6 +236,7 @@ public interface FileService<T> {
      * 获取指定文件编号文件中的总行数，适合单行内容较多较长的情况
      *
      * @param num 文件编号
+     *
      * @return 文件总行数
      */
     default int getFileLineCountIfLittleCharLine(int num) {
@@ -242,6 +247,7 @@ public interface FileService<T> {
      * 获取文件中的总行数，适合单行内容较多较长的情况
      *
      * @param file 文件
+     *
      * @return 文件总行数
      */
     default int getFileLineCountIfBigCharLine(File file) {
@@ -270,6 +276,7 @@ public interface FileService<T> {
      * 获取文件中的总行数，适合单行内容较少的情况
      *
      * @param file 文件
+     *
      * @return 文件总行数
      */
     default int getFileLineCountIfLittleCharLine(File file) {
@@ -306,7 +313,7 @@ public interface FileService<T> {
      * @param file   文件
      * @param string 写入内容
      */
-    default void wirteFisrtLine(File file, String string) throws IOException {
+    default void writeFirstLine(File file, String string) throws IOException {
         Files.asCharSink(file, Charset.forName("UTF-8"), FileWriteMode.APPEND).write(string);
     }
 
@@ -316,7 +323,7 @@ public interface FileService<T> {
      * @param file   文件
      * @param string 追加内容
      */
-    default void wirteAppendLine(File file, String string) throws IOException {
+    default void writeAppendLine(File file, String string) throws IOException {
         Files.asCharSink(file, Charset.forName("UTF-8"), FileWriteMode.APPEND).write(String.format("\r\n%s", string));
     }
 

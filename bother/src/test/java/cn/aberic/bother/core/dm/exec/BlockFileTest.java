@@ -27,6 +27,8 @@ package cn.aberic.bother.core.dm.exec;
 
 import cn.aberic.bother.SystemOut;
 import cn.aberic.bother.common.Common;
+import cn.aberic.bother.core.dm.BlockAcquire;
+import cn.aberic.bother.core.dm.BlockStorage;
 import cn.aberic.bother.core.dm.block.*;
 import cn.aberic.bother.core.dm.status.TransactionStatus;
 
@@ -43,36 +45,25 @@ public class BlockFileTest {
     public static void main(String[] args) {
         SystemOut.println("================= block file test start =================");
 
-        BlockExec blockExec = new BlockExec(Common.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH);
-        BlockIndexExec blockIndexExec = new BlockIndexExec(Common.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH);
-        BlockTransactionIndexExec blockTransactionIndexExec = new BlockTransactionIndexExec(Common.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH);
+        BlockAcquire acquire = new BlockAcquire(Common.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH);
 
-        SystemOut.println("================= getBlockFileCount ================= " + blockExec.getFileCount());
-
-        SystemOut.println("================= block height ================= " + blockExec.getHeight());
-
-        writeBlock(blockExec, blockIndexExec, blockTransactionIndexExec);
-
-        int num = 0;
-        int line = 4;
+        SystemOut.println("================= getBlockFileCount ================= " + acquire.getFileCount());
 
         long time = new Date().getTime();
-        int lineCount = blockExec.getFileLineCountIfBigCharLine(num);
-        SystemOut.println("处理时长 = " + (new Date().getTime() - time) + " | block line count = " + lineCount);
+        int height = acquire.getHeight();
+        SystemOut.println("处理时长 = " + (new Date().getTime() - time) + " | block height = " + height);
+
+        writeBlock();
 
         time = new Date().getTime();
-        Block block = blockExec.getByNumAndLine(num, line);
+        Block block = acquire.getBlockByHeight(8);
         SystemOut.println("处理时长 = " + (new Date().getTime() - time) + " | block height = " + block.getHeader().getHeight());
-
-//        BlockAcquire acquire = new BlockAcquire();
-//        long time = new Date().getTime();
-//        Block block = acquire.getBlockByHeight(92000);
-//        SystemOut.println("处理时长 = " + (new Date().getTime() - time) + " | block hash = " + block.getHeader().getCurrentDataHash());
 
         SystemOut.println("=================  block file test end  =================");
     }
 
-    private static void writeBlock(BlockExec blockExec, BlockIndexExec blockIndexExec, BlockTransactionIndexExec blockTransactionIndexExec) {
+    private static void writeBlock() {
+        BlockStorage blockStorage = new BlockStorage();
         for (int blockCount = 0; blockCount < 1000000; blockCount++) {
             BlockHeader header = BlockHeader.newInstance().create(true, 120, new Date().getTime());
 
@@ -115,9 +106,7 @@ public class BlockFileTest {
             body.setTransactions(transactions);
 
             Block block = new Block(header, body);
-            BlockInfo blockInfo = blockExec.createOrUpdate(block);
-            blockIndexExec.createOrUpdate(blockInfo);
-            blockTransactionIndexExec.createOrUpdate(blockInfo);
+            blockStorage.save(block, Common.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH);
         }
     }
 

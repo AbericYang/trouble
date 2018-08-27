@@ -24,12 +24,14 @@
 
 package cn.aberic.bother.core.dm;
 
-import cn.aberic.bother.common.Common;
 import cn.aberic.bother.core.cta.ConsensusStatus;
 import cn.aberic.bother.core.cta.exec.Proactive;
 import cn.aberic.bother.core.dm.block.Block;
-import cn.aberic.bother.core.dm.exec.ExecObtain;
+import cn.aberic.bother.core.dm.block.BlockInfo;
 import cn.aberic.bother.core.dm.exec.BlockExec;
+import cn.aberic.bother.core.dm.exec.BlockIndexExec;
+import cn.aberic.bother.core.dm.exec.BlockTransactionIndexExec;
+import cn.aberic.bother.core.dm.exec.ExecObtain;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -44,35 +46,70 @@ public class BlockStorage {
     private Proactive proactive;
 
     /**
-     * 存储区块文件
+     * 根据投票后，作为区块打包节点的操作方法
+     * <p>
+     * 打包并存储指定智能合约账本的区块文件
      *
-     * @param block 待存储区块对象
-     *
-     * @return 成功与否
+     * @param block        待存储区块对象
+     * @param contractHash 智能合约hash值
      */
-    public boolean save(Block block) {
+    public void save(Block block, String contractHash) {
         // 获取当前待存储区块高度
         int height = block.getHeader().getHeight();
-        BlockExec blockExec = ExecObtain.getBlockExec(Common.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH);
+        // 获取区块文件操作对象
+        BlockExec blockExec = ExecObtain.getBlockExec(contractHash);
+        // 获取区块索引文件操作对象
+        BlockIndexExec blockIndexExec = ExecObtain.getBlockIndexExec(contractHash);
+        // 获取区块交易索引操作对象
+        BlockTransactionIndexExec blockTransactionIndexExec = ExecObtain.getBlockTransactionIndexExec(contractHash);
+
+        BlockInfo blockInfo = blockExec.createOrUpdate(block);
+        blockIndexExec.createOrUpdate(blockInfo);
+        blockTransactionIndexExec.createOrUpdate(blockInfo);
+    }
+
+    /**
+     * 根据投票后，作为非打包区块节点的操作方法
+     * <p>
+     * 同步指定智能合约账本的区块文件
+     *
+     * @param block        待同步区块对象
+     * @param contractHash 智能合约hash值
+     */
+    public void snyc(Block block, String contractHash) {
+        // 获取当前待存储区块高度
+        int height = block.getHeader().getHeight();
+        // 获取区块文件操作对象
+        BlockExec blockExec = ExecObtain.getBlockExec(contractHash);
+        // 获取区块索引文件操作对象
+        BlockIndexExec blockIndexExec = ExecObtain.getBlockIndexExec(contractHash);
+        // 获取区块交易索引操作对象
+        BlockTransactionIndexExec blockTransactionIndexExec = ExecObtain.getBlockTransactionIndexExec(contractHash);
         // 根据高度查询是否已存在本地区块对象
-        Block blockFromFile = blockExec.getBlockByHeight(height);
+        Block blockFromFile = blockIndexExec.getByHeight(height);
         if (null == blockFromFile) { // 如果不存在，则执行存储操作
-            return blockExec.createOrUpdate(block) != null;
+            BlockInfo blockInfo = blockExec.createOrUpdate(block);
+            blockIndexExec.createOrUpdate(blockInfo);
         } else { // 如果存在，则进入下一步判断两者区块有效性
-            return checkVerify(blockExec, height, block, blockFromFile);
+            checkVerify(blockExec, blockIndexExec, blockTransactionIndexExec, height, block, blockFromFile);
         }
     }
 
     /**
      * 检查两个区块有效性
      *
-     * @param height        待存储区块对象高度
-     * @param block         待存储区块对象
-     * @param blockFromFile 本地已存在区块文件中获取的区块对象
+     * @param blockExec                 区块文件操作对象
+     * @param blockIndexExec            区块索引文件操作对象
+     * @param blockTransactionIndexExec 区块交易索引文件操作对象
+     * @param height                    待存储区块对象高度
+     * @param block                     待存储区块对象
+     * @param blockFromFile             本地已存在区块文件中获取的区块对象
      *
      * @return 区块存储结果
      */
-    private boolean checkVerify(BlockExec blockExec, int height, Block block, Block blockFromFile) {
+    private boolean checkVerify(BlockExec blockExec, BlockIndexExec blockIndexExec,
+                                BlockTransactionIndexExec blockTransactionIndexExec,
+                                int height, Block block, Block blockFromFile) {
         // 比较两者上一区块hash值是否匹配
         if (StringUtils.equalsIgnoreCase(
                 block.getHeader().getPreviousDataHash(),
@@ -93,7 +130,7 @@ public class BlockStorage {
                 proactive().verifyBlock(height, ConsensusStatus.BLOCK_CLASH_IN_FIRST);
                 return false;
             }
-            Block blockFromPreFile = blockExec.getBlockByHeight(height - 1);
+            Block blockFromPreFile = blockIndexExec.getByHeight(height - 1);
             // 如果待同步区块上一hash与上一区块的当前hash相同
             if (StringUtils.equalsIgnoreCase(
                     block.getHeader().getPreviousDataHash(),
