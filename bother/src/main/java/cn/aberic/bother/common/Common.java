@@ -66,9 +66,9 @@ public class Common {
     public final static String BLOCK_TRANSACTION_INDEX_END = ".index";
     /** 默认区块文件中交易存储索引路径 测试/生产 */
     public final static String BLOCK_TRANSACTION_INDEX_DIR = "/Users/Aberic/Documents/tmp/trouble/btif";
-    // public final static String BLOCK_INDEX_DIR = "/data/trouble/blocktxindex";
+    // public final static String BLOCK_INDEX_DIR = "/data/trouble/btif";
     /** 自定义合约区块文件中交易存储索引路径 测试/生产 */
     public final static String BLOCK_TRANSACTION_INDEX_CUSTOM_DIR = "/Users/Aberic/Documents/tmp/trouble/btifs";
-    // public final static String BLOCK_INDEX_CUSTOM_DIR = "/data/trouble/blocktxindex";
+    // public final static String BLOCK_INDEX_CUSTOM_DIR = "/data/trouble/btifs";
 
 }

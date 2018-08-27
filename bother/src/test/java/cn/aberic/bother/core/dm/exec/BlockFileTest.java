@@ -44,15 +44,17 @@ public class BlockFileTest {
         SystemOut.println("================= block file test start =================");
 
         BlockExec blockExec = new BlockExec(Common.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH);
+        BlockIndexExec blockIndexExec = new BlockIndexExec(Common.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH);
+        BlockTransactionIndexExec blockTransactionIndexExec = new BlockTransactionIndexExec(Common.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH);
 
         SystemOut.println("================= getBlockFileCount ================= " + blockExec.getFileCount());
 
         SystemOut.println("================= block height ================= " + blockExec.getHeight());
 
-        writeBlock(blockExec);
+        writeBlock(blockExec, blockIndexExec, blockTransactionIndexExec);
 
         int num = 0;
-        int line = 1954;
+        int line = 4;
 
         long time = new Date().getTime();
         int lineCount = blockExec.getFileLineCountIfBigCharLine(num);
@@ -70,8 +72,8 @@ public class BlockFileTest {
         SystemOut.println("=================  block file test end  =================");
     }
 
-    private static void writeBlock(BlockExec blockExec) {
-        for (int blockCount = 0; blockCount < 6000; blockCount++) {
+    private static void writeBlock(BlockExec blockExec, BlockIndexExec blockIndexExec, BlockTransactionIndexExec blockTransactionIndexExec) {
+        for (int blockCount = 0; blockCount < 1000000; blockCount++) {
             BlockHeader header = BlockHeader.newInstance().create(true, 120, new Date().getTime());
 
             BlockBody body = new BlockBody();
@@ -113,7 +115,9 @@ public class BlockFileTest {
             body.setTransactions(transactions);
 
             Block block = new Block(header, body);
-            blockExec.createOrUpdate(block);
+            BlockInfo blockInfo = blockExec.createOrUpdate(block);
+            blockIndexExec.createOrUpdate(blockInfo);
+            blockTransactionIndexExec.createOrUpdate(blockInfo);
         }
     }
 

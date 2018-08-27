@@ -25,12 +25,9 @@
 package cn.aberic.bother.core.dm.exec;
 
 import cn.aberic.bother.common.Common;
-import cn.aberic.bother.core.dm.block.BlockInfo;
 import cn.aberic.bother.core.dm.block.FileComponent;
 import cn.aberic.bother.core.dm.exec.service.BlockIndexFile;
 import org.apache.commons.lang3.StringUtils;
-
-import java.io.File;
 
 /**
  * 区块索引文件本地读写——数据操作层-data manipulation
@@ -59,10 +56,5 @@ public class BlockIndexExec implements BlockIndexFile {
             return FileComponent.getBlockIndexFileComponentDefault();
         }
         return FileComponent.getBlockIndexFileComponent(contractHash);
-    }
-
-    @Override
-    public BlockInfo getFromFileByLine(File file, int line) {
-        return null;
     }
 }

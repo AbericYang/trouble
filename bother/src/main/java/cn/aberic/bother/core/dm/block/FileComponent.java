@@ -37,12 +37,35 @@ import org.apache.commons.lang3.StringUtils;
 @Getter
 public class FileComponent {
 
+    @Getter
+    public enum TType {
+
+        /** 交易成功 */
+        T_TYPE_BLOCK(Block.class),
+        /** 交易失败 */
+        T_TYPE_BLOCK_INDEX(BlockInfo.class);
+
+        /** 交易结果码 */
+        private Class aClass;
+
+        /**
+         * 当前交易状态
+         *
+         * @param aClass 交易结果码
+         */
+        TType(Class aClass) {
+            this.aClass = aClass;
+        }
+    }
+
     /** 文件固定格式开头字符串 */
     private String start;
     /** 文件固定格式结尾字符串 */
     private String end;
     /** 文件所存储目录 */
     private String dir;
+    /** JSON格式化解析类型枚举 */
+    private TType tType;
 
     /**
      * 当前文件组件
@@ -51,25 +74,38 @@ public class FileComponent {
      * @param end   文件固定格式结尾字符串
      * @param dir   文件所存储目录
      */
-    private FileComponent(String start, String end, String dir) {
+    private FileComponent(String start, String end, String dir, TType tType) {
         this.start = start;
         this.end = end;
         this.dir = dir;
+        this.tType = tType;
     }
 
     /** 获取默认区块文件可操作状态 */
     public static FileComponent getBlockFileComponentDefault() {
-        return new FileComponent(Common.BLOCK_FILE_START, Common.BLOCK_FILE_END, Common.BLOCK_FILE_DIR);
+        return new FileComponent(
+                Common.BLOCK_FILE_START,
+                Common.BLOCK_FILE_END,
+                Common.BLOCK_FILE_DIR,
+                TType.T_TYPE_BLOCK);
     }
 
     /** 获取默认区块索引文件可操作状态 */
     public static FileComponent getBlockIndexFileComponentDefault() {
-        return new FileComponent(Common.BLOCK_INDEX_START, Common.BLOCK_INDEX_DIR, Common.BLOCK_INDEX_END);
+        return new FileComponent(
+                Common.BLOCK_INDEX_START,
+                Common.BLOCK_INDEX_END,
+                Common.BLOCK_INDEX_DIR,
+                TType.T_TYPE_BLOCK_INDEX);
     }
 
     /** 获取默认区块索引文件可操作状态 */
     public static FileComponent getBlockTransactionIndexFileComponentDefault() {
-        return new FileComponent(Common.BLOCK_TRANSACTION_INDEX_START, Common.BLOCK_TRANSACTION_INDEX_DIR, Common.BLOCK_TRANSACTION_INDEX_CUSTOM_DIR);
+        return new FileComponent(
+                Common.BLOCK_TRANSACTION_INDEX_START,
+                Common.BLOCK_TRANSACTION_INDEX_END,
+                Common.BLOCK_TRANSACTION_INDEX_DIR,
+                TType.T_TYPE_BLOCK_INDEX);
     }
 
     /**
@@ -84,7 +120,8 @@ public class FileComponent {
         return new FileComponent(
                 Common.BLOCK_FILE_START,
                 Common.BLOCK_FILE_END,
-                getCustomDirByContractHash(Common.BLOCK_FILE_CUSTOM_DIR, contractHash));
+                getCustomDirByContractHash(Common.BLOCK_FILE_CUSTOM_DIR, contractHash),
+                TType.T_TYPE_BLOCK);
     }
 
     /**
@@ -99,7 +136,8 @@ public class FileComponent {
         return new FileComponent(
                 Common.BLOCK_INDEX_START,
                 Common.BLOCK_INDEX_END,
-                getCustomDirByContractHash(Common.BLOCK_INDEX_CUSTOM_DIR, contractHash));
+                getCustomDirByContractHash(Common.BLOCK_INDEX_CUSTOM_DIR, contractHash),
+                TType.T_TYPE_BLOCK_INDEX);
     }
 
     /**
@@ -114,7 +152,8 @@ public class FileComponent {
         return new FileComponent(
                 Common.BLOCK_TRANSACTION_INDEX_START,
                 Common.BLOCK_TRANSACTION_INDEX_END,
-                getCustomDirByContractHash(Common.BLOCK_TRANSACTION_INDEX_CUSTOM_DIR, contractHash));
+                getCustomDirByContractHash(Common.BLOCK_TRANSACTION_INDEX_CUSTOM_DIR, contractHash),
+                TType.T_TYPE_BLOCK_INDEX);
     }
 
     /**
@@ -122,6 +161,7 @@ public class FileComponent {
      *
      * @param dir          文件固定目录
      * @param contractHash 智能合约hash
+     *
      * @return 当前文件操作目录
      */
     private static String getCustomDirByContractHash(String dir, String contractHash) {

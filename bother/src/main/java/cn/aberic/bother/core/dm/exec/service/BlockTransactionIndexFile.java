@@ -24,24 +24,16 @@
 
 package cn.aberic.bother.core.dm.exec.service;
 
-import cn.aberic.bother.core.dm.block.BlockInfo;
-
 /**
- * 区块交易索引文件本地读写——数据操作层-data manipulation
+ * 区块交易索引文件本地读写接口——数据操作层-data manipulation
  * <p>
  * 作者：Aberic on 2018/08/27 17:51
  * 邮箱：abericyang@gmail.com
  */
-public interface BlockTransactionIndexFile extends FileService<BlockInfo> {
+public interface BlockTransactionIndexFile extends FileIndexService {
 
-    /**
-     * 创建并存储区块文件，如已存在且大小超过24M，则覆盖，否则下一行追加更新
-     *
-     * @param blockInfo 区块索引对象
-     */
     @Override
-    default BlockInfo createOrUpdate(BlockInfo blockInfo) {
-        return null;
+    default String[] jsonStringByPropertyPreFilter() {
+        return new String[]{"transactionHashList", "num", "line"};
     }
-
 }

@@ -43,8 +43,8 @@ public class BlockInfo {
     private int height;
     /** 区块hash */
     private String blockHash;
-    /** 区块中交易hash */
-    private List<String> transactionHashs;
+    /** 区块中交易hash集合 */
+    private List<String> transactionHashList;
     /** 区块所在区块文件编号 */
     private int num;
     /** 区块所在区块文件中的行号 */

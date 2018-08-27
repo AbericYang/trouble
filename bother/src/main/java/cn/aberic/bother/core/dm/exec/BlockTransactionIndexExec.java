@@ -25,12 +25,9 @@
 package cn.aberic.bother.core.dm.exec;
 
 import cn.aberic.bother.common.Common;
-import cn.aberic.bother.core.dm.block.BlockInfo;
 import cn.aberic.bother.core.dm.block.FileComponent;
 import cn.aberic.bother.core.dm.exec.service.BlockTransactionIndexFile;
 import org.apache.commons.lang3.StringUtils;
-
-import java.io.File;
 
 /**
  * 作者：Aberic on 2018/08/27 17:53
@@ -54,13 +51,8 @@ public class BlockTransactionIndexExec implements BlockTransactionIndexFile {
     @Override
     public FileComponent getFileStatus() {
         if (StringUtils.equals(contractHash, Common.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH)) {
-            return FileComponent.getBlockIndexFileComponentDefault();
+            return FileComponent.getBlockTransactionIndexFileComponentDefault();
         }
-        return FileComponent.getBlockIndexFileComponent(contractHash);
-    }
-
-    @Override
-    public BlockInfo getFromFileByLine(File file, int line) {
-        return null;
+        return FileComponent.getBlockTransactionIndexFileComponent(contractHash);
     }
 }

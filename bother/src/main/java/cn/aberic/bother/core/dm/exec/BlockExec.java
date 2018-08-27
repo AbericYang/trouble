@@ -25,8 +25,8 @@
 package cn.aberic.bother.core.dm.exec;
 
 import cn.aberic.bother.common.Common;
-import cn.aberic.bother.core.dm.exec.service.BlockFile;
 import cn.aberic.bother.core.dm.block.FileComponent;
+import cn.aberic.bother.core.dm.exec.service.BlockFile;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
@@ -58,10 +58,6 @@ public class BlockExec implements BlockFile {
             return FileComponent.getBlockFileComponentDefault();
         }
         return FileComponent.getBlockFileComponent(contractHash);
-    }
-
-    private void createOrUpdateBlockIndexByTransactionHash(String transactionHash, int num, int line) {
-
     }
 
 }

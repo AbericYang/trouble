@@ -24,19 +24,24 @@
 
 package cn.aberic.bother.core.dm.exec.service;
 
+import cn.aberic.bother.core.dm.block.Block;
 import cn.aberic.bother.core.dm.block.BlockInfo;
 import cn.aberic.bother.core.dm.block.FileComponent;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
 import com.google.common.base.Preconditions;
 import com.google.common.io.FileWriteMode;
 import com.google.common.io.Files;
 import com.google.common.primitives.Ints;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.LineIterator;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.*;
 import java.nio.charset.Charset;
 
 /**
- * 文件本地读写——数据操作层-data manipulation
+ * 文件本地读写接口——数据操作层-data manipulation
  * <p>
  * 该接口服务提供了区块文件{@link cn.aberic.bother.core.dm.block.Block}
  * 及区块索引文件{@link BlockInfo}对象的
@@ -52,10 +57,10 @@ public interface FileService<T> {
     /**
      * 根据{@link T}对象创建或更新后存储{@link T}文件
      *
-     * @param k {@link T}对象
+     * @param t {@link T}对象
      * @return 成功与否
      */
-    BlockInfo createOrUpdate(T k);
+    BlockInfo createOrUpdate(T t);
 
     /**
      * 获取指定文件编号的文件中指定行号的{@link T}对象
@@ -75,7 +80,35 @@ public interface FileService<T> {
      * @param line 在区块文件中的行号
      * @return {@link T}对象
      */
-    T getFromFileByLine(File file, int line);
+    @SuppressWarnings("unchecked")
+    default T getFromFileByLine(File file, int line) {
+        T[] ts = (T[]) new Object[]{null};
+        try (LineIterator it = FileUtils.lineIterator(file, "UTF-8")) {
+            // 计算文件行数
+            int linePosition = 0;
+            while (it.hasNext()) {
+                linePosition++;
+                String lineString = it.nextLine();
+                // System.out.println(String.format("linePosition = %s", linePosition));
+                if (linePosition == line) {
+                    if (StringUtils.isNotEmpty(lineString)) {
+                        switch (getFileStatus().getTType()) {
+                            case T_TYPE_BLOCK:
+                                ts[0] = (T) JSON.parseObject(lineString, new TypeReference<Block>() {});
+                                break;
+                            case T_TYPE_BLOCK_INDEX:
+                                ts[0] = (T) JSON.parseObject(lineString, new TypeReference<BlockInfo>() {});
+                                break;
+                        }
+                        break;
+                    }
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return ts[0];
+    }
 
     /**
      * 获取本地目录下文件个数

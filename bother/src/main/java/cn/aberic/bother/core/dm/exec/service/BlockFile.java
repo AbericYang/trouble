@@ -31,10 +31,7 @@ import cn.aberic.bother.core.dm.block.BlockInfo;
 import cn.aberic.bother.core.dm.block.Transaction;
 import cn.aberic.bother.core.dm.call.CallableSearchBlock;
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.TypeReference;
 import com.google.common.io.Files;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.LineIterator;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
@@ -45,7 +42,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 /**
- * 区块文件本地读写——数据操作层-data manipulation
+ * 区块文件本地读写接口——数据操作层-data manipulation
  * <p>
  * 作者：Aberic on 2018/08/27 11:24
  * 邮箱：abericyang@gmail.com
@@ -60,7 +57,7 @@ public interface BlockFile extends FileService<Block> {
     @Override
     default BlockInfo createOrUpdate(Block block) {
         BlockInfo blockInfo = new BlockInfo();
-        int height = 0, line = 1;
+        int height = 0, line = 0;
         String currentDataHash;
         String jsonStringBlock;
         // 获取最新写入的区块文件
@@ -103,15 +100,15 @@ public interface BlockFile extends FileService<Block> {
                     wirteAppendLine(blockFile, jsonStringBlock);
                 }
             }
-            List<String> transactionHashs = new ArrayList<>();
+            List<String> transactionHashList = new ArrayList<>();
             for (Transaction transaction: block.getBody().getTransactions()) {
-                transactionHashs.add(transaction.getHash());
+                transactionHashList.add(transaction.getHash());
             }
             blockInfo.setHeight(height);
             blockInfo.setBlockHash(currentDataHash);
             blockInfo.setNum(getNumByFileName(blockFile.getName()));
             blockInfo.setLine(line + 1);
-            blockInfo.setTransactionHashs(transactionHashs);
+            blockInfo.setTransactionHashList(transactionHashList);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -132,36 +129,6 @@ public interface BlockFile extends FileService<Block> {
             // 返回上一区块高度
             return preBlock.getHeader().getHeight();
         }
-    }
-
-    /**
-     * 获取区块文件中指定行号的区块对象
-     *
-     * @param file 区块文件
-     * @param line 区块在区块文件中的行号
-     * @return 区块对象
-     */
-    @Override
-    default Block getFromFileByLine(File file, int line) {
-        Block[] blocks = new Block[]{null};
-        try (LineIterator it = FileUtils.lineIterator(file, "UTF-8")) {
-            // 计算文件行数
-            int linePosition = 0;
-            while (it.hasNext()) {
-                linePosition++;
-                String lineString = it.nextLine();
-                // System.out.println(String.format("linePosition = %s", linePosition));
-                if (linePosition == line) {
-                    if (StringUtils.isNotEmpty(lineString)) {
-                        blocks[0] = JSON.parseObject(lineString, new TypeReference<Block>() {});
-                        break;
-                    }
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return blocks[0];
     }
 
     /**
