@@ -29,6 +29,8 @@ import cn.aberic.bother.core.dm.block.BlockInfo;
 import cn.aberic.bother.core.dm.exec.BlockExec;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.LineIterator;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.*;
@@ -60,13 +62,11 @@ public class RunnableSearchBlockHashIndex implements Runnable {
 
     @Override
     public void run() {
-        try (BufferedInputStream fis = new BufferedInputStream(new FileInputStream(file));
-             // 用5M的缓冲读取文本文件
-             BufferedReader reader = new BufferedReader(new InputStreamReader(fis, "utf-8"), 5 * 1024 * 1024)) {
-            String line;
+        try (LineIterator it = FileUtils.lineIterator(file, "UTF-8")) {
             boolean found = false;
-            while ((line = reader.readLine()) != null) {
-                BlockInfo blockInfo = JSON.parseObject(line, new TypeReference<BlockInfo>() {});
+            while (it.hasNext()) {
+                String lineString = it.nextLine();
+                BlockInfo blockInfo = JSON.parseObject(lineString, new TypeReference<BlockInfo>() {});
                 if (null != blockInfo && StringUtils.equalsIgnoreCase(blockInfo.getBlockHash(), currentDataHash)) {
                     System.out.println("找到file，block-hash-index-file-num = " + blockFileNum);
                     found = true;
