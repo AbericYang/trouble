@@ -73,18 +73,7 @@ public interface IBlockIndexExec extends IInit, IExecInit, IIndexExec {
         }
         long time = new Date().getTime();
         while (!found) {
-            if (null != blocks[0]) {
-                found = true;
-            } else {
-                if (new Date().getTime() - time > 15000) {
-                    found = true;
-                }
-                try {
-                    Thread.sleep(10);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
+            found = checkFoundToDo(blocks, time);
         }
         troublePool.shutdown();
         return blocks[0];
@@ -116,21 +105,26 @@ public interface IBlockIndexExec extends IInit, IExecInit, IIndexExec {
         }
         long time = new Date().getTime();
         while (!found) {
-            if (null != blocks[0]) {
-                found = true;
-            } else {
-                if (new Date().getTime() - time > 15000) {
-                    found = true;
-                }
-                try {
-                    Thread.sleep(10);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
+            found = checkFoundToDo(blocks, time);
         }
         troublePool.shutdown();
         return blocks[0];
+    }
+
+    default boolean checkFoundToDo(Block[] blocks, long time) {
+        if (null != blocks[0]) {
+            return true;
+        } else {
+            if (new Date().getTime() - time > 15000) {
+                return true;
+            }
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        return false;
     }
 
 }
