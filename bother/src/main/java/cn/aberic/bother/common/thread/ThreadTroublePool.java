@@ -24,9 +24,9 @@
 
 package cn.aberic.bother.common.thread;
 
-import cn.aberic.bother.core.dm.block.Block;
-
-import java.util.concurrent.*;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 开启一个线程池——公共方法包
@@ -49,27 +49,14 @@ public class ThreadTroublePool {
     /**
      * 执行线程
      *
-     * @param callable 执行线程
-     */
-    public Future<Block> submit(CallableSearchBlock callable) {
-        return executor.submit(callable);
-    }
-
-    /**
-     * 执行线程
-     *
      * @param runnable 执行线程
      */
     public void submit(Runnable runnable) {
         executor.execute(runnable);
     }
 
-    public boolean isShutdown() {
-        return executor.isShutdown();
-    }
-
     public void shutdown() {
-        if (!isShutdown()) {
+        if (!executor.isShutdown()) {
             executor.shutdown();
         }
     }

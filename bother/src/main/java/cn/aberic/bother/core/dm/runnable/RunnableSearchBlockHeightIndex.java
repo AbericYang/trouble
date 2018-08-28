@@ -22,75 +22,63 @@
  * SOFTWARE.
  */
 
-package cn.aberic.bother.common.thread;
+package cn.aberic.bother.core.dm.runnable;
 
 import cn.aberic.bother.core.dm.block.Block;
 import cn.aberic.bother.core.dm.block.BlockInfo;
 import cn.aberic.bother.core.dm.exec.BlockExec;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.LineIterator;
-import org.apache.commons.lang3.StringUtils;
 
 import java.io.*;
-import java.util.concurrent.Callable;
 
 /**
- * 作者：Aberic on 2018/8/25 22:03
+ * 作者：Aberic on 2018/08/28 15:27
  * 邮箱：abericyang@gmail.com
  */
-public class CallableSearchBlock implements Callable<Block> {
+public class RunnableSearchBlockHeightIndex implements Runnable {
+
+    public interface SearchBlockHeightIndexListener {
+        void find(Block block);
+    }
 
     private BlockExec blockExec;
-    private String transactionHash;
+    private int height;
     private File file;
     private int blockFileNum;
+    private SearchBlockHeightIndexListener listener;
 
-    public CallableSearchBlock(BlockExec blockExec, String transactionHash, File file, int blockFileNum) {
+    public RunnableSearchBlockHeightIndex(BlockExec blockExec, int height, File file, int blockFileNum, SearchBlockHeightIndexListener lintener) {
         this.blockExec = blockExec;
-        this.transactionHash = transactionHash;
+        this.height = height;
         this.file = file;
         this.blockFileNum = blockFileNum;
+        this.listener = lintener;
 
     }
 
     @Override
-    public Block call() {
-        System.out.println("开启线程，当前区块编号 = " + blockFileNum);
-//        try (BufferedInputStream fis = new BufferedInputStream(new FileInputStream(file));
-//             // 用5M的缓冲读取文本文件
-//             BufferedReader reader = new BufferedReader(new InputStreamReader(fis, "utf-8"), 5 * 1024 * 1024)) {
-//            String line;
-//            while ((line = reader.readLine()) != null) {
-//                BlockInfo blockInfo = JSON.parseObject(line, new TypeReference<BlockInfo>() {});
-//                if (null != blockInfo && blockInfo.getHeight() == height) {
-//                    return blockExec.getByNumAndLine(blockInfo.getNum(), blockInfo.getLine());
-//                }
-//            }
-//            System.out.println("未找到block，blockFileNum = " + blockFileNum);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
+    public void run() {
         try (BufferedInputStream fis = new BufferedInputStream(new FileInputStream(file));
              // 用5M的缓冲读取文本文件
              BufferedReader reader = new BufferedReader(new InputStreamReader(fis, "utf-8"), 5 * 1024 * 1024)) {
             String line;
+            boolean found = false;
             while ((line = reader.readLine()) != null) {
                 BlockInfo blockInfo = JSON.parseObject(line, new TypeReference<BlockInfo>() {});
-                if (null != blockInfo) {
-                    for (String transaction : blockInfo.getTransactionHashList()) {
-                        if (StringUtils.equalsIgnoreCase(transaction, transactionHash)) {
-                            System.out.println("找到block，blockFileNum = " + blockFileNum);
-                            return blockExec.getByNumAndLine(blockInfo.getNum(), blockInfo.getLine());
-                        }
-                    }
+                if (null != blockInfo && blockInfo.getHeight() == height) {
+                    System.out.println("找到file，block-height-index-file-num = " + blockFileNum);
+                    found = true;
+                    listener.find(blockExec.getByNumAndLine(blockInfo.getNum(), blockInfo.getLine()));
+                    break;
                 }
             }
-            System.out.println("未找到block，blockFileNum = " + blockFileNum);
+            if (!found) {
+                System.out.println("未找到file，block-height-index-file-num = " + blockFileNum);
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return null;
     }
+
 }

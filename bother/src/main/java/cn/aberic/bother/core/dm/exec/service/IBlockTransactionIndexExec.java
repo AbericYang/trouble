@@ -24,7 +24,7 @@
 
 package cn.aberic.bother.core.dm.exec.service;
 
-import cn.aberic.bother.common.thread.RunnableSearchTransactionIndex;
+import cn.aberic.bother.core.dm.runnable.RunnableSearchTransactionHashIndex;
 import cn.aberic.bother.common.thread.ThreadTroublePool;
 import cn.aberic.bother.core.dm.block.Block;
 import com.google.common.io.Files;
@@ -60,13 +60,10 @@ public interface IBlockTransactionIndexExec extends IInit, IExecInit, IIndexExec
         Iterable<File> files = Files.fileTraverser().breadthFirst(new File(getFileStatus().getDir()));
         for (File file: files) {
             if (StringUtils.startsWith(file.getName(), getFileStatus().getStart())) {
-                troublePool.submit(new RunnableSearchTransactionIndex(getBlockExec(), transactionHash, file, getNumByFileName(file.getName()), new RunnableSearchTransactionIndex.searchTransactionIndexListener() {
-                    @Override
-                    public void find(Block block) {
-                        if (null != block) {
-                            blocks[0] = block;
-                            troublePool.shutdown();
-                        }
+                troublePool.submit(new RunnableSearchTransactionHashIndex(getBlockExec(), transactionHash, file, getNumByFileName(file.getName()), block -> {
+                    if (null != block) {
+                        blocks[0] = block;
+                        troublePool.shutdown();
                     }
                 }));
             }

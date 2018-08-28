@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package cn.aberic.bother.common.thread;
+package cn.aberic.bother.core.dm.runnable;
 
 import cn.aberic.bother.core.dm.block.Block;
 import cn.aberic.bother.core.dm.block.BlockInfo;
@@ -37,21 +37,21 @@ import java.io.*;
  * 作者：Aberic on 2018/08/28 15:27
  * 邮箱：abericyang@gmail.com
  */
-public class RunnableSearchTransactionIndex implements Runnable {
+public class RunnableSearchBlockHashIndex implements Runnable {
 
-    public interface searchTransactionIndexListener {
+    public interface SearchBlockHashIndexListener {
         void find(Block block);
     }
 
     private BlockExec blockExec;
-    private String transactionHash;
+    private String currentDataHash;
     private File file;
     private int blockFileNum;
-    private searchTransactionIndexListener listener;
+    private SearchBlockHashIndexListener listener;
 
-    public RunnableSearchTransactionIndex(BlockExec blockExec, String transactionHash, File file, int blockFileNum, searchTransactionIndexListener lintener) {
+    public RunnableSearchBlockHashIndex(BlockExec blockExec, String currentDataHash, File file, int blockFileNum, SearchBlockHashIndexListener lintener) {
         this.blockExec = blockExec;
-        this.transactionHash = transactionHash;
+        this.currentDataHash = currentDataHash;
         this.file = file;
         this.blockFileNum = blockFileNum;
         this.listener = lintener;
@@ -60,27 +60,22 @@ public class RunnableSearchTransactionIndex implements Runnable {
 
     @Override
     public void run() {
-//        System.out.println("开启线程，当前区块编号 = " + blockFileNum);
         try (BufferedInputStream fis = new BufferedInputStream(new FileInputStream(file));
              // 用5M的缓冲读取文本文件
              BufferedReader reader = new BufferedReader(new InputStreamReader(fis, "utf-8"), 5 * 1024 * 1024)) {
             String line;
             boolean found = false;
-            while ((line = reader.readLine()) != null && !found) {
+            while ((line = reader.readLine()) != null) {
                 BlockInfo blockInfo = JSON.parseObject(line, new TypeReference<BlockInfo>() {});
-                if (null != blockInfo) {
-                    for (String transaction : blockInfo.getTransactionHashList()) {
-                        if (StringUtils.equalsIgnoreCase(transaction, transactionHash)) {
-                            System.out.println("找到block，blockFileNum = " + blockFileNum);
-                            found = true;
-                            listener.find(blockExec.getByNumAndLine(blockInfo.getNum(), blockInfo.getLine()));
-                            break;
-                        }
-                    }
+                if (null != blockInfo && StringUtils.equalsIgnoreCase(blockInfo.getBlockHash(), currentDataHash)) {
+                    System.out.println("找到file，block-hash-index-file-num = " + blockFileNum);
+                    found = true;
+                    listener.find(blockExec.getByNumAndLine(blockInfo.getNum(), blockInfo.getLine()));
+                    break;
                 }
             }
             if (!found) {
-                System.out.println("未找到block，blockFileNum = " + blockFileNum);
+                System.out.println("未找到file，block-hash-index-file-num = " + blockFileNum);
             }
         } catch (IOException e) {
             e.printStackTrace();

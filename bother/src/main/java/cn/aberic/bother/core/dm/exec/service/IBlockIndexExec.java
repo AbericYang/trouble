@@ -24,15 +24,15 @@
 
 package cn.aberic.bother.core.dm.exec.service;
 
+import cn.aberic.bother.common.thread.ThreadTroublePool;
 import cn.aberic.bother.core.dm.block.Block;
-import cn.aberic.bother.core.dm.block.BlockInfo;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.TypeReference;
+import cn.aberic.bother.core.dm.runnable.RunnableSearchBlockHashIndex;
+import cn.aberic.bother.core.dm.runnable.RunnableSearchBlockHeightIndex;
 import com.google.common.io.Files;
 import org.apache.commons.lang3.StringUtils;
 
-import java.io.*;
-import java.util.Iterator;
+import java.io.File;
+import java.util.Date;
 
 /**
  * 区块索引文件本地读写接口——数据操作层-data manipulation
@@ -55,28 +55,38 @@ public interface IBlockIndexExec extends IInit, IExecInit, IIndexExec {
      */
     default Block getByHeight(int height) {
         Block[] blocks = new Block[]{null};
+        ThreadTroublePool troublePool = new ThreadTroublePool();
+        boolean found = false;
         Iterable<File> files = Files.fileTraverser().breadthFirst(new File(getFileStatus().getDir()));
-        for (File file : files) {
+        for (File file: files) {
             if (StringUtils.startsWith(file.getName(), getFileStatus().getStart())) {
-                try (BufferedInputStream fis = new BufferedInputStream(new FileInputStream(file));
-                     // 用5M的缓冲读取文本文件
-                     BufferedReader reader = new BufferedReader(new InputStreamReader(fis, "utf-8"), 5 * 1024 * 1024)) {
-                    String line;
-                    while ((line = reader.readLine()) != null) {
-                        BlockInfo blockInfo = JSON.parseObject(line, new TypeReference<BlockInfo>() {});
-                        if (null != blockInfo && blockInfo.getHeight() == height) {
-                            blocks[0] = getBlockExec().getByNumAndLine(blockInfo.getNum(), blockInfo.getLine());
-                            break;
-                        }
+                troublePool.submit(new RunnableSearchBlockHeightIndex(getBlockExec(), height, file, getNumByFileName(file.getName()), block -> {
+                    if (null != block) {
+                        blocks[0] = block;
+                        troublePool.shutdown();
                     }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                }));
             }
             if (null != blocks[0]) {
                 break;
             }
         }
+        long time = new Date().getTime();
+        while (!found) {
+            if (null != blocks[0]) {
+                found = true;
+            } else {
+                if (new Date().getTime() - time > 15000) {
+                    found = true;
+                }
+                try {
+                    Thread.sleep(10);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        troublePool.shutdown();
         return blocks[0];
     }
 
@@ -88,24 +98,38 @@ public interface IBlockIndexExec extends IInit, IExecInit, IIndexExec {
      */
     default Block getByCurrentDataHash(String currentDataHash) {
         Block[] blocks = new Block[]{null};
+        ThreadTroublePool troublePool = new ThreadTroublePool();
+        boolean found = false;
         Iterable<File> files = Files.fileTraverser().breadthFirst(new File(getFileStatus().getDir()));
-        files.forEach(file -> {
+        for (File file: files) {
             if (StringUtils.startsWith(file.getName(), getFileStatus().getStart())) {
-                try (BufferedInputStream fis = new BufferedInputStream(new FileInputStream(file));
-                     // 用5M的缓冲读取文本文件
-                     BufferedReader reader = new BufferedReader(new InputStreamReader(fis, "utf-8"), 5 * 1024 * 1024)) {
-                    String line;
-                    while ((line = reader.readLine()) != null) {
-                        BlockInfo blockInfo = JSON.parseObject(line, new TypeReference<BlockInfo>() {});
-                        if (null != blockInfo && StringUtils.equalsIgnoreCase(blockInfo.getBlockHash(), currentDataHash)) {
-                            blocks[0] = getBlockExec().getByNumAndLine(blockInfo.getNum(), blockInfo.getLine());
-                        }
+                troublePool.submit(new RunnableSearchBlockHashIndex(getBlockExec(), currentDataHash, file, getNumByFileName(file.getName()), block -> {
+                    if (null != block) {
+                        blocks[0] = block;
+                        troublePool.shutdown();
                     }
-                } catch (IOException e) {
+                }));
+            }
+            if (null != blocks[0]) {
+                break;
+            }
+        }
+        long time = new Date().getTime();
+        while (!found) {
+            if (null != blocks[0]) {
+                found = true;
+            } else {
+                if (new Date().getTime() - time > 15000) {
+                    found = true;
+                }
+                try {
+                    Thread.sleep(10);
+                } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }
-        });
+        }
+        troublePool.shutdown();
         return blocks[0];
     }
 
