@@ -26,7 +26,7 @@ package cn.aberic.bother.core.dm.exec;
 
 import cn.aberic.bother.common.Common;
 import cn.aberic.bother.core.dm.block.FileComponent;
-import cn.aberic.bother.core.dm.exec.service.BlockFile;
+import cn.aberic.bother.core.dm.exec.service.IBlockExec;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
@@ -37,7 +37,7 @@ import org.apache.commons.lang3.StringUtils;
  * 邮箱：abericyang@gmail.com
  */
 @Slf4j
-public class BlockExec implements BlockFile {
+public class BlockExec implements IBlockExec {
 
     private String contractHash;
 

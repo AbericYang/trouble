@@ -25,10 +25,7 @@
 package cn.aberic.bother.core.dm;
 
 import cn.aberic.bother.core.dm.block.Block;
-import cn.aberic.bother.core.dm.exec.BlockExec;
-import cn.aberic.bother.core.dm.exec.BlockIndexExec;
-import cn.aberic.bother.core.dm.exec.BlockTransactionIndexExec;
-import cn.aberic.bother.core.dm.exec.ExecObtain;
+import cn.aberic.bother.core.dm.exec.BlockAS;
 
 /**
  * 获取区块——数据操作层-data manipulation
@@ -36,13 +33,10 @@ import cn.aberic.bother.core.dm.exec.ExecObtain;
  * 作者：Aberic on 2018/08/24 11:27
  * 邮箱：abericyang@gmail.com
  */
-public class BlockAcquire {
-
-    /** 智能合约hash值 */
-    private String contractHash;
+public class BlockAcquire extends BlockAS {
 
     public BlockAcquire(String contractHash) {
-        this.contractHash = contractHash;
+        super(contractHash);
     }
 
     /**
@@ -51,13 +45,11 @@ public class BlockAcquire {
      * @return 区块文件个数
      */
     public int getFileCount() {
-        BlockExec blockExec = ExecObtain.getBlockExec(contractHash);
-        return blockExec.getFileCount();
+        return getBlockExec().getFileCount();
     }
 
     public int getHeight() {
-        BlockExec blockExec = ExecObtain.getBlockExec(contractHash);
-        return blockExec.getHeight();
+        return getBlockExec().getHeight();
     }
 
     /**
@@ -68,8 +60,7 @@ public class BlockAcquire {
      * @return 区块对象
      */
     public Block getBlockByHeight(int height) {
-        BlockIndexExec blockIndexExec = ExecObtain.getBlockIndexExec(contractHash);
-        return blockIndexExec.getByHeight(height);
+        return getBlockIndexExec().getByHeight(height);
     }
 
     /**
@@ -80,8 +71,7 @@ public class BlockAcquire {
      * @return 区块对象
      */
     public Block getBlockByHash(String currentDataHash) {
-        BlockIndexExec blockIndexExec = ExecObtain.getBlockIndexExec(contractHash);
-        return blockIndexExec.getByCurrentDataHash(currentDataHash);
+        return getBlockIndexExec().getByCurrentDataHash(currentDataHash);
     }
 
     /**
@@ -92,8 +82,6 @@ public class BlockAcquire {
      * @return 区块对象
      */
     public Block getBlockByTransactionHash(String transactionHash) {
-        BlockTransactionIndexExec blockTransactionIndexExec = ExecObtain.getBlockTransactionIndexExec(contractHash);
-        return blockTransactionIndexExec.getByTransactionHash(transactionHash);
+        return getBlockTransactionIndexExec().getByTransactionHash(transactionHash);
     }
-
 }

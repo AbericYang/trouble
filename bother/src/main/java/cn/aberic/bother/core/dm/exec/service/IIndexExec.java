@@ -38,7 +38,7 @@ import java.io.IOException;
  * 作者：Aberic on 2018/8/27 21:39
  * 邮箱：abericyang@gmail.com
  */
-public interface FileIndexService extends FileService<BlockInfo> {
+public interface IIndexExec extends IExec<BlockInfo> {
 
     String[] jsonStringByPropertyPreFilter();
 

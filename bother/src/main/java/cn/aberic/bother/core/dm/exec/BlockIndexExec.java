@@ -26,7 +26,7 @@ package cn.aberic.bother.core.dm.exec;
 
 import cn.aberic.bother.common.Common;
 import cn.aberic.bother.core.dm.block.FileComponent;
-import cn.aberic.bother.core.dm.exec.service.BlockIndexFile;
+import cn.aberic.bother.core.dm.exec.service.IBlockIndexExec;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -35,7 +35,7 @@ import org.apache.commons.lang3.StringUtils;
  * 作者：Aberic on 2018/08/27 16:55
  * 邮箱：abericyang@gmail.com
  */
-public class BlockIndexExec implements BlockIndexFile {
+public class BlockIndexExec implements IBlockIndexExec {
 
     private String contractHash;
 

@@ -24,40 +24,28 @@
 
 package cn.aberic.bother.core.dm.exec;
 
-import cn.aberic.bother.common.Common;
-import cn.aberic.bother.core.dm.block.FileComponent;
-import cn.aberic.bother.core.dm.exec.service.IBlockTransactionIndexExec;
-import org.apache.commons.lang3.StringUtils;
+import cn.aberic.bother.core.dm.exec.service.*;
 
 /**
- * 作者：Aberic on 2018/08/27 17:53
+ * 文件本地操作实现创建工厂接口实现——数据操作层-data manipulation
+ * <p>
+ * 作者：Aberic on 2018/08/28 10:18
  * 邮箱：abericyang@gmail.com
  */
-public class BlockTransactionIndexExec implements IBlockTransactionIndexExec {
+public class ExecFactory implements IExecFactory {
 
-    private String contractHash;
-
-    /**
-     * 根据智能合约hash值操作区块文件；
-     * 在智能合约被安装的时候就根据合约内容计算该合约hash；
-     * 并以此hash匹配所有安装该合约的节点且同步数据
-     *
-     * @param contractHash 智能合约hash值
-     */
-    BlockTransactionIndexExec(String contractHash) {
-        this.contractHash = contractHash;
+    @Override
+    public BlockExec createBlockExec(String contractHash) {
+        return new BlockExec(contractHash);
     }
 
     @Override
-    public String getContractHash() {
-        return contractHash;
+    public BlockIndexExec createBlockIndexExec(String contractHash) {
+        return new BlockIndexExec(contractHash);
     }
 
     @Override
-    public FileComponent getFileStatus() {
-        if (StringUtils.equals(contractHash, Common.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH)) {
-            return FileComponent.getBlockTransactionIndexFileComponentDefault();
-        }
-        return FileComponent.getBlockTransactionIndexFileComponent(contractHash);
+    public BlockTransactionIndexExec createBlockTransactionIndexExec(String contractHash) {
+        return new BlockTransactionIndexExec(contractHash);
     }
 }

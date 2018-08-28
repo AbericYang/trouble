@@ -31,6 +31,7 @@ import cn.aberic.bother.core.dm.BlockAcquire;
 import cn.aberic.bother.core.dm.BlockStorage;
 import cn.aberic.bother.core.dm.block.*;
 import cn.aberic.bother.core.dm.status.TransactionStatus;
+import com.alibaba.fastjson.JSON;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -47,24 +48,32 @@ public class BlockFileTest {
 
         BlockAcquire acquire = new BlockAcquire(Common.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH);
 
+        writeBlock();
+
         SystemOut.println("================= getBlockFileCount ================= " + acquire.getFileCount());
 
         long time = new Date().getTime();
         int height = acquire.getHeight();
         SystemOut.println("处理时长 = " + (new Date().getTime() - time) + " | block height = " + height);
 
-        writeBlock();
+        time = new Date().getTime();
+        Block block = acquire.getBlockByHeight(43999);
+        SystemOut.println("处理时长 = " + (new Date().getTime() - time) + " | getBlockByHeight | block = " + JSON.toJSONString(block));
 
         time = new Date().getTime();
-        Block block = acquire.getBlockByHeight(8);
-        SystemOut.println("处理时长 = " + (new Date().getTime() - time) + " | block height = " + block.getHeader().getHeight());
+        block = acquire.getBlockByHash("f0c60296c244bda7fcd3dcd17a109e9471b64d187ccf480c4aee50b5948010ce");
+        SystemOut.println("处理时长 = " + (new Date().getTime() - time) + " | getBlockByHash | block = " + JSON.toJSONString(block));
+
+        time = new Date().getTime();
+        block = acquire.getBlockByTransactionHash("5c8e99c5b9ea8ace10745b7eae1f2f60a59a938bfe939313be94066e0183e289");
+        SystemOut.println("处理时长 = " + (new Date().getTime() - time) + " | getBlockByTransactionHash | block = " + JSON.toJSONString(block));
 
         SystemOut.println("=================  block file test end  =================");
     }
 
     private static void writeBlock() {
-        BlockStorage blockStorage = new BlockStorage();
-        for (int blockCount = 0; blockCount < 1000000; blockCount++) {
+        BlockStorage blockStorage = new BlockStorage(Common.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH);
+        for (int blockCount = 46000; blockCount < 47000; blockCount++) {
             BlockHeader header = BlockHeader.newInstance().create(true, 120, new Date().getTime());
 
             BlockBody body = new BlockBody();
@@ -106,7 +115,7 @@ public class BlockFileTest {
             body.setTransactions(transactions);
 
             Block block = new Block(header, body);
-            blockStorage.save(block, Common.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH);
+            blockStorage.save(block);
         }
     }
 

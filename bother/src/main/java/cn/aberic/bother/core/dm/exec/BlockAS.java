@@ -24,40 +24,47 @@
 
 package cn.aberic.bother.core.dm.exec;
 
-import cn.aberic.bother.common.Common;
-import cn.aberic.bother.core.dm.block.FileComponent;
-import cn.aberic.bother.core.dm.exec.service.IBlockTransactionIndexExec;
-import org.apache.commons.lang3.StringUtils;
+import cn.aberic.bother.core.dm.exec.service.IExecFactory;
 
 /**
- * 作者：Aberic on 2018/08/27 17:53
+ * 存储及获取区块基类——数据操作层-data manipulation
+ *
+ * 作者：Aberic on 2018/08/28 11:15
  * 邮箱：abericyang@gmail.com
  */
-public class BlockTransactionIndexExec implements IBlockTransactionIndexExec {
+public class BlockAS {
 
-    private String contractHash;
+    /** 智能合约hash值 */
+    protected String contractHash;
+    private IExecFactory execFactory;
+    private BlockExec blockExec;
+    private BlockIndexExec blockIndexExec;
+    private BlockTransactionIndexExec blockTransactionIndexExec;
 
-    /**
-     * 根据智能合约hash值操作区块文件；
-     * 在智能合约被安装的时候就根据合约内容计算该合约hash；
-     * 并以此hash匹配所有安装该合约的节点且同步数据
-     *
-     * @param contractHash 智能合约hash值
-     */
-    BlockTransactionIndexExec(String contractHash) {
+    public BlockAS(String contractHash) {
         this.contractHash = contractHash;
+        execFactory = new ExecFactory();
     }
 
-    @Override
-    public String getContractHash() {
-        return contractHash;
-    }
-
-    @Override
-    public FileComponent getFileStatus() {
-        if (StringUtils.equals(contractHash, Common.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH)) {
-            return FileComponent.getBlockTransactionIndexFileComponentDefault();
+    protected BlockExec getBlockExec() {
+        if (null == blockExec) {
+            blockExec = execFactory.createBlockExec(contractHash);
         }
-        return FileComponent.getBlockTransactionIndexFileComponent(contractHash);
+        return blockExec;
     }
+
+    protected BlockIndexExec getBlockIndexExec() {
+        if (null == blockIndexExec) {
+            blockIndexExec = execFactory.createBlockIndexExec(contractHash);
+        }
+        return blockIndexExec;
+    }
+
+    protected BlockTransactionIndexExec getBlockTransactionIndexExec() {
+        if (null == blockTransactionIndexExec) {
+            blockTransactionIndexExec = execFactory.createBlockTransactionIndexExec(contractHash);
+        }
+        return blockTransactionIndexExec;
+    }
+
 }

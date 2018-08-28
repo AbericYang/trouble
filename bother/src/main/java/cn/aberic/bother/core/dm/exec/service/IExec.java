@@ -50,7 +50,7 @@ import java.nio.charset.Charset;
  * 作者：Aberic on 2018/08/27 12:13
  * 邮箱：abericyang@gmail.com
  */
-public interface FileService<T> {
+public interface IExec<T> {
 
     /** 获取合约hash */
     String getContractHash();

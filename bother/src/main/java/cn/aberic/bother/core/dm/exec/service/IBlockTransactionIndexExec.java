@@ -36,26 +36,26 @@ import org.apache.commons.lang3.StringUtils;
 import java.io.*;
 
 /**
- * 区块索引文件本地读写接口——数据操作层-data manipulation
+ * 区块交易索引文件本地读写接口——数据操作层-data manipulation
  * <p>
- * 作者：Aberic on 2018/08/27 16:54
+ * 作者：Aberic on 2018/08/27 17:51
  * 邮箱：abericyang@gmail.com
  */
-public interface BlockIndexFile extends FileIndexService {
+public interface IBlockTransactionIndexExec extends IIndexExec {
 
     @Override
     default String[] jsonStringByPropertyPreFilter() {
-        return new String[]{"height", "blockHash", "num", "line"};
+        return new String[]{"transactionHashList", "num", "line"};
     }
 
     /**
-     * 根据区块高度获取区块对象
+     * 根据交易hash获取区块对象
      *
-     * @param height 区块高度
+     * @param transactionHash 交易hash
      *
      * @return 区块对象
      */
-    default Block getByHeight(int height) {
+    default Block getByTransactionHash(String transactionHash) {
         Block[] blocks = new Block[]{null};
         Iterable<File> files = Files.fileTraverser().breadthFirst(new File(getFileStatus().getDir()));
         files.forEach(file -> {
@@ -66,9 +66,13 @@ public interface BlockIndexFile extends FileIndexService {
                     String line;
                     while ((line = reader.readLine()) != null) {
                         BlockInfo blockInfo = JSON.parseObject(line, new TypeReference<BlockInfo>() {});
-                        if (null != blockInfo && blockInfo.getHeight() == height) {
-                            BlockExec blockExec = ExecObtain.getBlockExec(getContractHash());
-                            blocks[0] = blockExec.getByNumAndLine(blockInfo.getNum(), blockInfo.getLine());
+                        if (null != blockInfo) {
+                            for (String transaction : blockInfo.getTransactionHashList()) {
+                                if (StringUtils.equalsIgnoreCase(transaction, transactionHash)) {
+                                    BlockExec blockExec = ExecObtain.getBlockExec(getContractHash());
+                                    blocks[0] = blockExec.getByNumAndLine(blockInfo.getNum(), blockInfo.getLine());
+                                }
+                            }
                         }
                     }
                 } catch (IOException e) {
@@ -78,36 +82,4 @@ public interface BlockIndexFile extends FileIndexService {
         });
         return blocks[0];
     }
-
-    /**
-     * 根据区块hash获取区块对象
-     *
-     * @param currentDataHash 区块hash
-     *
-     * @return 区块对象
-     */
-    default Block getByCurrentDataHash(String currentDataHash) {
-        Block[] blocks = new Block[]{null};
-        Iterable<File> files = Files.fileTraverser().breadthFirst(new File(getFileStatus().getDir()));
-        files.forEach(file -> {
-            if (StringUtils.startsWith(file.getName(), getFileStatus().getStart())) {
-                try (BufferedInputStream fis = new BufferedInputStream(new FileInputStream(file));
-                     // 用5M的缓冲读取文本文件
-                     BufferedReader reader = new BufferedReader(new InputStreamReader(fis, "utf-8"), 5 * 1024 * 1024)) {
-                    String line;
-                    while ((line = reader.readLine()) != null) {
-                        BlockInfo blockInfo = JSON.parseObject(line, new TypeReference<BlockInfo>() {});
-                        if (null != blockInfo && StringUtils.equalsIgnoreCase(blockInfo.getBlockHash(), currentDataHash)) {
-                            BlockExec blockExec = ExecObtain.getBlockExec(getContractHash());
-                            blocks[0] = blockExec.getByNumAndLine(blockInfo.getNum(), blockInfo.getLine());
-                        }
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-        return blocks[0];
-    }
-
 }

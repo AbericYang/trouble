@@ -40,7 +40,7 @@ import java.util.List;
  * 作者：Aberic on 2018/08/27 11:24
  * 邮箱：abericyang@gmail.com
  */
-public interface BlockFile extends FileService<Block> {
+public interface IBlockExec extends IExec<Block> {
 
     /**
      * 创建并存储区块文件，如已存在且大小超过24M，则覆盖，否则下一行追加更新
