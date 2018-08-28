@@ -20,62 +20,58 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- *
  */
 
-package cn.aberic.bother.common;
+package cn.aberic.bother.common.thread;
 
 import cn.aberic.bother.core.dm.block.Block;
-import cn.aberic.bother.core.dm.call.CallableSearchBlock;
 
 import java.util.concurrent.*;
 
 /**
  * 开启一个线程池——公共方法包
- *  * <p>
- *  * 作者：Aberic on 2018/08/24 11:44
- *  * 邮箱：abericyang@gmail.com
+ * * <p>
+ * * 作者：Aberic on 2018/08/24 11:44
+ * * 邮箱：abericyang@gmail.com
  */
 public class ThreadTroublePool {
 
-	/** 无界线程池，可以进行自动线程回收 */
-	private ExecutorService mCacheThreadPool;
+    private ThreadPoolExecutor executor;
+    private final static int CORE_POOL_SIZE = Runtime.getRuntime().availableProcessors();// 核心线程数为当前设备CPU核心数+1
 
-	private static ThreadTroublePool instance = null;
+    public ThreadTroublePool() {
+        executor = new ThreadPoolExecutor(CORE_POOL_SIZE + 1, Integer.MAX_VALUE, 10L,
+                TimeUnit.SECONDS, new LinkedBlockingQueue<>(5), new ThreadTroubleFactory()
+        );
+        executor.prestartCoreThread(); //预启动一个线程
+    }
 
-	public static ThreadTroublePool obtain() {
-		if (null == instance) {
-			synchronized (ThreadTroublePool.class) {
-				if (null == instance) {
-					instance = new ThreadTroublePool();
-				}
-			}
-		}
-		return instance;
-	}
+    /**
+     * 执行线程
+     *
+     * @param callable 执行线程
+     */
+    public Future<Block> submit(CallableSearchBlock callable) {
+        return executor.submit(callable);
+    }
 
-	private ThreadTroublePool() {
-		mCacheThreadPool = Executors.newCachedThreadPool();
-	}
+    /**
+     * 执行线程
+     *
+     * @param runnable 执行线程
+     */
+    public void submit(Runnable runnable) {
+        executor.execute(runnable);
+    }
 
-	/**
-	 * 执行定长核心线程池
-	 *
-	 * @param runnable
-	 *            执行线程
-	 */
-	public void submitFixed(Runnable runnable) {
-		mCacheThreadPool.execute(runnable);
-	}
+    public boolean isShutdown() {
+        return executor.isShutdown();
+    }
 
-	/**
-	 * 执行定长核心线程池
-	 *
-	 * @param callable
-	 *            执行线程
-	 */
-	public Future<Block> submitFixed(CallableSearchBlock callable) {
-		return mCacheThreadPool.submit(callable);
-	}
+    public void shutdown() {
+        if (!isShutdown()) {
+            executor.shutdown();
+        }
+    }
 
 }

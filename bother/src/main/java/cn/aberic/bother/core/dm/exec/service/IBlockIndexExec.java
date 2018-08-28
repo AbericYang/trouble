@@ -32,6 +32,7 @@ import com.google.common.io.Files;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.*;
+import java.util.Iterator;
 
 /**
  * 区块索引文件本地读写接口——数据操作层-data manipulation
@@ -50,13 +51,12 @@ public interface IBlockIndexExec extends IInit, IExecInit, IIndexExec {
      * 根据区块高度获取区块对象
      *
      * @param height 区块高度
-     *
      * @return 区块对象
      */
     default Block getByHeight(int height) {
         Block[] blocks = new Block[]{null};
         Iterable<File> files = Files.fileTraverser().breadthFirst(new File(getFileStatus().getDir()));
-        files.forEach(file -> {
+        for (File file : files) {
             if (StringUtils.startsWith(file.getName(), getFileStatus().getStart())) {
                 try (BufferedInputStream fis = new BufferedInputStream(new FileInputStream(file));
                      // 用5M的缓冲读取文本文件
@@ -66,13 +66,17 @@ public interface IBlockIndexExec extends IInit, IExecInit, IIndexExec {
                         BlockInfo blockInfo = JSON.parseObject(line, new TypeReference<BlockInfo>() {});
                         if (null != blockInfo && blockInfo.getHeight() == height) {
                             blocks[0] = getBlockExec().getByNumAndLine(blockInfo.getNum(), blockInfo.getLine());
+                            break;
                         }
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
-        });
+            if (null != blocks[0]) {
+                break;
+            }
+        }
         return blocks[0];
     }
 
@@ -80,7 +84,6 @@ public interface IBlockIndexExec extends IInit, IExecInit, IIndexExec {
      * 根据区块hash获取区块对象
      *
      * @param currentDataHash 区块hash
-     *
      * @return 区块对象
      */
     default Block getByCurrentDataHash(String currentDataHash) {

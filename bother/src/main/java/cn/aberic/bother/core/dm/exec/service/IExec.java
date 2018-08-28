@@ -104,6 +104,8 @@ public interface IExec<T> {
                                 ts[0] = (T) JSON.parseObject(lineString, new TypeReference<BlockInfo>() {});
                                 break;
                         }
+                    }
+                    if (null != ts[0]) {
                         break;
                     }
                 }
