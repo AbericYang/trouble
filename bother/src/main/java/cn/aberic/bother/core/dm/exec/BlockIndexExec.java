@@ -35,9 +35,7 @@ import org.apache.commons.lang3.StringUtils;
  * 作者：Aberic on 2018/08/27 16:55
  * 邮箱：abericyang@gmail.com
  */
-public class BlockIndexExec implements IBlockIndexExec {
-
-    private String contractHash;
+public class BlockIndexExec extends ExecInit implements IBlockIndexExec {
 
     /**
      * 根据智能合约hash值操作区块文件；
@@ -47,19 +45,14 @@ public class BlockIndexExec implements IBlockIndexExec {
      * @param contractHash 智能合约hash值
      */
     BlockIndexExec(String contractHash) {
-        this.contractHash = contractHash;
-    }
-
-    @Override
-    public String getContractHash() {
-        return contractHash;
+        super(contractHash);
     }
 
     @Override
     public FileComponent getFileStatus() {
-        if (StringUtils.equals(contractHash, Common.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH)) {
+        if (StringUtils.equals(getContractHash(), Common.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH)) {
             return FileComponent.getBlockIndexFileComponentDefault();
         }
-        return FileComponent.getBlockIndexFileComponent(contractHash);
+        return FileComponent.getBlockIndexFileComponent(getContractHash());
     }
 }

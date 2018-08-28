@@ -36,10 +36,28 @@ import cn.aberic.bother.core.dm.exec.BlockTransactionIndexExec;
  */
 public interface IExecFactory {
 
+    /**
+     * 创建指定智能合约的区块文件本地读写操作对象
+     *
+     * @param contractHash 智能合约
+     * @return 区块文件本地读写操作对象
+     */
     BlockExec createBlockExec(String contractHash);
 
+    /**
+     * 创建指定智能合约的区块索引文件本地读写操作对象
+     *
+     * @param contractHash 智能合约
+     * @return 区块索引文件本地读写操作对象
+     */
     BlockIndexExec createBlockIndexExec(String contractHash);
 
+    /**
+     * 创建指定智能合约的区块交易索引文件本地读写操作对象
+     *
+     * @param contractHash 智能合约
+     * @return 区块交易索引文件本地读写操作对象
+     */
     BlockTransactionIndexExec createBlockTransactionIndexExec(String contractHash);
 
 }

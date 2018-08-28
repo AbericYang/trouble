@@ -52,9 +52,6 @@ import java.nio.charset.Charset;
  */
 public interface IExec<T> {
 
-    /** 获取合约hash */
-    String getContractHash();
-
     /** 获取文件对应组件属性 */
     FileComponent getFileStatus();
 

@@ -24,13 +24,18 @@
 
 package cn.aberic.bother.core.dm.exec;
 
+import cn.aberic.bother.core.dm.exec.service.IExecFactory;
+import cn.aberic.bother.core.dm.exec.service.IExecInit;
+import cn.aberic.bother.core.dm.exec.service.IInit;
+
 /**
- * 区块各类文件本地读写对象获取工具类——数据操作层-data manipulation
- * <p>
- * 作者：Aberic on 2018/08/27 16:56
+ * 作者：Aberic on 2018/08/28 12:09
  * 邮箱：abericyang@gmail.com
  */
-public class ExecObtain {
+public class ExecInit extends Init implements IInit, IExecInit {
+
+    private IExecFactory execFactory;
+    private BlockExec blockExec;
 
     /**
      * 根据智能合约hash值操作区块文件；
@@ -39,30 +44,16 @@ public class ExecObtain {
      *
      * @param contractHash 智能合约hash值
      */
-    public static BlockExec getBlockExec(String contractHash) {
-        return new BlockExec(contractHash);
+    ExecInit(String contractHash) {
+        super(contractHash);
+        execFactory = new ExecFactory();
     }
 
-    /**
-     * 根据智能合约hash值操作区块文件；
-     * 在智能合约被安装的时候就根据合约内容计算该合约hash；
-     * 并以此hash匹配所有安装该合约的节点且同步数据
-     *
-     * @param contractHash 智能合约hash值
-     */
-    public static BlockIndexExec getBlockIndexExec(String contractHash) {
-        return new BlockIndexExec(contractHash);
+    @Override
+    public BlockExec getBlockExec() {
+        if (null == blockExec) {
+            blockExec = execFactory.createBlockExec(getContractHash());
+        }
+        return blockExec;
     }
-
-    /**
-     * 根据智能合约hash值操作区块文件；
-     * 在智能合约被安装的时候就根据合约内容计算该合约hash；
-     * 并以此hash匹配所有安装该合约的节点且同步数据
-     *
-     * @param contractHash 智能合约hash值
-     */
-    public static BlockTransactionIndexExec getBlockTransactionIndexExec(String contractHash) {
-        return new BlockTransactionIndexExec(contractHash);
-    }
-
 }

@@ -26,8 +26,6 @@ package cn.aberic.bother.core.dm.exec.service;
 
 import cn.aberic.bother.core.dm.block.Block;
 import cn.aberic.bother.core.dm.block.BlockInfo;
-import cn.aberic.bother.core.dm.exec.BlockExec;
-import cn.aberic.bother.core.dm.exec.ExecObtain;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import com.google.common.io.Files;
@@ -41,7 +39,7 @@ import java.io.*;
  * 作者：Aberic on 2018/08/27 16:54
  * 邮箱：abericyang@gmail.com
  */
-public interface IBlockIndexExec extends IIndexExec {
+public interface IBlockIndexExec extends IInit, IExecInit, IIndexExec {
 
     @Override
     default String[] jsonStringByPropertyPreFilter() {
@@ -67,8 +65,7 @@ public interface IBlockIndexExec extends IIndexExec {
                     while ((line = reader.readLine()) != null) {
                         BlockInfo blockInfo = JSON.parseObject(line, new TypeReference<BlockInfo>() {});
                         if (null != blockInfo && blockInfo.getHeight() == height) {
-                            BlockExec blockExec = ExecObtain.getBlockExec(getContractHash());
-                            blocks[0] = blockExec.getByNumAndLine(blockInfo.getNum(), blockInfo.getLine());
+                            blocks[0] = getBlockExec().getByNumAndLine(blockInfo.getNum(), blockInfo.getLine());
                         }
                     }
                 } catch (IOException e) {
@@ -98,8 +95,7 @@ public interface IBlockIndexExec extends IIndexExec {
                     while ((line = reader.readLine()) != null) {
                         BlockInfo blockInfo = JSON.parseObject(line, new TypeReference<BlockInfo>() {});
                         if (null != blockInfo && StringUtils.equalsIgnoreCase(blockInfo.getBlockHash(), currentDataHash)) {
-                            BlockExec blockExec = ExecObtain.getBlockExec(getContractHash());
-                            blocks[0] = blockExec.getByNumAndLine(blockInfo.getNum(), blockInfo.getLine());
+                            blocks[0] = getBlockExec().getByNumAndLine(blockInfo.getNum(), blockInfo.getLine());
                         }
                     }
                 } catch (IOException e) {

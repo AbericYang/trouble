@@ -30,12 +30,12 @@ import cn.aberic.bother.core.dm.exec.service.IBlockTransactionIndexExec;
 import org.apache.commons.lang3.StringUtils;
 
 /**
+ * 区块交易索引文件本地读写——数据操作层-data manipulation
+ * <p>
  * 作者：Aberic on 2018/08/27 17:53
  * 邮箱：abericyang@gmail.com
  */
-public class BlockTransactionIndexExec implements IBlockTransactionIndexExec {
-
-    private String contractHash;
+public class BlockTransactionIndexExec extends ExecInit implements IBlockTransactionIndexExec {
 
     /**
      * 根据智能合约hash值操作区块文件；
@@ -45,19 +45,14 @@ public class BlockTransactionIndexExec implements IBlockTransactionIndexExec {
      * @param contractHash 智能合约hash值
      */
     BlockTransactionIndexExec(String contractHash) {
-        this.contractHash = contractHash;
-    }
-
-    @Override
-    public String getContractHash() {
-        return contractHash;
+        super(contractHash);
     }
 
     @Override
     public FileComponent getFileStatus() {
-        if (StringUtils.equals(contractHash, Common.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH)) {
+        if (StringUtils.equals(getContractHash(), Common.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH)) {
             return FileComponent.getBlockTransactionIndexFileComponentDefault();
         }
-        return FileComponent.getBlockTransactionIndexFileComponent(contractHash);
+        return FileComponent.getBlockTransactionIndexFileComponent(getContractHash());
     }
 }

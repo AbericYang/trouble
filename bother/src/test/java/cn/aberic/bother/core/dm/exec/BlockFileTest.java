@@ -48,7 +48,7 @@ public class BlockFileTest {
 
         BlockAcquire acquire = new BlockAcquire(Common.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH);
 
-        writeBlock();
+//        writeBlock();
 
         SystemOut.println("================= getBlockFileCount ================= " + acquire.getFileCount());
 
@@ -57,7 +57,7 @@ public class BlockFileTest {
         SystemOut.println("处理时长 = " + (new Date().getTime() - time) + " | block height = " + height);
 
         time = new Date().getTime();
-        Block block = acquire.getBlockByHeight(43999);
+        Block block = acquire.getBlockByHeight(45999);
         SystemOut.println("处理时长 = " + (new Date().getTime() - time) + " | getBlockByHeight | block = " + JSON.toJSONString(block));
 
         time = new Date().getTime();
@@ -73,7 +73,7 @@ public class BlockFileTest {
 
     private static void writeBlock() {
         BlockStorage blockStorage = new BlockStorage(Common.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH);
-        for (int blockCount = 46000; blockCount < 47000; blockCount++) {
+        for (int blockCount = 47000; blockCount < 100000; blockCount++) {
             BlockHeader header = BlockHeader.newInstance().create(true, 120, new Date().getTime());
 
             BlockBody body = new BlockBody();

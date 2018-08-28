@@ -26,8 +26,6 @@ package cn.aberic.bother.core.dm.exec.service;
 
 import cn.aberic.bother.core.dm.block.Block;
 import cn.aberic.bother.core.dm.block.BlockInfo;
-import cn.aberic.bother.core.dm.exec.BlockExec;
-import cn.aberic.bother.core.dm.exec.ExecObtain;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import com.google.common.io.Files;
@@ -41,7 +39,7 @@ import java.io.*;
  * 作者：Aberic on 2018/08/27 17:51
  * 邮箱：abericyang@gmail.com
  */
-public interface IBlockTransactionIndexExec extends IIndexExec {
+public interface IBlockTransactionIndexExec extends IInit, IExecInit, IIndexExec {
 
     @Override
     default String[] jsonStringByPropertyPreFilter() {
@@ -69,8 +67,7 @@ public interface IBlockTransactionIndexExec extends IIndexExec {
                         if (null != blockInfo) {
                             for (String transaction : blockInfo.getTransactionHashList()) {
                                 if (StringUtils.equalsIgnoreCase(transaction, transactionHash)) {
-                                    BlockExec blockExec = ExecObtain.getBlockExec(getContractHash());
-                                    blocks[0] = blockExec.getByNumAndLine(blockInfo.getNum(), blockInfo.getLine());
+                                    blocks[0] = getBlockExec().getByNumAndLine(blockInfo.getNum(), blockInfo.getLine());
                                 }
                             }
                         }

@@ -22,38 +22,17 @@
  * SOFTWARE.
  */
 
-package cn.aberic.bother.core.dm.exec;
-
-import cn.aberic.bother.common.Common;
-import cn.aberic.bother.core.dm.block.FileComponent;
-import cn.aberic.bother.core.dm.exec.service.IBlockExec;
-import org.apache.commons.lang3.StringUtils;
+package cn.aberic.bother.core.dm.exec.service;
 
 /**
- * 区块文件本地读写——数据操作层-data manipulation
+ * 文件基类待初始化接口——数据操作层-data manipulation
  * <p>
- * 作者：Aberic on 2018/08/24 11:44
+ * 作者：Aberic on 2018/08/28 11:55
  * 邮箱：abericyang@gmail.com
  */
-public class BlockExec extends Init implements IBlockExec {
+public interface IInit {
 
-    /**
-     * 根据智能合约hash值操作区块文件；
-     * 在智能合约被安装的时候就根据合约内容计算该合约hash；
-     * 并以此hash匹配所有安装该合约的节点且同步数据
-     *
-     * @param contractHash 智能合约hash值
-     */
-    BlockExec(String contractHash) {
-        super(contractHash);
-    }
-
-    @Override
-    public FileComponent getFileStatus() {
-        if (StringUtils.equals(getContractHash(), Common.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH)) {
-            return FileComponent.getBlockFileComponentDefault();
-        }
-        return FileComponent.getBlockFileComponent(getContractHash());
-    }
+    /** 获取合约hash */
+    String getContractHash();
 
 }

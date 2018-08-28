@@ -24,18 +24,17 @@
 
 package cn.aberic.bother.core.dm.exec;
 
-import cn.aberic.bother.common.Common;
-import cn.aberic.bother.core.dm.block.FileComponent;
-import cn.aberic.bother.core.dm.exec.service.IBlockExec;
-import org.apache.commons.lang3.StringUtils;
+import cn.aberic.bother.core.dm.exec.service.IInit;
 
 /**
- * 区块文件本地读写——数据操作层-data manipulation
+ * 文件初始化接口实现基类——数据操作层-data manipulation
  * <p>
- * 作者：Aberic on 2018/08/24 11:44
+ * 作者：Aberic on 2018/08/28 11:57
  * 邮箱：abericyang@gmail.com
  */
-public class BlockExec extends Init implements IBlockExec {
+public class Init implements IInit {
+
+    private String contractHash;
 
     /**
      * 根据智能合约hash值操作区块文件；
@@ -44,16 +43,13 @@ public class BlockExec extends Init implements IBlockExec {
      *
      * @param contractHash 智能合约hash值
      */
-    BlockExec(String contractHash) {
-        super(contractHash);
+    Init(String contractHash) {
+        this.contractHash = contractHash;
     }
 
     @Override
-    public FileComponent getFileStatus() {
-        if (StringUtils.equals(getContractHash(), Common.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH)) {
-            return FileComponent.getBlockFileComponentDefault();
-        }
-        return FileComponent.getBlockFileComponent(getContractHash());
+    public String getContractHash() {
+        return contractHash;
     }
 
 }
