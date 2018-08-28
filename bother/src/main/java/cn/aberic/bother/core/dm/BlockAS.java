@@ -22,8 +22,12 @@
  * SOFTWARE.
  */
 
-package cn.aberic.bother.core.dm.exec;
+package cn.aberic.bother.core.dm;
 
+import cn.aberic.bother.core.dm.exec.BlockExec;
+import cn.aberic.bother.core.dm.exec.BlockIndexExec;
+import cn.aberic.bother.core.dm.exec.BlockTransactionIndexExec;
+import cn.aberic.bother.core.dm.exec.ExecFactory;
 import cn.aberic.bother.core.dm.exec.service.IExecFactory;
 
 /**
@@ -41,26 +45,26 @@ public class BlockAS {
     private BlockIndexExec blockIndexExec;
     private BlockTransactionIndexExec blockTransactionIndexExec;
 
-    public BlockAS(String contractHash) {
+    BlockAS(String contractHash) {
         this.contractHash = contractHash;
         execFactory = new ExecFactory();
     }
 
-    protected BlockExec getBlockExec() {
+    BlockExec getBlockExec() {
         if (null == blockExec) {
             blockExec = execFactory.createBlockExec(contractHash);
         }
         return blockExec;
     }
 
-    protected BlockIndexExec getBlockIndexExec() {
+    BlockIndexExec getBlockIndexExec() {
         if (null == blockIndexExec) {
             blockIndexExec = execFactory.createBlockIndexExec(contractHash);
         }
         return blockIndexExec;
     }
 
-    protected BlockTransactionIndexExec getBlockTransactionIndexExec() {
+    BlockTransactionIndexExec getBlockTransactionIndexExec() {
         if (null == blockTransactionIndexExec) {
             blockTransactionIndexExec = execFactory.createBlockTransactionIndexExec(contractHash);
         }

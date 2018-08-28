@@ -25,7 +25,6 @@
 package cn.aberic.bother.core.dm;
 
 import cn.aberic.bother.core.dm.block.Block;
-import cn.aberic.bother.core.dm.exec.BlockAS;
 
 /**
  * 获取区块——数据操作层-data manipulation
@@ -48,6 +47,11 @@ public class BlockAcquire extends BlockAS {
         return getBlockExec().getFileCount();
     }
 
+    /**
+     * 获取指定合约下账本高度
+     *
+     * @return 指定合约账本高度
+     */
     public int getHeight() {
         return getBlockExec().getHeight();
     }
@@ -56,7 +60,6 @@ public class BlockAcquire extends BlockAS {
      * 根据区块高度获取区块对象
      *
      * @param height 区块高度
-     *
      * @return 区块对象
      */
     public Block getBlockByHeight(int height) {
@@ -67,7 +70,6 @@ public class BlockAcquire extends BlockAS {
      * 根据区块高度获取区块对象
      *
      * @param currentDataHash 当前区块hash
-     *
      * @return 区块对象
      */
     public Block getBlockByHash(String currentDataHash) {
@@ -78,7 +80,6 @@ public class BlockAcquire extends BlockAS {
      * 根据区块高度获取区块对象
      *
      * @param transactionHash 交易hash
-     *
      * @return 区块对象
      */
     public Block getBlockByTransactionHash(String transactionHash) {
