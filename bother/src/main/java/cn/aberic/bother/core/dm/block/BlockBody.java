@@ -26,6 +26,7 @@
 package cn.aberic.bother.core.dm.block;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -42,8 +43,10 @@ import java.util.List;
 public class BlockBody {
 
     /** 交易数量 */
+    @JSONField(name="c")
     private int txCount;
     /** 交易集合 */
+    @JSONField(name="t")
     private List<Transaction> transactions;
 
     /** 获取当前数据体字符串信息 */

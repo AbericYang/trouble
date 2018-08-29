@@ -25,6 +25,7 @@
 
 package cn.aberic.bother.core.dm.block;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -38,7 +39,9 @@ import lombok.Setter;
 public class RWSet {
 
     /** 交易读内容 */
+    @JSONField(name="r")
     private ValueRead valueRead;
     /** 交易写内容 */
+    @JSONField(name="w")
     private ValueWrite valueWrite;
 }

@@ -41,16 +41,22 @@ import lombok.Setter;
 public class BlockHeader {
 
     /** 区块高度 */
+    @JSONField(name="h")
     private int height;
     /** 当前区块hash */
+    @JSONField(name="c")
     private String currentDataHash;
     /** 上一区块hash */
+    @JSONField(name="p")
     private String previousDataHash;
     /** 是否由第一顺位节点出块 */
+    @JSONField(name="s")
     private boolean smoothlyOut;
     /** 参与本次区块打包的投票节点个数 */
+    @JSONField(name="nc")
     private int consentNodeCount;
     /** 当前区块生成时间戳 */
+    @JSONField(name="t")
     private long timestamp;
     /** 隐藏属性，压缩查询 */
     @JSONField(serialize=false)

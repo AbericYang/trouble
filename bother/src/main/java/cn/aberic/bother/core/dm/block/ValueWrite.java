@@ -25,6 +25,7 @@
 
 package cn.aberic.bother.core.dm.block;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -39,15 +40,19 @@ import lombok.Setter;
 public class ValueWrite {
 
     /** 本次写入值编号，与读取值编号对应 */
+    @JSONField(name="n")
     private int number;
     /** 本次写入值所用合约名称 */
+    @JSONField(name="c")
     private String contractName;
     /** 本次写入值所用合约版本 */
+    @JSONField(name="v")
     private String contractVersion;
     /**
      * 本次写入值参数；
      * <p>
      * 参数格式为：参数组个数，参数个数，参数…组成
      */
+    @JSONField(name="s")
     private String[] strings;
 }

@@ -31,13 +31,8 @@ import cn.aberic.bother.core.dm.BlockAcquire;
 import cn.aberic.bother.core.dm.BlockStorage;
 import cn.aberic.bother.core.dm.block.*;
 import cn.aberic.bother.core.dm.status.TransactionStatus;
-import com.alibaba.fastjson.JSON;
-import com.google.common.hash.Hashing;
+import org.json.JSONObject;
 
-import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
-import java.io.UnsupportedEncodingException;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -64,15 +59,15 @@ public class BlockFileTest {
 
         time = new Date().getTime();
         Block block = acquire.getBlockByHeight(9);
-        SystemOut.println("处理时长 = " + (new Date().getTime() - time) + " | getBlockByHeight          | block = " + JSON.toJSONString(block));
+        SystemOut.println("处理时长 = " + (new Date().getTime() - time) + " | getBlockByHeight           | block = " + new JSONObject(block).toString());
 
         time = new Date().getTime();
-        block = acquire.getBlockByHash("f3e1deb9669aa5675d5f3643b3e6a933d99347de3ea105415b5a593b84fdd30c");
-        SystemOut.println("处理时长 = " + (new Date().getTime() - time) + " | getBlockByHash            | block = " + JSON.toJSONString(block));
+        block = acquire.getBlockByHash("abe0c7aa2f15a0eaedc36a6a0640540a3fc27939bd414f95a3fbd437f272658e");
+        SystemOut.println("处理时长 = " + (new Date().getTime() - time) + " | getBlockByHash             | block = " + new JSONObject(block).toString());
 
         time = new Date().getTime();
-        block = acquire.getBlockByTransactionHash("695d383e33992eb9e3cffd6fcc900ed4af9846936b5ee8c7b36f59b2a219fad5");
-        SystemOut.println("处理时长 = " + (new Date().getTime() - time) + " | getBlockByTransactionHash | block = " + JSON.toJSONString(block));
+        block = acquire.getBlockByTransactionHash("343c9ebfb3922bca570725291120fed4149528367efd4ae91a2c98436921873d");
+        SystemOut.println("处理时长 = " + (new Date().getTime() - time) + " | getBlockByTransactionHash  | block = " + new JSONObject(block).toString());
         SystemOut.println("=================  block file test end  =================");
     }
 
@@ -88,7 +83,7 @@ public class BlockFileTest {
                 transaction.setCreator(String.format("haha%s", transactionCount));
                 transaction.setErrorMessage(String.format("error message %s", transactionCount));
                 transaction.setSign(String.format("sign %s", transactionCount));
-                transaction.setStatus(TransactionStatus.SUCCESS);
+                transaction.setTransactionStatusCode(TransactionStatus.SUCCESS.getCode());
                 transaction.setTimestamp(new Date().getTime());
 
                 List<RWSet> rwSets = new ArrayList<>();

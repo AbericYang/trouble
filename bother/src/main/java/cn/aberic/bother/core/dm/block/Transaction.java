@@ -47,22 +47,29 @@ import java.util.List;
 public class Transaction {
 
     /** 发起方 */
+    @JSONField(name="c")
     private String creator;
     /** 发起方签名 */
+    @JSONField(name="s")
     private String sign;
     /** 交易读写集 */
+    @JSONField(name="rw")
     private List<RWSet> rwSets;
     /** 交易时间戳 */
+    @JSONField(name="t")
     private Long timestamp;
     /**
      * 交易hash
      * <p>
      * 为creator、sign、JSON.toJSONString(readSet)、JSON.toJSONString(writeSet)及timestamp拼接后md5
      */
+    @JSONField(name="h")
     private String hash;
     /** 交易状态 */
-    private TransactionStatus status = TransactionStatus.SUCCESS;
+    @JSONField(name="ts")
+    private int transactionStatusCode = TransactionStatus.SUCCESS.getCode();
     /** 交易错误信息 */
+    @JSONField(name="e")
     private String errorMessage;
     @JSONField(serialize=false)
     private String hashMd516; // 序列化时不写入

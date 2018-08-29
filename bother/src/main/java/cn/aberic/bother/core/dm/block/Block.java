@@ -25,6 +25,7 @@
 
 package cn.aberic.bother.core.dm.block;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import com.google.common.hash.Hashing;
 import lombok.Getter;
 import lombok.Setter;
@@ -44,8 +45,10 @@ import java.nio.charset.Charset;
 public class Block {
 
     /** 区块头部信息 */
+    @JSONField(name="h")
     private BlockHeader header;
     /** 区块数据体 */
+    @JSONField(name="b")
     private BlockBody body;
 
     public Block(BlockHeader header, BlockBody body) {
