@@ -25,7 +25,6 @@
 
 package cn.aberic.bother.core.as.sys;
 
-import cn.aberic.bother.common.exception.ContractParamException;
 import cn.aberic.bother.core.sc.entity.Contract;
 import cn.aberic.bother.core.sc.exec.service.IContract;
 import cn.aberic.bother.core.sc.exec.service.IContractBlockExec;
@@ -40,11 +39,7 @@ public class SystemAppContract implements IContract {
 
     @Override
     public String init(IContractBlockExec exec) {
-        try {
-            exec.set(new Contract("tb", "1.0", 1, "让连接更有价值！no trouble, no bother!"));
-        } catch (ContractParamException e) {
-            e.printStackTrace();
-        }
+        exec.set(new Contract("", "1.0", 1, "让连接更有价值！no trouble, no bother!"));
         return response("success");
     }
 

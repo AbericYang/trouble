@@ -23,22 +23,11 @@
  *
  */
 
-package cn.aberic.bother.common.exception;
+package cn.aberic.bother.contract;
 
 /**
- * 智能合约字段为空异常——公共方法包
- * <p>
- * 作者：Aberic on 2018/8/29 21:13
+ * 作者：Aberic on 2018/8/30 00:58
  * 邮箱：abericyang@gmail.com
  */
-public class ContractParamException extends NullPointerException {
-
-    public ContractParamException() {
-        super();
-    }
-
-    public ContractParamException(String message) {
-        super(message);
-    }
-
+public class Test {
 }

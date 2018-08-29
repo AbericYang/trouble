@@ -24,12 +24,11 @@
 
 package cn.aberic.bother.core.sc.exec.service;
 
-import cn.aberic.bother.common.exception.ContractParamException;
-import cn.aberic.bother.core.sc.exec.ContractFileExec;
 import cn.aberic.bother.common.file.IFile;
 import cn.aberic.bother.core.dm.BlockAcquire;
 import cn.aberic.bother.core.dm.entity.Block;
 import cn.aberic.bother.core.sc.entity.Contract;
+import cn.aberic.bother.core.sc.exec.ContractFileExec;
 import cn.aberic.bother.eac.MD5;
 
 /**
@@ -53,7 +52,7 @@ public interface IContractBlockExec {
      */
     ContractFileExec getFileExec();
 
-    default Contract set(Contract contract) throws ContractParamException {
+    default Contract set(Contract contract) {
         return getFileExec().set(contract);
     }
 

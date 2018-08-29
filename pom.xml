@@ -6,8 +6,12 @@
 
   <groupId>cn.aberic</groupId>
   <artifactId>trouble</artifactId>
-  <version>1.0-SNAPSHOT</version>
-  <name>trouble Maven Webapp</name>
+    <packaging>pom</packaging>
+    <version>1.0-SNAPSHOT</version>
+    <modules>
+        <module>contract-api</module>
+    </modules>
+    <name>trouble Maven Webapp</name>
   <!-- FIXME change it to the project's website -->
   <url>http://www.aberic.cn</url>
 

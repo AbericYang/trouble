@@ -65,11 +65,11 @@ public class ContractFileExec implements IInit, IFile<Contract> {
         return FileComponent.getContractFileComponent(contractHash);
     }
 
-    public Contract set(Contract contract) throws ContractParamException {
+    public Contract set(Contract contract) {
         if (StringUtils.isEmpty(contract.getName()) ||
                 StringUtils.isEmpty(contract.getVersionName()) ||
                 StringUtils.isEmpty(contract.getBrief())) {
-            throw new ContractParamException("For entity, Contract's params can't be empty");
+            throw new ContractParamException("For entity Contract, params can't be empty");
         }
         String jsonString = JSON.toJSONString(contract);
         // 获取最新写入的合约文件
