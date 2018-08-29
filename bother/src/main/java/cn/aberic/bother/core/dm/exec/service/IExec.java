@@ -24,6 +24,7 @@
 
 package cn.aberic.bother.core.dm.exec.service;
 
+import cn.aberic.bother.common.DeflaterTool;
 import cn.aberic.bother.core.dm.block.Block;
 import cn.aberic.bother.core.dm.block.BlockInfo;
 import cn.aberic.bother.core.dm.block.FileComponent;
@@ -98,10 +99,10 @@ public interface IExec<T> {
                     if (StringUtils.isNotEmpty(lineString)) {
                         switch (getFileStatus().getTType()) {
                             case T_TYPE_BLOCK:
-                                ts[0] = (T) JSON.parseObject(lineString, new TypeReference<Block>() {});
+                                ts[0] = (T) JSON.parseObject(DeflaterTool.uncompress(lineString), new TypeReference<Block>() {});
                                 break;
                             case T_TYPE_BLOCK_INDEX:
-                                ts[0] = (T) JSON.parseObject(lineString, new TypeReference<BlockInfo>() {});
+                                ts[0] = (T) JSON.parseObject(DeflaterTool.uncompress(lineString), new TypeReference<BlockInfo>() {});
                                 break;
                         }
                     }

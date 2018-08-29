@@ -24,6 +24,7 @@
 
 package cn.aberic.bother.core.dm.exec.service;
 
+import cn.aberic.bother.common.DeflaterTool;
 import cn.aberic.bother.core.dm.block.Block;
 import cn.aberic.bother.core.dm.block.BlockInfo;
 import cn.aberic.bother.core.dm.block.Transaction;
@@ -53,7 +54,7 @@ public interface IBlockExec extends IExec<Block> {
         BlockInfo blockInfo = new BlockInfo();
         int height = 0, line = 0;
         String currentDataHash;
-        String jsonStringBlock;
+        String compressJsonString;
         // 获取最新写入的区块文件
         File blockFile = getLastFile();
         try {
@@ -65,8 +66,8 @@ public interface IBlockExec extends IExec<Block> {
                 block.getHeader().setPreviousDataHash("0"); // 第一区块上一hash为0
                 currentDataHash = block.calculateHash();
                 block.getHeader().setCurrentDataHash(currentDataHash); // 第一区块当前hash
-                jsonStringBlock = JSON.toJSONString(block);
-                writeFirstLine(blockFile, jsonStringBlock);
+                compressJsonString = DeflaterTool.compress(JSON.toJSONString(block));
+                writeFirstLine(blockFile, compressJsonString);
             } else {
                 // 获取当前区块文件中的总行数，其值即为上一区块的行数
                 line = getFileLineCountIfBigCharLine(blockFile);
@@ -81,17 +82,17 @@ public interface IBlockExec extends IExec<Block> {
                 currentDataHash = block.calculateHash();
                 block.getHeader().setCurrentDataHash(currentDataHash);
                 // 重新生成待写入JSON String内容
-                jsonStringBlock = JSON.toJSONString(block);
+                compressJsonString = DeflaterTool.compress(JSON.toJSONString(block));
                 // 计算该内容的字节长度
-                long blockSize = jsonStringBlock.getBytes().length;
+                long blockSize = compressJsonString.getBytes().length;
                 // 如果区块文件和待写入对象之和已经大于或等于24MB，则开辟新区块文件写入区块对象
                 if (blockFile.length() + blockSize >= 24 * 1000 * 1000) {
                     System.out.println(String.format("block file size great than 24MB, now size = %s", blockFile.length()));
                     blockFile = getNextFileByCurrentFile(blockFile);
                     System.out.println(String.format("next block file name = %s", blockFile.getName()));
-                    writeFirstLine(blockFile, jsonStringBlock);
+                    writeFirstLine(blockFile, compressJsonString);
                 } else {
-                    writeAppendLine(blockFile, jsonStringBlock);
+                    writeAppendLine(blockFile, compressJsonString);
                 }
             }
             List<String> transactionHashList = new ArrayList<>();

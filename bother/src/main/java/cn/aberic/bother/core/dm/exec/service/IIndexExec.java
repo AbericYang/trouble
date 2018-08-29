@@ -45,7 +45,7 @@ public interface IIndexExec extends IExec<BlockInfo> {
     default BlockInfo createOrUpdate(BlockInfo blockInfo) {
         // 首先序列化时过滤掉无用属性
         SimplePropertyPreFilter filter = new SimplePropertyPreFilter(BlockInfo.class, jsonStringByPropertyPreFilter());
-        String jsonStringBlock = JSON.toJSONString(blockInfo, filter);
+        String jsonString = JSON.toJSONString(blockInfo, filter);
         // 获取最新写入的区块文件
         File indexFile = getLastFile();
         try {
@@ -53,18 +53,18 @@ public interface IIndexExec extends IExec<BlockInfo> {
             if (null == indexFile) {
                 // 定义新的区块文件
                 indexFile = createFirstFile();
-                writeFirstLine(indexFile, jsonStringBlock);
+                writeFirstLine(indexFile, jsonString);
             } else {
                 // 计算该内容的字节长度
-                long blockIndexSize = jsonStringBlock.getBytes().length;
+                long blockIndexSize = jsonString.getBytes().length;
                 // 如果区块文件和待写入对象之和已经大于或等于24MB，则开辟新区块文件写入区块对象
                 if (indexFile.length() + blockIndexSize >= 24 * 1000 * 1000) {
                     System.out.println(String.format("block index file size great than 24MB, now size = %s", indexFile.length()));
                     indexFile = getNextFileByCurrentFile(indexFile);
                     System.out.println(String.format("next block index file name = %s", indexFile.getName()));
-                    writeFirstLine(indexFile, jsonStringBlock);
+                    writeFirstLine(indexFile, jsonString);
                 } else {
-                    writeAppendLine(indexFile, jsonStringBlock);
+                    writeAppendLine(indexFile, jsonString);
                 }
             }
         } catch (IOException e) {

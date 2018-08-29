@@ -62,11 +62,11 @@ public class BlockFileTest {
         SystemOut.println("处理时长 = " + (new Date().getTime() - time) + " | getBlockByHeight           | block = " + new JSONObject(block).toString());
 
         time = new Date().getTime();
-        block = acquire.getBlockByHash("abe0c7aa2f15a0eaedc36a6a0640540a3fc27939bd414f95a3fbd437f272658e");
+        block = acquire.getBlockByHash("0a06cd5102d81cc1b7f052612c341af460c1648052e1318ca5e7b68bc577c6c3");
         SystemOut.println("处理时长 = " + (new Date().getTime() - time) + " | getBlockByHash             | block = " + new JSONObject(block).toString());
 
         time = new Date().getTime();
-        block = acquire.getBlockByTransactionHash("343c9ebfb3922bca570725291120fed4149528367efd4ae91a2c98436921873d");
+        block = acquire.getBlockByTransactionHash("2cd96de4feaa3e96d31f60f0436523d568bab1827456231518cb58d3c7365de5");
         SystemOut.println("处理时长 = " + (new Date().getTime() - time) + " | getBlockByTransactionHash  | block = " + new JSONObject(block).toString());
         SystemOut.println("=================  block file test end  =================");
     }
