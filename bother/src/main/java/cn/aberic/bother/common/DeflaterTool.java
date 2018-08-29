@@ -30,6 +30,8 @@ import java.util.zip.Deflater;
 import java.util.zip.Inflater;
 
 /**
+ * deflater字符串压缩工具——公共方法包
+ * <p>
  * 作者：Aberic on 2018/08/29 13:49
  * 邮箱：abericyang@gmail.com
  */
@@ -43,6 +45,7 @@ public class DeflaterTool {
      * 压缩
      *
      * @param inputByte 待压缩的字节数组
+     *
      * @return 压缩后的数据
      */
     public static byte[] compress(byte[] inputByte) throws IOException {
@@ -73,6 +76,7 @@ public class DeflaterTool {
      * 解压
      *
      * @param inputByte 待解压缩的字节数组
+     *
      * @return 解压缩后的字节数组
      */
     public static byte[] uncompress(byte[] inputByte) throws IOException {

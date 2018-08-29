@@ -25,7 +25,7 @@
 package cn.aberic.bother.common;
 
 /**
- * 公共方法包
+ * 常量——公共方法包
  * <p>
  * 作者：Aberic on 2018/8/20 20:24
  * 邮箱：abericyang@gmail.com

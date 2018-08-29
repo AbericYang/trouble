@@ -26,7 +26,7 @@
 package cn.aberic.bother.common.exception;
 
 /**
- * 智能合约摘要为空异常
+ * 智能合约摘要为空异常——公共方法包
  * <p>
  * 作者：Aberic on 2018/8/29 21:13
  * 邮箱：abericyang@gmail.com

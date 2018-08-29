@@ -33,7 +33,7 @@ import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 
 /**
- * 区块及区块索引文件可操作组件——数据操作层-data manipulation
+ * 区块及区块索引文件可操作组件——公共方法包
  * <p>
  * 作者：Aberic on 2018/08/27 14:31
  * 邮箱：abericyang@gmail.com

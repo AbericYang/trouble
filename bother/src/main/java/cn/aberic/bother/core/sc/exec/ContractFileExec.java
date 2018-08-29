@@ -39,6 +39,8 @@ import java.io.File;
 import java.io.IOException;
 
 /**
+ * 智能合约文件对象操作-smart contract
+ * <p>
  * 作者：Aberic on 2018/8/29 23:03
  * 邮箱：abericyang@gmail.com
  */
