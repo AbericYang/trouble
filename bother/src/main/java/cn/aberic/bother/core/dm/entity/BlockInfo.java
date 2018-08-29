@@ -20,39 +20,40 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- *
  */
 
-package cn.aberic.bother.core.dm.block;
+package cn.aberic.bother.core.dm.entity;
 
 import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 /**
- * 一笔操作的写入值对象——数据操作层-data manipulation
- *
- * 作者：Aberic on 2018/8/24 23:02
+ * 区块在区块文件中的基本信息——数据操作层-data manipulation
+ * <p>
+ * 作者：Aberic on 2018/08/27 17:29
  * 邮箱：abericyang@gmail.com
  */
 @Setter
 @Getter
-public class ValueWrite {
+public class BlockInfo {
 
-    /** 本次写入值编号，与读取值编号对应 */
+    /** 区块高度 */
+    @JSONField(name="h")
+    private int height;
+    /** 区块hash */
+    @JSONField(name="b")
+    private String blockHash;
+    /** 区块中交易hash集合 */
+    @JSONField(name="t")
+    private List<String> transactionHashList;
+    /** 区块所在区块文件编号 */
     @JSONField(name="n")
-    private int number;
-    /** 本次写入值所用合约名称 */
-    @JSONField(name="c")
-    private String contractName;
-    /** 本次写入值所用合约版本 */
-    @JSONField(name="v")
-    private String contractVersion;
-    /**
-     * 本次写入k-v中key数组；
-     * <p>
-     * 参数格式为：key个数，key…组成
-     */
-    @JSONField(name="s")
-    private String[] strings;
+    private int num;
+    /** 区块所在区块文件中的行号 */
+    @JSONField(name="l")
+    private int line;
+
 }

@@ -25,9 +25,9 @@
 package cn.aberic.bother.core.dm.exec.service;
 
 import cn.aberic.bother.common.DeflaterTool;
-import cn.aberic.bother.core.dm.block.Block;
-import cn.aberic.bother.core.dm.block.BlockInfo;
-import cn.aberic.bother.core.dm.block.FileComponent;
+import cn.aberic.bother.core.dm.entity.Block;
+import cn.aberic.bother.core.dm.entity.BlockInfo;
+import cn.aberic.bother.core.dm.entity.FileComponent;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import com.google.common.base.Preconditions;
@@ -44,7 +44,7 @@ import java.nio.charset.Charset;
 /**
  * 文件本地读写接口——数据操作层-data manipulation
  * <p>
- * 该接口服务提供了区块文件{@link cn.aberic.bother.core.dm.block.Block}
+ * 该接口服务提供了区块文件{@link cn.aberic.bother.core.dm.entity.Block}
  * 及区块索引文件{@link BlockInfo}对象的
  * 基本操作方案
  * <p>

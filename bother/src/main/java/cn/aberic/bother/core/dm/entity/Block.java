@@ -23,62 +23,46 @@
  *
  */
 
-package cn.aberic.bother.core.dm.block;
+package cn.aberic.bother.core.dm.entity;
 
-import cn.aberic.bother.core.dm.status.TransactionStatus;
-import cn.aberic.bother.eac.MD5;
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.annotation.JSONField;
 import com.google.common.hash.Hashing;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.nio.charset.Charset;
-import java.util.List;
 
 /**
- * 事务/交易/业务对象——数据操作层-data manipulation
+ * 区块对象——数据操作层-data manipulation
  * <p>
- * 作者：Aberic on 2018/8/20 21:28
+ * 作者：Aberic on 2018/8/20 21:21
  * 邮箱：abericyang@gmail.com
  */
 @Setter
 @Getter
-public class Transaction {
+@ToString
+public class Block {
 
-    /** 发起方 */
-    @JSONField(name="c")
-    private String creator;
-    /** 发起方签名 */
-    @JSONField(name="s")
-    private String sign;
-    /** 交易读写集 */
-    @JSONField(name="rw")
-    private List<RWSet> rwSets;
-    /** 交易时间戳 */
-    @JSONField(name="t")
-    private Long timestamp;
-    /**
-     * 交易hash
-     * <p>
-     * 为creator、sign、JSON.toJSONString(readSet)、JSON.toJSONString(writeSet)及timestamp拼接后md5
-     */
+    /** 区块头部信息 */
     @JSONField(name="h")
-    private String hash;
-    /** 交易状态 */
-    @JSONField(name="ts")
-    private int transactionStatusCode = TransactionStatus.SUCCESS.getCode();
-    /** 交易错误信息 */
-    @JSONField(name="e")
-    private String errorMessage;
-    @JSONField(serialize=false)
-    private String hashMd516; // 序列化时不写入
+    private BlockHeader header;
+    /** 区块数据体 */
+    @JSONField(name="b")
+    private BlockBody body;
 
-    public Transaction build() {
-        hash = Hashing.sha256().hashString(String.format("%s%s%s%s",
-                creator, sign, JSON.toJSONString(rwSets), timestamp), Charset.forName("UTF-8")).toString();
-        hashMd516 = MD5.md516(hash);
-        return this;
+    public Block(BlockHeader header, BlockBody body) {
+        this.header = header;
+        this.body = body;
+    }
+
+    /** 得到当前区块hash */
+    public String calculateHash() {
+        return Hashing.sha256().hashString(String.format("%s%s%s%s",
+                header.getPreviousDataHash(),
+                header.getConsentNodeCount(),
+                Long.toString(header.getTimestamp()),
+                body.bodyString()), Charset.forName("UTF-8")).toString();
     }
 
 }

@@ -20,39 +20,33 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
+ *
  */
 
-package cn.aberic.bother.core.dm.exec;
+package cn.aberic.bother.sc;
 
-import cn.aberic.bother.common.Common;
-import cn.aberic.bother.core.dm.entity.FileComponent;
-import cn.aberic.bother.core.dm.exec.service.IBlockTransactionIndexExec;
-import org.apache.commons.lang3.StringUtils;
+import cn.aberic.bother.core.sc.service.IContract;
+import cn.aberic.bother.core.sc.service.IContractBlockExec;
 
 /**
- * 区块交易索引文件本地读写——数据操作层-data manipulation
- * <p>
- * 作者：Aberic on 2018/08/27 17:53
+ * 作者：Aberic on 2018/8/29 19:51
  * 邮箱：abericyang@gmail.com
  */
-public class BlockTransactionIndexExec extends ExecInit implements IBlockTransactionIndexExec {
+public class SmartTest implements IContract {
 
-    /**
-     * 根据智能合约hash值操作区块文件；
-     * 在智能合约被安装的时候就根据合约内容计算该合约hash；
-     * 并以此hash匹配所有安装该合约的节点且同步数据
-     *
-     * @param contractHash 智能合约hash值
-     */
-    BlockTransactionIndexExec(String contractHash) {
-        super(contractHash);
+    @Override
+    public String init(IContractBlockExec exec) {
+        return null;
     }
 
     @Override
-    public FileComponent getFileStatus() {
-        if (StringUtils.equals(getContractHash(), Common.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH)) {
-            return FileComponent.getBlockTransactionIndexFileComponentDefault();
-        }
-        return FileComponent.getBlockTransactionIndexFileComponent(getContractHash());
+    public String invoke(IContractBlockExec exec) {
+        return null;
     }
+
+    @Override
+    public String query(IContractBlockExec exec) {
+        return null;
+    }
+
 }

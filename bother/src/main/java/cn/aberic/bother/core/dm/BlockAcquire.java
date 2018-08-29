@@ -24,7 +24,7 @@
 
 package cn.aberic.bother.core.dm;
 
-import cn.aberic.bother.core.dm.block.Block;
+import cn.aberic.bother.core.dm.entity.Block;
 import cn.aberic.bother.eac.MD5;
 
 /**

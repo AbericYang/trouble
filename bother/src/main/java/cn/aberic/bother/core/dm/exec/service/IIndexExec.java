@@ -25,7 +25,7 @@
 
 package cn.aberic.bother.core.dm.exec.service;
 
-import cn.aberic.bother.core.dm.block.BlockInfo;
+import cn.aberic.bother.core.dm.entity.BlockInfo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SimplePropertyPreFilter;
 

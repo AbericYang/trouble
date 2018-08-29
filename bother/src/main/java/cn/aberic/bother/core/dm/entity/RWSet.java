@@ -23,37 +23,25 @@
  *
  */
 
-package cn.aberic.bother.core.dm.block;
+package cn.aberic.bother.core.dm.entity;
 
 import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Getter;
 import lombok.Setter;
 
 /**
- * 一笔操作的读取值对象——数据操作层-data manipulation
- * <p>
- * 作者：Aberic on 2018/8/24 23:01
+ * 读写集——数据操作层-data manipulation
+ * 作者：Aberic on 2018/8/25 02:12
  * 邮箱：abericyang@gmail.com
  */
 @Setter
 @Getter
-public class ValueRead {
+public class RWSet {
 
-    /** 本次读取值编号，与写入值编号对应 */
-    @JSONField(name = "n")
-    private int number;
-    /** 本次读取值所用合约名称 */
-    @JSONField(name = "c")
-    private String contractName;
-    /** 本次读取值所用合约版本 */
-    @JSONField(name = "v")
-    private String contractVersion;
-    /**
-     * 本次读取k-v中key数组；
-     * <p>
-     * 参数格式为：key个数，key…组成
-     */
-    @JSONField(name = "s")
-    private String[] strings;
-
+    /** 交易读内容 */
+    @JSONField(name="r")
+    private ValueRead valueRead;
+    /** 交易写内容 */
+    @JSONField(name="w")
+    private ValueWrite valueWrite;
 }

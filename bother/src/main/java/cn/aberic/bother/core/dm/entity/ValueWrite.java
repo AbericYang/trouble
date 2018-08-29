@@ -20,39 +20,39 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
+ *
  */
 
-package cn.aberic.bother.core.dm.exec;
+package cn.aberic.bother.core.dm.entity;
 
-import cn.aberic.bother.common.Common;
-import cn.aberic.bother.core.dm.entity.FileComponent;
-import cn.aberic.bother.core.dm.exec.service.IBlockTransactionIndexExec;
-import org.apache.commons.lang3.StringUtils;
+import com.alibaba.fastjson.annotation.JSONField;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
- * 区块交易索引文件本地读写——数据操作层-data manipulation
- * <p>
- * 作者：Aberic on 2018/08/27 17:53
+ * 一笔操作的写入值对象——数据操作层-data manipulation
+ *
+ * 作者：Aberic on 2018/8/24 23:02
  * 邮箱：abericyang@gmail.com
  */
-public class BlockTransactionIndexExec extends ExecInit implements IBlockTransactionIndexExec {
+@Setter
+@Getter
+public class ValueWrite {
 
+    /** 本次写入值编号，与读取值编号对应 */
+    @JSONField(name="n")
+    private int number;
+    /** 本次写入值所用合约名称 */
+    @JSONField(name="c")
+    private String contractName;
+    /** 本次写入值所用合约版本 */
+    @JSONField(name="v")
+    private String contractVersion;
     /**
-     * 根据智能合约hash值操作区块文件；
-     * 在智能合约被安装的时候就根据合约内容计算该合约hash；
-     * 并以此hash匹配所有安装该合约的节点且同步数据
-     *
-     * @param contractHash 智能合约hash值
+     * 本次写入k-v中key数组；
+     * <p>
+     * 参数格式为：key个数，key…组成
      */
-    BlockTransactionIndexExec(String contractHash) {
-        super(contractHash);
-    }
-
-    @Override
-    public FileComponent getFileStatus() {
-        if (StringUtils.equals(getContractHash(), Common.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH)) {
-            return FileComponent.getBlockTransactionIndexFileComponentDefault();
-        }
-        return FileComponent.getBlockTransactionIndexFileComponent(getContractHash());
-    }
+    @JSONField(name="s")
+    private String[] strings;
 }

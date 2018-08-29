@@ -20,23 +20,25 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
+ *
  */
 
-package cn.aberic.bother.core.sc.contract;
+package cn.aberic.bother.sc;
 
-import cn.aberic.bother.core.dm.status.TransactionStatus;
+import cn.aberic.bother.core.sc.ContractBlockExec;
 
 /**
- * 智能合约执行结果-smart contract
- * <p>
- * 作者：Aberic on 2018/08/29 17:24
+ * 作者：Aberic on 2018/8/29 19:57
  * 邮箱：abericyang@gmail.com
  */
-public class ContractConsequence {
+public class SCTest {
 
-    /** 智能合约事务结果 */
-    private TransactionStatus status;
-    /** 智能合约事务补充信息 */
-    private String msg;
+    public static void main(String[] args) {
+    }
+
+    private static void smart() {
+        SmartTest test = new SmartTest();
+        test.init(new ContractBlockExec("hello"));
+    }
 
 }

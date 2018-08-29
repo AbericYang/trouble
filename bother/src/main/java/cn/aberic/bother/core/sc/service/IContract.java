@@ -24,6 +24,8 @@
 
 package cn.aberic.bother.core.sc.service;
 
+import com.alibaba.fastjson.JSONObject;
+
 /**
  * 智能合约常规操作接口-smart contract
  * <p>
@@ -32,13 +34,40 @@ package cn.aberic.bother.core.sc.service;
  */
 public interface IContract {
 
+    int SUCCESS = 200;
+
     /**
      * 智能合约初始化方法，相同版本合约只能初始化一次，重复初始化无效。
      * 初始化操作执行完成后会返回当前智能合约唯一hash，该hash值是用于提供给其它节点安装本合约使用。
      *
      * @return 智能合约唯一hash
      */
-    String init();
+    String init(IContractBlockExec exec);
+
+    String invoke(IContractBlockExec exec);
+
+    String query(IContractBlockExec exec);
+
+    default String response(String result) {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("code", SUCCESS);
+        jsonObject.put("data", result);
+        return jsonObject.toString();
+    }
+
+    default String response(int result) {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("code", SUCCESS);
+        jsonObject.put("data", result);
+        return jsonObject.toString();
+    }
+
+    default String response(Object obj) {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("code", SUCCESS);
+        jsonObject.put("data", obj);
+        return jsonObject.toString();
+    }
 
 
 

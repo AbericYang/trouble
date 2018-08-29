@@ -20,28 +20,31 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- *
  */
 
-package cn.aberic.bother.core.dm.block;
+package cn.aberic.bother.core.sc.entity;
 
 import com.alibaba.fastjson.annotation.JSONField;
-import lombok.Getter;
-import lombok.Setter;
 
 /**
- * 读写集——数据操作层-data manipulation
- * 作者：Aberic on 2018/8/25 02:12
+ * 智能合约对象-smart contract
+ * <p>
+ * 作者：Aberic on 2018/08/29 17:24
  * 邮箱：abericyang@gmail.com
  */
-@Setter
-@Getter
-public class RWSet {
+public class Contract {
 
-    /** 交易读内容 */
-    @JSONField(name="r")
-    private ValueRead valueRead;
-    /** 交易写内容 */
-    @JSONField(name="w")
-    private ValueWrite valueWrite;
+    /** 名称 */
+    @JSONField(name = "c")
+    private String name;
+    /** 版本号 */
+    @JSONField(name = "v")
+    private String version;
+    /** 初始化时间戳 */
+    @JSONField(name="t")
+    private long timestamp;
+    /** 内容摘要 */
+    @JSONField(name = "b")
+    private String brief;
+
 }

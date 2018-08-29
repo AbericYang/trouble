@@ -25,11 +25,10 @@
 package cn.aberic.bother.core.dm.exec.service;
 
 import cn.aberic.bother.common.DeflaterTool;
-import cn.aberic.bother.core.dm.block.Block;
-import cn.aberic.bother.core.dm.block.BlockInfo;
-import cn.aberic.bother.core.dm.block.Transaction;
+import cn.aberic.bother.core.dm.entity.Block;
+import cn.aberic.bother.core.dm.entity.BlockInfo;
+import cn.aberic.bother.core.dm.entity.Transaction;
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.serializer.SimplePropertyPreFilter;
 
 import java.io.File;
 import java.io.IOException;

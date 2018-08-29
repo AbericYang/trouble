@@ -23,7 +23,7 @@
  *
  */
 
-package cn.aberic.bother.core.dm.block;
+package cn.aberic.bother.core.dm.entity;
 
 import cn.aberic.bother.eac.MD5;
 import com.alibaba.fastjson.annotation.JSONField;

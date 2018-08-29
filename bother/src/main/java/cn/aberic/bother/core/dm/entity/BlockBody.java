@@ -20,10 +20,12 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
+ *
  */
 
-package cn.aberic.bother.core.dm.block;
+package cn.aberic.bother.core.dm.entity;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Getter;
 import lombok.Setter;
@@ -31,29 +33,25 @@ import lombok.Setter;
 import java.util.List;
 
 /**
- * 区块在区块文件中的基本信息——数据操作层-data manipulation
+ * 区块数据体——数据操作层-data manipulation
  * <p>
- * 作者：Aberic on 2018/08/27 17:29
+ * 作者：Aberic on 2018/8/23 21:49
  * 邮箱：abericyang@gmail.com
  */
 @Setter
 @Getter
-public class BlockInfo {
+public class BlockBody {
 
-    /** 区块高度 */
-    @JSONField(name="h")
-    private int height;
-    /** 区块hash */
-    @JSONField(name="b")
-    private String blockHash;
-    /** 区块中交易hash集合 */
+    /** 交易数量 */
+    @JSONField(name="c")
+    private int txCount;
+    /** 交易集合 */
     @JSONField(name="t")
-    private List<String> transactionHashList;
-    /** 区块所在区块文件编号 */
-    @JSONField(name="n")
-    private int num;
-    /** 区块所在区块文件中的行号 */
-    @JSONField(name="l")
-    private int line;
+    private List<Transaction> transactions;
+
+    /** 获取当前数据体字符串信息 */
+    String bodyString() {
+        return String.format("%s%s", txCount, JSON.toJSONString(transactions));
+    }
 
 }
