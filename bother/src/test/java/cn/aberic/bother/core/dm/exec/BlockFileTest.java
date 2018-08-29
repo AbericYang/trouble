@@ -58,22 +58,23 @@ public class BlockFileTest {
         SystemOut.println("处理时长 = " + (new Date().getTime() - time) + " | getHeight                 | block height = " + height);
 
         time = new Date().getTime();
-        Block block = acquire.getBlockByHeight(9);
+        Block block = acquire.getBlockByHeight(99998);
         SystemOut.println("处理时长 = " + (new Date().getTime() - time) + " | getBlockByHeight           | block = " + new JSONObject(block).toString());
 
         time = new Date().getTime();
-        block = acquire.getBlockByHash("0a06cd5102d81cc1b7f052612c341af460c1648052e1318ca5e7b68bc577c6c3");
+        block = acquire.getBlockByHash("e1e50c42165c1b9efad3cc7df46cf0483342a3ef63dbb01d976105e890acc494");
         SystemOut.println("处理时长 = " + (new Date().getTime() - time) + " | getBlockByHash             | block = " + new JSONObject(block).toString());
 
         time = new Date().getTime();
-        block = acquire.getBlockByTransactionHash("2cd96de4feaa3e96d31f60f0436523d568bab1827456231518cb58d3c7365de5");
+        block = acquire.getBlockByTransactionHash("a233e1002e9517b06259be11ccd5cd4e4cd61252fb2cc6e5d0047763ea63325e");
         SystemOut.println("处理时长 = " + (new Date().getTime() - time) + " | getBlockByTransactionHash  | block = " + new JSONObject(block).toString());
         SystemOut.println("=================  block file test end  =================");
     }
 
     private static void writeBlock() {
         BlockStorage blockStorage = new BlockStorage(Common.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH);
-        for (int blockCount = 0; blockCount < 10; blockCount++) {
+        for (int blockCount = 20018; blockCount < 100000; blockCount++) {
+            SystemOut.println("=================  blockCount = " + blockCount + "  =================");
             BlockHeader header = BlockHeader.newInstance().create(true, 120, new Date().getTime());
 
             BlockBody body = new BlockBody();

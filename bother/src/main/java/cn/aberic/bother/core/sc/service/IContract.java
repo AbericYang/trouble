@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2018. Aberic Yang
+ * Copyright (c) 2018 Aberic Yang
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,13 +22,24 @@
  * SOFTWARE.
  */
 
-package cn.aberic.bother.core.sc;
+package cn.aberic.bother.core.sc.service;
 
 /**
- * 智能合约层-smart contract
+ * 智能合约常规操作接口-smart contract
  * <p>
- * 作者：Aberic on 2018/8/20 20:15
+ * 作者：Aberic on 2018/08/29 16:40
  * 邮箱：abericyang@gmail.com
  */
-public class Contract {
+public interface IContract {
+
+    /**
+     * 智能合约初始化方法，相同版本合约只能初始化一次，重复初始化无效。
+     * 初始化操作执行完成后会返回当前智能合约唯一hash，该hash值是用于提供给其它节点安装本合约使用。
+     *
+     * @return 智能合约唯一hash
+     */
+    String init();
+
+
+
 }
