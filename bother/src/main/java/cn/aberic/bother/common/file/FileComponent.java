@@ -20,11 +20,15 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
+ *
  */
 
-package cn.aberic.bother.core.dm.entity;
+package cn.aberic.bother.common.file;
 
 import cn.aberic.bother.common.Common;
+import cn.aberic.bother.core.dm.entity.Block;
+import cn.aberic.bother.core.dm.entity.BlockInfo;
+import cn.aberic.bother.core.sc.entity.Contract;
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 
@@ -40,10 +44,12 @@ public class FileComponent {
     @Getter
     public enum TType {
 
-        /** 交易成功 */
+        /** 区块对象类型 */
         T_TYPE_BLOCK(Block.class),
-        /** 交易失败 */
-        T_TYPE_BLOCK_INDEX(BlockInfo.class);
+        /** 区块索引对象类型 */
+        T_TYPE_BLOCK_INDEX(BlockInfo.class),
+        /** 智能合约对象类型 */
+        T_TYPE_CONTRACT(Contract .class);
 
         /** 交易结果码 */
         private Class aClass;
@@ -108,6 +114,15 @@ public class FileComponent {
                 TType.T_TYPE_BLOCK_INDEX);
     }
 
+    /** 获取默认智能合约文件可操作状态 */
+    public static FileComponent getContractFileComponentDefault() {
+        return new FileComponent(
+                Common.CONTRACT_FILE_START,
+                Common.CONTRACT_FILE_END,
+                Common.CONTRACT_FILE_DIR,
+                TType.T_TYPE_CONTRACT);
+    }
+
     /**
      * 获取指定智能合约hash的区块文件可操作状态
      *
@@ -154,6 +169,22 @@ public class FileComponent {
                 Common.BLOCK_TRANSACTION_INDEX_END,
                 getCustomDirByContractHash(Common.BLOCK_TRANSACTION_INDEX_CUSTOM_DIR, contractHash),
                 TType.T_TYPE_BLOCK_INDEX);
+    }
+
+    /**
+     * 获取指定智能合约hash的智能合约文件可操作状态
+     *
+     * @param contractHash 智能合约hash
+     */
+    public static FileComponent getContractFileComponent(String contractHash) {
+        if (StringUtils.isEmpty(contractHash)) {
+            throw new NullPointerException("smart contract hash can't be empty");
+        }
+        return new FileComponent(
+                Common.CONTRACT_FILE_START,
+                Common.CONTRACT_FILE_END,
+                getCustomDirByContractHash(Common.CONTRACT_FILE_CUSTOM_DIR, contractHash),
+                TType.T_TYPE_CONTRACT);
     }
 
     /**

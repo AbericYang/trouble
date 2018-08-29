@@ -25,8 +25,9 @@
 
 package cn.aberic.bother.sc;
 
-import cn.aberic.bother.core.sc.service.IContract;
-import cn.aberic.bother.core.sc.service.IContractBlockExec;
+import cn.aberic.bother.core.sc.exec.service.IContract;
+import cn.aberic.bother.core.sc.exec.service.IContractBlockExec;
+import org.json.JSONObject;
 
 /**
  * 作者：Aberic on 2018/8/29 19:51
@@ -36,7 +37,7 @@ public class SmartTest implements IContract {
 
     @Override
     public String init(IContractBlockExec exec) {
-        return null;
+        return new JSONObject(exec.getBlockByHeight(12)).toString();
     }
 
     @Override

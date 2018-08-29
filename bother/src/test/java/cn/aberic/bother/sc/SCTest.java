@@ -25,7 +25,12 @@
 
 package cn.aberic.bother.sc;
 
-import cn.aberic.bother.core.sc.ContractBlockExec;
+import cn.aberic.bother.SystemOut;
+import cn.aberic.bother.common.Common;
+import cn.aberic.bother.core.as.sys.SystemAppContract;
+import cn.aberic.bother.core.sc.exec.ContractBlockExec;
+
+import java.util.Scanner;
 
 /**
  * 作者：Aberic on 2018/8/29 19:57
@@ -34,11 +39,26 @@ import cn.aberic.bother.core.sc.ContractBlockExec;
 public class SCTest {
 
     public static void main(String[] args) {
+        systemAppContract();
+        // smart();
+        // scanner();
+    }
+
+    private static void systemAppContract() {
+        SystemAppContract contract = new SystemAppContract();
+        SystemOut.println("smart test result = " + contract.init(new ContractBlockExec(Common.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH)));
     }
 
     private static void smart() {
         SmartTest test = new SmartTest();
-        test.init(new ContractBlockExec("hello"));
+        SystemOut.println("smart test block = " + test.init(new ContractBlockExec(Common.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH)));
+    }
+
+    private static void scanner() {
+        System.out.print("请输入:");
+        String showInfo=new Scanner(System.in).next();
+        System.out.println("\n*************\n");
+        System.out.println(showInfo);
     }
 
 }

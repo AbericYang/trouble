@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package cn.aberic.bother.core.sc.service;
+package cn.aberic.bother.core.sc.exec.service;
 
 import com.alibaba.fastjson.JSONObject;
 

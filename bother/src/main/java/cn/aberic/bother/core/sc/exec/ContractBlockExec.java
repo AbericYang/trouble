@@ -20,12 +20,13 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
+ *
  */
 
-package cn.aberic.bother.core.sc;
+package cn.aberic.bother.core.sc.exec;
 
 import cn.aberic.bother.core.dm.BlockAcquire;
-import cn.aberic.bother.core.sc.service.IContractBlockExec;
+import cn.aberic.bother.core.sc.exec.service.IContractBlockExec;
 
 /**
  * 智能合约区块操作接口实现-smart contract
@@ -44,5 +45,10 @@ public class ContractBlockExec implements IContractBlockExec {
     @Override
     public BlockAcquire getBlockAcquire() {
         return new BlockAcquire(contractHash);
+    }
+
+    @Override
+    public ContractFileExec getFileExec() {
+        return new ContractFileExec(contractHash);
     }
 }

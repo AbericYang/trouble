@@ -25,6 +25,7 @@
 package cn.aberic.bother.core.dm.exec.service;
 
 import cn.aberic.bother.common.DeflaterTool;
+import cn.aberic.bother.common.file.FileTool;
 import cn.aberic.bother.core.dm.entity.Block;
 import cn.aberic.bother.core.dm.entity.BlockInfo;
 import cn.aberic.bother.core.dm.entity.Transaction;
@@ -66,10 +67,10 @@ public interface IBlockExec extends IExec<Block> {
                 currentDataHash = block.calculateHash();
                 block.getHeader().setCurrentDataHash(currentDataHash); // 第一区块当前hash
                 compressJsonString = DeflaterTool.compress(JSON.toJSONString(block));
-                writeFirstLine(blockFile, compressJsonString);
+                FileTool.writeFirstLine(blockFile, compressJsonString);
             } else {
                 // 获取当前区块文件中的总行数，其值即为上一区块的行数
-                line = getFileLineCountIfBigCharLine(blockFile);
+                line = FileTool.getFileLineCountIfBigCharLine(blockFile);
                 // 获取上一区块
                 Block preBlock = getFromFileByLine(blockFile, line);
                 // 获取上一区块高度，计算并赋值当前区块高度
@@ -89,9 +90,9 @@ public interface IBlockExec extends IExec<Block> {
                     System.out.println(String.format("block file size great than 24MB, now size = %s", blockFile.length()));
                     blockFile = getNextFileByCurrentFile(blockFile);
                     System.out.println(String.format("next block file name = %s", blockFile.getName()));
-                    writeFirstLine(blockFile, compressJsonString);
+                    FileTool.writeFirstLine(blockFile, compressJsonString);
                 } else {
-                    writeAppendLine(blockFile, compressJsonString);
+                    FileTool.writeAppendLine(blockFile, compressJsonString);
                 }
             }
             List<String> transactionHashList = new ArrayList<>();
@@ -117,7 +118,7 @@ public interface IBlockExec extends IExec<Block> {
             return 0;
         } else {
             // 获取当前区块文件中的总行数，其值即为上一区块的行数
-            int lineCount = getFileLineCountIfBigCharLine(blockFile);
+            int lineCount = FileTool.getFileLineCountIfBigCharLine(blockFile);
             // 获取上一区块
             Block preBlock = getFromFileByLine(blockFile, lineCount);
             // 返回上一区块高度

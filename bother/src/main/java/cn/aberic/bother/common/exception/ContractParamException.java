@@ -20,32 +20,39 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
+ *
  */
 
-package cn.aberic.bother.core.dm.exec.service;
-
-import cn.aberic.bother.common.file.IFile;
-import cn.aberic.bother.core.dm.entity.BlockInfo;
+package cn.aberic.bother.common.exception;
 
 /**
- * 文件本地读写接口——数据操作层-data manipulation
+ * 智能合约摘要为空异常
  * <p>
- * 该接口服务提供了区块文件{@link cn.aberic.bother.core.dm.entity.Block}
- * 及区块索引文件{@link BlockInfo}对象的
- * 基本操作方案
- * <p>
- * 作者：Aberic on 2018/08/27 12:13
+ * 作者：Aberic on 2018/8/29 21:13
  * 邮箱：abericyang@gmail.com
  */
-public interface IExec<T> extends IFile<T> {
+public class ContractParamException extends Exception {
 
-    /**
-     * 根据{@link T}对象创建或更新后存储{@link T}文件
-     *
-     * @param t {@link T}对象
-     *
-     * @return 区块在区块文件中的基本信息对象
-     */
-    BlockInfo createOrUpdate(T t);
+    public ContractParamException() {
+        super();
+    }
+
+    public ContractParamException(String message) {
+        super(message);
+    }
+
+    public ContractParamException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public ContractParamException(Throwable cause) {
+        super(cause);
+    }
+
+    protected ContractParamException(String message, Throwable cause,
+                                     boolean enableSuppression,
+                                     boolean writableStackTrace) {
+        super(message, cause, enableSuppression, writableStackTrace);
+    }
 
 }

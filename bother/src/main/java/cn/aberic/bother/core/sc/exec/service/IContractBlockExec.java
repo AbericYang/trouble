@@ -22,10 +22,14 @@
  * SOFTWARE.
  */
 
-package cn.aberic.bother.core.sc.service;
+package cn.aberic.bother.core.sc.exec.service;
 
+import cn.aberic.bother.common.exception.ContractParamException;
+import cn.aberic.bother.core.sc.exec.ContractFileExec;
+import cn.aberic.bother.common.file.IFile;
 import cn.aberic.bother.core.dm.BlockAcquire;
 import cn.aberic.bother.core.dm.entity.Block;
+import cn.aberic.bother.core.sc.entity.Contract;
 import cn.aberic.bother.eac.MD5;
 
 /**
@@ -37,6 +41,21 @@ import cn.aberic.bother.eac.MD5;
 public interface IContractBlockExec {
 
     BlockAcquire getBlockAcquire();
+
+    /**
+     * 获取 {@link IFile} 实现类。
+     * <p>
+     * 原本应该当前接口继承 {@link IFile} 进行操作，但有关 {@link IFile} 接口不方便直接暴露出去。
+     * <p>
+     * 所以这里采用的方案与IBlockExec和IIndexExec不同
+     *
+     * @return {@link IFile} 实现
+     */
+    ContractFileExec getFileExec();
+
+    default Contract set(Contract contract) throws ContractParamException {
+        return getFileExec().set(contract);
+    }
 
     /**
      * 获取本地区块文件个数
@@ -60,6 +79,7 @@ public interface IContractBlockExec {
      * 根据区块高度获取区块对象
      *
      * @param height 区块高度
+     *
      * @return 区块对象
      */
     default Block getBlockByHeight(int height) {
@@ -70,6 +90,7 @@ public interface IContractBlockExec {
      * 根据区块高度获取区块对象
      *
      * @param currentDataHash 当前区块hash
+     *
      * @return 区块对象
      */
     default Block getBlockByHash(String currentDataHash) {
@@ -80,6 +101,7 @@ public interface IContractBlockExec {
      * 根据区块高度获取区块对象
      *
      * @param transactionHash 交易hash
+     *
      * @return 区块对象
      */
     default Block getBlockByTransactionHash(String transactionHash) {

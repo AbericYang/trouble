@@ -25,6 +25,10 @@
 package cn.aberic.bother.core.sc.entity;
 
 import com.alibaba.fastjson.annotation.JSONField;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.util.Date;
 
 /**
  * 智能合约对象-smart contract
@@ -32,19 +36,32 @@ import com.alibaba.fastjson.annotation.JSONField;
  * 作者：Aberic on 2018/08/29 17:24
  * 邮箱：abericyang@gmail.com
  */
+@Setter
+@Getter
 public class Contract {
 
     /** 名称 */
     @JSONField(name = "c")
     private String name;
-    /** 版本号 */
+    /** 版本名称 */
     @JSONField(name = "v")
-    private String version;
+    private String versionName;
+    /** 版本号 */
+    @JSONField(name = "vc")
+    private int versionCode;
     /** 初始化时间戳 */
     @JSONField(name="t")
     private long timestamp;
     /** 内容摘要 */
     @JSONField(name = "b")
     private String brief;
+
+    public Contract(String name, String versionName, int versionCode, String brief) {
+        this.name = name;
+        this.versionName = versionName;
+        this.versionCode = versionCode;
+        this.timestamp = new Date().getTime();
+        this.brief = brief;
+    }
 
 }

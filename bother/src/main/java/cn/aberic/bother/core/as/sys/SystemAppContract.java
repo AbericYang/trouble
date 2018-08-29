@@ -20,32 +20,42 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
+ *
  */
 
-package cn.aberic.bother.core.dm.exec.service;
+package cn.aberic.bother.core.as.sys;
 
-import cn.aberic.bother.common.file.IFile;
-import cn.aberic.bother.core.dm.entity.BlockInfo;
+import cn.aberic.bother.common.exception.ContractParamException;
+import cn.aberic.bother.core.sc.entity.Contract;
+import cn.aberic.bother.core.sc.exec.service.IContract;
+import cn.aberic.bother.core.sc.exec.service.IContractBlockExec;
 
 /**
- * 文件本地读写接口——数据操作层-data manipulation
+ * 系统应用智能合约-app support
  * <p>
- * 该接口服务提供了区块文件{@link cn.aberic.bother.core.dm.entity.Block}
- * 及区块索引文件{@link BlockInfo}对象的
- * 基本操作方案
- * <p>
- * 作者：Aberic on 2018/08/27 12:13
+ * 作者：Aberic on 2018/8/29 20:49
  * 邮箱：abericyang@gmail.com
  */
-public interface IExec<T> extends IFile<T> {
+public class SystemAppContract implements IContract {
 
-    /**
-     * 根据{@link T}对象创建或更新后存储{@link T}文件
-     *
-     * @param t {@link T}对象
-     *
-     * @return 区块在区块文件中的基本信息对象
-     */
-    BlockInfo createOrUpdate(T t);
+    @Override
+    public String init(IContractBlockExec exec) {
+        try {
+            exec.set(new Contract("tb", "1.0", 1, "让连接更有价值！no trouble, no bother!"));
+        } catch (ContractParamException e) {
+            e.printStackTrace();
+        }
+        return response("success");
+    }
+
+    @Override
+    public String invoke(IContractBlockExec exec) {
+        return null;
+    }
+
+    @Override
+    public String query(IContractBlockExec exec) {
+        return null;
+    }
 
 }

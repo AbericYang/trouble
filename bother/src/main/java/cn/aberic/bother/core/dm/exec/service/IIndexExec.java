@@ -25,6 +25,7 @@
 
 package cn.aberic.bother.core.dm.exec.service;
 
+import cn.aberic.bother.common.file.FileTool;
 import cn.aberic.bother.core.dm.entity.BlockInfo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SimplePropertyPreFilter;
@@ -53,7 +54,7 @@ public interface IIndexExec extends IExec<BlockInfo> {
             if (null == indexFile) {
                 // 定义新的区块文件
                 indexFile = createFirstFile();
-                writeFirstLine(indexFile, jsonString);
+                FileTool.writeFirstLine(indexFile, jsonString);
             } else {
                 // 计算该内容的字节长度
                 long blockIndexSize = jsonString.getBytes().length;
@@ -62,9 +63,9 @@ public interface IIndexExec extends IExec<BlockInfo> {
                     System.out.println(String.format("block index file size great than 24MB, now size = %s", indexFile.length()));
                     indexFile = getNextFileByCurrentFile(indexFile);
                     System.out.println(String.format("next block index file name = %s", indexFile.getName()));
-                    writeFirstLine(indexFile, jsonString);
+                    FileTool.writeFirstLine(indexFile, jsonString);
                 } else {
-                    writeAppendLine(indexFile, jsonString);
+                    FileTool.writeAppendLine(indexFile, jsonString);
                 }
             }
         } catch (IOException e) {
