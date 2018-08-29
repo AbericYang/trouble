@@ -60,7 +60,7 @@ public interface IExec<T> {
      *
      * @param t {@link T}对象
      *
-     * @return 成功与否
+     * @return 区块在区块文件中的基本信息对象
      */
     BlockInfo createOrUpdate(T t);
 

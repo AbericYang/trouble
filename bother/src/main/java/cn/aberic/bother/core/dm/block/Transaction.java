@@ -26,7 +26,9 @@
 package cn.aberic.bother.core.dm.block;
 
 import cn.aberic.bother.core.dm.status.TransactionStatus;
+import cn.aberic.bother.eac.MD5;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.annotation.JSONField;
 import com.google.common.hash.Hashing;
 import lombok.Getter;
 import lombok.Setter;
@@ -62,10 +64,13 @@ public class Transaction {
     private TransactionStatus status = TransactionStatus.SUCCESS;
     /** 交易错误信息 */
     private String errorMessage;
+    @JSONField(serialize=false)
+    private String hashMd516; // 序列化时不写入
 
     public Transaction build() {
         hash = Hashing.sha256().hashString(String.format("%s%s%s%s",
                 creator, sign, JSON.toJSONString(rwSets), timestamp), Charset.forName("UTF-8")).toString();
+        hashMd516 = MD5.md516(hash);
         return this;
     }
 

@@ -44,7 +44,7 @@ public interface IBlockIndexExec extends IInit, IExecInit, IIndexExec {
 
     @Override
     default String[] jsonStringByPropertyPreFilter() {
-        return new String[]{"height", "blockHash", "num", "line"};
+        return new String[]{"h", "b", "n", "l"};
     }
 
     /**

@@ -43,7 +43,7 @@ public interface IBlockTransactionIndexExec extends IInit, IExecInit, IIndexExec
 
     @Override
     default String[] jsonStringByPropertyPreFilter() {
-        return new String[]{"transactionHashList", "num", "line"};
+        return new String[]{"t", "n", "l"};
     }
 
     /**

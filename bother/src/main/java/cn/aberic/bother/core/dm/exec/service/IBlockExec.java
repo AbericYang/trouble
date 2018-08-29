@@ -28,6 +28,7 @@ import cn.aberic.bother.core.dm.block.Block;
 import cn.aberic.bother.core.dm.block.BlockInfo;
 import cn.aberic.bother.core.dm.block.Transaction;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.serializer.SimplePropertyPreFilter;
 
 import java.io.File;
 import java.io.IOException;
@@ -95,10 +96,10 @@ public interface IBlockExec extends IExec<Block> {
             }
             List<String> transactionHashList = new ArrayList<>();
             for (Transaction transaction: block.getBody().getTransactions()) {
-                transactionHashList.add(transaction.getHash());
+                transactionHashList.add(transaction.getHashMd516());
             }
             blockInfo.setHeight(height);
-            blockInfo.setBlockHash(currentDataHash);
+            blockInfo.setBlockHash(block.getHeader().getHashMd516());
             blockInfo.setNum(getNumByFileName(blockFile.getName()));
             blockInfo.setLine(line + 1);
             blockInfo.setTransactionHashList(transactionHashList);

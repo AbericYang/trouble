@@ -32,7 +32,12 @@ import cn.aberic.bother.core.dm.BlockStorage;
 import cn.aberic.bother.core.dm.block.*;
 import cn.aberic.bother.core.dm.status.TransactionStatus;
 import com.alibaba.fastjson.JSON;
+import com.google.common.hash.Hashing;
 
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -44,12 +49,13 @@ import java.util.List;
 public class BlockFileTest {
 
     public static void main(String[] args) {
-        SystemOut.println("================= block file test start =================");
-
-        BlockAcquire acquire = new BlockAcquire(Common.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH);
-
 //        writeBlock();
+        blockTest();
+    }
 
+    private static void blockTest() {
+        SystemOut.println("================= block file test start =================");
+        BlockAcquire acquire = new BlockAcquire(Common.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH);
         SystemOut.println("================= getBlockFileCount ================= " + acquire.getFileCount());
 
         long time = new Date().getTime();
@@ -57,23 +63,22 @@ public class BlockFileTest {
         SystemOut.println("处理时长 = " + (new Date().getTime() - time) + " | getHeight                 | block height = " + height);
 
         time = new Date().getTime();
-        Block block = acquire.getBlockByHeight(99989);
+        Block block = acquire.getBlockByHeight(9);
         SystemOut.println("处理时长 = " + (new Date().getTime() - time) + " | getBlockByHeight          | block = " + JSON.toJSONString(block));
 
         time = new Date().getTime();
-        block = acquire.getBlockByHash("dc3959123c29156cf5f351983e6de09aa3abdbe9a97acd3c18178164f73db737");
+        block = acquire.getBlockByHash("f3e1deb9669aa5675d5f3643b3e6a933d99347de3ea105415b5a593b84fdd30c");
         SystemOut.println("处理时长 = " + (new Date().getTime() - time) + " | getBlockByHash            | block = " + JSON.toJSONString(block));
 
         time = new Date().getTime();
-        block = acquire.getBlockByTransactionHash("d165d387798a55ee764204a0fb8c0b3906ae9f2f8571cbc0a4b4a60f335d95e9");
+        block = acquire.getBlockByTransactionHash("695d383e33992eb9e3cffd6fcc900ed4af9846936b5ee8c7b36f59b2a219fad5");
         SystemOut.println("处理时长 = " + (new Date().getTime() - time) + " | getBlockByTransactionHash | block = " + JSON.toJSONString(block));
-
         SystemOut.println("=================  block file test end  =================");
     }
 
     private static void writeBlock() {
         BlockStorage blockStorage = new BlockStorage(Common.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH);
-        for (int blockCount = 47000; blockCount < 100000; blockCount++) {
+        for (int blockCount = 0; blockCount < 10; blockCount++) {
             BlockHeader header = BlockHeader.newInstance().create(true, 120, new Date().getTime());
 
             BlockBody body = new BlockBody();

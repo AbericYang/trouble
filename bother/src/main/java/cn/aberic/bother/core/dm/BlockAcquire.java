@@ -25,6 +25,7 @@
 package cn.aberic.bother.core.dm;
 
 import cn.aberic.bother.core.dm.block.Block;
+import cn.aberic.bother.eac.MD5;
 
 /**
  * 获取区块——数据操作层-data manipulation
@@ -73,7 +74,7 @@ public class BlockAcquire extends BlockAS {
      * @return 区块对象
      */
     public Block getBlockByHash(String currentDataHash) {
-        return getBlockIndexExec().getByCurrentDataHash(currentDataHash);
+        return getBlockIndexExec().getByCurrentDataHash(MD5.md516(currentDataHash));
     }
 
     /**
@@ -83,6 +84,6 @@ public class BlockAcquire extends BlockAS {
      * @return 区块对象
      */
     public Block getBlockByTransactionHash(String transactionHash) {
-        return getBlockTransactionIndexExec().getByTransactionHash(transactionHash);
+        return getBlockTransactionIndexExec().getByTransactionHash(MD5.md516(transactionHash));
     }
 }

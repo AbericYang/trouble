@@ -25,6 +25,8 @@
 
 package cn.aberic.bother.core.dm.block;
 
+import cn.aberic.bother.eac.MD5;
+import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -50,6 +52,9 @@ public class BlockHeader {
     private int consentNodeCount;
     /** 当前区块生成时间戳 */
     private long timestamp;
+    /** 隐藏属性，压缩查询 */
+    @JSONField(serialize=false)
+    private String hashMd516; // 序列化时不写入
 
     private BlockHeader(){}
 
@@ -89,5 +94,10 @@ public class BlockHeader {
         this.consentNodeCount = consentNodeCount;
         this.timestamp = timestamp;
         return this;
+    }
+
+    public void setCurrentDataHash(String currentDataHash) {
+        this.currentDataHash = currentDataHash;
+        hashMd516 = MD5.md516(currentDataHash);
     }
 }

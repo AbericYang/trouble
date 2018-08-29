@@ -22,38 +22,36 @@
  * SOFTWARE.
  */
 
-package cn.aberic.bother.core.dm.block;
+package cn.aberic.bother.eac;
 
-import com.alibaba.fastjson.annotation.JSONField;
-import lombok.Getter;
-import lombok.Setter;
+import cn.aberic.bother.SystemOut;
+import com.google.common.hash.Hashing;
 
-import java.util.List;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 
 /**
- * 区块在区块文件中的基本信息——数据操作层-data manipulation
- * <p>
- * 作者：Aberic on 2018/08/27 17:29
+ * 作者：Aberic on 2018/08/29 10:29
  * 邮箱：abericyang@gmail.com
  */
-@Setter
-@Getter
-public class BlockInfo {
+public class EACTest {
 
-    /** 区块高度 */
-    @JSONField(name="h")
-    private int height;
-    /** 区块hash */
-    @JSONField(name="b")
-    private String blockHash;
-    /** 区块中交易hash集合 */
-    @JSONField(name="t")
-    private List<String> transactionHashList;
-    /** 区块所在区块文件编号 */
-    @JSONField(name="n")
-    private int num;
-    /** 区块所在区块文件中的行号 */
-    @JSONField(name="l")
-    private int line;
+    public static void main(String[] args) {
+        md5();
+    }
+
+    private static void md5() {
+        String str = "123456";
+        try {
+            SecretKey MD5_KEY = new SecretKeySpec("secret key".getBytes("UTF-8"), "HmacMD5");
+            SystemOut.println("hmacMd5 -----> " + str + " = " + Hashing.hmacMd5(MD5_KEY).hashString(str, Charset.forName("UTF-8")));
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        SystemOut.println("MD532   -----> " + str + " = " + MD5.md532(str));
+        SystemOut.println("MD516   -----> " + str + " = " + MD5.md516(str));
+    }
 
 }

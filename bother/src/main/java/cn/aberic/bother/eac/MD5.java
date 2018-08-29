@@ -22,38 +22,34 @@
  * SOFTWARE.
  */
 
-package cn.aberic.bother.core.dm.block;
+package cn.aberic.bother.eac;
 
-import com.alibaba.fastjson.annotation.JSONField;
-import lombok.Getter;
-import lombok.Setter;
+import com.google.common.hash.Hashing;
 
-import java.util.List;
+import java.nio.charset.Charset;
 
 /**
- * 区块在区块文件中的基本信息——数据操作层-data manipulation
+ * MD5工具类
  * <p>
- * 作者：Aberic on 2018/08/27 17:29
+ * 作者：Aberic on 2018/08/29 10:44
  * 邮箱：abericyang@gmail.com
  */
-@Setter
-@Getter
-public class BlockInfo {
+public class MD5 {
 
-    /** 区块高度 */
-    @JSONField(name="h")
-    private int height;
-    /** 区块hash */
-    @JSONField(name="b")
-    private String blockHash;
-    /** 区块中交易hash集合 */
-    @JSONField(name="t")
-    private List<String> transactionHashList;
-    /** 区块所在区块文件编号 */
-    @JSONField(name="n")
-    private int num;
-    /** 区块所在区块文件中的行号 */
-    @JSONField(name="l")
-    private int line;
+    public static String md516(String str) {
+        return md516(str, Charset.forName("UTF-8"));
+    }
+
+    public static String md516(String str, Charset charset) {
+        return md532(str, charset).substring(8, 24);
+    }
+
+    public static String md532(String str) {
+        return md532(str, Charset.forName("UTF-8"));
+    }
+
+    public static String md532(String str, Charset charset) {
+        return Hashing.md5().hashString(str, charset).toString();
+    }
 
 }
