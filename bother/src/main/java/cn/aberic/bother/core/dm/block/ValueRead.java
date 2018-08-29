@@ -40,20 +40,20 @@ import lombok.Setter;
 public class ValueRead {
 
     /** 本次读取值编号，与写入值编号对应 */
-    @JSONField(name="n")
+    @JSONField(name = "n")
     private int number;
     /** 本次读取值所用合约名称 */
-    @JSONField(name="c")
+    @JSONField(name = "c")
     private String contractName;
     /** 本次读取值所用合约版本 */
-    @JSONField(name="v")
+    @JSONField(name = "v")
     private String contractVersion;
     /**
-     * 本次读取值参数；
+     * 本次读取k-v中key数组；
      * <p>
-     * 参数格式为：参数组个数，参数个数，参数…组成
+     * 参数格式为：key个数，key…组成
      */
-    @JSONField(name="s")
+    @JSONField(name = "s")
     private String[] strings;
 
 }
