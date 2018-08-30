@@ -24,15 +24,13 @@
 
 package cn.aberic.bother.contract.exec.service;
 
-import cn.aberic.bother.tools.service.IResponse;
-
 /**
  * 智能合约常规操作接口-smart contract
  * <p>
  * 作者：Aberic on 2018/08/29 16:40
  * 邮箱：abericyang@gmail.com
  */
-public interface IContract extends IResponse {
+public interface IContract {
 
     /**
      * 智能合约初始化方法，相同版本合约只能初始化一次，重复初始化无效。

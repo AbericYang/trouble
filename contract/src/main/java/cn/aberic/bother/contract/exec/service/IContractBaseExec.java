@@ -23,26 +23,38 @@
  *
  */
 
-package cn.aberic.bother.contract.exec;
+package cn.aberic.bother.contract.exec.service;
 
-import cn.aberic.bother.contract.exec.service.ISystemContractFileExec;
-import cn.aberic.bother.storage.Common;
-import cn.aberic.bother.storage.FileComponent;
+import cn.aberic.bother.block.BlockAcquire;
 
 /**
- * 作者：Aberic on 2018/8/30 21:00
+ * 智能合约基本操作接口-smart contract
+ * <p>
+ * 作者：Aberic on 2018/8/30 23:11
  * 邮箱：abericyang@gmail.com
  */
-public class SystemContractFileExec implements ISystemContractFileExec {
+public interface IContractBaseExec {
 
-    @Override
-    public String getContractHash() {
-        return Common.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH;
-    }
+    /**
+     * 获取区块获取操作对象
+     * <p>
+     * 智能合约通过该对象可以得到区块中的基本信息
+     * <p>
+     * 并以此对象可以进行溯源操作
+     *
+     * @return 区块获取操作对象
+     */
+    BlockAcquire getBlockAcquire();
 
-    @Override
-    public FileComponent getFileStatus() {
-        return FileComponent.getContractFileComponentDefault();
-    }
+    /**
+     * 获取 {@link cn.aberic.bother.storage.IFile} 实现类。
+     * <p>
+     * 原本应该当前接口继承 {@link cn.aberic.bother.storage.IFile} 进行操作，但有关 {@link cn.aberic.bother.storage.IFile} 接口不方便直接暴露出去。
+     * <p>
+     * 所以这里采用的方案与 {@link cn.aberic.bother.block.exec.service.IBlockExec}和 {@link cn.aberic.bother.block.exec.service.IIndexExec} 不同
+     *
+     * @return {@link cn.aberic.bother.storage.IFile} 实现
+     */
+    ISystemContractFileExec getContractFileExec();
 
 }

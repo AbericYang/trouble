@@ -27,7 +27,6 @@ package cn.aberic.bother.contract;
 import cn.aberic.bother.contract.exec.ContractExec;
 import cn.aberic.bother.contract.exec.SystemContract;
 import cn.aberic.bother.contract.exec.SystemContractExec;
-import cn.aberic.bother.storage.Common;
 import cn.aberic.bother.tools.SystemOut;
 import cn.aberic.bother.tools.exception.ContractParamException;
 
@@ -41,8 +40,8 @@ import java.util.Scanner;
 public class SCTest {
 
     public static void main(String[] args) {
-//        systemContract();
-         simpleContract();
+        systemContract();
+//         simpleContract();
         // scanner();
     }
 

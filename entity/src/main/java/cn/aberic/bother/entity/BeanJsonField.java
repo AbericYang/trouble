@@ -23,26 +23,19 @@
  *
  */
 
-package cn.aberic.bother.contract.exec;
+package cn.aberic.bother.entity;
 
-import cn.aberic.bother.contract.exec.service.ISystemContractFileExec;
-import cn.aberic.bother.storage.Common;
-import cn.aberic.bother.storage.FileComponent;
+import org.json.JSONObject;
 
 /**
- * 作者：Aberic on 2018/8/30 21:00
+ * 通过fastjson转译过参数的对象如果需要全量输出，必须实现此接口
+ * 作者：Aberic on 2018/8/31 00:31
  * 邮箱：abericyang@gmail.com
  */
-public class SystemContractFileExec implements ISystemContractFileExec {
+public interface BeanJsonField {
 
-    @Override
-    public String getContractHash() {
-        return Common.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH;
-    }
-
-    @Override
-    public FileComponent getFileStatus() {
-        return FileComponent.getContractFileComponentDefault();
+    default String toJsonString() {
+        return new JSONObject(this).toString();
     }
 
 }

@@ -38,7 +38,7 @@ public class SystemContract implements ISystemContract {
 
     @Override
     public String invoke(ISystemContractExec exec) {
-        return null;
+        return exec.response(exec.getContract());
     }
 
     @Override

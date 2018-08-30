@@ -24,6 +24,7 @@
 
 package cn.aberic.bother.entity.block;
 
+import cn.aberic.bother.entity.BeanJsonField;
 import com.alibaba.fastjson.annotation.JSONField;
 import com.google.common.hash.Hashing;
 import lombok.Getter;
@@ -42,7 +43,7 @@ import java.nio.charset.Charset;
 @Setter
 @Getter
 @ToString
-public class Block {
+public class Block implements BeanJsonField {
 
     /** 区块头部信息 */
     @JSONField(name="h")
@@ -63,10 +64,6 @@ public class Block {
                 header.getConsentNodeCount(),
                 Long.toString(header.getTimestamp()),
                 body.bodyString()), Charset.forName("UTF-8")).toString();
-    }
-
-    public String toJsonString() {
-        return new JSONObject(this).toString();
     }
 
 }

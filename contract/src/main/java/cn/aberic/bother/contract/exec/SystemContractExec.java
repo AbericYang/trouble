@@ -26,7 +26,12 @@
 package cn.aberic.bother.contract.exec;
 
 import cn.aberic.bother.block.BlockAcquire;
-import cn.aberic.bother.contract.exec.service.IContractExec;
+import cn.aberic.bother.contract.exec.service.IContractBaseExec;
+import cn.aberic.bother.contract.exec.service.ISystemContractExec;
+import cn.aberic.bother.contract.exec.service.ISystemContractFileExec;
+import cn.aberic.bother.encryption.MD5;
+import cn.aberic.bother.entity.block.Block;
+import cn.aberic.bother.entity.contract.Contract;
 import cn.aberic.bother.storage.Common;
 
 /**
@@ -35,15 +40,50 @@ import cn.aberic.bother.storage.Common;
  * 作者：Aberic on 2018/8/30 20:54
  * 邮箱：abericyang@gmail.com
  */
-public class SystemContractExec implements IContractExec {
+public class SystemContractExec implements ISystemContractExec, IContractBaseExec {
 
     @Override
-    public BlockAcquire blockAcquire() {
+    public BlockAcquire getBlockAcquire() {
         return new BlockAcquire(Common.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH);
     }
 
     @Override
-    public SystemContractFileExec contractFileExec() {
+    public ISystemContractFileExec getContractFileExec() {
         return new SystemContractFileExec();
+    }
+
+    @Override
+    public Contract getContract() {
+        return getContractFileExec().getContract();
+    }
+
+    @Override
+    public String getContractHash() {
+        return getContractFileExec().getContractHash();
+    }
+
+    @Override
+    public int getFileCount() {
+        return getBlockAcquire().getFileCount();
+    }
+
+    @Override
+    public int getHeight() {
+        return getBlockAcquire().getHeight();
+    }
+
+    @Override
+    public Block getBlockByHeight(int height) {
+        return getBlockAcquire().getBlockByHeight(height);
+    }
+
+    @Override
+    public Block getBlockByHash(String currentDataHash) {
+        return getBlockAcquire().getBlockByHash(MD5.md516(currentDataHash));
+    }
+
+    @Override
+    public Block getBlockByTransactionHash(String transactionHash) {
+        return getBlockAcquire().getBlockByTransactionHash(MD5.md516(transactionHash));
     }
 }

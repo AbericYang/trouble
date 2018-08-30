@@ -25,7 +25,9 @@
 package cn.aberic.bother.contract.exec;
 
 import cn.aberic.bother.block.BlockAcquire;
+import cn.aberic.bother.contract.exec.service.IContractBaseExec;
 import cn.aberic.bother.contract.exec.service.IContractExec;
+import cn.aberic.bother.entity.contract.Contract;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
@@ -36,7 +38,7 @@ import java.io.File;
  * 作者：Aberic on 2018/08/29 16:43
  * 邮箱：abericyang@gmail.com
  */
-public class ContractExec implements IContractExec {
+public class ContractExec extends SystemContractExec implements IContractExec, IContractBaseExec {
 
     /** 智能合约hash */
     private String contractHash;
@@ -48,7 +50,7 @@ public class ContractExec implements IContractExec {
      * <p>
      * 此方法不出意外，将仅由 controller 层进行调用
      * <p>
-     * 通过上传智能合约安装文件来利用 {@link #contractFileExec()} 方法实现来为 {@link #contractHash} 赋值。
+     * 通过上传智能合约安装文件来利用 {@link #getContractFileExec()} 方法实现来为 {@link #contractHash} 赋值。
      *
      * @param contractFile 智能合约上传的安装文件
      */
@@ -72,15 +74,21 @@ public class ContractExec implements IContractExec {
     }
 
     @Override
-    public BlockAcquire blockAcquire() {
-        return new BlockAcquire(StringUtils.isEmpty(contractHash) ? contractFileExec().getContractHash() : contractHash);
+    public BlockAcquire getBlockAcquire() {
+        return new BlockAcquire(StringUtils.isEmpty(contractHash) ? getContractFileExec().getContractHash() : contractHash);
     }
 
     @Override
-    public ContractFileExec contractFileExec() {
+    public ContractFileExec getContractFileExec() {
         if (StringUtils.isEmpty(contractHash)) {
             return new ContractFileExec(contractFile);
         }
         return new ContractFileExec(contractFile, contractHash);
     }
+
+    @Override
+    public String init(Contract contract) {
+        return getContractFileExec().init(contract);
+    }
+
 }

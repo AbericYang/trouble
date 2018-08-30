@@ -23,26 +23,45 @@
  *
  */
 
-package cn.aberic.bother.contract.exec;
+package cn.aberic.bother.entity;
 
-import cn.aberic.bother.contract.exec.service.ISystemContractFileExec;
-import cn.aberic.bother.storage.Common;
-import cn.aberic.bother.storage.FileComponent;
+import cn.aberic.bother.tools.VerifyTool;
+import com.alibaba.fastjson.JSONObject;
 
 /**
- * 作者：Aberic on 2018/8/30 21:00
+ * 返回内容通用接口
+ * <p>
+ * 作者：Aberic on 2018/08/30 14:08
  * 邮箱：abericyang@gmail.com
  */
-public class SystemContractFileExec implements ISystemContractFileExec {
+public interface IResponse {
 
-    @Override
-    public String getContractHash() {
-        return Common.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH;
+    int SUCCESS = 200;
+
+    default String responseSuccess() {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("code", SUCCESS);
+        return VerifyTool.verifyJSON(jsonObject, "success").toString();
     }
 
-    @Override
-    public FileComponent getFileStatus() {
-        return FileComponent.getContractFileComponentDefault();
+    default String response(String result) {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("code", SUCCESS);
+        return VerifyTool.verifyJSON(jsonObject, result).toString();
+    }
+
+    default String response(Object obj) {
+        if (obj instanceof BeanJsonField) {
+            return responseBean((BeanJsonField) obj);
+        }
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("code", SUCCESS);
+        jsonObject.put("data", obj);
+        return jsonObject.toString();
+    }
+
+    default String responseBean(BeanJsonField bean) {
+        return response(bean.toJsonString());
     }
 
 }

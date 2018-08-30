@@ -37,7 +37,7 @@ public class SimpleContract implements IContract {
 
     @Override
     public String init(IContractExec exec) {
-        return exec.installOrUpgrade(new Contract("simple", "1.0", 1, "simple"));
+        return exec.init(new Contract("simple", "1.0", 1, "simple"));
     }
 
     @Override

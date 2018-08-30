@@ -20,44 +20,24 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
+ *
  */
 
-package cn.aberic.bother.tools.service;
+package cn.aberic.bother.tools;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
 /**
- * 返回内容通用接口
+ * 验证通用工具
  * <p>
- * 作者：Aberic on 2018/08/30 14:08
+ * 作者：Aberic on 2018/8/31 00:26
  * 邮箱：abericyang@gmail.com
  */
-public interface IResponse {
+public class VerifyTool {
 
-    int SUCCESS = 200;
-
-    default String responseSuccess() {
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("code", SUCCESS);
-        return verifyJSON(jsonObject, "success").toString();
-    }
-
-    default String response(String result) {
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("code", SUCCESS);
-        return verifyJSON(jsonObject, result).toString();
-    }
-
-    default String response(Object obj) {
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("code", SUCCESS);
-        jsonObject.put("data", obj);
-        return jsonObject.toString();
-    }
-
-    default JSONObject verifyJSON(JSONObject jsonObject, String result) {
+    public static JSONObject verifyJSON(JSONObject jsonObject, String result) {
         try {
             JSONObject object = JSON.parseObject(result);
             jsonObject.put("data", object);

@@ -24,6 +24,7 @@
 
 package cn.aberic.bother.entity.contract;
 
+import cn.aberic.bother.entity.BeanJsonField;
 import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Getter;
 import lombok.Setter;
@@ -39,7 +40,7 @@ import java.util.Date;
  */
 @Setter
 @Getter
-public class Contract {
+public class Contract implements BeanJsonField {
 
     /** 名称 */
     @JSONField(name = "c")
@@ -77,10 +78,6 @@ public class Contract {
         this.versionCode = versionCode;
         this.timestamp = new Date().getTime();
         this.brief = brief;
-    }
-
-    public String toJsonString() {
-        return new JSONObject(this).toString();
     }
 
 }

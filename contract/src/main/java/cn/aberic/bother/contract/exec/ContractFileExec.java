@@ -29,13 +29,11 @@ import cn.aberic.bother.encryption.MD5;
 import cn.aberic.bother.entity.contract.Contract;
 import cn.aberic.bother.storage.Common;
 import cn.aberic.bother.storage.FileComponent;
-import cn.aberic.bother.storage.IFile;
 import cn.aberic.bother.tools.FileTool;
 import cn.aberic.bother.tools.exception.ContractFileNotFoundException;
 import cn.aberic.bother.tools.exception.ContractHashException;
 import cn.aberic.bother.tools.exception.ContractParamException;
 import cn.aberic.bother.tools.exception.ContractRepetitionException;
-import cn.aberic.bother.tools.service.IResponse;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import com.google.common.io.Files;
@@ -52,7 +50,7 @@ import java.io.IOException;
  * 作者：Aberic on 2018/8/29 23:03
  * 邮箱：abericyang@gmail.com
  */
-public class ContractFileExec implements IContractFileExec, IFile<Contract>, IResponse {
+public class ContractFileExec implements IContractFileExec {
 
     /** 智能合约hash */
     private String contractHash;
@@ -99,24 +97,8 @@ public class ContractFileExec implements IContractFileExec, IFile<Contract>, IRe
         return FileComponent.getContractFileComponent();
     }
 
-    /**
-     * 安装或者升级智能合约。
-     * <p>
-     * 首先判断当前 {@link #contractHash} 是否为空，如果为空则表示当前操作需要实例化，该智能合约是被首次安装。
-     * <p>
-     * 安装智能合约需要获取上传路径，在
-     * <p>
-     * 如果 {@link #contractHash} 不为空，则表示直接安装并在安装完成后加入该智能合约创世节点。
-     * <p>
-     * 如果 {@link #contractHash} 不为空，还会判断本地合约是否有相同hash值得存在。
-     * <p>
-     * 如果有，则创建失败，如果没有，则返回当前合约的完整对象，包括提供给第三方进行安装部署的hash字段
-     *
-     * @param contract 智能合约
-     * @return 智能合约唯一hash
-     */
     @Override
-    public String installOrUpgrade(Contract contract) {
+    public String init(Contract contract) {
         // 即将部署的智能合约名称、版本号、版本名称及描述不能为空
         if (StringUtils.isEmpty(contract.getName()) ||
                 StringUtils.isEmpty(contract.getVersionName()) ||
@@ -166,7 +148,7 @@ public class ContractFileExec implements IContractFileExec, IFile<Contract>, IRe
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return responseSuccess();
+        return contractHash;
     }
 
     /**
@@ -177,12 +159,13 @@ public class ContractFileExec implements IContractFileExec, IFile<Contract>, IRe
      * 如果不重复，则返回可写入智能合约文件
      *
      * @param contract 待部署合约
+     *
      * @return 写入智能合约文件
      */
     private File verifyContract(Contract contract) {
         File[] fileArray = new File[]{null};
         Iterable<File> files = Files.fileTraverser().breadthFirst(new File(getFileStatus().getDir()));
-        for (File file : files) {
+        files.forEach(file -> {
             if (StringUtils.startsWith(file.getName(), getFileStatus().getStart())) {
                 try (LineIterator it = FileUtils.lineIterator(file, "UTF-8")) {
                     while (it.hasNext()) {
@@ -201,7 +184,7 @@ public class ContractFileExec implements IContractFileExec, IFile<Contract>, IRe
                     e.printStackTrace();
                 }
             }
-        }
+        });
         return fileArray[0];
     }
 

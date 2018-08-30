@@ -23,26 +23,27 @@
  *
  */
 
-package cn.aberic.bother.contract.exec;
+package cn.aberic.bother.contract.exec.service;
 
-import cn.aberic.bother.contract.exec.service.ISystemContractFileExec;
+import cn.aberic.bother.block.exec.service.IInit;
+import cn.aberic.bother.entity.contract.Contract;
 import cn.aberic.bother.storage.Common;
-import cn.aberic.bother.storage.FileComponent;
+import cn.aberic.bother.storage.IFile;
 
 /**
- * 作者：Aberic on 2018/8/30 21:00
+ * 系统级智能合约文件对象操作接口-smart contract
+ * <p>
+ * 作者：Aberic on 2018/8/30 23:33
  * 邮箱：abericyang@gmail.com
  */
-public class SystemContractFileExec implements ISystemContractFileExec {
+public interface ISystemContractFileExec extends IInit, IFile<Contract> {
 
-    @Override
-    public String getContractHash() {
-        return Common.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH;
-    }
-
-    @Override
-    public FileComponent getFileStatus() {
-        return FileComponent.getContractFileComponentDefault();
+    default Contract getContract() {
+        Contract contract = new Contract("tb", "1.0", 1, "让连接更有价值！no trouble, no bother!");
+        contract.setTimestamp(515260800000L);
+        contract.setHash(Common.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH);
+        contract.setDir("6c5ea876d5220135ee0c05d0f0840efe");
+        return contract;
     }
 
 }
