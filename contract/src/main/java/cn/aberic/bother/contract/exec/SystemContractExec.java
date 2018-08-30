@@ -20,18 +20,30 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
+ *
  */
 
-package cn.aberic.bother.tools.exception;
+package cn.aberic.bother.contract.exec;
+
+import cn.aberic.bother.block.BlockAcquire;
+import cn.aberic.bother.contract.exec.service.IContractExec;
+import cn.aberic.bother.storage.Common;
 
 /**
- * 作者：Aberic on 2018/08/30 17:26
+ * 系统智能合约操作接口实现-smart contract
+ * <p>
+ * 作者：Aberic on 2018/8/30 20:54
  * 邮箱：abericyang@gmail.com
  */
-public class ContractFileNotFoundException extends RuntimeException {
+public class SystemContractExec implements IContractExec {
 
-    public ContractFileNotFoundException(String name, String versionName, int versionCode) {
-        super(String.format("contract %s version name %s code %s file does not exist", name, versionName, versionCode));
+    @Override
+    public BlockAcquire blockAcquire() {
+        return new BlockAcquire(Common.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH);
     }
 
+    @Override
+    public SystemContractFileExec contractFileExec() {
+        return new SystemContractFileExec();
+    }
 }

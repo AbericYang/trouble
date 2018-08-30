@@ -24,7 +24,7 @@
 
 package cn.aberic.bother.contract.exec;
 
-import cn.aberic.bother.block.exec.service.IInit;
+import cn.aberic.bother.contract.exec.service.IContractFileExec;
 import cn.aberic.bother.encryption.MD5;
 import cn.aberic.bother.entity.contract.Contract;
 import cn.aberic.bother.storage.Common;
@@ -32,6 +32,7 @@ import cn.aberic.bother.storage.FileComponent;
 import cn.aberic.bother.storage.IFile;
 import cn.aberic.bother.tools.FileTool;
 import cn.aberic.bother.tools.exception.ContractFileNotFoundException;
+import cn.aberic.bother.tools.exception.ContractHashException;
 import cn.aberic.bother.tools.exception.ContractParamException;
 import cn.aberic.bother.tools.exception.ContractRepetitionException;
 import cn.aberic.bother.tools.service.IResponse;
@@ -51,7 +52,7 @@ import java.io.IOException;
  * 作者：Aberic on 2018/8/29 23:03
  * 邮箱：abericyang@gmail.com
  */
-public class ContractFileExec implements IInit, IFile<Contract>, IResponse {
+public class ContractFileExec implements IContractFileExec, IFile<Contract>, IResponse {
 
     /** 智能合约hash */
     private String contractHash;
@@ -80,6 +81,10 @@ public class ContractFileExec implements IInit, IFile<Contract>, IResponse {
      * @param contractHash 智能合约hash
      */
     ContractFileExec(File contractFile, String contractHash) {
+        // 设定的智能合约hash必须由系统生成，且不能与系统自由合约hash相同
+        if (StringUtils.equalsIgnoreCase(contractHash, Common.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH)) {
+            throw new ContractHashException();
+        }
         this.contractFile = contractFile;
         this.contractHash = contractHash;
     }
@@ -91,9 +96,6 @@ public class ContractFileExec implements IInit, IFile<Contract>, IResponse {
 
     @Override
     public FileComponent getFileStatus() {
-        if (StringUtils.equals(contractHash, Common.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH)) {
-            return FileComponent.getContractFileComponentDefault();
-        }
         return FileComponent.getContractFileComponent();
     }
 
@@ -113,12 +115,17 @@ public class ContractFileExec implements IInit, IFile<Contract>, IResponse {
      * @param contract 智能合约
      * @return 智能合约唯一hash
      */
+    @Override
     public String installOrUpgrade(Contract contract) {
         // 即将部署的智能合约名称、版本号、版本名称及描述不能为空
         if (StringUtils.isEmpty(contract.getName()) ||
                 StringUtils.isEmpty(contract.getVersionName()) ||
                 StringUtils.isEmpty(contract.getBrief())) {
             throw new ContractParamException();
+        }
+        // 如果上传智能合约文件为空
+        if (null == contractFile) {
+            throw new ContractFileNotFoundException(contract.getName(), contract.getVersionName(), contract.getVersionCode());
         }
         // 如果智能合约hash为空，则表示首次安装该合约，安装并返回最终成功的hash
         if (StringUtils.isEmpty(contractHash)) {
@@ -130,10 +137,6 @@ public class ContractFileExec implements IInit, IFile<Contract>, IResponse {
                     contract.getDir(),
                     contract.getTimestamp(),
                     FileTool.getMD5(contractFile)));
-        }
-        // 如果上传智能合约文件为空
-        if (null == contractFile) {
-            throw new ContractFileNotFoundException(contract.getName(), contract.getVersionName(), contract.getVersionName());
         }
         contract.setHash(contractHash);
         contract.setDir(contractFile.getAbsolutePath());

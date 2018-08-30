@@ -36,8 +36,4 @@ public class ContractParamException extends NullPointerException {
         super("For entity Contract, params can't be empty");
     }
 
-    public ContractParamException(String message) {
-        super(message);
-    }
-
 }

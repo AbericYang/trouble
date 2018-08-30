@@ -25,10 +25,13 @@
 package cn.aberic.bother.contract;
 
 import cn.aberic.bother.contract.exec.ContractExec;
+import cn.aberic.bother.contract.exec.SystemContract;
+import cn.aberic.bother.contract.exec.SystemContractExec;
 import cn.aberic.bother.storage.Common;
 import cn.aberic.bother.tools.SystemOut;
 import cn.aberic.bother.tools.exception.ContractParamException;
 
+import java.io.File;
 import java.util.Scanner;
 
 /**
@@ -38,20 +41,24 @@ import java.util.Scanner;
 public class SCTest {
 
     public static void main(String[] args) {
-        systemAppContract();
-        // smart();
+//        systemContract();
+         simpleContract();
         // scanner();
     }
 
-    private static void systemAppContract() throws ContractParamException {
-        SystemAppContract contract = new SystemAppContract();
+    private static void systemContract() throws ContractParamException {
+        SystemContract contract = new SystemContract();
+        SystemOut.println("simple contract test result = " + contract.invoke(new SystemContractExec()));
+    }
 
-        SystemOut.println("smart test result = " + contract.init(new ContractExec(null, Common.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH)));
+    private static void simpleContract() {
+        SimpleContract contract = new SimpleContract();
+        SystemOut.println("simple contract test result = " + contract.init(new ContractExec(new File(""))));
     }
 
     private static void scanner() {
         System.out.print("请输入:");
-        String showInfo=new Scanner(System.in).next();
+        String showInfo = new Scanner(System.in).next();
         System.out.println("\n*************\n");
         System.out.println(showInfo);
     }

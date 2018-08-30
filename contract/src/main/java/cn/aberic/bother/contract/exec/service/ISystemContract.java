@@ -20,18 +20,35 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
+ *
  */
 
-package cn.aberic.bother.tools.exception;
+package cn.aberic.bother.contract.exec.service;
 
 /**
- * 作者：Aberic on 2018/08/30 17:26
+ * 系统级智能合约常规操作接口-smart contract
+ * <p>
+ * 作者：Aberic on 2018/8/30 21:36
  * 邮箱：abericyang@gmail.com
  */
-public class ContractFileNotFoundException extends RuntimeException {
+public interface ISystemContract {
 
-    public ContractFileNotFoundException(String name, String versionName, int versionCode) {
-        super(String.format("contract %s version name %s code %s file does not exist", name, versionName, versionCode));
-    }
+    /**
+     * 执行智能合约
+     *
+     * @param exec 智能合约区块操作接口
+     *
+     * @return 执行结果
+     */
+    String invoke(ISystemContractExec exec);
+
+    /**
+     * 查询智能合约
+     *
+     * @param exec 智能合约区块操作接口
+     *
+     * @return 查询结果
+     */
+    String query(ISystemContractExec exec);
 
 }

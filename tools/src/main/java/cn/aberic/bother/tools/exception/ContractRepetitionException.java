@@ -36,8 +36,4 @@ public class ContractRepetitionException extends RuntimeException {
         super("the same contract already exists");
     }
 
-    public ContractRepetitionException(String message) {
-        super(message);
-    }
-
 }

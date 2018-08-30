@@ -20,13 +20,13 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
+ *
  */
 
-package cn.aberic.bother.contract;
+package cn.aberic.bother.contract.exec;
 
-import cn.aberic.bother.contract.exec.service.IContract;
-import cn.aberic.bother.contract.exec.service.IContractExec;
-import cn.aberic.bother.entity.contract.Contract;
+import cn.aberic.bother.contract.exec.service.ISystemContract;
+import cn.aberic.bother.contract.exec.service.ISystemContractExec;
 
 /**
  * 系统应用智能合约-app support
@@ -34,20 +34,15 @@ import cn.aberic.bother.entity.contract.Contract;
  * 作者：Aberic on 2018/8/29 20:49
  * 邮箱：abericyang@gmail.com
  */
-public class SystemAppContract implements IContract {
+public class SystemContract implements ISystemContract {
 
     @Override
-    public String init(IContractExec exec) {
-        return exec.installOrUpgrade(new Contract("tb", "1.0", 1, "让连接更有价值！no trouble, no bother!"));
-    }
-
-    @Override
-    public String invoke(IContractExec exec) {
+    public String invoke(ISystemContractExec exec) {
         return null;
     }
 
     @Override
-    public String query(IContractExec exec) {
+    public String query(ISystemContractExec exec) {
         return null;
     }
 

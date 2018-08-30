@@ -46,6 +46,7 @@ public interface IContract extends IResponse {
      * 执行智能合约
      *
      * @param exec 智能合约区块操作接口
+     *
      * @return 执行结果
      */
     String invoke(IContractExec exec);
@@ -54,11 +55,9 @@ public interface IContract extends IResponse {
      * 查询智能合约
      *
      * @param exec 智能合约区块操作接口
+     *
      * @return 查询结果
      */
     String query(IContractExec exec);
-
-    /** 获取当前智能合约对象 */
-//    String getContract();
 
 }

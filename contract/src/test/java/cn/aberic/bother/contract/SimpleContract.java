@@ -20,18 +20,34 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
+ *
  */
 
-package cn.aberic.bother.tools.exception;
+package cn.aberic.bother.contract;
+
+import cn.aberic.bother.contract.exec.service.IContract;
+import cn.aberic.bother.contract.exec.service.IContractExec;
+import cn.aberic.bother.entity.contract.Contract;
 
 /**
- * 作者：Aberic on 2018/08/30 17:26
+ * 作者：Aberic on 2018/8/30 21:39
  * 邮箱：abericyang@gmail.com
  */
-public class ContractFileNotFoundException extends RuntimeException {
+public class SimpleContract implements IContract {
 
-    public ContractFileNotFoundException(String name, String versionName, int versionCode) {
-        super(String.format("contract %s version name %s code %s file does not exist", name, versionName, versionCode));
+    @Override
+    public String init(IContractExec exec) {
+        return exec.installOrUpgrade(new Contract("simple", "1.0", 1, "simple"));
+    }
+
+    @Override
+    public String invoke(IContractExec exec) {
+        return null;
+    }
+
+    @Override
+    public String query(IContractExec exec) {
+        return null;
     }
 
 }
