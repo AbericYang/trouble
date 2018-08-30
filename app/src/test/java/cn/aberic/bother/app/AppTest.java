@@ -20,37 +20,30 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- *
  */
 
-package cn.aberic.bother.core.as.sys;
+package cn.aberic.bother.app;
 
-import cn.aberic.bother.core.sc.exec.service.IContract;
-import cn.aberic.bother.core.sc.exec.service.IContractBlockExec;
-import cn.aberic.bother.entity.contract.Contract;
+import cn.aberic.bother.contract.ContractBlockExec;
+import cn.aberic.bother.storage.Common;
+import cn.aberic.bother.tools.SystemOut;
+import cn.aberic.bother.tools.exception.ContractParamException;
+
+import java.util.Scanner;
 
 /**
- * 系统应用智能合约-app support
- * <p>
- * 作者：Aberic on 2018/8/29 20:49
+ * 作者：Aberic on 2018/8/29 19:57
  * 邮箱：abericyang@gmail.com
  */
-public class SystemAppContract implements IContract {
+public class AppTest {
 
-    @Override
-    public String init(IContractBlockExec exec) {
-        exec.set(new Contract("", "1.0", 1, "让连接更有价值！no trouble, no bother!"));
-        return response("success");
+    public static void main(String[] args) {
+        systemAppContract();
     }
 
-    @Override
-    public String invoke(IContractBlockExec exec) {
-        return null;
-    }
-
-    @Override
-    public String query(IContractBlockExec exec) {
-        return null;
+    private static void systemAppContract() throws ContractParamException {
+        SystemAppContract contract = new SystemAppContract();
+        SystemOut.println("smart test result = " + contract.init(new ContractBlockExec(Common.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH)));
     }
 
 }

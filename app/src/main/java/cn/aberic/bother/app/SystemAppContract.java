@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2018. Aberic Yang
+ * Copyright (c) 2018 Aberic Yang
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,13 +22,34 @@
  * SOFTWARE.
  */
 
-package cn.aberic.bother.core.as;
+package cn.aberic.bother.app;
+
+import cn.aberic.bother.contract.service.IContract;
+import cn.aberic.bother.contract.service.IContractBlockExec;
+import cn.aberic.bother.entity.contract.Contract;
 
 /**
- * 应用支持层-app support
+ * 系统应用智能合约-app support
  * <p>
- * 作者：Aberic on 2018/8/20 20:14
+ * 作者：Aberic on 2018/8/29 20:49
  * 邮箱：abericyang@gmail.com
  */
-public class App {
+public class SystemAppContract implements IContract {
+
+    @Override
+    public String init(IContractBlockExec exec) {
+        exec.set(new Contract("", "1.0", 1, "让连接更有价值！no trouble, no bother!"));
+        return response("success");
+    }
+
+    @Override
+    public String invoke(IContractBlockExec exec) {
+        return null;
+    }
+
+    @Override
+    public String query(IContractBlockExec exec) {
+        return null;
+    }
+
 }

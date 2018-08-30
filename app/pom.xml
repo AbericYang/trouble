@@ -21,7 +21,6 @@
   ~ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
   ~ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   ~ SOFTWARE.
-  ~
   -->
 
 <project xmlns="http://maven.apache.org/POM/4.0.0"
@@ -31,7 +30,7 @@
     <modelVersion>4.0.0</modelVersion>
     <version>1.0-SNAPSHOT</version>
 
-    <artifactId>contract</artifactId>
+    <artifactId>app</artifactId>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -42,7 +41,7 @@
     <dependencies>
         <dependency>
             <groupId>cn.aberic</groupId>
-            <artifactId>block</artifactId>
+            <artifactId>contract</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
     </dependencies>

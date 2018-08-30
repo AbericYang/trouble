@@ -27,7 +27,7 @@
     <dependencies>
         <dependency>
             <groupId>cn.aberic</groupId>
-            <artifactId>storage</artifactId>
+            <artifactId>contract</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
         <dependency>
