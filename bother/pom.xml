@@ -35,11 +35,6 @@
             <artifactId>commons-codec</artifactId>
             <version>1.11</version>
         </dependency>
-        <dependency>
-            <groupId>org.json</groupId>
-            <artifactId>json</artifactId>
-            <version>20180813</version>
-        </dependency>
 
         <!-- slf4j核心包-->
         <dependency>

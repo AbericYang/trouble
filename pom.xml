@@ -13,6 +13,8 @@
       <module>tools</module>
     <module>encryption</module>
       <module>storage</module>
+      <module>block</module>
+    <module>consensus</module>
   </modules>
   <name>trouble Maven App</name>
   <!-- FIXME change it to the project's website -->

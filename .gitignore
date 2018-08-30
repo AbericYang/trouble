@@ -16,3 +16,5 @@ gen
 /contract/target/
 /storage/target/
 /tools/target/
+/block/target/
+/consensus/target/
