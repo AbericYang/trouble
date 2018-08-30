@@ -55,6 +55,9 @@ public class Contract {
     /** 内容摘要 */
     @JSONField(name = "b")
     private String brief;
+    /** 唯一hash */
+    @JSONField(name = "h")
+    private String hash;
 
     public Contract(String name, String versionName, int versionCode, String brief) {
         this.name = name;

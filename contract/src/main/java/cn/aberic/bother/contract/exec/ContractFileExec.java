@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package cn.aberic.bother.contract;
+package cn.aberic.bother.contract.exec;
 
 import cn.aberic.bother.block.exec.service.IInit;
 import cn.aberic.bother.entity.contract.Contract;
@@ -64,7 +64,17 @@ public class ContractFileExec implements IInit, IFile<Contract> {
         return FileComponent.getContractFileComponent(contractHash);
     }
 
-    public Contract set(Contract contract) {
+    /**
+     * 安装或者升级智能合约。
+     * <p>
+     * 此操作会判断本地合约是否有相同hash值得存在。
+     * <p>
+     * 如果有，则创建失败，如果没有，则返回当前合约的完整对象，包括提供给第三方进行安装部署的hash字段
+     *
+     * @param contract 智能合约
+     * @return 完整智能合约对象
+     */
+    public Contract installOrUpgrade(Contract contract) {
         if (StringUtils.isEmpty(contract.getName()) ||
                 StringUtils.isEmpty(contract.getVersionName()) ||
                 StringUtils.isEmpty(contract.getBrief())) {

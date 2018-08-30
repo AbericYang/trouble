@@ -29,6 +29,7 @@ import com.google.common.hash.Hashing;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.json.JSONObject;
 
 import java.nio.charset.Charset;
 
@@ -62,6 +63,10 @@ public class Block {
                 header.getConsentNodeCount(),
                 Long.toString(header.getTimestamp()),
                 body.bodyString()), Charset.forName("UTF-8")).toString();
+    }
+
+    public String toJsonString() {
+        return new JSONObject(this).toString();
     }
 
 }

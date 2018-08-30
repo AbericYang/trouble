@@ -24,13 +24,6 @@
 
 package cn.aberic.bother.app;
 
-import cn.aberic.bother.contract.ContractBlockExec;
-import cn.aberic.bother.storage.Common;
-import cn.aberic.bother.tools.SystemOut;
-import cn.aberic.bother.tools.exception.ContractParamException;
-
-import java.util.Scanner;
-
 /**
  * 作者：Aberic on 2018/8/29 19:57
  * 邮箱：abericyang@gmail.com
@@ -38,12 +31,6 @@ import java.util.Scanner;
 public class AppTest {
 
     public static void main(String[] args) {
-        systemAppContract();
-    }
-
-    private static void systemAppContract() throws ContractParamException {
-        SystemAppContract contract = new SystemAppContract();
-        SystemOut.println("smart test result = " + contract.init(new ContractBlockExec(Common.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH)));
     }
 
 }

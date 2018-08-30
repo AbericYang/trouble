@@ -22,10 +22,10 @@
  * SOFTWARE.
  */
 
-package cn.aberic.bother.app;
+package cn.aberic.bother.contract;
 
-import cn.aberic.bother.contract.service.IContract;
-import cn.aberic.bother.contract.service.IContractBlockExec;
+import cn.aberic.bother.contract.exec.service.IContract;
+import cn.aberic.bother.contract.exec.service.IContractBlockExec;
 import cn.aberic.bother.entity.contract.Contract;
 
 /**
@@ -38,7 +38,7 @@ public class SystemAppContract implements IContract {
 
     @Override
     public String init(IContractBlockExec exec) {
-        exec.set(new Contract("", "1.0", 1, "让连接更有价值！no trouble, no bother!"));
+        exec.installOrUpgrade(new Contract("tb", "1.0", 1, "让连接更有价值！no trouble, no bother!"));
         return response("success");
     }
 

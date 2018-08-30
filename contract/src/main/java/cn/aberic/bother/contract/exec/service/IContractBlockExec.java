@@ -22,11 +22,10 @@
  * SOFTWARE.
  */
 
-package cn.aberic.bother.contract.service;
+package cn.aberic.bother.contract.exec.service;
 
 import cn.aberic.bother.block.BlockAcquire;
-import cn.aberic.bother.contract.ContractFileExec;
-import cn.aberic.bother.block.BlockAcquire;
+import cn.aberic.bother.contract.exec.ContractFileExec;
 import cn.aberic.bother.encryption.MD5;
 import cn.aberic.bother.entity.block.Block;
 import cn.aberic.bother.entity.contract.Contract;
@@ -52,8 +51,8 @@ public interface IContractBlockExec {
      */
     ContractFileExec getFileExec();
 
-    default Contract set(Contract contract) {
-        return getFileExec().set(contract);
+    default Contract installOrUpgrade(Contract contract) {
+        return getFileExec().installOrUpgrade(contract);
     }
 
     /**

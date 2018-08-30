@@ -22,10 +22,10 @@
  * SOFTWARE.
  */
 
-package cn.aberic.bother.contract;
+package cn.aberic.bother.contract.exec;
 
 import cn.aberic.bother.block.BlockAcquire;
-import cn.aberic.bother.contract.service.IContractBlockExec;
+import cn.aberic.bother.contract.exec.service.IContractBlockExec;
 
 /**
  * 智能合约区块操作接口实现-smart contract

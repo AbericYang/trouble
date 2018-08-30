@@ -24,8 +24,10 @@
 
 package cn.aberic.bother.contract;
 
+import cn.aberic.bother.contract.exec.ContractBlockExec;
 import cn.aberic.bother.storage.Common;
 import cn.aberic.bother.tools.SystemOut;
+import cn.aberic.bother.tools.exception.ContractParamException;
 
 import java.util.Scanner;
 
@@ -36,13 +38,14 @@ import java.util.Scanner;
 public class SCTest {
 
     public static void main(String[] args) {
+        systemAppContract();
         // smart();
         // scanner();
     }
 
-    private static void smart() {
-        SmartTest test = new SmartTest();
-        SystemOut.println("smart test block = " + test.init(new ContractBlockExec(Common.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH)));
+    private static void systemAppContract() throws ContractParamException {
+        SystemAppContract contract = new SystemAppContract();
+        SystemOut.println("smart test result = " + contract.init(new ContractBlockExec(Common.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH)));
     }
 
     private static void scanner() {

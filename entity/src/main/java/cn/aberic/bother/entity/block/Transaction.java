@@ -26,6 +26,7 @@ package cn.aberic.bother.entity.block;
 
 import cn.aberic.bother.encryption.MD5;
 import cn.aberic.bother.entity.enums.TransactionStatus;
+import cn.aberic.bother.tools.DateTool;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.annotation.JSONField;
 import com.google.common.hash.Hashing;
@@ -70,14 +71,21 @@ public class Transaction {
     /** 交易错误信息 */
     @JSONField(name="e")
     private String errorMessage;
+    /**交易索引hash*/
     @JSONField(serialize=false)
-    private String hashMd516; // 序列化时不写入
+    private String dataStorageHash; // 序列化时不写入
+    /**交易时间戳转字符串——yyyy/MM/dd HH:mm:ss*/
+    @JSONField(serialize=false)
+    private String time; // 序列化时不写入
 
     public Transaction build() {
         hash = Hashing.sha256().hashString(String.format("%s%s%s%s",
                 creator, sign, JSON.toJSONString(rwSets), timestamp), Charset.forName("UTF-8")).toString();
-        hashMd516 = MD5.md516(hash);
+        dataStorageHash = MD5.md516(hash);
         return this;
     }
 
+    public String getTime() {
+        return DateTool.timestampToString(timestamp, "yyyy/MM/dd HH:mm:ss");
+    }
 }

@@ -97,10 +97,10 @@ public interface IBlockExec extends IExec<Block> {
             }
             List<String> transactionHashList = new ArrayList<>();
             for (Transaction transaction: block.getBody().getTransactions()) {
-                transactionHashList.add(transaction.getHashMd516());
+                transactionHashList.add(transaction.getDataStorageHash());
             }
             blockInfo.setHeight(height);
-            blockInfo.setBlockHash(block.getHeader().getHashMd516());
+            blockInfo.setBlockHash(block.getHeader().getDataStorageHash());
             blockInfo.setNum(getNumByFileName(blockFile.getName()));
             blockInfo.setLine(line + 1);
             blockInfo.setTransactionHashList(transactionHashList);
