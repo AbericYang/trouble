@@ -24,7 +24,7 @@
 
 package cn.aberic.bother.contract.exec.service;
 
-import com.alibaba.fastjson.JSONObject;
+import cn.aberic.bother.tools.service.IResponse;
 
 /**
  * 智能合约常规操作接口-smart contract
@@ -32,9 +32,7 @@ import com.alibaba.fastjson.JSONObject;
  * 作者：Aberic on 2018/08/29 16:40
  * 邮箱：abericyang@gmail.com
  */
-public interface IContract {
-
-    int SUCCESS = 200;
+public interface IContract extends IResponse {
 
     /**
      * 智能合约初始化方法，相同版本合约只能初始化一次，重复初始化无效。
@@ -42,33 +40,25 @@ public interface IContract {
      *
      * @return 智能合约唯一hash
      */
-    String init(IContractBlockExec exec);
+    String init(IContractExec exec);
 
-    String invoke(IContractBlockExec exec);
+    /**
+     * 执行智能合约
+     *
+     * @param exec 智能合约区块操作接口
+     * @return 执行结果
+     */
+    String invoke(IContractExec exec);
 
-    String query(IContractBlockExec exec);
+    /**
+     * 查询智能合约
+     *
+     * @param exec 智能合约区块操作接口
+     * @return 查询结果
+     */
+    String query(IContractExec exec);
 
-    default String response(String result) {
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("code", SUCCESS);
-        jsonObject.put("data", result);
-        return jsonObject.toString();
-    }
-
-    default String response(int result) {
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("code", SUCCESS);
-        jsonObject.put("data", result);
-        return jsonObject.toString();
-    }
-
-    default String response(Object obj) {
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("code", SUCCESS);
-        jsonObject.put("data", obj);
-        return jsonObject.toString();
-    }
-
-
+    /** 获取当前智能合约对象 */
+//    String getContract();
 
 }

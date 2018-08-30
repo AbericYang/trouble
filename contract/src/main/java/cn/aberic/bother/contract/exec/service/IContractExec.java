@@ -31,14 +31,23 @@ import cn.aberic.bother.entity.block.Block;
 import cn.aberic.bother.entity.contract.Contract;
 
 /**
- * 智能合约区块操作接口-smart contract
+ * 智能合约操作接口-smart contract
  * <p>
  * 作者：Aberic on 2018/08/29 16:41
  * 邮箱：abericyang@gmail.com
  */
-public interface IContractBlockExec {
+public interface IContractExec {
 
-    BlockAcquire getBlockAcquire();
+    /**
+     * 获取区块获取操作对象
+     * <p>
+     * 智能合约通过该对象可以得到区块中的基本信息
+     * <p>
+     * 并以此对象可以进行溯源操作
+     *
+     * @return 区块获取操作对象
+     */
+    BlockAcquire blockAcquire();
 
     /**
      * 获取 {@link cn.aberic.bother.storage.IFile} 实现类。
@@ -49,10 +58,10 @@ public interface IContractBlockExec {
      *
      * @return {@link cn.aberic.bother.storage.IFile} 实现
      */
-    ContractFileExec getFileExec();
+    ContractFileExec contractFileExec();
 
-    default Contract installOrUpgrade(Contract contract) {
-        return getFileExec().installOrUpgrade(contract);
+    default String installOrUpgrade(Contract contract) {
+        return contractFileExec().installOrUpgrade(contract);
     }
 
     /**
@@ -61,7 +70,7 @@ public interface IContractBlockExec {
      * @return 区块文件个数
      */
     default int getFileCount() {
-        return getBlockAcquire().getFileCount();
+        return blockAcquire().getFileCount();
     }
 
     /**
@@ -70,40 +79,37 @@ public interface IContractBlockExec {
      * @return 指定合约账本高度
      */
     default int getHeight() {
-        return getBlockAcquire().getHeight();
+        return blockAcquire().getHeight();
     }
 
     /**
      * 根据区块高度获取区块对象
      *
      * @param height 区块高度
-     *
      * @return 区块对象
      */
     default Block getBlockByHeight(int height) {
-        return getBlockAcquire().getBlockByHeight(height);
+        return blockAcquire().getBlockByHeight(height);
     }
 
     /**
      * 根据区块高度获取区块对象
      *
      * @param currentDataHash 当前区块hash
-     *
      * @return 区块对象
      */
     default Block getBlockByHash(String currentDataHash) {
-        return getBlockAcquire().getBlockByHash(MD5.md516(currentDataHash));
+        return blockAcquire().getBlockByHash(MD5.md516(currentDataHash));
     }
 
     /**
      * 根据区块高度获取区块对象
      *
      * @param transactionHash 交易hash
-     *
      * @return 区块对象
      */
     default Block getBlockByTransactionHash(String transactionHash) {
-        return getBlockAcquire().getBlockByTransactionHash(MD5.md516(transactionHash));
+        return blockAcquire().getBlockByTransactionHash(MD5.md516(transactionHash));
     }
 
 }

@@ -24,7 +24,7 @@
 
 package cn.aberic.bother.contract;
 
-import cn.aberic.bother.contract.exec.ContractBlockExec;
+import cn.aberic.bother.contract.exec.ContractExec;
 import cn.aberic.bother.storage.Common;
 import cn.aberic.bother.tools.SystemOut;
 import cn.aberic.bother.tools.exception.ContractParamException;
@@ -45,7 +45,8 @@ public class SCTest {
 
     private static void systemAppContract() throws ContractParamException {
         SystemAppContract contract = new SystemAppContract();
-        SystemOut.println("smart test result = " + contract.init(new ContractBlockExec(Common.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH)));
+
+        SystemOut.println("smart test result = " + contract.init(new ContractExec(Common.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH)));
     }
 
     private static void scanner() {

@@ -31,6 +31,7 @@ import cn.aberic.bother.storage.FileComponent;
 import cn.aberic.bother.storage.IFile;
 import cn.aberic.bother.tools.FileTool;
 import cn.aberic.bother.tools.exception.ContractParamException;
+import cn.aberic.bother.tools.service.IResponse;
 import com.alibaba.fastjson.JSON;
 import org.apache.commons.lang3.StringUtils;
 
@@ -43,17 +44,40 @@ import java.io.IOException;
  * 作者：Aberic on 2018/8/29 23:03
  * 邮箱：abericyang@gmail.com
  */
-public class ContractFileExec implements IInit, IFile<Contract> {
+public class ContractFileExec implements IInit, IFile<Contract>, IResponse {
 
+    /** 智能合约hash */
     private String contractHash;
+    /** 智能合约上传的安装文件 */
+    private File contractFile;
 
+    /**
+     * 实例化智能合约文件对象操作。
+     * <p>
+     * 通过上传智能合约安装文件来验证智能合约信息，即智能合约安装操作。
+     * <p>
+     * 基于上述操作为 {@link #contractHash} 赋值。
+     *
+     * @param contractFile 智能合约上传的安装文件
+     */
+    public ContractFileExec(File contractFile) {
+        this.contractFile = contractFile;
+    }
+
+    /**
+     * 实例化智能合约文件对象操作。
+     * <p>
+     * 已传智能合约hash，根据已传参数操作智能合约
+     *
+     * @param contractHash 智能合约hash
+     */
     public ContractFileExec(String contractHash) {
         this.contractHash = contractHash;
     }
 
     @Override
     public String getContractHash() {
-        return null;
+        return contractHash;
     }
 
     @Override
@@ -67,14 +91,24 @@ public class ContractFileExec implements IInit, IFile<Contract> {
     /**
      * 安装或者升级智能合约。
      * <p>
-     * 此操作会判断本地合约是否有相同hash值得存在。
+     * 首先判断当前 {@link #contractHash} 是否为空，如果为空则表示当前操作需要实例化，该智能合约是被首次安装。
+     * <p>
+     * 安装智能合约需要获取上传路径，在
+     * <p>
+     * 如果 {@link #contractHash} 不为空，则表示直接安装并在安装完成后加入该智能合约创世节点。
+     * <p>
+     * 如果 {@link #contractHash} 不为空，还会判断本地合约是否有相同hash值得存在。
      * <p>
      * 如果有，则创建失败，如果没有，则返回当前合约的完整对象，包括提供给第三方进行安装部署的hash字段
      *
      * @param contract 智能合约
      * @return 完整智能合约对象
      */
-    public Contract installOrUpgrade(Contract contract) {
+    public String installOrUpgrade(Contract contract) {
+        if (StringUtils.isEmpty(contractHash)) {
+            // TODO: 2018/8/30 安装智能合约操作，并最终为 contractHash 赋值
+            contractHash = "";
+        }
         if (StringUtils.isEmpty(contract.getName()) ||
                 StringUtils.isEmpty(contract.getVersionName()) ||
                 StringUtils.isEmpty(contract.getBrief())) {
@@ -90,6 +124,7 @@ public class ContractFileExec implements IInit, IFile<Contract> {
                 contractFile = createFirstFile();
                 FileTool.writeFirstLine(contractFile, jsonString);
             } else {
+
                 // 计算该内容的字节长度
                 long contractSize = jsonString.getBytes().length;
                 // 如果区块文件和待写入对象之和已经大于或等于24MB，则开辟新区块文件写入区块对象
@@ -105,7 +140,7 @@ public class ContractFileExec implements IInit, IFile<Contract> {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return contract;
+        return response(contract.toJsonString());
     }
 
 }

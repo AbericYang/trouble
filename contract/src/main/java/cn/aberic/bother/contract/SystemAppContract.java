@@ -25,7 +25,7 @@
 package cn.aberic.bother.contract;
 
 import cn.aberic.bother.contract.exec.service.IContract;
-import cn.aberic.bother.contract.exec.service.IContractBlockExec;
+import cn.aberic.bother.contract.exec.service.IContractExec;
 import cn.aberic.bother.entity.contract.Contract;
 
 /**
@@ -37,18 +37,17 @@ import cn.aberic.bother.entity.contract.Contract;
 public class SystemAppContract implements IContract {
 
     @Override
-    public String init(IContractBlockExec exec) {
-        exec.installOrUpgrade(new Contract("tb", "1.0", 1, "让连接更有价值！no trouble, no bother!"));
-        return response("success");
+    public String init(IContractExec exec) {
+        return exec.installOrUpgrade(new Contract("tb", "1.0", 1, "让连接更有价值！no trouble, no bother!"));
     }
 
     @Override
-    public String invoke(IContractBlockExec exec) {
+    public String invoke(IContractExec exec) {
         return null;
     }
 
     @Override
-    public String query(IContractBlockExec exec) {
+    public String query(IContractExec exec) {
         return null;
     }
 

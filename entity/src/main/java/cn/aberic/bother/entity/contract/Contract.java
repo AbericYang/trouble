@@ -27,6 +27,7 @@ package cn.aberic.bother.entity.contract;
 import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Getter;
 import lombok.Setter;
+import org.json.JSONObject;
 
 import java.util.Date;
 
@@ -50,11 +51,14 @@ public class Contract {
     @JSONField(name = "vc")
     private int versionCode;
     /** 初始化时间戳 */
-    @JSONField(name="t")
+    @JSONField(name = "t")
     private long timestamp;
     /** 内容摘要 */
     @JSONField(name = "b")
     private String brief;
+    /** 安装路径 */
+    @JSONField(name = "d")
+    private String dir;
     /** 唯一hash */
     @JSONField(name = "h")
     private String hash;
@@ -65,6 +69,10 @@ public class Contract {
         this.versionCode = versionCode;
         this.timestamp = new Date().getTime();
         this.brief = brief;
+    }
+
+    public String toJsonString() {
+        return new JSONObject(this).toString();
     }
 
 }

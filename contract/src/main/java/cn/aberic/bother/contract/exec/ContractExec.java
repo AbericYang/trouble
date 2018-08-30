@@ -25,29 +25,51 @@
 package cn.aberic.bother.contract.exec;
 
 import cn.aberic.bother.block.BlockAcquire;
-import cn.aberic.bother.contract.exec.service.IContractBlockExec;
+import cn.aberic.bother.contract.exec.service.IContractExec;
+import org.apache.commons.lang3.StringUtils;
+
+import java.io.File;
 
 /**
- * 智能合约区块操作接口实现-smart contract
+ * 智能合约操作接口实现-smart contract
  * <p>
  * 作者：Aberic on 2018/08/29 16:43
  * 邮箱：abericyang@gmail.com
  */
-public class ContractBlockExec implements IContractBlockExec {
+public class ContractExec implements IContractExec {
 
+    /** 智能合约hash */
     private String contractHash;
+    /** 智能合约上传的安装文件 */
+    private File contractFile;
 
-    public ContractBlockExec(String contractHash) {
+    /**
+     * 实例化智能合约操作接口实现。
+     * <p>
+     * 此方法不出意外，将仅由 controller 层进行调用
+     * <p>
+     * 通过上传智能合约安装文件来利用 {@link #contractFileExec()} 方法实现来为 {@link #contractHash} 赋值。
+     *
+     * @param contractFile 智能合约上传的安装文件
+     */
+    public ContractExec(File contractFile) {
+        this.contractFile = contractFile;
+    }
+
+    public ContractExec(String contractHash) {
         this.contractHash = contractHash;
     }
 
     @Override
-    public BlockAcquire getBlockAcquire() {
-        return new BlockAcquire(contractHash);
+    public BlockAcquire blockAcquire() {
+        return new BlockAcquire(StringUtils.isEmpty(contractHash) ? contractFileExec().getContractHash() : contractHash);
     }
 
     @Override
-    public ContractFileExec getFileExec() {
+    public ContractFileExec contractFileExec() {
+        if (StringUtils.isEmpty(contractHash)) {
+            return new ContractFileExec(contractFile);
+        }
         return new ContractFileExec(contractHash);
     }
 }
