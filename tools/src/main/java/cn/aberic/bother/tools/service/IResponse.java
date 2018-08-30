@@ -38,6 +38,12 @@ public interface IResponse {
 
     int SUCCESS = 200;
 
+    default String responseSuccess() {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("code", SUCCESS);
+        return verifyJSON(jsonObject, "success").toString();
+    }
+
     default String response(String result) {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("code", SUCCESS);

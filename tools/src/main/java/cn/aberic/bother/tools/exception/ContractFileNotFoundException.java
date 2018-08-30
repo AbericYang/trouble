@@ -25,19 +25,19 @@
 package cn.aberic.bother.tools.exception;
 
 /**
- * 智能合约字段为空异常——公共方法包
- * <p>
- * 作者：Aberic on 2018/8/29 21:13
+ * 作者：Aberic on 2018/08/30 17:26
  * 邮箱：abericyang@gmail.com
  */
-public class ContractParamException extends NullPointerException {
+public class ContractFileNotFoundException extends RuntimeException {
 
-    public ContractParamException() {
-        super("For entity Contract, params can't be empty");
+    public ContractFileNotFoundException() {
+        super("contract file does not exist");
     }
 
-    public ContractParamException(String message) {
-        super(message);
+    public ContractFileNotFoundException(String message) { super(message); }
+
+    public ContractFileNotFoundException(String name, String versionName, String versionCode) {
+        super(String.format("contract %s version name %s code %s file does not exist", name, versionName, versionCode));
     }
 
 }

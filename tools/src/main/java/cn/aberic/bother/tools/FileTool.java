@@ -27,6 +27,7 @@ package cn.aberic.bother.tools;
 import com.google.common.base.Preconditions;
 import com.google.common.io.FileWriteMode;
 import com.google.common.io.Files;
+import org.apache.commons.codec.digest.DigestUtils;
 
 import java.io.*;
 import java.nio.charset.Charset;
@@ -43,7 +44,6 @@ public class FileTool {
      * 创建第一个隶属指定目录下的文件
      *
      * @param filePath 文件完整路径及文件名
-     *
      * @return 创建的文件
      */
     public static File createFirstFile(String filePath) throws IOException {
@@ -80,7 +80,6 @@ public class FileTool {
      * 获取文件中的总行数，适合单行内容较多较长的情况
      *
      * @param file 文件
-     *
      * @return 文件总行数
      */
     public static int getFileLineCountIfBigCharLine(File file) {
@@ -109,7 +108,6 @@ public class FileTool {
      * 获取文件中的总行数，适合单行内容较少的情况
      *
      * @param file 文件
-     *
      * @return 文件总行数
      */
     public static int getFileLineCountIfLittleCharLine(File file) {
@@ -138,6 +136,22 @@ public class FileTool {
             }
         }
         return cnt;
+    }
+
+    /**
+     * 获取文件MD5的值
+     *
+     * @param file 文件
+     * @return MD5值
+     */
+    public static String getMD5(File file) {
+        try (FileInputStream fis = new FileInputStream(file)) {
+            // 获取一个文件MD5的方法，参数为该文件的输入流
+            return DigestUtils.md5Hex(fis);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
 }

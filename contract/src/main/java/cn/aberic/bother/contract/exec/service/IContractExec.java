@@ -64,6 +64,10 @@ public interface IContractExec {
         return contractFileExec().installOrUpgrade(contract);
     }
 
+    default String contractHash() {
+        return contractFileExec().getContractHash();
+    }
+
     /**
      * 获取本地区块文件个数
      *

@@ -59,7 +59,15 @@ public class Contract {
     /** 安装路径 */
     @JSONField(name = "d")
     private String dir;
-    /** 唯一hash */
+    /**
+     * 智能合约唯一hash。
+     * <p>
+     * 该hash值必须被妥善保管。
+     * <p>
+     * 该智能合约今后的升级等操作均依赖此hash值。
+     * <p>
+     * 此hash不会重复，如果出现重复，则表示有误操作或有人恶意攻击该合约
+     */
     @JSONField(name = "h")
     private String hash;
 

@@ -47,7 +47,7 @@ public class FileComponent {
         /** 区块索引对象类型 */
         T_TYPE_BLOCK_INDEX(BlockInfo.class),
         /** 智能合约对象类型 */
-        T_TYPE_CONTRACT(Contract .class);
+        T_TYPE_CONTRACT(Contract.class);
 
         /** 交易结果码 */
         private Class aClass;
@@ -169,19 +169,12 @@ public class FileComponent {
                 TType.T_TYPE_BLOCK_INDEX);
     }
 
-    /**
-     * 获取指定智能合约hash的智能合约文件可操作状态
-     *
-     * @param contractHash 智能合约hash
-     */
-    public static FileComponent getContractFileComponent(String contractHash) {
-        if (StringUtils.isEmpty(contractHash)) {
-            throw new NullPointerException("smart contract hash can't be empty");
-        }
+    /** 获取指定智能合约hash的智能合约文件可操作状态 */
+    public static FileComponent getContractFileComponent() {
         return new FileComponent(
                 Common.CONTRACT_FILE_START,
                 Common.CONTRACT_FILE_END,
-                getCustomDirByContractHash(Common.CONTRACT_FILE_CUSTOM_DIR, contractHash),
+                Common.CONTRACT_FILE_CUSTOM_DIR,
                 TType.T_TYPE_CONTRACT);
     }
 
@@ -190,7 +183,6 @@ public class FileComponent {
      *
      * @param dir          文件固定目录
      * @param contractHash 智能合约hash
-     *
      * @return 当前文件操作目录
      */
     private static String getCustomDirByContractHash(String dir, String contractHash) {

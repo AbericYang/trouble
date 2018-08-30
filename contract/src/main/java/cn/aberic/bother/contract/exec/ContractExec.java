@@ -56,7 +56,18 @@ public class ContractExec implements IContractExec {
         this.contractFile = contractFile;
     }
 
-    public ContractExec(String contractHash) {
+    /**
+     * 实例化智能合约操作接口实现。
+     * <p>
+     * 此方法不出意外，将仅由 controller 层进行调用
+     * <p>
+     * 通过上传智能合约安装文件来获取智能合约安装路径
+     *
+     * @param contractFile 智能合约上传的安装文件
+     * @param contractHash 智能合约hash
+     */
+    public ContractExec(File contractFile, String contractHash) {
+        this.contractFile = contractFile;
         this.contractHash = contractHash;
     }
 
@@ -70,6 +81,6 @@ public class ContractExec implements IContractExec {
         if (StringUtils.isEmpty(contractHash)) {
             return new ContractFileExec(contractFile);
         }
-        return new ContractFileExec(contractHash);
+        return new ContractFileExec(contractFile, contractHash);
     }
 }
