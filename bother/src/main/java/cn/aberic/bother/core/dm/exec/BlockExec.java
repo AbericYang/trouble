@@ -25,8 +25,8 @@
 package cn.aberic.bother.core.dm.exec;
 
 import cn.aberic.bother.common.Common;
-import cn.aberic.bother.common.file.FileComponent;
 import cn.aberic.bother.core.dm.exec.service.IBlockExec;
+import cn.aberic.bother.storage.FileComponent;
 import org.apache.commons.lang3.StringUtils;
 
 /**

@@ -24,9 +24,9 @@
 
 package cn.aberic.bother.core.dm.runnable;
 
-import cn.aberic.bother.core.dm.entity.Block;
-import cn.aberic.bother.core.dm.entity.BlockInfo;
 import cn.aberic.bother.core.dm.exec.BlockExec;
+import cn.aberic.bother.entity.block.Block;
+import cn.aberic.bother.entity.block.BlockInfo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import org.apache.commons.io.FileUtils;

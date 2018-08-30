@@ -25,9 +25,9 @@
 
 package cn.aberic.bother.core.as.sys;
 
-import cn.aberic.bother.core.sc.entity.Contract;
 import cn.aberic.bother.core.sc.exec.service.IContract;
 import cn.aberic.bother.core.sc.exec.service.IContractBlockExec;
+import cn.aberic.bother.entity.contract.Contract;
 
 /**
  * 系统应用智能合约-app support

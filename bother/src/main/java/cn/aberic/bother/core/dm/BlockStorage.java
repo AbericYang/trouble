@@ -26,8 +26,8 @@ package cn.aberic.bother.core.dm;
 
 import cn.aberic.bother.core.cta.ConsensusStatus;
 import cn.aberic.bother.core.cta.exec.Proactive;
-import cn.aberic.bother.core.dm.entity.Block;
-import cn.aberic.bother.core.dm.entity.BlockInfo;
+import cn.aberic.bother.entity.block.Block;
+import cn.aberic.bother.entity.block.BlockInfo;
 import org.apache.commons.lang3.StringUtils;
 
 /**

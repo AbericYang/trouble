@@ -27,11 +27,11 @@ package cn.aberic.bother.core.sc.exec;
 
 import cn.aberic.bother.common.Common;
 import cn.aberic.bother.common.exception.ContractParamException;
-import cn.aberic.bother.common.file.FileComponent;
-import cn.aberic.bother.common.file.FileTool;
-import cn.aberic.bother.common.file.IFile;
+import cn.aberic.bother.storage.FileComponent;
 import cn.aberic.bother.core.dm.exec.service.IInit;
-import cn.aberic.bother.core.sc.entity.Contract;
+import cn.aberic.bother.entity.contract.Contract;
+import cn.aberic.bother.storage.IFile;
+import cn.aberic.bother.tools.FileTool;
 import com.alibaba.fastjson.JSON;
 import org.apache.commons.lang3.StringUtils;
 

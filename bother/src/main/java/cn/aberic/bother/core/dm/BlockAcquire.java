@@ -24,8 +24,8 @@
 
 package cn.aberic.bother.core.dm;
 
-import cn.aberic.bother.core.dm.entity.Block;
-import cn.aberic.bother.eac.MD5;
+import cn.aberic.bother.encryption.MD5;
+import cn.aberic.bother.entity.block.Block;
 
 /**
  * 获取区块——数据操作层-data manipulation

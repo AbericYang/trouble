@@ -24,13 +24,13 @@
 
 package cn.aberic.bother.core.dm.exec.service;
 
-import cn.aberic.bother.common.file.IFile;
-import cn.aberic.bother.core.dm.entity.BlockInfo;
+import cn.aberic.bother.entity.block.BlockInfo;
+import cn.aberic.bother.storage.IFile;
 
 /**
  * 文件本地读写接口——数据操作层-data manipulation
  * <p>
- * 该接口服务提供了区块文件{@link cn.aberic.bother.core.dm.entity.Block}
+ * 该接口服务提供了区块文件{@link cn.aberic.bother.entity.block.Block}
  * 及区块索引文件{@link BlockInfo}对象的
  * 基本操作方案
  * <p>

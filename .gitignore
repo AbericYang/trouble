@@ -11,3 +11,8 @@ gen
 /bother/mvnw
 /bother/mvnw.cmd
 /bother/.mvn/
+/entity/target/
+/encryption/target/
+/contract/target/
+/storage/target/
+/tools/target/

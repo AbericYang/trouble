@@ -25,8 +25,8 @@
 
 package cn.aberic.bother.core.dm.exec.service;
 
-import cn.aberic.bother.common.file.FileTool;
-import cn.aberic.bother.core.dm.entity.BlockInfo;
+import cn.aberic.bother.tools.FileTool;
+import cn.aberic.bother.entity.block.BlockInfo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SimplePropertyPreFilter;
 

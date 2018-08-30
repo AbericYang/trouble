@@ -24,12 +24,11 @@
 
 package cn.aberic.bother.core.sc.exec.service;
 
-import cn.aberic.bother.common.file.IFile;
 import cn.aberic.bother.core.dm.BlockAcquire;
-import cn.aberic.bother.core.dm.entity.Block;
-import cn.aberic.bother.core.sc.entity.Contract;
 import cn.aberic.bother.core.sc.exec.ContractFileExec;
-import cn.aberic.bother.eac.MD5;
+import cn.aberic.bother.encryption.MD5;
+import cn.aberic.bother.entity.block.Block;
+import cn.aberic.bother.entity.contract.Contract;
 
 /**
  * 智能合约区块操作接口-smart contract
@@ -42,13 +41,13 @@ public interface IContractBlockExec {
     BlockAcquire getBlockAcquire();
 
     /**
-     * 获取 {@link IFile} 实现类。
+     * 获取 {@link cn.aberic.bother.storage.IFile} 实现类。
      * <p>
-     * 原本应该当前接口继承 {@link IFile} 进行操作，但有关 {@link IFile} 接口不方便直接暴露出去。
+     * 原本应该当前接口继承 {@link cn.aberic.bother.storage.IFile} 进行操作，但有关 {@link cn.aberic.bother.storage.IFile} 接口不方便直接暴露出去。
      * <p>
      * 所以这里采用的方案与 {@link cn.aberic.bother.core.dm.exec.service.IBlockExec}和 {@link cn.aberic.bother.core.dm.exec.service.IIndexExec} 不同
      *
-     * @return {@link IFile} 实现
+     * @return {@link cn.aberic.bother.storage.IFile} 实现
      */
     ContractFileExec getFileExec();
 
