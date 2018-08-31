@@ -67,15 +67,26 @@ public class Common {
     public final static String BLOCK_TRANSACTION_INDEX_CUSTOM_DIR = "/Users/Aberic/Documents/tmp/trouble/btifs";
     // public final static String BLOCK_INDEX_CUSTOM_DIR = "/data/trouble/btifs";
 
-    /** 默认区块文件前缀 */
+    /** 默认合约文件前缀 */
     public final static String CONTRACT_FILE_START = "contract_file_";
-    /** 默认区块文件后缀 */
+    /** 默认合约文件后缀 */
     public final static String CONTRACT_FILE_END = ".contract";
-    /** 默认区块文件存储路径 测试/生产 */
+    /** 默认合约文件存储路径 测试/生产 */
     public final static String CONTRACT_FILE_DIR = "/Users/Aberic/Documents/tmp/trouble/c";
-    // public final static String BLOCK_FILE_DIR = "/data/trouble/blockfile";
-    /** 自定义区块文件存储路径 测试/生产 */
+    // public final static String BLOCK_FILE_DIR = "/data/trouble/c";
+    /** 自定义合约文件存储路径 测试/生产 */
     public final static String CONTRACT_FILE_CUSTOM_DIR = "/Users/Aberic/Documents/tmp/trouble/cs";
-    // public final static String BLOCK_FILE_CUSTOM_DIR = "/data/trouble/blockfile";
+    // public final static String BLOCK_FILE_CUSTOM_DIR = "/data/trouble/cs";
+
+    /** 默认合约数据文件前缀 */
+    public final static String CONTRACT_DATA_FILE_START = "data_file_";
+    /** 默认合约数据文件后缀 */
+    public final static String CONTRACT_DATA_FILE_END = ".data";
+    /** 默认合约数据文件存储路径 测试/生产 */
+    public final static String CONTRACT_DATA_FILE_DIR = "/Users/Aberic/Documents/tmp/trouble/cd";
+    // public final static String BLOCK_FILE_DIR = "/data/trouble/cd";
+    /** 自定义合约数据文件存储路径 测试/生产 */
+    public final static String CONTRACT_DATA_FILE_CUSTOM_DIR = "/Users/Aberic/Documents/tmp/trouble/cds";
+    // public final static String BLOCK_FILE_CUSTOM_DIR = "/data/trouble/cds";
 
 }

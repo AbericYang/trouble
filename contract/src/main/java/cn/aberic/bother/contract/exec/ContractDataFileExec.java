@@ -20,35 +20,44 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- *
  */
 
-package cn.aberic.bother.contract.exec.service;
+package cn.aberic.bother.contract.exec;
 
-import cn.aberic.bother.block.exec.service.IInit;
-import cn.aberic.bother.entity.contract.Contract;
+import cn.aberic.bother.contract.exec.service.IContractDataFileExec;
 import cn.aberic.bother.storage.Common;
-import cn.aberic.bother.storage.IFile;
+import cn.aberic.bother.storage.FileComponent;
+import org.apache.commons.lang3.StringUtils;
 
 /**
- * 系统级智能合约文件对象操作接口-smart contract
- * <p>
- * 作者：Aberic on 2018/8/30 23:33
+ * 作者：Aberic on 2018/08/31 11:33
  * 邮箱：abericyang@gmail.com
  */
-public interface ISystemContractFileExec extends IInit, IFile<Contract> {
+public class ContractDataFileExec implements IContractDataFileExec {
+
+    private String contractHash;
 
     /**
-     * 获取当前智能合约对象
+     * 根据智能合约hash值操作区块文件；
+     * 在智能合约被安装的时候就根据合约内容计算该合约hash；
+     * 并以此hash匹配所有安装该合约的节点且同步数据
      *
-     * @return 智能合约对象
+     * @param contractHash 智能合约hash值
      */
-    default Contract getContract() {
-        Contract contract = new Contract("tb", "1.0", 1, "让连接更有价值！no trouble, no bother!");
-        contract.setTimestamp(515260800000L);
-        contract.setHash(Common.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH);
-        contract.setDir("6c5ea876d5220135ee0c05d0f0840efe");
-        return contract;
+    ContractDataFileExec(String contractHash) {
+        this.contractHash = contractHash;
     }
 
+    @Override
+    public String getContractHash() {
+        return contractHash;
+    }
+
+    @Override
+    public FileComponent getFileStatus() {
+        if (StringUtils.equals(getContractHash(), Common.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH)) {
+            return FileComponent.getContractDataFileComponentDefault();
+        }
+        return FileComponent.getContractDataFileComponent(getContractHash());
+    }
 }

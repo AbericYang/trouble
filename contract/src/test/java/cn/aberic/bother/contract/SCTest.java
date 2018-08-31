@@ -52,7 +52,7 @@ public class SCTest {
 
     private static void simpleContract() {
         SimpleContract contract = new SimpleContract();
-        SystemOut.println("simple contract test result = " + contract.init(new ContractExec(new File(""))));
+        SystemOut.println("simple contract test result = " + contract.init(new ContractExec(new File(""), "")));
     }
 
     private static void scanner() {

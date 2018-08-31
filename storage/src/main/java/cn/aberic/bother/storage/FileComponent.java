@@ -47,7 +47,9 @@ public class FileComponent {
         /** 区块索引对象类型 */
         T_TYPE_BLOCK_INDEX(BlockInfo.class),
         /** 智能合约对象类型 */
-        T_TYPE_CONTRACT(Contract.class);
+        T_TYPE_CONTRACT(Contract.class),
+        /** 智能合约对象类型 */
+        T_TYPE_CONTRACT_DATA(null);
 
         /** 交易结果码 */
         private Class aClass;
@@ -121,6 +123,15 @@ public class FileComponent {
                 TType.T_TYPE_CONTRACT);
     }
 
+    /** 获取默认智能合约数据文件可操作状态 */
+    public static FileComponent getContractDataFileComponentDefault() {
+        return new FileComponent(
+                Common.CONTRACT_DATA_FILE_START,
+                Common.CONTRACT_DATA_FILE_END,
+                Common.CONTRACT_DATA_FILE_DIR,
+                TType.T_TYPE_CONTRACT_DATA);
+    }
+
     /**
      * 获取指定智能合约hash的区块文件可操作状态
      *
@@ -176,6 +187,15 @@ public class FileComponent {
                 Common.CONTRACT_FILE_END,
                 Common.CONTRACT_FILE_CUSTOM_DIR,
                 TType.T_TYPE_CONTRACT);
+    }
+
+    /** 获取指定智能合约hash的智能合约数据文件可操作状态 */
+    public static FileComponent getContractDataFileComponent(String contractHash) {
+        return new FileComponent(
+                Common.CONTRACT_DATA_FILE_START,
+                Common.CONTRACT_DATA_FILE_END,
+                getCustomDirByContractHash(Common.CONTRACT_DATA_FILE_CUSTOM_DIR, contractHash),
+                TType.T_TYPE_CONTRACT_DATA);
     }
 
     /**

@@ -75,15 +75,13 @@ public class ContractFileExec implements IContractFileExec {
      * <p>
      * 已传智能合约hash，根据已传参数操作智能合约
      *
-     * @param contractFile 智能合约上传的安装文件
      * @param contractHash 智能合约hash
      */
-    ContractFileExec(File contractFile, String contractHash) {
+    ContractFileExec(String contractHash) {
         // 设定的智能合约hash必须由系统生成，且不能与系统自由合约hash相同
         if (StringUtils.equalsIgnoreCase(contractHash, Common.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH)) {
             throw new ContractHashException();
         }
-        this.contractFile = contractFile;
         this.contractHash = contractHash;
     }
 
@@ -109,40 +107,36 @@ public class ContractFileExec implements IContractFileExec {
         if (null == contractFile) {
             throw new ContractFileNotFoundException(contract.getName(), contract.getVersionName(), contract.getVersionCode());
         }
-        // 如果智能合约hash为空，则表示首次安装该合约，安装并返回最终成功的hash
-        if (StringUtils.isEmpty(contractHash)) {
-            contractHash = MD5.md532(String.format("%s%s%s%s%s%s%s",
-                    contract.getName(),
-                    contract.getVersionName(),
-                    contract.getVersionCode(),
-                    contract.getBrief(),
-                    contract.getDir(),
-                    contract.getTimestamp(),
-                    FileTool.getMD5(contractFile)));
-        }
+        // 首次安装该合约，安装并返回最终成功的hash
+        contractHash = MD5.md532(String.format("%s%s%s%s%s",
+                contract.getName(),
+                contract.getVersionName(),
+                contract.getVersionCode(),
+                contract.getBrief(),
+                FileTool.getMD5(contractFile)));
         contract.setHash(contractHash);
         contract.setDir(contractFile.getAbsolutePath());
         String jsonString = JSON.toJSONString(contract);
         // 验证并获取最新写入的合约文件
-        File contractFile = verifyContract(contract);
+        File contractLocalFile = verifyContract();
         // File contractFile = getLastFile();
         try {
             // 如果最新写入的合约文件为null，则从0开始重新写入
-            if (null == contractFile) {
+            if (null == contractLocalFile) {
                 // 定义新的合约文件
-                contractFile = createFirstFile();
-                FileTool.writeFirstLine(contractFile, jsonString);
+                contractLocalFile = createFirstFile();
+                FileTool.writeFirstLine(contractLocalFile, jsonString);
             } else {
                 // 计算该内容的字节长度
                 long contractSize = jsonString.getBytes().length;
                 // 如果合约文件和待写入对象之和已经大于或等于24MB，则开辟新合约文件写入合约对象
-                if (contractFile.length() + contractSize >= 24 * 1000 * 1000) {
-                    System.out.println(String.format("contract file size great than 24MB, now size = %s", contractFile.length()));
-                    contractFile = getNextFileByCurrentFile(contractFile);
-                    System.out.println(String.format("next contract file name = %s", contractFile.getName()));
-                    FileTool.writeFirstLine(contractFile, jsonString);
+                if (contractLocalFile.length() + contractSize >= 24 * 1000 * 1000) {
+                    System.out.println(String.format("contract file size great than 24MB, now size = %s", contractLocalFile.length()));
+                    contractLocalFile = getNextFileByCurrentFile(contractLocalFile);
+                    System.out.println(String.format("next contract file name = %s", contractLocalFile.getName()));
+                    FileTool.writeFirstLine(contractLocalFile, jsonString);
                 } else {
-                    FileTool.writeAppendLine(contractFile, jsonString);
+                    FileTool.writeAppendLine(contractLocalFile, jsonString);
                 }
             }
         } catch (IOException e) {
@@ -158,11 +152,9 @@ public class ContractFileExec implements IContractFileExec {
      * <p>
      * 如果不重复，则返回可写入智能合约文件
      *
-     * @param contract 待部署合约
-     *
      * @return 写入智能合约文件
      */
-    private File verifyContract(Contract contract) {
+    private File verifyContract() {
         File[] fileArray = new File[]{null};
         Iterable<File> files = Files.fileTraverser().breadthFirst(new File(getFileStatus().getDir()));
         files.forEach(file -> {
@@ -174,8 +166,7 @@ public class ContractFileExec implements IContractFileExec {
                         if (null == lineContract) {
                             continue;
                         }
-                        if (StringUtils.equalsIgnoreCase(lineContract.getHash(), contractHash) &&
-                                lineContract.getVersionCode() == contract.getVersionCode()) {
+                        if (StringUtils.equalsIgnoreCase(lineContract.getHash(), contractHash)) {
                             throw new ContractRepetitionException();
                         }
                     }

@@ -36,30 +36,79 @@ import com.alibaba.fastjson.JSONObject;
  */
 public interface IResponse {
 
-    int SUCCESS = 200;
+    /** 返回的成功码 */
+    int SUCCESS_CODE = 200;
 
-    default String responseSuccess() {
+    /**
+     * 通用且简单点成功返回，仅需接收方知道此次请求状态即可。
+     * <p>
+     * 返回格式是一个json字符串，此json有两个key，分别是code和data。
+     * <p>
+     * code默认值是 {@link #SUCCESS_CODE} ，data默认返回success字符串
+     *
+     * @return 返回 success json字符串
+     */
+    default String response() {
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("code", SUCCESS);
-        return VerifyTool.verifyJSON(jsonObject, "success").toString();
+        jsonObject.put("code", SUCCESS_CODE);
+        jsonObject.put("data", "success");
+        return jsonObject.toString();
     }
 
+    /**
+     * 根据传入字符串 {@param result} 返回一个json字符串，此json有两个key，分别是code和data。
+     * <p>
+     * code默认值是 {@link #SUCCESS_CODE}。
+     * <p>
+     * data会验证 {@param result} 是否为json对象或json array对象
+     * <p>
+     * 如果是json对象，则转成json对象后作为data的值
+     * <p>
+     * 如果是json array对象，则转成json array对象后作为data的值
+     * <p>
+     * 如果不属于json类型，则直接将此字符串作为data的值。
+     *
+     * @param result 传入字符串
+     * @return json字符串
+     */
     default String response(String result) {
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("code", SUCCESS);
+        jsonObject.put("code", SUCCESS_CODE);
         return VerifyTool.verifyJSON(jsonObject, result).toString();
     }
 
+    /**
+     * 根据传入对象 {@param obj} 返回一个json字符串，此json有两个key，分别是code和data。
+     * <p>
+     * code默认值是 {@link #SUCCESS_CODE}。
+     * <p>
+     * {@param obj} 直接作为data的值。
+     *
+     * @param obj 传入对象
+     * @return json字符串
+     */
     default String response(Object obj) {
         if (obj instanceof BeanJsonField) {
             return responseBean((BeanJsonField) obj);
         }
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("code", SUCCESS);
+        jsonObject.put("code", SUCCESS_CODE);
         jsonObject.put("data", obj);
         return jsonObject.toString();
     }
 
+    /**
+     * 根据传入实现了 {@link BeanJsonField} 接口的对象 {@param bean} 返回一个json字符串
+     * <p>
+     * 此json有两个key，分别是code和data。
+     * <p>
+     * code默认值是 {@link #SUCCESS_CODE}。
+     * <p>
+     * {@param bean} 在调用接口方法toJsonString后直接作为data的值。
+     *
+     * @param bean 实现 BeanJsonField 接口的对象
+     * @return json字符串
+     */
     default String responseBean(BeanJsonField bean) {
         return response(bean.toJsonString());
     }

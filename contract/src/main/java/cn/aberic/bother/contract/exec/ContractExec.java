@@ -42,6 +42,8 @@ public class ContractExec extends SystemContractExec implements IContractExec, I
 
     /** 智能合约hash */
     private String contractHash;
+    /** 旧版智能合约hash */
+    private String contractOldHash;
     /** 智能合约上传的安装文件 */
     private File contractFile;
 
@@ -52,24 +54,22 @@ public class ContractExec extends SystemContractExec implements IContractExec, I
      * <p>
      * 通过上传智能合约安装文件来利用 {@link #getContractFileExec()} 方法实现来为 {@link #contractHash} 赋值。
      *
-     * @param contractFile 智能合约上传的安装文件
+     * @param contractFile    智能合约上传的安装文件
+     * @param contractOldHash 旧版智能合约hash
      */
-    public ContractExec(File contractFile) {
+    public ContractExec(File contractFile, String contractOldHash) {
         this.contractFile = contractFile;
+        this.contractOldHash = contractOldHash;
     }
 
     /**
-     * 实例化智能合约操作接口实现。
+     * 智能合约操作接口实现。
      * <p>
      * 此方法不出意外，将仅由 controller 层进行调用
-     * <p>
-     * 通过上传智能合约安装文件来获取智能合约安装路径
      *
-     * @param contractFile 智能合约上传的安装文件
      * @param contractHash 智能合约hash
      */
-    public ContractExec(File contractFile, String contractHash) {
-        this.contractFile = contractFile;
+    public ContractExec(String contractHash) {
         this.contractHash = contractHash;
     }
 
@@ -83,12 +83,15 @@ public class ContractExec extends SystemContractExec implements IContractExec, I
         if (StringUtils.isEmpty(contractHash)) {
             return new ContractFileExec(contractFile);
         }
-        return new ContractFileExec(contractFile, contractHash);
+        return new ContractFileExec(contractHash);
     }
 
     @Override
     public String init(Contract contract) {
-        return getContractFileExec().init(contract);
+        contractHash = getContractFileExec().init(contract);
+        // 上述初始化操作后会废弃旧版hash，需要将旧版hash中的智能合约数据文件夹重命名为新版hash，以便调用
+        getContractDataFileExec().renameContractFile(contractOldHash);
+        return contractHash;
     }
 
 }

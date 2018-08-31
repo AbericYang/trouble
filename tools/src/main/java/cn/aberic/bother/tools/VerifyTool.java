@@ -41,20 +41,34 @@ public class VerifyTool {
         try {
             JSONObject object = JSON.parseObject(result);
             jsonObject.put("data", object);
-        } catch (Exception ignored) {
-        }
-        if (jsonObject.containsKey("data")) {
             return jsonObject;
+        } catch (Exception ignored) {
         }
         try {
             JSONArray array = JSON.parseArray(result);
             jsonObject.put("data", array);
+            return jsonObject;
         } catch (Exception ignored) {
         }
-        if (jsonObject.containsKey("data")) {
-            return jsonObject;
-        }
         jsonObject.put("data", result);
+        return jsonObject;
+    }
+
+    public static JSONObject verifyJSON(String key, String value) {
+        JSONObject jsonObject = new JSONObject();
+        try {
+            JSONObject object = JSON.parseObject(value);
+            jsonObject.put(key, object);
+            return jsonObject;
+        } catch (Exception ignored) {
+        }
+        try {
+            JSONArray array = JSON.parseArray(value);
+            jsonObject.put(key, array);
+            return jsonObject;
+        } catch (Exception ignored) {
+        }
+        jsonObject.put(key, value);
         return jsonObject;
     }
 

@@ -20,45 +20,39 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- *
  */
 
 package cn.aberic.bother.contract.exec.service;
 
-import cn.aberic.bother.entity.IResponse;
-import cn.aberic.bother.entity.block.Block;
+import cn.aberic.bother.block.exec.service.IInit;
 import cn.aberic.bother.entity.contract.Contract;
+import cn.aberic.bother.storage.Common;
+import cn.aberic.bother.storage.FileComponent;
+import cn.aberic.bother.storage.IFile;
+import cn.aberic.bother.tools.VerifyTool;
+import com.alibaba.fastjson.JSONObject;
+
+import java.io.File;
 
 /**
- * 系统级智能合约操作接口-smart contract
+ * 系统级智能合约数据文件对象操作接口-smart contract
  * <p>
- * 作者：Aberic on 2018/8/30 21:45
+ * 作者：Aberic on 2018/08/31 11:28
  * 邮箱：abericyang@gmail.com
  */
-public interface ISystemContractExec extends IResponse {
+public interface IContractDataFileExec extends IInit, IFile<Contract> {
 
     /**
-     * 获取当前智能合约对象
+     * 将根据旧版hash所指定智能合约数据文件夹重命名为新版hash
      *
-     * @return 智能合约对象
+     * @param contractOldHash 旧版hash
      */
-    Contract getContract();
-
-    /**
-     * 根据传入字符串 {@param value} 存入一个key为 {@param key} 的json。
-     * <p>
-     * {@param value} 会被验证是否为json对象或json array对象
-     * <p>
-     * 如果是json对象，则转成json对象后作为json value的值
-     * <p>
-     * 如果是json array对象，则转成json array对象后作为json value的值
-     * <p>
-     * 如果不属于json类型，则直接将此字符串作为json value的值。
-     *
-     * @param key   json key
-     * @param value 传入字符串
-     */
-    void put(String key, String value);
+    default void renameContractFile(String contractOldHash) {
+        // 旧版hash所在文件夹路径
+        File file = new File(FileComponent.getContractDataFileComponent(contractOldHash).getDir());
+        // 将原文件夹更改为新版hash
+        file.renameTo(new File(getFileStatus().getDir()));
+    }
 
     /**
      * 根据传入字符串 {@param value} 存入一个key为 {@param key} 的json。
@@ -81,7 +75,16 @@ public interface ISystemContractExec extends IResponse {
      * @param value 传入字符串
      * @param force 是否强制将value不做处理直接存入
      */
-    void put(String key, String value, boolean force);
+    default void put(String key, String value, boolean force) {
+        JSONObject jsonObject;
+        if (!force) {
+            jsonObject = VerifyTool.verifyJSON(key, value);
+        } else {
+            jsonObject = new JSONObject();
+            jsonObject.put(key, value);
+        }
+
+    }
 
     /**
      * 根据传入对象 {@param obj} 存入一个key为 {@param key} 的json。
@@ -89,51 +92,7 @@ public interface ISystemContractExec extends IResponse {
      * @param key json key
      * @param obj 传入字符串
      */
-    void put(String key, Object obj);
-
-    /**
-     * 获取当前智能合约唯一hash
-     *
-     * @return 智能合约唯一hash
-     */
-    String getContractHash();
-
-    /**
-     * 获取本地区块文件个数
-     *
-     * @return 区块文件个数
-     */
-    int getFileCount();
-
-    /**
-     * 获取指定合约下账本高度
-     *
-     * @return 指定合约账本高度
-     */
-    int getHeight();
-
-    /**
-     * 根据区块高度获取区块对象
-     *
-     * @param height 区块高度
-     * @return 区块对象
-     */
-    Block getBlockByHeight(int height);
-
-    /**
-     * 根据区块高度获取区块对象
-     *
-     * @param currentDataHash 当前区块hash
-     * @return 区块对象
-     */
-    Block getBlockByHash(String currentDataHash);
-
-    /**
-     * 根据区块高度获取区块对象
-     *
-     * @param transactionHash 交易hash
-     * @return 区块对象
-     */
-    Block getBlockByTransactionHash(String transactionHash);
+    default void put(String key, Object obj) {
+    }
 
 }

@@ -63,6 +63,11 @@ public interface IContractFileExec extends ISystemContractFileExec {
      */
     String init(Contract contract);
 
+    /**
+     * 获取当前智能合约对象
+     *
+     * @return 智能合约对象
+     */
     default Contract getContract() {
         Contract[] contracts = new Contract[]{null};
         Iterable<File> files = Files.fileTraverser().breadthFirst(new File(getFileStatus().getDir()));
