@@ -90,18 +90,18 @@ public interface IContractDataFileExec extends IInit, IFile<String> {
         try {
             // 得到即将存入的压缩字符串
             String compressJsonString = DeflaterTool.compress(jsonObject.toJSONString());
-            // 如果最新写入的区块文件为null，则从0开始重新写入
+            // 如果最新写入的智能合约数据文件为null，则从0开始重新写入
             if (null == contractDataFile) {
-                // 定义新的区块文件
+                // 定义新的智能合约数据文件
                 contractDataFile = createFirstFile();
                 FileTool.writeFirstLine(contractDataFile, compressJsonString);
             } else {
-                // 获取当前区块文件中的总行数，其值即为上一区块的行数
+                // 获取当前智能合约数据文件中的总行数，其值即为上一区块的行数
                 line = FileTool.getFileLineCountIfBigCharLine(contractDataFile);
                 // 重新生成待写入JSON String内容
                 // 计算该内容的字节长度
                 long contractDataSize = compressJsonString.getBytes().length;
-                // 如果区块文件和待写入对象之和已经大于或等于24MB，则开辟新区块文件写入区块对象
+                // 如果智能合约数据文件和待写入对象之和已经大于或等于24MB，则开辟新智能合约数据文件写入智能合约数据
                 if (contractDataFile.length() + contractDataSize >= 24 * 1000 * 1000) {
                     System.out.println(String.format("contract data file size great than 24MB, now size = %s", contractDataFile.length()));
                     contractDataFile = getNextFileByCurrentFile(contractDataFile);

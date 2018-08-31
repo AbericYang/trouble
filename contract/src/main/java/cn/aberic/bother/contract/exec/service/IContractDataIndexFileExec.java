@@ -53,18 +53,18 @@ public interface IContractDataIndexFileExec extends IInit, IFile<ContractInfo> {
      */
     default void put(ContractInfo contractInfo) {
         String jsonString = JSON.toJSONString(contractInfo);
-        // 获取最新写入的区块文件
+        // 获取最新写入的智能合约数据文件
         File indexFile = getLastFile();
         try {
-            // 如果最新写入的区块文件为null，则从0开始重新写入
+            // 如果最新写入的智能合约数据文件为null，则从0开始重新写入
             if (null == indexFile) {
-                // 定义新的区块文件
+                // 定义新的智能合约数据文件
                 indexFile = createFirstFile();
                 FileTool.writeFirstLine(indexFile, jsonString);
             } else {
                 // 计算该内容的字节长度
                 long indexSize = jsonString.getBytes().length;
-                // 如果区块文件和待写入对象之和已经大于或等于24MB，则开辟新区块文件写入区块对象
+                // 如果智能合约数据文件和待写入对象之和已经大于或等于24MB，则开辟新智能合约数据文件写入智能合约数据
                 if (indexFile.length() + indexSize >= 24 * 1000 * 1000) {
                     System.out.println(String.format("contract data index file size great than 24MB, now size = %s", indexFile.length()));
                     indexFile = getNextFileByCurrentFile(indexFile);
