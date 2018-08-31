@@ -26,10 +26,7 @@
 package cn.aberic.bother.contract.exec;
 
 import cn.aberic.bother.block.BlockAcquire;
-import cn.aberic.bother.contract.exec.service.IContractBaseExec;
-import cn.aberic.bother.contract.exec.service.IContractDataFileExec;
-import cn.aberic.bother.contract.exec.service.ISystemContractExec;
-import cn.aberic.bother.contract.exec.service.ISystemContractFileExec;
+import cn.aberic.bother.contract.exec.service.*;
 import cn.aberic.bother.encryption.MD5;
 import cn.aberic.bother.entity.block.Block;
 import cn.aberic.bother.entity.contract.Contract;
@@ -59,23 +56,23 @@ public class SystemContractExec implements ISystemContractExec, IContractBaseExe
     }
 
     @Override
+    public IContractDataIndexFileExec getContractDataIndexFileExec() {
+        return new ContractDataIndexFileExec(getContractHash());
+    }
+
+    @Override
     public Contract getContract() {
         return getContractFileExec().getContract();
     }
 
     @Override
-    public void put(String key, String value) {
-        put(key, value, false);
+    public void put(String key, Object obj, boolean force) {
+        getContractDataIndexFileExec().put(getContractDataFileExec().put(key, obj, force));
     }
 
     @Override
-    public void put(String key, String value, boolean force) {
-        getContractDataFileExec().put(key, value, force);
-    }
-
-    @Override
-    public void put(String key, Object obj) {
-        getContractDataFileExec().put(key, obj);
+    public Object get(String key) {
+        return getContractDataIndexFileExec().get(getContractDataFileExec(), key);
     }
 
     @Override

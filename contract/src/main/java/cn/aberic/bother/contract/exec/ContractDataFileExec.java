@@ -30,6 +30,8 @@ import cn.aberic.bother.storage.FileComponent;
 import org.apache.commons.lang3.StringUtils;
 
 /**
+ * 智能合约数据文件对象操作对象-smart contract
+ * <p>
  * 作者：Aberic on 2018/08/31 11:33
  * 邮箱：abericyang@gmail.com
  */

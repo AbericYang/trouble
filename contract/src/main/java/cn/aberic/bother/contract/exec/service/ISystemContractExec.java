@@ -45,9 +45,11 @@ public interface ISystemContractExec extends IResponse {
     Contract getContract();
 
     /**
-     * 根据传入字符串 {@param value} 存入一个key为 {@param key} 的json。
+     * 根据传入对象 {@param obj} 存入一个key为 {@param key} 的json。
      * <p>
-     * {@param value} 会被验证是否为json对象或json array对象
+     * 如果 {@param obj} 为 {@link String} 类型，且 {@param forcedString} 不为true
+     * <p>
+     * 那么 {@param obj} 会被验证是否为json对象或json array对象
      * <p>
      * 如果是json对象，则转成json对象后作为json value的值
      * <p>
@@ -56,32 +58,11 @@ public interface ISystemContractExec extends IResponse {
      * 如果不属于json类型，则直接将此字符串作为json value的值。
      *
      * @param key   json key
-     * @param value 传入字符串
+     * @param obj   传入对象
+     * @param force 如果对象为字符串，是否强制将value不做处理直接存入
+     * @return 智能合约数据key在智能合约数据文件中的基本信息
      */
-    void put(String key, String value);
-
-    /**
-     * 根据传入字符串 {@param value} 存入一个key为 {@param key} 的json。
-     * <p>
-     * 如果 {@param forcedString} 不为true
-     * <p>
-     * 那么 {@param value} 会被验证是否为json对象或json array对象
-     * <p>
-     * 如果是json对象，则转成json对象后作为json value的值
-     * <p>
-     * 如果是json array对象，则转成json array对象后作为json value的值
-     * <p>
-     * 如果不属于json类型，则直接将此字符串作为json value的值。
-     * <p>
-     * 如果 {@param forcedString} 为true
-     * <p>
-     * 则直接将 {@param value} 作为json value的值。
-     *
-     * @param key   json key
-     * @param value 传入字符串
-     * @param force 是否强制将value不做处理直接存入
-     */
-    void put(String key, String value, boolean force);
+    void put(String key, Object obj, boolean force);
 
     /**
      * 根据传入对象 {@param obj} 存入一个key为 {@param key} 的json。
@@ -89,7 +70,19 @@ public interface ISystemContractExec extends IResponse {
      * @param key json key
      * @param obj 传入字符串
      */
-    void put(String key, Object obj);
+    default void put(String key, Object obj) {
+        put(key, obj, false);
+    }
+
+    /**
+     * 根据传入键返回对应值
+     * <p>
+     * 天知道你的值是什么玩意，不管是什么，如果要用到话，就转成你能用的对象，比如"(String)obj"这样
+     *
+     * @param key 传入键
+     * @return 对应值
+     */
+    Object get(String key);
 
     /**
      * 获取当前智能合约唯一hash

@@ -20,36 +20,47 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- *
  */
 
 package cn.aberic.bother.contract.exec;
 
-import cn.aberic.bother.contract.exec.service.ISystemContract;
-import cn.aberic.bother.contract.exec.service.ISystemContractExec;
-import cn.aberic.bother.tools.SystemOut;
+import cn.aberic.bother.contract.exec.service.IContractDataIndexFileExec;
+import cn.aberic.bother.storage.Common;
+import cn.aberic.bother.storage.FileComponent;
+import org.apache.commons.lang3.StringUtils;
 
 /**
- * 系统应用智能合约-app support
+ * 智能合约数据索引文件对象操作对象-smart contract
  * <p>
- * 作者：Aberic on 2018/8/29 20:49
+ * 作者：Aberic on 2018/08/31 14:34
  * 邮箱：abericyang@gmail.com
  */
-public class SystemContract implements ISystemContract {
+public class ContractDataIndexFileExec implements IContractDataIndexFileExec {
 
-    @Override
-    public String invoke(ISystemContractExec exec) {
-        exec.put("haha", "hehe1");
-        return exec.response(exec.getContract());
+    private String contractHash;
+
+    /**
+     * 根据智能合约hash值操作区块文件；
+     * 在智能合约被安装的时候就根据合约内容计算该合约hash；
+     * 并以此hash匹配所有安装该合约的节点且同步数据
+     *
+     * @param contractHash 智能合约hash值
+     */
+    ContractDataIndexFileExec(String contractHash) {
+        this.contractHash = contractHash;
     }
 
     @Override
-    public String query(ISystemContractExec exec) {
-        Object o = exec.get("haha");
-        if (o instanceof String) {
-            SystemOut.println("o = " + o);
+    public String getContractHash() {
+        return contractHash;
+    }
+
+    @Override
+    public FileComponent getFileStatus() {
+        if (StringUtils.equals(getContractHash(), Common.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH)) {
+            return FileComponent.getContractDataIndexFileComponentDefault();
         }
-        return "haha";
+        return FileComponent.getContractDataIndexFileComponent(getContractHash());
     }
 
 }

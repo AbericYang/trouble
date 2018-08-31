@@ -27,6 +27,7 @@ package cn.aberic.bother.storage;
 import cn.aberic.bother.entity.block.Block;
 import cn.aberic.bother.entity.block.BlockInfo;
 import cn.aberic.bother.entity.contract.Contract;
+import cn.aberic.bother.entity.contract.ContractInfo;
 import cn.aberic.bother.tools.DeflaterTool;
 import cn.aberic.bother.tools.FileTool;
 import com.alibaba.fastjson.JSON;
@@ -93,6 +94,12 @@ public interface IFile<T> {
                                 break;
                             case T_TYPE_CONTRACT:
                                 ts[0] = (T) JSON.parseObject(DeflaterTool.uncompress(lineString), new TypeReference<Contract>() {});
+                                break;
+                            case T_TYPE_CONTRACT_DATA:
+                                ts[0] = (T) JSON.parseObject(DeflaterTool.uncompress(lineString), new TypeReference<String>() {});
+                                break;
+                            case T_TYPE_CONTRACT_INDEX_DATA:
+                                ts[0] = (T) JSON.parseObject(DeflaterTool.uncompress(lineString), new TypeReference<ContractInfo>() {});
                                 break;
                         }
                     }

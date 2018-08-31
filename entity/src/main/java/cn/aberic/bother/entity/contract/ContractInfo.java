@@ -20,36 +20,32 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- *
  */
 
-package cn.aberic.bother.contract.exec;
+package cn.aberic.bother.entity.contract;
 
-import cn.aberic.bother.contract.exec.service.ISystemContract;
-import cn.aberic.bother.contract.exec.service.ISystemContractExec;
-import cn.aberic.bother.tools.SystemOut;
+import com.alibaba.fastjson.annotation.JSONField;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
- * 系统应用智能合约-app support
+ * 智能合约数据key在智能合约数据文件中的基本信息——数据操作层-data manipulation
  * <p>
- * 作者：Aberic on 2018/8/29 20:49
+ * 作者：Aberic on 2018/08/31 14:11
  * 邮箱：abericyang@gmail.com
  */
-public class SystemContract implements ISystemContract {
+@Setter
+@Getter
+public class ContractInfo {
 
-    @Override
-    public String invoke(ISystemContractExec exec) {
-        exec.put("haha", "hehe1");
-        return exec.response(exec.getContract());
-    }
-
-    @Override
-    public String query(ISystemContractExec exec) {
-        Object o = exec.get("haha");
-        if (o instanceof String) {
-            SystemOut.println("o = " + o);
-        }
-        return "haha";
-    }
+    /** 智能合约数据key */
+    @JSONField(name = "k")
+    private String key;
+    /** 智能合约数据所在智能合约数据key编号 */
+    @JSONField(name = "n")
+    private int num;
+    /** 智能合约数据所在智能合约数据key中的行号 */
+    @JSONField(name = "l")
+    private int line;
 
 }

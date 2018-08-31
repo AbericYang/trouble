@@ -40,6 +40,7 @@ import java.io.IOException;
  */
 public interface IIndexExec extends IExec<BlockInfo> {
 
+    /** 参与序列化的参数数组 */
     String[] jsonStringByPropertyPreFilter();
 
     default BlockInfo createOrUpdate(BlockInfo blockInfo) {

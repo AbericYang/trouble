@@ -27,6 +27,7 @@ package cn.aberic.bother.storage;
 import cn.aberic.bother.entity.block.Block;
 import cn.aberic.bother.entity.block.BlockInfo;
 import cn.aberic.bother.entity.contract.Contract;
+import cn.aberic.bother.entity.contract.ContractInfo;
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 
@@ -49,7 +50,9 @@ public class FileComponent {
         /** 智能合约对象类型 */
         T_TYPE_CONTRACT(Contract.class),
         /** 智能合约对象类型 */
-        T_TYPE_CONTRACT_DATA(null);
+        T_TYPE_CONTRACT_DATA(String.class),
+        /** 智能合约对象类型 */
+        T_TYPE_CONTRACT_INDEX_DATA(ContractInfo.class);
 
         /** 交易结果码 */
         private Class aClass;
@@ -132,6 +135,15 @@ public class FileComponent {
                 TType.T_TYPE_CONTRACT_DATA);
     }
 
+    /** 获取默认智能合约数据索引文件可操作状态 */
+    public static FileComponent getContractDataIndexFileComponentDefault() {
+        return new FileComponent(
+                Common.CONTRACT_DATA_INDEX_FILE_START,
+                Common.CONTRACT_DATA_INDEX_FILE_END,
+                Common.CONTRACT_DATA_INDEX_FILE_DIR,
+                TType.T_TYPE_CONTRACT_INDEX_DATA);
+    }
+
     /**
      * 获取指定智能合约hash的区块文件可操作状态
      *
@@ -196,6 +208,15 @@ public class FileComponent {
                 Common.CONTRACT_DATA_FILE_END,
                 getCustomDirByContractHash(Common.CONTRACT_DATA_FILE_CUSTOM_DIR, contractHash),
                 TType.T_TYPE_CONTRACT_DATA);
+    }
+
+    /** 获取默认智能合约数据索引文件可操作状态 */
+    public static FileComponent getContractDataIndexFileComponent(String contractHash) {
+        return new FileComponent(
+                Common.CONTRACT_DATA_INDEX_FILE_START,
+                Common.CONTRACT_DATA_INDEX_FILE_END,
+                getCustomDirByContractHash(Common.CONTRACT_DATA_INDEX_FILE_CUSTOM_DIR, contractHash),
+                TType.T_TYPE_CONTRACT_INDEX_DATA);
     }
 
     /**

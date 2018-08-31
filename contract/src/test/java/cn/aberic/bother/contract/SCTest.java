@@ -47,7 +47,8 @@ public class SCTest {
 
     private static void systemContract() throws ContractParamException {
         SystemContract contract = new SystemContract();
-        SystemOut.println("simple contract test result = " + contract.invoke(new SystemContractExec()));
+        SystemOut.println("system contract invoke result = " + contract.invoke(new SystemContractExec()));
+        SystemOut.println("system contract query result = " + contract.query(new SystemContractExec()));
     }
 
     private static void simpleContract() {
