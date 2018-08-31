@@ -50,7 +50,6 @@ public interface IBlockTransactionIndexExec extends IInit, IExecInit, IIndexExec
      * 根据交易hash获取区块对象
      *
      * @param transactionHash 交易hash
-     *
      * @return 区块对象
      */
     default Block getByTransactionHash(String transactionHash) {
@@ -58,12 +57,12 @@ public interface IBlockTransactionIndexExec extends IInit, IExecInit, IIndexExec
         ThreadTroublePool troublePool = new ThreadTroublePool();
         boolean found = false;
         Iterable<File> files = Files.fileTraverser().breadthFirst(new File(getFileStatus().getDir()));
-        for (File file: files) {
+        for (File file : files) {
             if (StringUtils.startsWith(file.getName(), getFileStatus().getStart())) {
-                troublePool.submit(new RunnableSearchTransactionHashIndex(getBlockExec(), transactionHash, file, getNumByFileName(file.getName()), block -> {
+                troublePool.submit(new RunnableSearchTransactionHashIndex(troublePool, getBlockExec(), transactionHash,
+                        file, getNumByFileName(file.getName()), block -> {
                     if (null != block) {
                         blocks[0] = block;
-                        troublePool.shutdown();
                     }
                 }));
             }
@@ -86,7 +85,6 @@ public interface IBlockTransactionIndexExec extends IInit, IExecInit, IIndexExec
                 }
             }
         }
-        troublePool.shutdown();
         return blocks[0];
     }
 }

@@ -27,6 +27,7 @@ package cn.aberic.bother.block.runnable;
 import cn.aberic.bother.block.exec.BlockExec;
 import cn.aberic.bother.entity.block.Block;
 import cn.aberic.bother.entity.block.BlockInfo;
+import cn.aberic.bother.tools.thread.ThreadTroublePool;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import org.apache.commons.io.FileUtils;
@@ -46,18 +47,21 @@ public class RunnableSearchTransactionHashIndex implements Runnable {
         void find(Block block);
     }
 
+    private ThreadTroublePool troublePool;
     private BlockExec blockExec;
     private String transactionHash;
     private File file;
     private int blockFileNum;
     private SearchTransactionHashIndexListener listener;
 
-    public RunnableSearchTransactionHashIndex(BlockExec blockExec, String transactionHash, File file, int blockFileNum, SearchTransactionHashIndexListener lintener) {
+    public RunnableSearchTransactionHashIndex(ThreadTroublePool troublePool, BlockExec blockExec, String transactionHash,
+                                              File file, int blockFileNum, SearchTransactionHashIndexListener listener) {
+        this.troublePool = troublePool;
         this.blockExec = blockExec;
         this.transactionHash = transactionHash;
         this.file = file;
         this.blockFileNum = blockFileNum;
-        this.listener = lintener;
+        this.listener = listener;
 
     }
 
@@ -74,11 +78,8 @@ public class RunnableSearchTransactionHashIndex implements Runnable {
                             System.out.println("找到file，block-transaction-hash-index-file-num = " + blockFileNum);
                             found = true;
                             listener.find(blockExec.getByNumAndLine(blockInfo.getNum(), blockInfo.getLine()));
-                            break;
+                            troublePool.shutdown();
                         }
-                    }
-                    if (found) {
-                        break;
                     }
                 }
             }
