@@ -42,11 +42,6 @@ import java.util.Date;
  */
 public interface IBlockIndexExec extends IInit, IExecInit, IIndexExec {
 
-    @Override
-    default String[] jsonStringByPropertyPreFilter() {
-        return new String[]{"h", "b", "n", "l"};
-    }
-
     /**
      * 根据区块高度获取区块对象
      *

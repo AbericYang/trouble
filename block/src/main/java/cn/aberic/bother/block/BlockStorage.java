@@ -54,8 +54,14 @@ public class BlockStorage extends BlockAS {
      */
     public void save(Block block) {
         BlockInfo blockInfo = getBlockExec().createOrUpdate(block);
-        getBlockIndexExec().createOrUpdate(blockInfo);
-        getBlockTransactionIndexExec().createOrUpdate(blockInfo);
+        String blockIndex = String.format("%s,%s,%s,%s", blockInfo.getNum(), blockInfo.getLine(), blockInfo.getBlockHash(), blockInfo.getHeight());
+        getBlockIndexExec().createOrUpdate(blockIndex);
+        StringBuilder sb = new StringBuilder();
+        sb.append(String.format("%s,%s", blockInfo.getNum(), blockInfo.getLine()));
+        for (String s : blockInfo.getTransactionHashList()) {
+            sb.append(",").append(s);
+        }
+        getBlockTransactionIndexExec().createOrUpdate(sb.toString());
     }
 
     /**
@@ -72,7 +78,7 @@ public class BlockStorage extends BlockAS {
         Block blockFromFile = getBlockIndexExec().getByHeight(height);
         if (null == blockFromFile) { // 如果不存在，则执行存储操作
             BlockInfo blockInfo = getBlockExec().createOrUpdate(block);
-            getBlockIndexExec().createOrUpdate(blockInfo);
+            // getBlockIndexExec().createOrUpdate(blockInfo);
         } else { // 如果存在，则进入下一步判断两者区块有效性
             checkVerify(height, block, blockFromFile);
         }
@@ -81,9 +87,10 @@ public class BlockStorage extends BlockAS {
     /**
      * 检查两个区块有效性
      *
-     * @param height                    待存储区块对象高度
-     * @param block                     待存储区块对象
-     * @param blockFromFile             本地已存在区块文件中获取的区块对象
+     * @param height        待存储区块对象高度
+     * @param block         待存储区块对象
+     * @param blockFromFile 本地已存在区块文件中获取的区块对象
+     *
      * @return 区块存储结果
      */
     private boolean checkVerify(int height, Block block, Block blockFromFile) {

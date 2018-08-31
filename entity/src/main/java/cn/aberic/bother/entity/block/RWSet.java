@@ -27,6 +27,7 @@ package cn.aberic.bother.entity.block;
 import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 /**
  * 读写集——数据操作层-data manipulation
@@ -35,6 +36,7 @@ import lombok.Setter;
  */
 @Setter
 @Getter
+@ToString
 public class RWSet {
 
     /** 交易读内容 */

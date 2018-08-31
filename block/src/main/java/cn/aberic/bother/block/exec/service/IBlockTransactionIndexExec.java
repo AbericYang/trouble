@@ -41,11 +41,6 @@ import java.util.Date;
  */
 public interface IBlockTransactionIndexExec extends IInit, IExecInit, IIndexExec {
 
-    @Override
-    default String[] jsonStringByPropertyPreFilter() {
-        return new String[]{"t", "n", "l"};
-    }
-
     /**
      * 根据交易hash获取区块对象
      *

@@ -27,8 +27,6 @@ package cn.aberic.bother.block.runnable;
 import cn.aberic.bother.block.exec.BlockExec;
 import cn.aberic.bother.entity.block.Block;
 import cn.aberic.bother.entity.block.BlockInfo;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.TypeReference;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.LineIterator;
@@ -68,8 +66,15 @@ public class RunnableSearchBlockHashIndex implements Runnable {
         try (LineIterator it = FileUtils.lineIterator(file, "UTF-8")) {
             boolean found = false;
             while (it.hasNext()) {
+                BlockInfo blockInfo = null;
                 String lineString = it.nextLine();
-                BlockInfo blockInfo = JSON.parseObject(lineString, new TypeReference<BlockInfo>() {});
+                if (StringUtils.isNotEmpty(lineString)) {
+                    String[] strs = lineString.split(",");
+                    blockInfo = new BlockInfo();
+                    blockInfo.setNum(Integer.valueOf(strs[0]));
+                    blockInfo.setLine(Integer.valueOf(strs[1]));
+                    blockInfo.setBlockHash(strs[2]);
+                }
                 if (null != blockInfo && StringUtils.equalsIgnoreCase(blockInfo.getBlockHash(), currentDataHash)) {
                     log.debug("找到file，block-hash-index-file-num = {}" , blockFileNum);
                     found = true;

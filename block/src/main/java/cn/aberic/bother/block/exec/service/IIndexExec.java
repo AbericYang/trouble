@@ -26,8 +26,6 @@ package cn.aberic.bother.block.exec.service;
 
 import cn.aberic.bother.entity.block.BlockInfo;
 import cn.aberic.bother.tools.FileTool;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.serializer.SimplePropertyPreFilter;
 
 import java.io.File;
 import java.io.IOException;
@@ -38,15 +36,9 @@ import java.io.IOException;
  * 作者：Aberic on 2018/8/27 21:39
  * 邮箱：abericyang@gmail.com
  */
-public interface IIndexExec extends IExec<BlockInfo> {
+public interface IIndexExec extends IExec<String> {
 
-    /** 参与序列化的参数数组 */
-    String[] jsonStringByPropertyPreFilter();
-
-    default BlockInfo createOrUpdate(BlockInfo blockInfo) {
-        // 首先序列化时过滤掉无用属性
-        SimplePropertyPreFilter filter = new SimplePropertyPreFilter(BlockInfo.class, jsonStringByPropertyPreFilter());
-        String jsonString = JSON.toJSONString(blockInfo, filter);
+    default BlockInfo createOrUpdate(String blockInfo) {
         // 获取最新写入的区块文件
         File indexFile = getLastFile();
         try {
@@ -54,24 +46,22 @@ public interface IIndexExec extends IExec<BlockInfo> {
             if (null == indexFile) {
                 // 定义新的区块文件
                 indexFile = createFirstFile();
-                FileTool.writeFirstLine(indexFile, jsonString);
+                FileTool.writeFirstLine(indexFile, blockInfo);
             } else {
                 // 计算该内容的字节长度
-                long blockIndexSize = jsonString.getBytes().length;
-                // 如果区块文件和待写入对象之和已经大于或等于64MB，则开辟新区块文件写入区块对象
-                if (indexFile.length() + blockIndexSize >= 64 * 1000 * 1000) {
-                    System.out.println(String.format("block index file size great than 64MB, now size = %s", indexFile.length()));
+                long blockIndexSize = blockInfo.getBytes().length;
+                // 如果区块文件和待写入对象之和已经大于或等于128MB，则开辟新区块文件写入区块对象
+                if (indexFile.length() + blockIndexSize >= 128 * 1000 * 1000) {
                     indexFile = getNextFileByCurrentFile(indexFile);
-                    System.out.println(String.format("next block index file name = %s", indexFile.getName()));
-                    FileTool.writeFirstLine(indexFile, jsonString);
+                    FileTool.writeFirstLine(indexFile, blockInfo);
                 } else {
-                    FileTool.writeAppendLine(indexFile, jsonString);
+                    FileTool.writeAppendLine(indexFile, blockInfo);
                 }
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return blockInfo;
+        return null;
     }
 
 }

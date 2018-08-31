@@ -27,6 +27,7 @@ package cn.aberic.bother.entity.block;
 import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 /**
  * 一笔操作的读取值对象——数据操作层-data manipulation
@@ -36,6 +37,7 @@ import lombok.Setter;
  */
 @Setter
 @Getter
+@ToString
 public class ValueRead {
 
     /** 本次读取值编号，与写入值编号对应 */

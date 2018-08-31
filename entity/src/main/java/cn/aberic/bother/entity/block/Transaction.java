@@ -32,6 +32,7 @@ import com.alibaba.fastjson.annotation.JSONField;
 import com.google.common.hash.Hashing;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.nio.charset.Charset;
 import java.util.List;
@@ -44,6 +45,7 @@ import java.util.List;
  */
 @Setter
 @Getter
+@ToString
 public class Transaction {
 
     /** 发起方 */

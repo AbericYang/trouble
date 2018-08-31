@@ -41,6 +41,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Date;
 
 /**
  * 存储文件公共接口——公共方法包
@@ -62,10 +63,10 @@ public interface IFile<T> {
      * @return {@link T}对象
      */
     default T getByNumAndLine(int num, int line) {
-//        long time = new Date().getTime();
-//        T t = getFromFileByLine(getFileByNum(num), line);
-//        System.out.println("getByNumAndLine time = " + (new Date().getTime() - time));
-        return getFromFileByLine(getFileByNum(num), line);
+        long time = new Date().getTime();
+        T t = getFromFileByLine(getFileByNum(num), line);
+        System.out.println("getByNumAndLine time = " + (new Date().getTime() - time));
+        return t;
     }
 
     /**

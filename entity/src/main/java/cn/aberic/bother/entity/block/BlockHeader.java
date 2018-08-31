@@ -29,6 +29,7 @@ import cn.aberic.bother.tools.DateTool;
 import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 /**
  * 区块头部信息——数据操作层-data manipulation
@@ -38,6 +39,7 @@ import lombok.Setter;
  */
 @Setter
 @Getter
+@ToString
 public class BlockHeader {
 
     /** 区块高度 */

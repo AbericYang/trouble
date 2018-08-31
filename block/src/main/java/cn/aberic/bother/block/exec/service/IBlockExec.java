@@ -85,11 +85,9 @@ public interface IBlockExec extends IExec<Block> {
                 compressJsonString = DeflaterTool.compress(JSON.toJSONString(block));
                 // 计算该内容的字节长度
                 long blockSize = compressJsonString.getBytes().length;
-                // 如果区块文件和待写入对象之和已经大于或等于64MB，则开辟新区块文件写入区块对象
-                if (blockFile.length() + blockSize >= 64 * 1000 * 1000) {
-                    System.out.println(String.format("block file size great than 64MB, now size = %s", blockFile.length()));
+                // 如果区块文件和待写入对象之和已经大于或等于128MB，则开辟新区块文件写入区块对象
+                if (blockFile.length() + blockSize >= 128 * 1000 * 1000) {
                     blockFile = getNextFileByCurrentFile(blockFile);
-                    System.out.println(String.format("next block file name = %s", blockFile.getName()));
                     FileTool.writeFirstLine(blockFile, compressJsonString);
                 } else {
                     FileTool.writeAppendLine(blockFile, compressJsonString);
