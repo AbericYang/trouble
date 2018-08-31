@@ -37,6 +37,7 @@ import cn.aberic.bother.tools.exception.ContractRepetitionException;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import com.google.common.io.Files;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.LineIterator;
 import org.apache.commons.lang3.StringUtils;
@@ -50,6 +51,7 @@ import java.io.IOException;
  * 作者：Aberic on 2018/8/29 23:03
  * 邮箱：abericyang@gmail.com
  */
+@Slf4j
 public class ContractFileExec implements IContractFileExec {
 
     /** 智能合约hash */
@@ -131,9 +133,9 @@ public class ContractFileExec implements IContractFileExec {
                 long contractSize = jsonString.getBytes().length;
                 // 如果合约文件和待写入对象之和已经大于或等于24MB，则开辟新合约文件写入合约对象
                 if (contractLocalFile.length() + contractSize >= 24 * 1000 * 1000) {
-                    System.out.println(String.format("contract file size great than 24MB, now size = %s", contractLocalFile.length()));
+                    log.debug("contract file size great than 24MB, now size = {}", contractLocalFile.length());
                     contractLocalFile = getNextFileByCurrentFile(contractLocalFile);
-                    System.out.println(String.format("next contract file name = %s", contractLocalFile.getName()));
+                    log.debug("next contract file name = {}", contractLocalFile.getName());
                     FileTool.writeFirstLine(contractLocalFile, jsonString);
                 } else {
                     FileTool.writeAppendLine(contractLocalFile, jsonString);

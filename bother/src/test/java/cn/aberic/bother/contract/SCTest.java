@@ -27,8 +27,8 @@ package cn.aberic.bother.contract;
 import cn.aberic.bother.contract.exec.ContractExec;
 import cn.aberic.bother.contract.exec.SystemContract;
 import cn.aberic.bother.contract.exec.SystemContractExec;
-import cn.aberic.bother.tools.SystemOut;
 import cn.aberic.bother.tools.exception.ContractParamException;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.util.Scanner;
@@ -37,6 +37,7 @@ import java.util.Scanner;
  * 作者：Aberic on 2018/8/29 19:57
  * 邮箱：abericyang@gmail.com
  */
+@Slf4j
 public class SCTest {
 
     public static void main(String[] args) {
@@ -47,13 +48,13 @@ public class SCTest {
 
     private static void systemContract() throws ContractParamException {
         SystemContract contract = new SystemContract();
-        SystemOut.println("system contract invoke result = " + contract.invoke(new SystemContractExec()));
-        SystemOut.println("system contract query result = " + contract.query(new SystemContractExec()));
+        log.debug("system contract invoke result = {}", contract.invoke(new SystemContractExec()));
+        log.debug("system contract query  result = {}", contract.query(new SystemContractExec()));
     }
 
     private static void simpleContract() {
         SimpleContract contract = new SimpleContract();
-        SystemOut.println("simple contract test result = " + contract.init(new ContractExec(new File(""), "")));
+        log.debug("simple contract test result = {}", contract.init(new ContractExec(new File(""), "")));
     }
 
     private static void scanner() {

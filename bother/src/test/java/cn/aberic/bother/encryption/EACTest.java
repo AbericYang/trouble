@@ -22,22 +22,37 @@
  * SOFTWARE.
  */
 
-package cn.aberic.bother.tools;
+package cn.aberic.bother.encryption;
 
-import java.util.Date;
+import com.google.common.hash.Hashing;
+import lombok.extern.slf4j.Slf4j;
+
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 
 /**
- * 作者：Aberic on 2018/08/24 13:55
+ * 作者：Aberic on 2018/08/29 10:29
  * 邮箱：abericyang@gmail.com
  */
-public class SystemOut {
+@Slf4j
+public class EACTest {
 
-    public static void print(String msg) {
-        System.out.print(String.format("%s %s", new Date().toString(), msg));
+    public static void main(String[] args) {
+        md5();
     }
 
-    public static void println(String msg) {
-        System.out.println(String.format("%s %s", new Date().toString(), msg));
+    private static void md5() {
+        String str = "123456";
+        try {
+            SecretKey MD5_KEY = new SecretKeySpec("secret key".getBytes("UTF-8"), "HmacMD5");
+            log.debug("hmacMd5 -----> {} = {}", str, Hashing.hmacMd5(MD5_KEY).hashString(str, Charset.forName("UTF-8")));
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        log.debug("MD532 -----> {} = {}", str, MD5.md532(str));
+        log.debug("MD516 -----> {} = {}", str, MD5.md516(str));
     }
 
 }

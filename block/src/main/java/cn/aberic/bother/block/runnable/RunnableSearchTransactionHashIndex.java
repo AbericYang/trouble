@@ -30,6 +30,7 @@ import cn.aberic.bother.entity.block.BlockInfo;
 import cn.aberic.bother.tools.thread.ThreadTroublePool;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.LineIterator;
 import org.apache.commons.lang3.StringUtils;
@@ -41,6 +42,7 @@ import java.io.IOException;
  * 作者：Aberic on 2018/08/28 15:27
  * 邮箱：abericyang@gmail.com
  */
+@Slf4j
 public class RunnableSearchTransactionHashIndex implements Runnable {
 
     public interface SearchTransactionHashIndexListener {
@@ -75,7 +77,7 @@ public class RunnableSearchTransactionHashIndex implements Runnable {
                 if (null != blockInfo) {
                     for (String transaction : blockInfo.getTransactionHashList()) {
                         if (StringUtils.equalsIgnoreCase(transaction, transactionHash)) {
-                            System.out.println("找到file，block-transaction-hash-index-file-num = " + blockFileNum);
+                            log.debug("找到file，block-transaction-hash-index-file-num = {}" , blockFileNum);
                             found = true;
                             listener.find(blockExec.getByNumAndLine(blockInfo.getNum(), blockInfo.getLine()));
                             troublePool.shutdown();
@@ -84,7 +86,7 @@ public class RunnableSearchTransactionHashIndex implements Runnable {
                 }
             }
             if (!found) {
-                System.out.println("未找到file，block-transaction-hash-index-file-num = " + blockFileNum);
+                log.debug("未找到file，block-transaction-hash-index-file-num = {}" , blockFileNum);
             }
         } catch (IOException e) {
             e.printStackTrace();

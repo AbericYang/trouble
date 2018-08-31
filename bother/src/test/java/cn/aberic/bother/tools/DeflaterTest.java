@@ -20,9 +20,12 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
+ *
  */
 
 package cn.aberic.bother.tools;
+
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 
@@ -30,6 +33,7 @@ import java.io.IOException;
  * 作者：Aberic on 2018/08/29 13:54
  * 邮箱：abericyang@gmail.com
  */
+@Slf4j
 public class DeflaterTest {
 
     public static void main(String[] args) {
@@ -38,11 +42,11 @@ public class DeflaterTest {
 
     private static void deflaterTest(String str) {
         try {
-            SystemOut.println("str1 = " + str);
+            log.debug("str1 = {}", str);
             String str2 = DeflaterTool.compress(str);
-            SystemOut.println("str2 = " + str2);
+            log.debug("str2 = {}", str2);
             String str3 = DeflaterTool.uncompress(str2);
-            SystemOut.println("str3 = " + str3);
+            log.debug("str3 = {}", str3);
         } catch (IOException e) {
             e.printStackTrace();
         }

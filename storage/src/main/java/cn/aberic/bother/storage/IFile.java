@@ -62,6 +62,9 @@ public interface IFile<T> {
      * @return {@link T}对象
      */
     default T getByNumAndLine(int num, int line) {
+//        long time = new Date().getTime();
+//        T t = getFromFileByLine(getFileByNum(num), line);
+//        System.out.println("getByNumAndLine time = " + (new Date().getTime() - time));
         return getFromFileByLine(getFileByNum(num), line);
     }
 

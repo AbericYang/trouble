@@ -29,6 +29,7 @@ import cn.aberic.bother.entity.block.Block;
 import cn.aberic.bother.entity.block.BlockInfo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.LineIterator;
 import org.apache.commons.lang3.StringUtils;
@@ -40,6 +41,7 @@ import java.io.IOException;
  * 作者：Aberic on 2018/08/28 15:27
  * 邮箱：abericyang@gmail.com
  */
+@Slf4j
 public class RunnableSearchBlockHashIndex implements Runnable {
 
     public interface SearchBlockHashIndexListener {
@@ -69,14 +71,14 @@ public class RunnableSearchBlockHashIndex implements Runnable {
                 String lineString = it.nextLine();
                 BlockInfo blockInfo = JSON.parseObject(lineString, new TypeReference<BlockInfo>() {});
                 if (null != blockInfo && StringUtils.equalsIgnoreCase(blockInfo.getBlockHash(), currentDataHash)) {
-                    System.out.println("找到file，block-hash-index-file-num = " + blockFileNum);
+                    log.debug("找到file，block-hash-index-file-num = {}" , blockFileNum);
                     found = true;
                     listener.find(blockExec.getByNumAndLine(blockInfo.getNum(), blockInfo.getLine()));
                     break;
                 }
             }
             if (!found) {
-                System.out.println("未找到file，block-hash-index-file-num = " + blockFileNum);
+                log.debug("未找到file，block-hash-index-file-num = {}" , blockFileNum);
             }
         } catch (IOException e) {
             e.printStackTrace();

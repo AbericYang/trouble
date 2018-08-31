@@ -27,7 +27,7 @@ package cn.aberic.bother.contract.exec;
 
 import cn.aberic.bother.contract.exec.service.ISystemContract;
 import cn.aberic.bother.contract.exec.service.ISystemContractExec;
-import cn.aberic.bother.tools.SystemOut;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * 系统应用智能合约-app support
@@ -35,6 +35,7 @@ import cn.aberic.bother.tools.SystemOut;
  * 作者：Aberic on 2018/8/29 20:49
  * 邮箱：abericyang@gmail.com
  */
+@Slf4j
 public class SystemContract implements ISystemContract {
 
     @Override
@@ -47,7 +48,7 @@ public class SystemContract implements ISystemContract {
     public String query(ISystemContractExec exec) {
         Object o = exec.get("haha");
         if (o instanceof String) {
-            SystemOut.println("o = " + o);
+            log.debug("o = {}", o);
         }
         return "haha";
     }
