@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package cn.aberic.bother.contract.exec.runnable;
+package cn.aberic.bother.contract.runnable;
 
 import cn.aberic.bother.contract.exec.service.IContractDataFileExec;
 import cn.aberic.bother.entity.contract.ContractInfo;
