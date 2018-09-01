@@ -29,6 +29,8 @@ import cn.aberic.bother.contract.exec.service.ISystemContract;
 import cn.aberic.bother.contract.exec.service.ISystemContractExec;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.List;
+
 /**
  * 系统应用智能合约-app support
  * <p>
@@ -50,6 +52,10 @@ public class SystemContract implements ISystemContract {
         if (o instanceof String) {
             log.debug("o = {}", o);
         }
+        List<Object> objects = exec.getHistory("haha");
+        objects.forEach(o1 -> {
+            log.debug("oh = {}", o1);
+        });
         return "haha";
     }
 

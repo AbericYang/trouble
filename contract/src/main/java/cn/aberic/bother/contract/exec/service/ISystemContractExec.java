@@ -29,6 +29,8 @@ import cn.aberic.bother.entity.IResponse;
 import cn.aberic.bother.entity.block.Block;
 import cn.aberic.bother.entity.contract.Contract;
 
+import java.util.List;
+
 /**
  * 系统级智能合约操作接口-smart contract
  * <p>
@@ -79,9 +81,21 @@ public interface ISystemContractExec extends IResponse {
      * 天知道你的值是什么玩意，不管是什么，如果要用到话，就转成你能用的对象，比如"(String)obj"这样
      *
      * @param key 传入键
+     *
      * @return 对应值
      */
     Object get(String key);
+
+    /**
+     * 根据传入键返回对应值的历史纪录
+     * <p>
+     * 天知道你的值是什么玩意，不管是什么，如果要用到话，就转成你能用的对象，比如"(String)obj"这样
+     *
+     * @param key 传入键
+     *
+     * @return 对应值的历史纪录
+     */
+    List<Object> getHistory(String key);
 
     /**
      * 获取当前智能合约唯一hash
@@ -108,6 +122,7 @@ public interface ISystemContractExec extends IResponse {
      * 根据区块高度获取区块对象
      *
      * @param height 区块高度
+     *
      * @return 区块对象
      */
     Block getBlockByHeight(int height);
@@ -116,6 +131,7 @@ public interface ISystemContractExec extends IResponse {
      * 根据区块高度获取区块对象
      *
      * @param currentDataHash 当前区块hash
+     *
      * @return 区块对象
      */
     Block getBlockByHash(String currentDataHash);
@@ -124,6 +140,7 @@ public interface ISystemContractExec extends IResponse {
      * 根据区块高度获取区块对象
      *
      * @param transactionHash 交易hash
+     *
      * @return 区块对象
      */
     Block getBlockByTransactionHash(String transactionHash);

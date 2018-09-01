@@ -32,6 +32,8 @@ import cn.aberic.bother.entity.block.Block;
 import cn.aberic.bother.entity.contract.Contract;
 import cn.aberic.bother.storage.Common;
 
+import java.util.List;
+
 /**
  * 系统智能合约操作接口实现-smart contract
  * <p>
@@ -73,6 +75,11 @@ public class SystemContractExec implements ISystemContractExec, IContractBaseExe
     @Override
     public Object get(String key) {
         return getContractDataIndexFileExec().get(getContractDataFileExec(), key);
+    }
+
+    @Override
+    public List<Object> getHistory(String key) {
+        return getContractDataIndexFileExec().getHistory(getContractDataFileExec(), key);
     }
 
     @Override

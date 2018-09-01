@@ -25,7 +25,7 @@
 package cn.aberic.bother.contract.exec.service;
 
 import cn.aberic.bother.block.exec.service.IInit;
-import cn.aberic.bother.contract.runnable.RunnableSearchContractKeyIndex;
+import cn.aberic.bother.contract.runnable.CallableSearchContractKeyIndexList;
 import cn.aberic.bother.entity.contract.ContractInfo;
 import cn.aberic.bother.storage.IFile;
 import cn.aberic.bother.storage.leveldb.LevelDB;
@@ -37,7 +37,10 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Date;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 /**
  * 智能合约数据索引文件对象操作接口-smart contract
@@ -85,6 +88,7 @@ public interface IContractDataIndexFileExec extends IInit, IFile<ContractInfo> {
      * 根据智能合约数据key获取智能合约数据
      *
      * @param key 智能合约数据key
+     *
      * @return 智能合约数据
      */
     default Object get(IContractDataFileExec contractDataFileExec, String key) {
@@ -96,48 +100,25 @@ public interface IContractDataIndexFileExec extends IInit, IFile<ContractInfo> {
      * 根据智能合约数据key获取智能合约数据
      *
      * @param key 智能合约数据key
+     *
      * @return 智能合约数据
      */
-//    default Object get(IContractDataFileExec contractDataFileExec, String key) {
-//        String[] strings = new String[]{null};
-//        ThreadTroublePool troublePool = new ThreadTroublePool();
-//        boolean found = false;
-//        Iterable<File> files = Files.fileTraverser().breadthFirst(new File(getFileStatus().getDir()));
-//        for (File file : files) {
-//            if (StringUtils.startsWith(file.getName(), getFileStatus().getStart())) {
-//                troublePool.submit(new RunnableSearchContractKeyIndex(contractDataFileExec, key, file, getNumByFileName(file.getName()), string -> {
-//                    if (StringUtils.isNotEmpty(string)) {
-//                        strings[0] = string;
-//                        troublePool.shutdown();
-//                    }
-//                }));
-//            }
-//            if (StringUtils.isNotEmpty(strings[0])) {
-//                break;
-//            }
-//        }
-//        long time = new Date().getTime();
-//        while (!found) {
-//            found = checkFoundToDo(strings, time);
-//        }
-//        troublePool.shutdown();
-//        return JSON.parseObject(strings[0]).get(key);
-//    }
-//
-//    default boolean checkFoundToDo(String[] strings, long time) {
-//        if (null != strings[0]) {
-//            return true;
-//        } else {
-//            if (new Date().getTime() - time > 60000) {
-//                return true;
-//            }
-//            try {
-//                Thread.sleep(10);
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
-//        }
-//        return false;
-//    }
+    default List<Object> getHistory(IContractDataFileExec contractDataFileExec, String key) {
+        ThreadTroublePool troublePool = new ThreadTroublePool();
+        List<Object> objects = new ArrayList<>();
+        Iterable<File> files = Files.fileTraverser().breadthFirst(new File(getFileStatus().getDir()));
+        for (File file : files) {
+            if (StringUtils.startsWith(file.getName(), getFileStatus().getStart())) {
+                Future<List<String>> future = troublePool.submit(new CallableSearchContractKeyIndexList(contractDataFileExec, key, file));
+                try {
+                    future.get().forEach(s -> objects.add(JSON.parseObject(s).get(key)));
+                } catch (InterruptedException | ExecutionException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        troublePool.shutdown();
+        return objects;
+    }
 
 }

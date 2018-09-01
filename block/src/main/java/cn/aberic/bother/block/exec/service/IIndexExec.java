@@ -50,8 +50,8 @@ public interface IIndexExec extends IExec<String> {
             } else {
                 // 计算该内容的字节长度
                 long blockIndexSize = blockInfo.getBytes().length;
-                // 如果区块文件和待写入对象之和已经大于或等于128MB，则开辟新区块文件写入区块对象
-                if (indexFile.length() + blockIndexSize >= 128 * 1000 * 1000) {
+                // 如果区块文件和待写入对象之和已经大于或等于 256 MB，则开辟新区块文件写入区块对象
+                if (indexFile.length() + blockIndexSize >= 256 * 1000 * 1000) {
                     indexFile = getNextFileByCurrentFile(indexFile);
                     FileTool.writeFirstLine(indexFile, blockInfo);
                 } else {

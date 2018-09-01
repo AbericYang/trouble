@@ -101,8 +101,8 @@ public interface IContractDataFileExec extends IInit, IFile<String> {
                 // 重新生成待写入JSON String内容
                 // 计算该内容的字节长度
                 long contractDataSize = compressJsonString.getBytes().length;
-                // 如果智能合约数据文件和待写入对象之和已经大于或等于64MB，则开辟新智能合约数据文件写入智能合约数据
-                if (contractDataFile.length() + contractDataSize >= 64 * 1000 * 1000) {
+                // 如果智能合约数据文件和待写入对象之和已经大于或等于 256 MB，则开辟新智能合约数据文件写入智能合约数据
+                if (contractDataFile.length() + contractDataSize >= 256 * 1000 * 1000) {
                     System.out.println(String.format("contract data file size great than 64MB, now size = %s", contractDataFile.length()));
                     contractDataFile = getNextFileByCurrentFile(contractDataFile);
                     System.out.println(String.format("next contract data file name = %s", contractDataFile.getName()));

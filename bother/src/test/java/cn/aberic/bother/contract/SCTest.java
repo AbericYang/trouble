@@ -49,6 +49,7 @@ public class SCTest {
         SystemContract contract = new SystemContract();
         log.debug("system contract invoke result = {}", contract.invoke(new SystemContractExec()));
         log.debug("system contract query  result = {}", contract.query(new SystemContractExec()));
+        log.debug("system contract query  result = {}", contract.query(new SystemContractExec()));
     }
 
     private static void simpleContract() {

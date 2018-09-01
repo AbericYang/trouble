@@ -24,9 +24,8 @@
 
 package cn.aberic.bother.tools.thread;
 
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import java.util.List;
+import java.util.concurrent.*;
 
 /**
  * 开启一个线程池——公共方法包
@@ -54,6 +53,8 @@ public class ThreadTroublePool {
     public void submit(Runnable runnable) {
         executor.execute(runnable);
     }
+
+    public Future<List<String>> submit(Callable<List<String>> callable) { return executor.submit(callable); }
 
     public void shutdown() {
         if (!executor.isShutdown()) {

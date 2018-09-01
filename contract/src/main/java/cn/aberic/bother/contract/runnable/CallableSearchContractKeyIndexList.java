@@ -20,6 +20,7 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
+ *
  */
 
 package cn.aberic.bother.contract.runnable;
@@ -34,51 +35,40 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Callable;
 
 /**
- * 作者：Aberic on 2018/08/31 15:25
+ * 作者：Aberic on 2018/9/1 17:10
  * 邮箱：abericyang@gmail.com
  */
-public class RunnableSearchContractKeyIndex implements Runnable {
-
-    public interface SearchContractKeyIndexListener {
-        void find(String string);
-    }
+public class CallableSearchContractKeyIndexList implements Callable<List<String>> {
 
     private IContractDataFileExec contractDataFileExec;
     private String key;
     private File file;
-    private int contractDataIndexFile;
-    private SearchContractKeyIndexListener listener;
 
-    public RunnableSearchContractKeyIndex(IContractDataFileExec contractDataFileExec, String key, File file, int blockFileNum, SearchContractKeyIndexListener lintener) {
+    public CallableSearchContractKeyIndexList(IContractDataFileExec contractDataFileExec, String key, File file) {
         this.contractDataFileExec = contractDataFileExec;
         this.key = key;
         this.file = file;
-        this.contractDataIndexFile = blockFileNum;
-        this.listener = lintener;
     }
 
     @Override
-    public void run() {
+    public List<String> call() {
+        List<String> list = new ArrayList<>();
         try (LineIterator it = FileUtils.lineIterator(file, "UTF-8")) {
-            boolean found = false;
             while (it.hasNext()) {
                 String lineString = it.nextLine();
                 ContractInfo contractInfo = JSON.parseObject(lineString, new TypeReference<ContractInfo>() {});
                 if (null != contractInfo && StringUtils.equalsIgnoreCase(contractInfo.getKey(), key)) {
-                    System.out.println("找到file，contract-data-index-file-num = " + contractDataIndexFile);
-                    found = true;
-                    listener.find(contractDataFileExec.getByNumAndLine(contractInfo.getNum(), contractInfo.getLine()));
-                    break;
+                    list.add(contractDataFileExec.getByNumAndLine(contractInfo.getNum(), contractInfo.getLine()));
                 }
-            }
-            if (!found) {
-                System.out.println("未找到file，contract-data-index-file-num = " + contractDataIndexFile);
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return list;
     }
-
 }
