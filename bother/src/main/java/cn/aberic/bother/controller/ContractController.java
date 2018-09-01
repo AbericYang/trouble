@@ -20,31 +20,14 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
+ *
  */
 
-package cn.aberic.bother.entity.block;
-
-import com.alibaba.fastjson.annotation.JSONField;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
-
-import java.util.List;
+package cn.aberic.bother.controller;
 
 /**
- * 读写集——数据操作层-data manipulation
- * 作者：Aberic on 2018/8/25 02:12
+ * 作者：Aberic on 2018/9/1 22:40
  * 邮箱：abericyang@gmail.com
  */
-@Setter
-@Getter
-@ToString
-public class RWSet {
-
-    /** 交易读内容 */
-    @JSONField(name="r")
-    private List<ValueRead> reads;
-    /** 交易写内容 */
-    @JSONField(name="w")
-    private List<ValueWrite> writes;
+public class ContractController {
 }

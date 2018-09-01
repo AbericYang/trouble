@@ -28,10 +28,15 @@ package cn.aberic.bother.contract.exec;
 import cn.aberic.bother.block.BlockAcquire;
 import cn.aberic.bother.contract.exec.service.*;
 import cn.aberic.bother.encryption.MD5;
-import cn.aberic.bother.entity.block.Block;
+import cn.aberic.bother.entity.block.*;
 import cn.aberic.bother.entity.contract.Contract;
 import cn.aberic.bother.storage.Common;
+import cn.aberic.bother.tools.SystemTool;
+import org.apache.commons.lang3.StringUtils;
 
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -41,6 +46,38 @@ import java.util.List;
  * 邮箱：abericyang@gmail.com
  */
 public class SystemContractExec implements ISystemContractExec, IContractBaseExec {
+
+    private RWSet rwSet;
+    private List<ValueRead> reads;
+    private List<ValueWrite> writes;
+
+    public SystemContractExec() {
+        rwSet = new RWSet();
+        reads = new ArrayList<>();
+        writes = new ArrayList<>();
+    }
+
+    /**
+     * 得到本次交易对象。
+     * <p>
+     * 如果写集结果的长度为0，则表示本次没有写入操作，不计入区块
+     *
+     * @param creator 如果是联盟链则不能为空
+     *
+     * @return 交易对象
+     */
+    public Transaction getTransaction(@Nullable String creator) {
+        if (writes.size() <= 0) {
+            return null;
+        }
+        rwSet.setReads(reads);
+        rwSet.setWrites(writes);
+        Transaction transaction = new Transaction();
+        transaction.setCreator(StringUtils.isEmpty(creator) ? SystemTool.getLocalMac() : creator);
+        transaction.setTimestamp(new Date().getTime());
+        transaction.setRwSet(rwSet);
+        return transaction.build();
+    }
 
     @Override
     public BlockAcquire getBlockAcquire() {
@@ -68,12 +105,22 @@ public class SystemContractExec implements ISystemContractExec, IContractBaseExe
     }
 
     @Override
-    public void put(String key, String string) {
-        getContractDataIndexFileExec().put(getContractDataFileExec().put(key, string));
+    public void put(String key, String value) {
+        ValueWrite write = new ValueWrite();
+        write.setContractName(getContract().getName());
+        write.setContractVersion(getContract().getVersionName());
+        write.setStrings(new String[]{key, value});
+        writes.add(write);
+        getContractDataIndexFileExec().put(getContractDataFileExec().put(key, value));
     }
 
     @Override
     public String get(String key) {
+        ValueRead read = new ValueRead();
+        read.setContractName(getContract().getName());
+        read.setContractVersion(getContract().getVersionName());
+        read.setKey(key);
+        reads.add(read);
         return getContractDataIndexFileExec().get(getContractDataFileExec(), key);
     }
 

@@ -31,7 +31,7 @@ import lombok.ToString;
 
 /**
  * 一笔操作的写入值对象——数据操作层-data manipulation
- *
+ * <p>
  * 作者：Aberic on 2018/8/24 23:02
  * 邮箱：abericyang@gmail.com
  */
@@ -40,20 +40,20 @@ import lombok.ToString;
 @ToString
 public class ValueWrite {
 
-    /** 本次写入值编号，与读取值编号对应 */
-    @JSONField(name="n")
-    private int number;
+    /** 本次写入值链码hash */
+    @JSONField(name = "h")
+    private String hash;
     /** 本次写入值所用合约名称 */
-    @JSONField(name="c")
+    @JSONField(name = "c")
     private String contractName;
     /** 本次写入值所用合约版本 */
-    @JSONField(name="v")
+    @JSONField(name = "v")
     private String contractVersion;
     /**
-     * 本次写入k-v中key数组；
+     * 本次写入的k-v
      * <p>
-     * 参数格式为：key个数，key…组成
+     * 参数格式为：key,value
      */
-    @JSONField(name="s")
+    @JSONField(name = "s")
     private String[] strings;
 }

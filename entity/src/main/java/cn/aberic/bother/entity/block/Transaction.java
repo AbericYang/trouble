@@ -35,7 +35,6 @@ import lombok.Setter;
 import lombok.ToString;
 
 import java.nio.charset.Charset;
-import java.util.List;
 
 /**
  * 事务/交易/业务对象——数据操作层-data manipulation
@@ -56,7 +55,7 @@ public class Transaction {
     private String sign;
     /** 交易读写集 */
     @JSONField(name="rw")
-    private List<RWSet> rwSets;
+    private RWSet rwSet;
     /** 交易时间戳 */
     @JSONField(name="t")
     private Long timestamp;
@@ -82,7 +81,7 @@ public class Transaction {
 
     public Transaction build() {
         hash = Hashing.sha256().hashString(String.format("%s%s%s%s",
-                creator, sign, JSON.toJSONString(rwSets), timestamp), Charset.forName("UTF-8")).toString();
+                creator, sign, JSON.toJSONString(rwSet), timestamp), Charset.forName("UTF-8")).toString();
         dataStorageHash = MD5.md516(hash);
         return this;
     }
