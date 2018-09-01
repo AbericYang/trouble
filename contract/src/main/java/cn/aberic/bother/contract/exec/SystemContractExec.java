@@ -68,17 +68,17 @@ public class SystemContractExec implements ISystemContractExec, IContractBaseExe
     }
 
     @Override
-    public void put(String key, Object obj, boolean force) {
-        getContractDataIndexFileExec().put(getContractDataFileExec().put(key, obj, force));
+    public void put(String key, String string) {
+        getContractDataIndexFileExec().put(getContractDataFileExec().put(key, string));
     }
 
     @Override
-    public Object get(String key) {
+    public String get(String key) {
         return getContractDataIndexFileExec().get(getContractDataFileExec(), key);
     }
 
     @Override
-    public List<Object> getHistory(String key) {
+    public List<String> getHistory(String key) {
         return getContractDataIndexFileExec().getHistory(getContractDataFileExec(), key);
     }
 

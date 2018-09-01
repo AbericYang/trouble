@@ -91,9 +91,9 @@ public interface IContractDataIndexFileExec extends IInit, IFile<ContractInfo> {
      *
      * @return 智能合约数据
      */
-    default Object get(IContractDataFileExec contractDataFileExec, String key) {
+    default String get(IContractDataFileExec contractDataFileExec, String key) {
         String[] strings = LevelDB.obtain().get(key).split(",");
-        return JSON.parseObject(contractDataFileExec.getByNumAndLine(Integer.valueOf(strings[0]), Integer.valueOf(strings[1]))).get(key);
+        return contractDataFileExec.getByNumAndLine(Integer.valueOf(strings[0]), Integer.valueOf(strings[1]));
     }
 
     /**
@@ -103,22 +103,22 @@ public interface IContractDataIndexFileExec extends IInit, IFile<ContractInfo> {
      *
      * @return 智能合约数据
      */
-    default List<Object> getHistory(IContractDataFileExec contractDataFileExec, String key) {
+    default List<String> getHistory(IContractDataFileExec contractDataFileExec, String key) {
         ThreadTroublePool troublePool = new ThreadTroublePool();
-        List<Object> objects = new ArrayList<>();
+        List<String> strings = new ArrayList<>();
         Iterable<File> files = Files.fileTraverser().breadthFirst(new File(getFileStatus().getDir()));
         for (File file : files) {
             if (StringUtils.startsWith(file.getName(), getFileStatus().getStart())) {
                 Future<List<String>> future = troublePool.submit(new CallableSearchContractKeyIndexList(contractDataFileExec, key, file));
                 try {
-                    future.get().forEach(s -> objects.add(JSON.parseObject(s).get(key)));
+                    strings.addAll(future.get());
                 } catch (InterruptedException | ExecutionException e) {
                     e.printStackTrace();
                 }
             }
         }
         troublePool.shutdown();
-        return objects;
+        return strings;
     }
 
 }

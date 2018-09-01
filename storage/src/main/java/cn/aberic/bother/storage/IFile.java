@@ -100,7 +100,7 @@ public interface IFile<T> {
                                 ts[0] = (T) JSON.parseObject(DeflaterTool.uncompress(lineString), new TypeReference<Contract>() {});
                                 break;
                             case T_TYPE_CONTRACT_DATA:
-                                ts[0] = (T) JSON.parseObject(DeflaterTool.uncompress(lineString), new TypeReference<String>() {});
+                                ts[0] = (T) DeflaterTool.uncompress(lineString);
                                 break;
                             case T_TYPE_CONTRACT_INDEX_DATA:
                                 ts[0] = (T) JSON.parseObject(DeflaterTool.uncompress(lineString), new TypeReference<ContractInfo>() {});

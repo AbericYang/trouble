@@ -30,8 +30,6 @@ import cn.aberic.bother.storage.FileComponent;
 import cn.aberic.bother.storage.IFile;
 import cn.aberic.bother.tools.DeflaterTool;
 import cn.aberic.bother.tools.FileTool;
-import cn.aberic.bother.tools.VerifyTool;
-import com.alibaba.fastjson.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
@@ -49,39 +47,21 @@ public interface IContractDataFileExec extends IInit, IFile<String> {
      *
      * @param contractOldHash 旧版hash
      */
-    default void renameContractFile(String contractOldHash) {
+    default boolean renameContractFile(String contractOldHash) {
         // 旧版hash所在文件夹路径
         File file = new File(FileComponent.getContractDataFileComponent(contractOldHash).getDir());
         // 将原文件夹更改为新版hash
-        file.renameTo(new File(getFileStatus().getDir()));
+        return file.renameTo(new File(getFileStatus().getDir()));
     }
 
     /**
-     * 根据传入对象 {@param obj} 存入一个key为 {@param key} 的json。
-     * <p>
-     * 如果 {@param obj} 为 {@link String} 类型，且 {@param forcedString} 不为true
-     * <p>
-     * 那么 {@param obj} 会被验证是否为json对象或json array对象
-     * <p>
-     * 如果是json对象，则转成json对象后作为json value的值
-     * <p>
-     * 如果是json array对象，则转成json array对象后作为json value的值
-     * <p>
-     * 如果不属于json类型，则直接将此字符串作为json value的值。
+     * 根据 {@param key} 传入对象 {@param string}
      *
      * @param key   json key
-     * @param obj   传入对象
-     * @param force 如果对象为字符串，是否强制将value不做处理直接存入
+     * @param string   传入对象
      * @return 智能合约数据key在智能合约数据文件中的基本信息
      */
-    default ContractInfo put(String key, Object obj, boolean force) {
-        JSONObject jsonObject;
-        if (obj instanceof String && !force) {
-            jsonObject = VerifyTool.verifyJSON(key, (String) obj);
-        } else {
-            jsonObject = new JSONObject();
-            jsonObject.put(key, obj);
-        }
+    default ContractInfo put(String key, String string) {
         ContractInfo contractInfo = new ContractInfo();
         // 当前智能合约数据在智能合约数据文件中所在行号
         int line = 0;
@@ -89,7 +69,7 @@ public interface IContractDataFileExec extends IInit, IFile<String> {
         File contractDataFile = getLastFile();
         try {
             // 得到即将存入的压缩字符串
-            String compressJsonString = DeflaterTool.compress(jsonObject.toJSONString());
+            String compressJsonString = DeflaterTool.compress(string);
             // 如果最新写入的智能合约数据文件为null，则从0开始重新写入
             if (null == contractDataFile) {
                 // 定义新的智能合约数据文件

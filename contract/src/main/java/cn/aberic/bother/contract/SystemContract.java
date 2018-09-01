@@ -27,6 +27,9 @@ package cn.aberic.bother.contract;
 
 import cn.aberic.bother.contract.exec.service.ISystemContract;
 import cn.aberic.bother.contract.exec.service.ISystemContractExec;
+import cn.aberic.bother.entity.contract.Contract;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
@@ -42,20 +45,21 @@ public class SystemContract implements ISystemContract {
 
     @Override
     public String invoke(ISystemContractExec exec) {
-        exec.put("haha", "hehe2");
+        exec.put("haha", "hehe4");
+        Contract test = new Contract("Aberic", "1", 18, "2");
+        exec.put("test", JSON.toJSONString(test));
         return exec.response(exec.getContract());
     }
 
     @Override
     public String query(ISystemContractExec exec) {
-        Object o = exec.get("haha");
-        if (o instanceof String) {
-            log.debug("o = {}", o);
-        }
-        List<Object> objects = exec.getHistory("haha");
-        objects.forEach(o1 -> {
+        log.debug("o = {}", exec.get("haha"));
+        List<String> strings = exec.getHistory("haha");
+        strings.forEach(o1 -> {
             log.debug("oh = {}", o1);
         });
+        Contract test = JSON.parseObject(exec.get("test"), new TypeReference<Contract>() {});
+        log.debug("test = {}", test.toJsonString());
         return "haha";
     }
 

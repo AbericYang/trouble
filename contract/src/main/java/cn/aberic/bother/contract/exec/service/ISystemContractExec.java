@@ -47,33 +47,12 @@ public interface ISystemContractExec extends IResponse {
     Contract getContract();
 
     /**
-     * 根据传入对象 {@param obj} 存入一个key为 {@param key} 的json。
-     * <p>
-     * 如果 {@param obj} 为 {@link String} 类型，且 {@param forcedString} 不为true
-     * <p>
-     * 那么 {@param obj} 会被验证是否为json对象或json array对象
-     * <p>
-     * 如果是json对象，则转成json对象后作为json value的值
-     * <p>
-     * 如果是json array对象，则转成json array对象后作为json value的值
-     * <p>
-     * 如果不属于json类型，则直接将此字符串作为json value的值。
+     * 根据 {@param key} 传入对象 {@param string}
      *
      * @param key   json key
-     * @param obj   传入对象
-     * @param force 如果对象为字符串，是否强制将value不做处理直接存入
+     * @param string   传入对象
      */
-    void put(String key, Object obj, boolean force);
-
-    /**
-     * 根据传入对象 {@param obj} 存入一个key为 {@param key} 的json。
-     *
-     * @param key json key
-     * @param obj 传入字符串
-     */
-    default void put(String key, Object obj) {
-        put(key, obj, false);
-    }
+    void put(String key, String string);
 
     /**
      * 根据传入键返回对应值
@@ -84,7 +63,7 @@ public interface ISystemContractExec extends IResponse {
      *
      * @return 对应值
      */
-    Object get(String key);
+    String get(String key);
 
     /**
      * 根据传入键返回对应值的历史纪录
@@ -95,7 +74,7 @@ public interface ISystemContractExec extends IResponse {
      *
      * @return 对应值的历史纪录
      */
-    List<Object> getHistory(String key);
+    List<String> getHistory(String key);
 
     /**
      * 获取当前智能合约唯一hash
