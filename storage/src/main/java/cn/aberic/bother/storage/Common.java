@@ -100,4 +100,11 @@ public class Common {
     public final static String CONTRACT_DATA_INDEX_FILE_CUSTOM_DIR = "/Users/Aberic/Documents/tmp/trouble/cdifs";
     // public final static String CONTRACT_DATA_INDEX_FILE_CUSTOM_DIR = "/data/trouble/cdfs";
 
+    /** 默认LevelDB合约数据文件存储路径 测试/生产 */
+    public final static String CONTRACT_DATA_LEVEL_DB_FILE_DIR = "/Users/Aberic/Documents/tmp/trouble/cdfleveldb";
+    // public final static String CONTRACT_DATA_INDEX_FILE_DIR = "/data/trouble/cdf";
+    /** 自定义LevelDB合约数据文件存储路径 测试/生产 */
+    public final static String CONTRACT_DATA_LEVEL_DB_FILE_CUSTOM_DIR = "/Users/Aberic/Documents/tmp/trouble/cdfsleveldb";
+    // public final static String CONTRACT_DATA_INDEX_FILE_CUSTOM_DIR = "/data/trouble/cdfs";
+
 }

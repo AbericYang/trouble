@@ -28,6 +28,7 @@ import cn.aberic.bother.block.exec.service.IInit;
 import cn.aberic.bother.contract.runnable.RunnableSearchContractKeyIndex;
 import cn.aberic.bother.entity.contract.ContractInfo;
 import cn.aberic.bother.storage.IFile;
+import cn.aberic.bother.storage.leveldb.LevelDB;
 import cn.aberic.bother.tools.FileTool;
 import cn.aberic.bother.tools.thread.ThreadTroublePool;
 import com.alibaba.fastjson.JSON;
@@ -74,6 +75,7 @@ public interface IContractDataIndexFileExec extends IInit, IFile<ContractInfo> {
                     FileTool.writeAppendLine(indexFile, jsonString);
                 }
             }
+            LevelDB.obtain().put(contractInfo.getKey(), String.format("%s,%s", contractInfo.getNum(), contractInfo.getLine()));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -86,45 +88,56 @@ public interface IContractDataIndexFileExec extends IInit, IFile<ContractInfo> {
      * @return 智能合约数据
      */
     default Object get(IContractDataFileExec contractDataFileExec, String key) {
-        String[] strings = new String[]{null};
-        ThreadTroublePool troublePool = new ThreadTroublePool();
-        boolean found = false;
-        Iterable<File> files = Files.fileTraverser().breadthFirst(new File(getFileStatus().getDir()));
-        for (File file : files) {
-            if (StringUtils.startsWith(file.getName(), getFileStatus().getStart())) {
-                troublePool.submit(new RunnableSearchContractKeyIndex(contractDataFileExec, key, file, getNumByFileName(file.getName()), string -> {
-                    if (StringUtils.isNotEmpty(string)) {
-                        strings[0] = string;
-                        troublePool.shutdown();
-                    }
-                }));
-            }
-            if (StringUtils.isNotEmpty(strings[0])) {
-                break;
-            }
-        }
-        long time = new Date().getTime();
-        while (!found) {
-            found = checkFoundToDo(strings, time);
-        }
-        troublePool.shutdown();
-        return JSON.parseObject(strings[0]).get(key);
+        String[] strings = LevelDB.obtain().get(key).split(",");
+        return JSON.parseObject(contractDataFileExec.getByNumAndLine(Integer.valueOf(strings[0]), Integer.valueOf(strings[1]))).get(key);
     }
 
-    default boolean checkFoundToDo(String[] strings, long time) {
-        if (null != strings[0]) {
-            return true;
-        } else {
-            if (new Date().getTime() - time > 60000) {
-                return true;
-            }
-            try {
-                Thread.sleep(10);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-        return false;
-    }
+    /**
+     * 根据智能合约数据key获取智能合约数据
+     *
+     * @param key 智能合约数据key
+     * @return 智能合约数据
+     */
+//    default Object get(IContractDataFileExec contractDataFileExec, String key) {
+//        String[] strings = new String[]{null};
+//        ThreadTroublePool troublePool = new ThreadTroublePool();
+//        boolean found = false;
+//        Iterable<File> files = Files.fileTraverser().breadthFirst(new File(getFileStatus().getDir()));
+//        for (File file : files) {
+//            if (StringUtils.startsWith(file.getName(), getFileStatus().getStart())) {
+//                troublePool.submit(new RunnableSearchContractKeyIndex(contractDataFileExec, key, file, getNumByFileName(file.getName()), string -> {
+//                    if (StringUtils.isNotEmpty(string)) {
+//                        strings[0] = string;
+//                        troublePool.shutdown();
+//                    }
+//                }));
+//            }
+//            if (StringUtils.isNotEmpty(strings[0])) {
+//                break;
+//            }
+//        }
+//        long time = new Date().getTime();
+//        while (!found) {
+//            found = checkFoundToDo(strings, time);
+//        }
+//        troublePool.shutdown();
+//        return JSON.parseObject(strings[0]).get(key);
+//    }
+//
+//    default boolean checkFoundToDo(String[] strings, long time) {
+//        if (null != strings[0]) {
+//            return true;
+//        } else {
+//            if (new Date().getTime() - time > 60000) {
+//                return true;
+//            }
+//            try {
+//                Thread.sleep(10);
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+//        }
+//        return false;
+//    }
 
 }

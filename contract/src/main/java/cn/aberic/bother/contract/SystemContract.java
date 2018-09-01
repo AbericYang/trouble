@@ -23,7 +23,7 @@
  *
  */
 
-package cn.aberic.bother.contract.exec;
+package cn.aberic.bother.contract;
 
 import cn.aberic.bother.contract.exec.service.ISystemContract;
 import cn.aberic.bother.contract.exec.service.ISystemContractExec;
@@ -40,7 +40,7 @@ public class SystemContract implements ISystemContract {
 
     @Override
     public String invoke(ISystemContractExec exec) {
-        exec.put("haha", "hehe1");
+        exec.put("haha", "hehe2");
         return exec.response(exec.getContract());
     }
 

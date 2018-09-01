@@ -25,7 +25,6 @@
 package cn.aberic.bother.contract;
 
 import cn.aberic.bother.contract.exec.ContractExec;
-import cn.aberic.bother.contract.exec.SystemContract;
 import cn.aberic.bother.contract.exec.SystemContractExec;
 import cn.aberic.bother.tools.exception.ContractParamException;
 import lombok.extern.slf4j.Slf4j;
