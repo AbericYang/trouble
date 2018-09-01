@@ -60,7 +60,6 @@ public interface ISystemContractExec extends IResponse {
      * @param key   json key
      * @param obj   传入对象
      * @param force 如果对象为字符串，是否强制将value不做处理直接存入
-     * @return 智能合约数据key在智能合约数据文件中的基本信息
      */
     void put(String key, Object obj, boolean force);
 
