@@ -77,7 +77,7 @@ public interface IContractDataFileExec extends IInit, IFile<String> {
                 FileTool.writeFirstLine(contractDataFile, compressJsonString);
             } else {
                 // 获取当前智能合约数据文件中的总行数，其值即为上一区块的行数
-                line = FileTool.getFileLineCountIfBigCharLine(contractDataFile);
+                line = FileTool.getFileLineCount(contractDataFile);
                 // 重新生成待写入JSON String内容
                 // 计算该内容的字节长度
                 long contractDataSize = compressJsonString.getBytes().length;

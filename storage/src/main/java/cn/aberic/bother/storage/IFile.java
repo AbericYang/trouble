@@ -223,19 +223,8 @@ public interface IFile<T> {
      *
      * @return 文件总行数
      */
-    default int getFileLineCountIfBigCharLine(int num) {
-        return FileTool.getFileLineCountIfBigCharLine(getFileByNum(num));
-    }
-
-    /**
-     * 获取指定文件编号文件中的总行数，适合单行内容较多较长的情况
-     *
-     * @param num 文件编号
-     *
-     * @return 文件总行数
-     */
-    default int getFileLineCountIfLittleCharLine(int num) {
-        return FileTool.getFileLineCountIfLittleCharLine(getFileByNum(num));
+    default int getFileLineCount(int num) {
+        return FileTool.getFileLineCount(getFileByNum(num));
     }
 
 }

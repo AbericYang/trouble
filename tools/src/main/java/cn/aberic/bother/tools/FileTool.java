@@ -27,10 +27,12 @@ package cn.aberic.bother.tools;
 import com.google.common.base.Preconditions;
 import com.google.common.io.FileWriteMode;
 import com.google.common.io.Files;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.DigestUtils;
 
 import java.io.*;
 import java.nio.charset.Charset;
+import java.util.Date;
 
 /**
  * 文件工具类——公共方法包
@@ -38,6 +40,7 @@ import java.nio.charset.Charset;
  * 作者：Aberic on 2018/8/29 21:31
  * 邮箱：abericyang@gmail.com
  */
+@Slf4j
 public class FileTool {
 
     /**
@@ -82,60 +85,18 @@ public class FileTool {
      * @param file 文件
      * @return 文件总行数
      */
-    public static int getFileLineCountIfBigCharLine(File file) {
-        int cnt;
-        LineNumberReader reader = null;
-        try {
-            reader = new LineNumberReader(new FileReader(file));
-            while (reader.readLine() != null) {
-            }
-            cnt = reader.getLineNumber();
-        } catch (Exception ex) {
-            cnt = -1;
-            ex.printStackTrace();
-        } finally {
-            try {
-                assert reader != null;
-                reader.close();
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
+    public static int getFileLineCount(File file) {
+        long time = new Date().getTime();
+        int lines = 0;
+        long fileLength = file.length();
+        try (LineNumberReader lineNumberReader = new LineNumberReader(new FileReader(file));){
+            lineNumberReader.skip(fileLength);
+            lines = lineNumberReader.getLineNumber();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        return cnt;
-    }
-
-    /**
-     * 获取文件中的总行数，适合单行内容较少的情况
-     *
-     * @param file 文件
-     * @return 文件总行数
-     */
-    public static int getFileLineCountIfLittleCharLine(File file) {
-        int cnt = 0;
-        InputStream is = null;
-        try {
-            is = new BufferedInputStream(new FileInputStream(file));
-            byte[] c = new byte[1024];
-            int readChars;
-            while ((readChars = is.read(c)) != -1) {
-                for (int i = 0; i < readChars; ++i) {
-                    if (c[i] == '\n') {
-                        ++cnt;
-                    }
-                }
-            }
-        } catch (Exception ex) {
-            cnt = -1;
-            ex.printStackTrace();
-        } finally {
-            try {
-                assert is != null;
-                is.close();
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-        }
-        return cnt;
+        log.debug("getFileLineCount new 处理时长 = {}", new Date().getTime() - time);
+        return lines;
     }
 
     /**

@@ -70,7 +70,7 @@ public interface IBlockExec extends IExec<Block> {
                 FileTool.writeFirstLine(blockFile, compressJsonString);
             } else {
                 // 获取当前区块文件中的总行数，其值即为上一区块的行数
-                line = FileTool.getFileLineCountIfBigCharLine(blockFile);
+                line = FileTool.getFileLineCount(blockFile);
                 // 获取上一区块
                 Block preBlock = getFromFileByLine(blockFile, line);
                 // 获取上一区块高度，计算并赋值当前区块高度
@@ -116,7 +116,7 @@ public interface IBlockExec extends IExec<Block> {
             return 0;
         } else {
             // 获取当前区块文件中的总行数，其值即为上一区块的行数
-            int lineCount = FileTool.getFileLineCountIfBigCharLine(blockFile);
+            int lineCount = FileTool.getFileLineCount(blockFile);
             // 获取上一区块
             Block preBlock = getFromFileByLine(blockFile, lineCount);
             // 返回上一区块高度
