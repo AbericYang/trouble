@@ -44,7 +44,9 @@ public class ContractController {
         SystemContract contract = new SystemContract();
         SystemContractExec contractExec = new SystemContractExec();
         contractExec.setRequest(request);
-        return contract.invoke(contractExec);
+        String result = contract.invoke(contractExec);
+        contractExec.sendTransaction();
+        return result;
     }
 
     @PostMapping(value = "query")

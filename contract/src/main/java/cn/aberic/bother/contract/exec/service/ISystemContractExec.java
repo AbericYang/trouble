@@ -55,6 +55,15 @@ public interface ISystemContractExec extends IResponse {
     Request getRequest();
 
     /**
+     * 获取当前交易hash。
+     * <p>
+     * 注意：只有在当前交易结束的时候才能
+     *
+     * @return 当前交易hash
+     */
+    String getTxID();
+
+    /**
      * 根据 {@param key} 传入对象 {@param string}
      *
      * @param key    json key

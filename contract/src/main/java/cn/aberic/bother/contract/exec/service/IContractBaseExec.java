@@ -26,6 +26,7 @@
 package cn.aberic.bother.contract.exec.service;
 
 import cn.aberic.bother.block.BlockAcquire;
+import cn.aberic.bother.entity.block.Transaction;
 
 /**
  * 智能合约基本操作接口-smart contract
@@ -88,5 +89,16 @@ public interface IContractBaseExec {
      * @return {@link cn.aberic.bother.storage.IFile} 实现
      */
     IContractDataIndexFileExec getContractDataIndexFileExec();
+
+    /**
+     * 得到本次交易对象。
+     * <p>
+     * 如果写集结果的长度为0，则表示本次没有写入操作，不计入区块
+     * <p>
+     * 如果是联盟链，则必须指定 creator 身份
+     *
+     * @return 交易对象
+     */
+    Transaction getTransaction();
 
 }

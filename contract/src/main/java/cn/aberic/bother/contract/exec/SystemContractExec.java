@@ -26,16 +26,14 @@
 package cn.aberic.bother.contract.exec;
 
 import cn.aberic.bother.block.BlockAcquire;
+import cn.aberic.bother.block.BlockStorage;
 import cn.aberic.bother.contract.exec.service.*;
 import cn.aberic.bother.encryption.MD5;
 import cn.aberic.bother.entity.block.*;
 import cn.aberic.bother.entity.contract.Contract;
 import cn.aberic.bother.entity.contract.Request;
 import cn.aberic.bother.storage.Common;
-import cn.aberic.bother.tools.SystemTool;
-import org.apache.commons.lang3.StringUtils;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -52,6 +50,8 @@ public class SystemContractExec implements ISystemContractExec, IContractBaseExe
     private List<ValueRead> reads;
     private List<ValueWrite> writes;
     private Request request;
+    /** 是否有写入数据 */
+    private boolean hasBeenWritten = false;
 
     public SystemContractExec() {
         rwSet = new RWSet();
@@ -60,29 +60,26 @@ public class SystemContractExec implements ISystemContractExec, IContractBaseExe
     }
 
     /**
-     * 得到本次交易对象。
-     * <p>
-     * 如果写集结果的长度为0，则表示本次没有写入操作，不计入区块
+     * 设置请求参数对象
      *
-     * @param creator 如果是联盟链则不能为空
-     *
-     * @return 交易对象
+     * @param request 请求对象
      */
-    public Transaction getTransaction(@Nullable String creator) {
-        if (writes.size() <= 0) {
-            return null;
-        }
-        rwSet.setReads(reads);
-        rwSet.setWrites(writes);
-        Transaction transaction = new Transaction();
-        transaction.setCreator(StringUtils.isEmpty(creator) ? SystemTool.getLocalMac() : creator);
-        transaction.setTimestamp(new Date().getTime());
-        transaction.setRwSet(rwSet);
-        return transaction.build();
-    }
-
     public void setRequest(Request request) {
         this.request = request;
+    }
+
+    /** 发送交易到 Leader 节点 */
+    public void sendTransaction() {
+        // TODO: 2018/9/2 临时生成区块，实际应发送至 Leader 节点统一打包
+        BlockStorage storage = new BlockStorage(Common.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH);
+        BlockHeader header = BlockHeader.newInstance().create(true, 120, new Date().getTime());
+        BlockBody body = new BlockBody();
+        List<Transaction> transactions = new ArrayList<>();
+        transactions.add(getTransaction());
+        body.setTxCount(transactions.size());
+        body.setTransactions(transactions);
+        Block block = new Block(header, body);
+        storage.save(block);
     }
 
     @Override
@@ -106,6 +103,20 @@ public class SystemContractExec implements ISystemContractExec, IContractBaseExe
     }
 
     @Override
+    public Transaction getTransaction() {
+        if (!hasBeenWritten) {
+            return null;
+        }
+        rwSet.setReads(reads);
+        rwSet.setWrites(writes);
+        Transaction transaction = new Transaction();
+        transaction.setCreator("");
+        transaction.setTimestamp(new Date().getTime());
+        transaction.setRwSet(rwSet);
+        return transaction.build();
+    }
+
+    @Override
     public Contract getContract() {
         return getContractFileExec().getContract();
     }
@@ -116,12 +127,23 @@ public class SystemContractExec implements ISystemContractExec, IContractBaseExe
     }
 
     @Override
+    public String getTxID() {
+        Transaction transaction = getTransaction();
+        if (null == transaction) {
+            throw new RuntimeException("there was no message been written");
+        }
+        return transaction.getHash();
+    }
+
+    @Override
     public void put(String key, String value) {
         ValueWrite write = new ValueWrite();
         write.setContractName(getContract().getName());
         write.setContractVersion(getContract().getVersionName());
         write.setStrings(new String[]{key, value});
         writes.add(write);
+        hasBeenWritten = true;
+        // TODO: 2018/9/2 下面步骤应该被修改成从区块中读取数据
         getContractDataIndexFileExec().put(getContractDataFileExec().put(key, value));
     }
 
