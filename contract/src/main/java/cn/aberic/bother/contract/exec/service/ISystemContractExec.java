@@ -28,6 +28,7 @@ package cn.aberic.bother.contract.exec.service;
 import cn.aberic.bother.entity.IResponse;
 import cn.aberic.bother.entity.block.Block;
 import cn.aberic.bother.entity.contract.Contract;
+import cn.aberic.bother.entity.contract.Request;
 
 import java.util.List;
 
@@ -45,6 +46,8 @@ public interface ISystemContractExec extends IResponse {
      * @return 智能合约对象
      */
     Contract getContract();
+
+    Request getRequest();
 
     /**
      * 根据 {@param key} 传入对象 {@param string}

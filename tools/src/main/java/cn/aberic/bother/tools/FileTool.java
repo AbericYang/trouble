@@ -91,7 +91,7 @@ public class FileTool {
         long fileLength = file.length();
         try (LineNumberReader lineNumberReader = new LineNumberReader(new FileReader(file));){
             lineNumberReader.skip(fileLength);
-            lines = lineNumberReader.getLineNumber();
+            lines = lineNumberReader.getLineNumber() + 1;
         } catch (IOException e) {
             e.printStackTrace();
         }

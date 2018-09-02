@@ -27,12 +27,8 @@ package cn.aberic.bother.contract;
 
 import cn.aberic.bother.contract.exec.service.ISystemContract;
 import cn.aberic.bother.contract.exec.service.ISystemContractExec;
-import cn.aberic.bother.entity.contract.Contract;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.TypeReference;
+import cn.aberic.bother.entity.contract.Request;
 import lombok.extern.slf4j.Slf4j;
-
-import java.util.List;
 
 /**
  * 系统应用智能合约-app support
@@ -45,22 +41,24 @@ public class SystemContract implements ISystemContract {
 
     @Override
     public String invoke(ISystemContractExec exec) {
-        exec.put("haha", "hehe4");
-        Contract test = new Contract("Aberic", "1", 18, "2");
-        exec.put("test", JSON.toJSONString(test));
-        return exec.response(exec.getContract());
+        Request request = exec.getRequest();
+        exec.put(request.getKey(), request.getValue());
+//        Contract test = new Contract("Aberic", "1", 18, "2");
+//        exec.put("test", JSON.toJSONString(test));
+        return exec.response();
     }
 
     @Override
     public String query(ISystemContractExec exec) {
-        log.debug("o = {}", exec.get("haha"));
-        List<String> strings = exec.getHistory("haha");
-        strings.forEach(o1 -> {
-            log.debug("oh = {}", o1);
-        });
-        Contract test = JSON.parseObject(exec.get("test"), new TypeReference<Contract>() {});
-        log.debug("test = {}", test.toJsonString());
-        return "haha";
+//        log.debug("o = {}", exec.get("haha"));
+//        List<String> strings = exec.getHistory("haha");
+//        strings.forEach(o1 -> {
+//            log.debug("oh = {}", o1);
+//        });
+//        Contract test = JSON.parseObject(exec.get("test"), new TypeReference<Contract>() {});
+//        log.debug("test = {}", test.toJsonString());
+        Request request = exec.getRequest();
+        return exec.get(request.getKey());
     }
 
 }

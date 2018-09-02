@@ -23,36 +23,22 @@
  *
  */
 
-package cn.aberic.bother.controller;
+package cn.aberic.bother.entity.contract;
 
-import cn.aberic.bother.contract.SystemContract;
-import cn.aberic.bother.contract.exec.SystemContractExec;
-import cn.aberic.bother.entity.contract.Request;
-import org.springframework.web.bind.annotation.*;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
- * 作者：Aberic on 2018/9/1 22:40
+ * 作者：Aberic on 2018/9/2 19:57
  * 邮箱：abericyang@gmail.com
  */
-@CrossOrigin
-@RestController
-@RequestMapping("contract")
-public class ContractController {
+@Setter
+@Getter
+public class Request {
 
-    @PostMapping(value = "invoke")
-    public String invoke(@RequestBody Request request) {
-        SystemContract contract = new SystemContract();
-        SystemContractExec contractExec = new SystemContractExec();
-        contractExec.setRequest(request);
-        return contract.invoke(contractExec);
-    }
-
-    @PostMapping(value = "query")
-    public String query(@RequestBody Request request) {
-        SystemContract contract = new SystemContract();
-        SystemContractExec contractExec = new SystemContractExec();
-        contractExec.setRequest(request);
-        return contract.query(contractExec);
-    }
+    /** 智能合约key */
+    private String key;
+    /** 智能合约value */
+    private String value;
 
 }

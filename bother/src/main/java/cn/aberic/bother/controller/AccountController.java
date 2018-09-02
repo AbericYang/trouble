@@ -25,34 +25,9 @@
 
 package cn.aberic.bother.controller;
 
-import cn.aberic.bother.contract.SystemContract;
-import cn.aberic.bother.contract.exec.SystemContractExec;
-import cn.aberic.bother.entity.contract.Request;
-import org.springframework.web.bind.annotation.*;
-
 /**
- * 作者：Aberic on 2018/9/1 22:40
+ * 作者：Aberic on 2018/9/2 19:10
  * 邮箱：abericyang@gmail.com
  */
-@CrossOrigin
-@RestController
-@RequestMapping("contract")
-public class ContractController {
-
-    @PostMapping(value = "invoke")
-    public String invoke(@RequestBody Request request) {
-        SystemContract contract = new SystemContract();
-        SystemContractExec contractExec = new SystemContractExec();
-        contractExec.setRequest(request);
-        return contract.invoke(contractExec);
-    }
-
-    @PostMapping(value = "query")
-    public String query(@RequestBody Request request) {
-        SystemContract contract = new SystemContract();
-        SystemContractExec contractExec = new SystemContractExec();
-        contractExec.setRequest(request);
-        return contract.query(contractExec);
-    }
-
+public class AccountController {
 }

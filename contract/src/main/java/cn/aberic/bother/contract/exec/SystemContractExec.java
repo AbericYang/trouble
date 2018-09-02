@@ -30,6 +30,7 @@ import cn.aberic.bother.contract.exec.service.*;
 import cn.aberic.bother.encryption.MD5;
 import cn.aberic.bother.entity.block.*;
 import cn.aberic.bother.entity.contract.Contract;
+import cn.aberic.bother.entity.contract.Request;
 import cn.aberic.bother.storage.Common;
 import cn.aberic.bother.tools.SystemTool;
 import org.apache.commons.lang3.StringUtils;
@@ -50,6 +51,7 @@ public class SystemContractExec implements ISystemContractExec, IContractBaseExe
     private RWSet rwSet;
     private List<ValueRead> reads;
     private List<ValueWrite> writes;
+    private Request request;
 
     public SystemContractExec() {
         rwSet = new RWSet();
@@ -79,6 +81,10 @@ public class SystemContractExec implements ISystemContractExec, IContractBaseExe
         return transaction.build();
     }
 
+    public void setRequest(Request request) {
+        this.request = request;
+    }
+
     @Override
     public BlockAcquire getBlockAcquire() {
         return new BlockAcquire(Common.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH);
@@ -102,6 +108,11 @@ public class SystemContractExec implements ISystemContractExec, IContractBaseExe
     @Override
     public Contract getContract() {
         return getContractFileExec().getContract();
+    }
+
+    @Override
+    public Request getRequest() {
+        return request;
     }
 
     @Override
