@@ -47,13 +47,18 @@ public interface ISystemContractExec extends IResponse {
      */
     Contract getContract();
 
+    /**
+     * 获取请求对象 Request
+     *
+     * @return 请求对象 Request
+     */
     Request getRequest();
 
     /**
      * 根据 {@param key} 传入对象 {@param string}
      *
-     * @param key   json key
-     * @param string   传入对象
+     * @param key    json key
+     * @param string 传入对象
      */
     void put(String key, String string);
 
