@@ -123,11 +123,11 @@ public interface IContractDataIndexFileExec extends IInit, IFile<ContractInfo> {
         String[] results = new String[]{null};
         long time = new Date().getTime();
         String[] strings = DBExec.obtain().get(key).split(",");
-        getLog().debug("LevelDBExec getKey 耗时 = {}", (new Date().getTime() - time));
+        getLog().debug("DBExec getKey 耗时 = {}", (new Date().getTime() - time));
 
         time = new Date().getTime();
         Block block = acquire.getBlockByNumAndLine(Integer.valueOf(strings[0]), Integer.valueOf(strings[1]));
-        getLog().debug("block getBlockByNumAndLine 耗时 = {}", (new Date().getTime() - time));
+        getLog().debug("Block getBlockByNumAndLine 耗时 = {}", (new Date().getTime() - time));
 
         time = new Date().getTime();
         block.getBody().getTransactions().forEach(transaction -> transaction.getRwSet().getWrites().forEach(write -> {
@@ -135,7 +135,7 @@ public interface IContractDataIndexFileExec extends IInit, IFile<ContractInfo> {
                 results[0] = write.getStrings()[1];
             }
         }));
-        getLog().debug("write getStrings 耗时 = {}", (new Date().getTime() - time));
+        getLog().debug("Write getStrings 耗时 = {}", (new Date().getTime() - time));
         return results[0];
     }
 
