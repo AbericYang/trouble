@@ -33,6 +33,7 @@ import cn.aberic.bother.entity.block.*;
 import cn.aberic.bother.entity.contract.Contract;
 import cn.aberic.bother.entity.contract.Request;
 import cn.aberic.bother.storage.Common;
+import cn.aberic.bother.tools.exception.ContractPutValueException;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -79,7 +80,8 @@ public class SystemContractExec implements ISystemContractExec, IContractBaseExe
         body.setTxCount(transactions.size());
         body.setTransactions(transactions);
         Block block = new Block(header, body);
-        storage.save(block);
+        BlockInfo blockInfo = storage.save(block);
+        getContractDataIndexFileExec().put(blockInfo, writes);
     }
 
     @Override
@@ -137,14 +139,15 @@ public class SystemContractExec implements ISystemContractExec, IContractBaseExe
 
     @Override
     public void put(String key, String value) {
+        if (null == value) {
+            throw new ContractPutValueException();
+        }
         ValueWrite write = new ValueWrite();
         write.setContractName(getContract().getName());
         write.setContractVersion(getContract().getVersionName());
         write.setStrings(new String[]{key, value});
         writes.add(write);
         hasBeenWritten = true;
-        // TODO: 2018/9/2 下面步骤应该被修改成从区块中读取数据
-        getContractDataIndexFileExec().put(getContractDataFileExec().put(key, value));
     }
 
     @Override
@@ -154,12 +157,12 @@ public class SystemContractExec implements ISystemContractExec, IContractBaseExe
         read.setContractVersion(getContract().getVersionName());
         read.setKey(key);
         reads.add(read);
-        return getContractDataIndexFileExec().get(getContractDataFileExec(), key);
+        return getContractDataIndexFileExec().get(getBlockAcquire(), key);
     }
 
     @Override
     public List<String> getHistory(String key) {
-        return getContractDataIndexFileExec().getHistory(getContractDataFileExec(), key);
+        return getContractDataIndexFileExec().getHistory(getBlockAcquire(), key);
     }
 
     @Override

@@ -86,4 +86,15 @@ public class BlockAcquire extends BlockAS {
     public Block getBlockByTransactionHash(String transactionHash) {
         return getBlockTransactionIndexExec().getByTransactionHash(MD5.md516(transactionHash));
     }
+
+    /**
+     * 根据区块所在区块文件编号以及区块文件中所在行号获取区块
+     *
+     * @param num  区块文件编号
+     * @param line 区块文件中所在行号
+     * @return 区块对象
+     */
+    public Block getBlockByNumAndLine(int num, int line) {
+        return getBlockExec().getByNumAndLine(num, line);
+    }
 }

@@ -28,6 +28,7 @@ package cn.aberic.bother.contract;
 import cn.aberic.bother.contract.exec.service.ISystemContract;
 import cn.aberic.bother.contract.exec.service.ISystemContractExec;
 import cn.aberic.bother.entity.contract.Request;
+import com.alibaba.fastjson.JSON;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -57,8 +58,18 @@ public class SystemContract implements ISystemContract {
 //        });
 //        Contract test = JSON.parseObject(exec.get("test"), new TypeReference<Contract>() {});
 //        log.debug("test = {}", test.toJsonString());
+        return queryTest(exec);
+    }
+
+    private String queryTest(ISystemContractExec exec) {
         Request request = exec.getRequest();
-        return exec.get(request.getKey());
+        switch (request.getValue()) {
+            case "query":
+                return exec.get(request.getKey());
+            case "history":
+                return JSON.toJSONString(exec.getHistory(request.getKey()));
+        }
+        return null;
     }
 
 }

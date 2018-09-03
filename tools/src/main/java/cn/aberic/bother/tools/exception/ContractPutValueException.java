@@ -22,32 +22,17 @@
  * SOFTWARE.
  */
 
-package cn.aberic.bother.contract.exec.service;
-
-import cn.aberic.bother.block.exec.service.IInit;
-import cn.aberic.bother.storage.FileComponent;
-import cn.aberic.bother.storage.IFile;
-
-import java.io.File;
+package cn.aberic.bother.tools.exception;
 
 /**
- * 智能合约数据文件对象操作接口-smart contract
+ * 智能合约请求对象 value 字段为空异常——公共方法包
  * <p>
- * 作者：Aberic on 2018/08/31 11:28
+ * 作者：Aberic on 2018/09/03 10:25
  * 邮箱：abericyang@gmail.com
  */
-public interface IContractDataFileExec extends IInit, IFile<String> {
+public class ContractPutValueException extends NullPointerException {
 
-    /**
-     * 将根据旧版hash所指定智能合约数据文件夹重命名为新版hash
-     *
-     * @param contractOldHash 旧版hash
-     */
-    default boolean renameContractFile(String contractOldHash) {
-        // 旧版hash所在文件夹路径
-        File file = new File(FileComponent.getContractDataFileComponent(contractOldHash).getDir());
-        // 将原文件夹更改为新版hash
-        return file.renameTo(new File(getFileStatus().getDir()));
+    public ContractPutValueException() {
+        super("For entity Request put, params value can't be empty");
     }
-
 }

@@ -25,7 +25,8 @@
 
 package cn.aberic.bother.contract.runnable;
 
-import cn.aberic.bother.contract.exec.service.IContractDataFileExec;
+import cn.aberic.bother.block.BlockAcquire;
+import cn.aberic.bother.entity.block.Block;
 import cn.aberic.bother.entity.contract.ContractInfo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
@@ -45,12 +46,12 @@ import java.util.concurrent.Callable;
  */
 public class CallableSearchContractKeyIndexList implements Callable<List<String>> {
 
-    private IContractDataFileExec contractDataFileExec;
+    private BlockAcquire acquire;
     private String key;
     private File file;
 
-    public CallableSearchContractKeyIndexList(IContractDataFileExec contractDataFileExec, String key, File file) {
-        this.contractDataFileExec = contractDataFileExec;
+    public CallableSearchContractKeyIndexList(BlockAcquire acquire, String key, File file) {
+        this.acquire = acquire;
         this.key = key;
         this.file = file;
     }
@@ -63,7 +64,12 @@ public class CallableSearchContractKeyIndexList implements Callable<List<String>
                 String lineString = it.nextLine();
                 ContractInfo contractInfo = JSON.parseObject(lineString, new TypeReference<ContractInfo>() {});
                 if (null != contractInfo && StringUtils.equalsIgnoreCase(contractInfo.getKey(), key)) {
-                    list.add(contractDataFileExec.getByNumAndLine(contractInfo.getNum(), contractInfo.getLine()));
+                    Block block = acquire.getBlockByNumAndLine(contractInfo.getNum(), contractInfo.getLine());
+                    block.getBody().getTransactions().forEach(transaction -> transaction.getRwSet().getWrites().forEach(write -> {
+                        if (StringUtils.equals(write.getStrings()[0], key)) {
+                            list.add(write.getStrings()[1]);
+                        }
+                    }));
                 }
             }
         } catch (IOException e) {

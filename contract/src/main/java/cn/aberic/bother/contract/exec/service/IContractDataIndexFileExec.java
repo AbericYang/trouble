@@ -24,8 +24,12 @@
 
 package cn.aberic.bother.contract.exec.service;
 
+import cn.aberic.bother.block.BlockAcquire;
 import cn.aberic.bother.block.exec.service.IInit;
 import cn.aberic.bother.contract.runnable.CallableSearchContractKeyIndexList;
+import cn.aberic.bother.entity.block.Block;
+import cn.aberic.bother.entity.block.BlockInfo;
+import cn.aberic.bother.entity.block.ValueWrite;
 import cn.aberic.bother.entity.contract.ContractInfo;
 import cn.aberic.bother.storage.IFile;
 import cn.aberic.bother.storage.leveldb.LevelDB;
@@ -38,7 +42,9 @@ import org.apache.commons.lang3.StringUtils;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -53,10 +59,20 @@ public interface IContractDataIndexFileExec extends IInit, IFile<ContractInfo> {
     /**
      * 将智能合约数据key在智能合约数据文件中的基本信息存入索引
      *
-     * @param contractInfo 智能合约数据key在智能合约数据文件中的基本信息
+     * @param blockInfo 区块在区块文件中的基本信息
+     * @param writes    一笔操作的写入值对象集合
      */
-    default void put(ContractInfo contractInfo) {
-        String jsonString = JSON.toJSONString(contractInfo);
+    default void put(BlockInfo blockInfo, List<ValueWrite> writes) {
+        StringBuilder sb = new StringBuilder();
+        Map<String, String> map = new HashMap<>();
+        writes.forEach(write -> {
+            map.put(write.getStrings()[0], String.format("%s,%s", blockInfo.getNum(), blockInfo.getLine()));
+            if (sb.toString().length() != 0) {
+                sb.append("\r\n");
+            }
+            sb.append(JSON.toJSONString(new ContractInfo(write.getStrings()[0], blockInfo.getNum(), blockInfo.getLine())));
+        });
+        String jsonString = sb.toString();
         // 获取最新写入的智能合约数据文件
         File indexFile = getLastFile();
         try {
@@ -78,7 +94,7 @@ public interface IContractDataIndexFileExec extends IInit, IFile<ContractInfo> {
                     FileTool.writeAppendLine(indexFile, jsonString);
                 }
             }
-            LevelDB.obtain().put(contractInfo.getKey(), String.format("%s,%s", contractInfo.getNum(), contractInfo.getLine()));
+            LevelDB.obtain().put(map);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -88,28 +104,33 @@ public interface IContractDataIndexFileExec extends IInit, IFile<ContractInfo> {
      * 根据智能合约数据key获取智能合约数据
      *
      * @param key 智能合约数据key
-     *
      * @return 智能合约数据
      */
-    default String get(IContractDataFileExec contractDataFileExec, String key) {
+    default String get(BlockAcquire acquire, String key) {
+        String[] results = new String[]{null};
         String[] strings = LevelDB.obtain().get(key).split(",");
-        return contractDataFileExec.getByNumAndLine(Integer.valueOf(strings[0]), Integer.valueOf(strings[1]));
+        Block block = acquire.getBlockByNumAndLine(Integer.valueOf(strings[0]), Integer.valueOf(strings[1]));
+        block.getBody().getTransactions().forEach(transaction -> transaction.getRwSet().getWrites().forEach(write -> {
+            if (StringUtils.equals(write.getStrings()[0], key)) {
+                results[0] = write.getStrings()[1];
+            }
+        }));
+        return results[0];
     }
 
     /**
      * 根据智能合约数据key获取智能合约数据
      *
      * @param key 智能合约数据key
-     *
      * @return 智能合约数据
      */
-    default List<String> getHistory(IContractDataFileExec contractDataFileExec, String key) {
+    default List<String> getHistory(BlockAcquire acquire, String key) {
         ThreadTroublePool troublePool = new ThreadTroublePool();
         List<String> strings = new ArrayList<>();
         Iterable<File> files = Files.fileTraverser().breadthFirst(new File(getFileStatus().getDir()));
         for (File file : files) {
             if (StringUtils.startsWith(file.getName(), getFileStatus().getStart())) {
-                Future<List<String>> future = troublePool.submit(new CallableSearchContractKeyIndexList(contractDataFileExec, key, file));
+                Future<List<String>> future = troublePool.submit(new CallableSearchContractKeyIndexList(acquire, key, file));
                 try {
                     strings.addAll(future.get());
                 } catch (InterruptedException | ExecutionException e) {

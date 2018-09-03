@@ -48,4 +48,9 @@ public class ContractInfo {
     @JSONField(name = "l")
     private int line;
 
+    public ContractInfo(String key, int num, int line) {
+        this.key = key;
+        this.num = num;
+        this.line = line;
+    }
 }

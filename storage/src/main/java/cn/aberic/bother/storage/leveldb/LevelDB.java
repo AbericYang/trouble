@@ -81,8 +81,7 @@ public class LevelDB {
     public String get(String key) {
         try (DB db = getSystemContractHash()) {
             return new String(db.get(key.getBytes("UTF-8")), "UTF-8");
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (Exception ignored) {
         }
         return null;
     }

@@ -52,7 +52,7 @@ public class BlockStorage extends BlockAS {
      *
      * @param block 待存储区块对象
      */
-    public void save(Block block) {
+    public BlockInfo save(Block block) {
         BlockInfo blockInfo = getBlockExec().createOrUpdate(block);
         String blockIndex = String.format("%s,%s,%s,%s", blockInfo.getNum(), blockInfo.getLine(), blockInfo.getBlockHash(), blockInfo.getHeight());
         getBlockIndexExec().createOrUpdate(blockIndex);
@@ -62,6 +62,7 @@ public class BlockStorage extends BlockAS {
             sb.append(",").append(s);
         }
         getBlockTransactionIndexExec().createOrUpdate(sb.toString());
+        return blockInfo;
     }
 
     /**
