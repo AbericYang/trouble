@@ -61,7 +61,7 @@ public class SCTest {
 
     private static void input() {
         Request request = new Request();
-        for (int i = 7279; i < 1000000; i++) {
+        for (int i = 15440; i < 1000000; i++) {
             request.setKey("key" + i);
             request.setValue("value" + i);
             request.setValue(JSON.toJSONString(request));

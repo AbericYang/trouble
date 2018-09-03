@@ -88,28 +88,30 @@ public class BlockFileTest {
                 transaction.setTransactionStatusCode(TransactionStatus.SUCCESS.getCode());
                 transaction.setTimestamp(new Date().getTime());
 
-                List<RWSet> rwSets = new ArrayList<>();
+                RWSet rwSet = new RWSet();
+                List<ValueRead> reads = new ArrayList<>();
+                List<ValueWrite> writes = new ArrayList<>();
                 for (int rwCount = 0; rwCount < 3; rwCount++) {
-                    RWSet rwSet = new RWSet();
 
                     ValueRead valueRead = new ValueRead();
-                    valueRead.setNumber(transactionCount + rwCount);
                     valueRead.setContractName(String.format("contract_%s%s%s", blockCount, transactionCount, rwCount));
                     valueRead.setContractVersion(String.format("v_%s%s%s", blockCount, transactionCount, rwCount));
-                    valueRead.setStrings(new String[]{String.valueOf(blockCount), String.valueOf(transactionCount), String.valueOf(rwCount)});
+                    valueRead.setKey(String.valueOf(blockCount));
 
                     ValueWrite valueWrite = new ValueWrite();
-                    valueWrite.setNumber(transactionCount + rwCount);
                     valueWrite.setContractName(String.format("contract_%s%s%s", blockCount, transactionCount, rwCount));
                     valueWrite.setContractVersion(String.format("v_%s%s%s", blockCount, transactionCount, rwCount));
                     valueWrite.setStrings(new String[]{String.valueOf(blockCount), String.valueOf(transactionCount), String.valueOf(rwCount)});
 
-                    rwSet.setValueRead(valueRead);
-                    rwSet.setValueWrite(valueWrite);
 
-                    rwSets.add(rwSet);
+                    reads.add(valueRead);
+                    writes.add(valueWrite);
+
                 }
-                transaction.setRwSets(rwSets);
+                rwSet.setReads(reads);
+                rwSet.setWrites(writes);
+
+                transaction.setRwSet(rwSet);
 
                 transactions.add(transaction.build());
             }

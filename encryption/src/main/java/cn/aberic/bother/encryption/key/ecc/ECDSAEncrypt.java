@@ -26,17 +26,11 @@ package cn.aberic.bother.encryption.key.ecc;
 
 import cn.aberic.bother.encryption.key.KeyExec;
 import org.apache.commons.codec.binary.Base64;
+import org.bouncycastle.jce.interfaces.ECPrivateKey;
+import org.bouncycastle.jce.interfaces.ECPublicKey;
 
-import javax.crypto.BadPaddingException;
-import javax.crypto.Cipher;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NullCipher;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
-import java.security.KeyFactory;
-import java.security.NoSuchAlgorithmException;
-import java.security.interfaces.ECPrivateKey;
-import java.security.interfaces.ECPublicKey;
+import javax.crypto.*;
+import java.security.*;
 import java.security.spec.*;
 
 /**
@@ -71,7 +65,7 @@ public class ECDSAEncrypt {
     private ECPublicKey getPublicKeyByStr(String keyStr) {
         X509EncodedKeySpec keySpec = new X509EncodedKeySpec(Base64.decodeBase64(keyStr));
         try {
-            KeyFactory keyFactory = KeyFactory.getInstance("EC");
+            KeyFactory keyFactory = KeyFactory.getInstance("EC", "BC");
             return (ECPublicKey) keyFactory.generatePublic(keySpec);
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
@@ -79,6 +73,9 @@ public class ECDSAEncrypt {
         } catch (InvalidKeySpecException e) {
             e.printStackTrace();
             throw new RuntimeException("无效X509EncodedKeySpec异常错误");
+        } catch (NoSuchProviderException e) {
+            e.printStackTrace();
+            throw new RuntimeException("无此代理");
         }
     }
 
@@ -91,7 +88,7 @@ public class ECDSAEncrypt {
     private ECPrivateKey getPrivateKeyByStr(String keyStr) {
         PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(Base64.decodeBase64(keyStr));
         try {
-            KeyFactory keyFactory = KeyFactory.getInstance("EC");
+            KeyFactory keyFactory = KeyFactory.getInstance("EC", "BC");
             return (ECPrivateKey) keyFactory.generatePrivate(keySpec);
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
@@ -99,6 +96,9 @@ public class ECDSAEncrypt {
         } catch (InvalidKeySpecException e) {
             e.printStackTrace();
             throw new RuntimeException("无效PKCS8EncodedKeySpec异常错误");
+        } catch (NoSuchProviderException e) {
+            e.printStackTrace();
+            throw new RuntimeException("无此代理");
         }
     }
 
@@ -127,9 +127,9 @@ public class ECDSAEncrypt {
         }
         ECPrivateKey privateKey = getPrivateKeyByStr(keyStr);
         try {
-            ECPrivateKeySpec privateKeySpec = new ECPrivateKeySpec(privateKey.getS(), privateKey.getParams());
-            Cipher cipher = new NullCipher();
-            cipher.init(Cipher.DECRYPT_MODE, privateKey, privateKeySpec.getParams());
+            // ECPrivateKeySpec privateKeySpec = new ECPrivateKeySpec(privateKey.getS(), privateKey.getParams());
+            Cipher cipher = Cipher.getInstance("ECIES", "BC");
+            cipher.init(Cipher.DECRYPT_MODE, privateKey);
             return new String(cipher.doFinal(infoBytes));
         } catch (InvalidKeyException e) {
             e.printStackTrace();
@@ -140,9 +140,15 @@ public class ECDSAEncrypt {
         } catch (IllegalBlockSizeException e) {
             e.printStackTrace();
             throw new RuntimeException("内容长度非法");
-        } catch (InvalidAlgorithmParameterException e) {
+        } catch (NoSuchPaddingException e) {
             e.printStackTrace();
-            throw new RuntimeException("无效的算法参数异常");
+            throw new RuntimeException("无此填充类型");
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+            throw new RuntimeException("无此算法");
+        } catch (NoSuchProviderException e) {
+            e.printStackTrace();
+            throw new RuntimeException("无此代理");
         }
     }
 
@@ -171,9 +177,9 @@ public class ECDSAEncrypt {
         }
         ECPublicKey publicKey = getPublicKeyByStr(keyStr);
         try {
-            ECPublicKeySpec publicKeySpec = new ECPublicKeySpec(publicKey.getW(), publicKey.getParams());
-            Cipher cipher = new NullCipher();
-            cipher.init(Cipher.ENCRYPT_MODE, publicKey, publicKeySpec.getParams());
+            // ECPublicKeySpec publicKeySpec = new ECPublicKeySpec(publicKey.getW(), publicKey.getParams());
+            Cipher cipher = Cipher.getInstance("ECIES", "BC");
+            cipher.init(Cipher.ENCRYPT_MODE, publicKey);
             return Base64.encodeBase64String(cipher.doFinal(infoBytes));
         } catch (InvalidKeyException e) {
             e.printStackTrace();
@@ -184,9 +190,15 @@ public class ECDSAEncrypt {
         } catch (IllegalBlockSizeException e) {
             e.printStackTrace();
             throw new RuntimeException("内容长度非法");
-        } catch (InvalidAlgorithmParameterException e) {
+        } catch (NoSuchPaddingException e) {
             e.printStackTrace();
-            throw new RuntimeException("无效的算法参数异常");
+            throw new RuntimeException("无此填充类型");
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+            throw new RuntimeException("无此算法");
+        } catch (NoSuchProviderException e) {
+            e.printStackTrace();
+            throw new RuntimeException("无此代理");
         }
     }
 

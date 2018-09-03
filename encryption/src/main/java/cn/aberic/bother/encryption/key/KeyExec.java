@@ -27,17 +27,15 @@ package cn.aberic.bother.encryption.key;
 import cn.aberic.bother.encryption.key.bean.Key;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Base64;
+import org.bouncycastle.jce.interfaces.ECPrivateKey;
 
 import java.io.*;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
-import java.security.interfaces.ECPrivateKey;
+import java.security.*;
 import java.security.interfaces.ECPublicKey;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.util.Objects;
+
 
 /**
  * 键值对密钥操作对象
@@ -130,14 +128,16 @@ public class KeyExec {
      */
     public void createECCDSAKeyPair(String path, String keyName) {
         KeyPairGenerator keyPairGenerator;
+        // 使用BC方法前，在代码中手动将BC方法添加进环境信息内
+        Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
         try {
-            keyPairGenerator = KeyPairGenerator.getInstance("EC");
-        } catch (NoSuchAlgorithmException e) {
+            keyPairGenerator = KeyPairGenerator.getInstance("EC", "BC");
+        } catch (NoSuchAlgorithmException | NoSuchProviderException e) {
             e.printStackTrace();
             return;
         }
         // 初始化密钥对生成器，密钥大小为96-1024位
-        keyPairGenerator.initialize(256);
+        keyPairGenerator.initialize(256, new SecureRandom());
         KeyPair keyPair = keyPairGenerator.generateKeyPair(); // 生成一个密钥对，保存在keyPair中
         ECPublicKey publicKey = (ECPublicKey) keyPair.getPublic(); // 得到公钥
         ECPrivateKey privateKey = (ECPrivateKey) keyPair.getPrivate(); // 得到私钥
