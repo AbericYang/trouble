@@ -24,9 +24,13 @@
 
 package cn.aberic.bother.controller;
 
+import cn.aberic.bother.encryption.key.KeyExec;
+import cn.aberic.bother.encryption.key.bean.Key;
 import cn.aberic.bother.entity.contract.Account;
 import cn.aberic.bother.entity.token.Token;
 import org.springframework.web.bind.annotation.*;
+
+import java.math.BigDecimal;
 
 /**
  * 作者：Aberic on 2018/09/03 12:05
@@ -40,7 +44,10 @@ public class TokenController {
     @PostMapping(value = "create")
     public String create(@RequestBody Token token) {
         Account account = new Account();
-        return token.getName();
+        Key key = KeyExec.obtain().createECCDSAKeyPair();
+        account.setPubKey(key.getPublicKey());
+        account.setCount(BigDecimal.valueOf(token.getTotalSupply()));
+        return key.getPrivateKey();
     }
 
 }
