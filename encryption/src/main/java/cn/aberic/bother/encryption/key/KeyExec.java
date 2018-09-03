@@ -170,14 +170,16 @@ public class KeyExec {
      */
     public Key createECCDSAKeyPair() {
         KeyPairGenerator keyPairGenerator;
+        // 使用BC方法前，在代码中手动将BC方法添加进环境信息内
+        Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
         try {
-            keyPairGenerator = KeyPairGenerator.getInstance("EC");
-        } catch (NoSuchAlgorithmException e) {
+            keyPairGenerator = KeyPairGenerator.getInstance("EC", "BC");
+        } catch (NoSuchAlgorithmException | NoSuchProviderException e) {
             e.printStackTrace();
             return null;
         }
         // 初始化密钥对生成器，密钥大小为96-1024位
-        keyPairGenerator.initialize(256);
+        keyPairGenerator.initialize(256, new SecureRandom());
         KeyPair keyPair = keyPairGenerator.generateKeyPair(); // 生成一个密钥对，保存在keyPair中
         ECPublicKey publicKey = (ECPublicKey) keyPair.getPublic(); // 得到公钥
         ECPrivateKey privateKey = (ECPrivateKey) keyPair.getPrivate(); // 得到私钥

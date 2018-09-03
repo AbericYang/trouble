@@ -24,10 +24,11 @@
 
 package cn.aberic.bother.controller;
 
-import cn.aberic.bother.entity.contract.Account;
 import cn.aberic.bother.entity.token.Token;
 import cn.aberic.bother.service.AccountService;
 import cn.aberic.bother.service.TokenService;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -47,9 +48,9 @@ public class TokenController {
     private AccountService accountService;
 
     @PostMapping(value = "create")
-    public Account create(@RequestBody Token token) {
+    public JSONObject create(@RequestBody Token token) {
         token = tokenService.saveTmp(token);
-        return accountService.saveTmp(token);
+        return JSON.parseObject(accountService.saveTmp(token));
     }
 
 }

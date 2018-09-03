@@ -32,6 +32,7 @@ import cn.aberic.bother.entity.contract.Account;
 import cn.aberic.bother.entity.token.Token;
 import cn.aberic.bother.service.AccountService;
 import com.google.common.hash.Hashing;
+import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -48,7 +49,7 @@ import java.util.Date;
 public class AccountServiceImpl implements AccountService {
 
     @Override
-    public Account saveTmp(Token token) {
+    public String saveTmp(Token token) {
         Account account = new Account();
         Key key = KeyExec.obtain().createECCDSAKeyPair();
         BigDecimal count = BigDecimal.valueOf(token.getTotalSupply());
@@ -59,6 +60,8 @@ public class AccountServiceImpl implements AccountService {
         account.setTimestamp(new Date().getTime());
         AccountManager manager = new AccountManager(token.getHash());
         manager.createOrUpdateTmp(account);
-        return account;
+        JSONObject aJson = new JSONObject(account);
+        aJson.put("privateKey", key.getPrivateKey());
+        return aJson.toString();
     }
 }
