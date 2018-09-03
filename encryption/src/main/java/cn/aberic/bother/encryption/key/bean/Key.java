@@ -22,25 +22,24 @@
  * SOFTWARE.
  */
 
-package cn.aberic.bother.controller;
+package cn.aberic.bother.encryption.key.bean;
 
-import cn.aberic.bother.entity.contract.Account;
-import cn.aberic.bother.entity.token.Token;
-import org.springframework.web.bind.annotation.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
- * 作者：Aberic on 2018/09/03 12:05
+ * 作者：Aberic on 2018/09/03 16:02
  * 邮箱：abericyang@gmail.com
  */
-@CrossOrigin
-@RestController
-@RequestMapping("token")
-public class TokenController {
+@Setter
+@Getter
+@AllArgsConstructor
+public class Key {
 
-    @PostMapping(value = "create")
-    public String create(@RequestBody Token token) {
-        Account account = new Account();
-        return token.getName();
-    }
+    /** 私钥字符串 */
+    private String privateKey;
+    /** 公钥字符串 */
+    private String publicKey;
 
 }

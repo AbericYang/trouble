@@ -114,4 +114,9 @@ public class Common {
     public final static String ACCOUNT_FILE_CUSTOM_DIR = "/Users/Aberic/Documents/tmp/trouble/afs";
     // public final static String ACCOUNT_FILE_CUSTOM_DIR = "/data/trouble/afs";
 
+
+    /** Key键值对保存路径 测试/生产 */
+    public final static String KEY_FILE_DIR = "/Users/Aberic/Documents/tmp/trouble/key";
+    // public final static String KEY_FILE_DIR = "/data/trouble/key";
+
 }
