@@ -26,7 +26,9 @@ package cn.aberic.bother.contract;
 
 import cn.aberic.bother.contract.exec.ContractExec;
 import cn.aberic.bother.contract.exec.SystemContractExec;
+import cn.aberic.bother.entity.contract.Request;
 import cn.aberic.bother.tools.exception.ContractParamException;
+import com.alibaba.fastjson.JSON;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
@@ -40,8 +42,9 @@ import java.util.Scanner;
 public class SCTest {
 
     public static void main(String[] args) {
-        systemContract();
+//        systemContract();
 //         simpleContract();
+        input();
         // scanner();
     }
 
@@ -54,6 +57,21 @@ public class SCTest {
     private static void simpleContract() {
         SimpleContract contract = new SimpleContract();
         log.debug("simple contract test result = {}", contract.init(new ContractExec(new File(""), "")));
+    }
+
+    private static void input() {
+        Request request = new Request();
+        for (int i = 7279; i < 1000000; i++) {
+            request.setKey("key" + i);
+            request.setValue("value" + i);
+            request.setValue(JSON.toJSONString(request));
+            SystemContract contract = new SystemContract();
+            SystemContractExec contractExec = new SystemContractExec();
+            contractExec.setRequest(request);
+            String result = contract.invoke(contractExec);
+            log.debug("result = {}", result);
+            contractExec.sendTransaction();
+        }
     }
 
     private static void scanner() {

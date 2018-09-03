@@ -46,7 +46,7 @@ public class SystemContract implements ISystemContract {
         exec.put(request.getKey(), request.getValue());
 //        Contract test = new Contract("Aberic", "1", 18, "2");
 //        exec.put("test", JSON.toJSONString(test));
-        return exec.response();
+        return exec.response(request);
     }
 
     @Override
