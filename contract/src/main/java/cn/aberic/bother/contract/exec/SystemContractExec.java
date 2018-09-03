@@ -27,7 +27,10 @@ package cn.aberic.bother.contract.exec;
 
 import cn.aberic.bother.block.BlockAcquire;
 import cn.aberic.bother.block.BlockStorage;
-import cn.aberic.bother.contract.exec.service.*;
+import cn.aberic.bother.contract.exec.service.IContractBaseExec;
+import cn.aberic.bother.contract.exec.service.IContractDataIndexFileExec;
+import cn.aberic.bother.contract.exec.service.ISystemContractExec;
+import cn.aberic.bother.contract.exec.service.ISystemContractFileExec;
 import cn.aberic.bother.encryption.MD5;
 import cn.aberic.bother.entity.block.*;
 import cn.aberic.bother.entity.contract.Contract;
@@ -92,11 +95,6 @@ public class SystemContractExec implements ISystemContractExec, IContractBaseExe
     @Override
     public ISystemContractFileExec getContractFileExec() {
         return new SystemContractFileExec();
-    }
-
-    @Override
-    public IContractDataFileExec getContractDataFileExec() {
-        return new ContractDataFileExec(getContractHash());
     }
 
     @Override

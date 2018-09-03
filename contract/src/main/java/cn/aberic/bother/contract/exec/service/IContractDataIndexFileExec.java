@@ -31,6 +31,7 @@ import cn.aberic.bother.entity.block.Block;
 import cn.aberic.bother.entity.block.BlockInfo;
 import cn.aberic.bother.entity.block.ValueWrite;
 import cn.aberic.bother.entity.contract.ContractInfo;
+import cn.aberic.bother.storage.FileComponent;
 import cn.aberic.bother.storage.IFile;
 import cn.aberic.bother.storage.leveldb.LevelDB;
 import cn.aberic.bother.tools.FileTool;
@@ -55,6 +56,18 @@ import java.util.concurrent.Future;
  * 邮箱：abericyang@gmail.com
  */
 public interface IContractDataIndexFileExec extends IInit, IFile<ContractInfo> {
+
+    /**
+     * 将根据旧版hash所指定智能合约数据文件夹重命名为新版hash
+     *
+     * @param contractOldHash 旧版hash
+     */
+    default boolean renameContractIndexFile(String contractOldHash) {
+        // 旧版hash所在文件夹路径
+        File file = new File(FileComponent.getContractDataIndexFileComponent(contractOldHash).getDir());
+        // 将原文件夹更改为新版hash
+        return file.renameTo(new File(getFileStatus().getDir()));
+    }
 
     /**
      * 将智能合约数据key在智能合约数据文件中的基本信息存入索引

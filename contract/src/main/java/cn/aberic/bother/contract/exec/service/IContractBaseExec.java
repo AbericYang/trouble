@@ -65,19 +65,6 @@ public interface IContractBaseExec {
     ISystemContractFileExec getContractFileExec();
 
     /**
-     * 智能合约数据文件对象操作接口
-     * <p>
-     * 获取 {@link cn.aberic.bother.storage.IFile} 实现类。
-     * <p>
-     * 原本应该当前接口继承 {@link cn.aberic.bother.storage.IFile} 进行操作，但有关 {@link cn.aberic.bother.storage.IFile} 接口不方便直接暴露出去。
-     * <p>
-     * 所以这里采用的方案与 {@link cn.aberic.bother.block.exec.service.IBlockExec}和 {@link cn.aberic.bother.block.exec.service.IIndexExec} 不同
-     *
-     * @return {@link cn.aberic.bother.storage.IFile} 实现
-     */
-    IContractDataFileExec getContractDataFileExec();
-
-    /**
      * 智能合约数据索引文件对象操作接口
      * <p>
      * 获取 {@link cn.aberic.bother.storage.IFile} 实现类。

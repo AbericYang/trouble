@@ -90,7 +90,7 @@ public class ContractExec extends SystemContractExec implements IContractExec, I
     public String init(Contract contract) {
         contractHash = getContractFileExec().init(contract);
         // 上述初始化操作后会废弃旧版hash，需要将旧版hash中的智能合约数据文件夹重命名为新版hash，以便调用
-        if (!getContractDataFileExec().renameContractFile(contractOldHash)) {
+        if (!getContractDataIndexFileExec().renameContractIndexFile(contractOldHash)) {
             throw new RuntimeException("rename contract file failed");
         }
         return contractHash;
