@@ -28,6 +28,8 @@ package cn.aberic.bother.contract.exec.service;
 import java.math.BigDecimal;
 
 /**
+ * ERC20 接口
+ * <p>
  * 作者：Aberic on 2018/9/2 10:31
  * 邮箱：abericyang@gmail.com
  */
@@ -65,7 +67,6 @@ public interface IERC20Token {
      * 根据指定地址返回该 Token 的余额
      *
      * @param address 指定地址
-     *
      * @return 余额
      */
     BigDecimal balanceOf(String address);
@@ -75,7 +76,6 @@ public interface IERC20Token {
      *
      * @param addressTo 接收 Token 的地址
      * @param count     转让的 Token 个数
-     *
      * @return 成功与否
      */
     boolean transfer(String addressTo, BigDecimal count);
@@ -85,7 +85,6 @@ public interface IERC20Token {
      *
      * @param addressSpender 账户地址
      * @param count          Token个数
-     *
      * @return 成功与否
      */
     boolean approve(String addressSpender, BigDecimal count);
@@ -96,7 +95,6 @@ public interface IERC20Token {
      * @param addressFrom 转账来源账户地址
      * @param addressTo   转账去处账户地址
      * @param count       转账个数
-     *
      * @return 成功与否
      */
     boolean transferFrom(String addressFrom, String addressTo, BigDecimal count);
@@ -111,7 +109,6 @@ public interface IERC20Token {
      *
      * @param addressOwner   账户A
      * @param addressSpender 账户B
-     *
      * @return 能提取token的个数
      */
     BigDecimal allowance(String addressOwner, String addressSpender);
