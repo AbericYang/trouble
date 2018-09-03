@@ -23,9 +23,10 @@
  *
  */
 
-package cn.aberic.bother.storage.leveldb;
+package cn.aberic.bother.storage.db;
 
 import cn.aberic.bother.storage.Common;
+import cn.aberic.bother.storage.db.service.IDBExec;
 import org.iq80.leveldb.*;
 import org.iq80.leveldb.impl.Iq80DBFactory;
 
@@ -38,21 +39,9 @@ import java.util.Map;
  * 作者：Aberic on 2018/9/1 15:12
  * 邮箱：abericyang@gmail.com
  */
-public class LevelDB {
+class LevelDBExec implements IDBExec {
 
-    private static LevelDB instance;
-
-    public static LevelDB obtain() {
-        if (null == instance) {
-            synchronized (LevelDB.class) {
-                if (null == instance) {
-                    instance = new LevelDB();
-                }
-            }
-        }
-        return instance;
-    }
-
+    @Override
     public void put(String key, String value) {
         try (DB db = getSystemContractHash()) {
             db.put(key.getBytes("UTF-8"), value.getBytes("UTF-8"), new WriteOptions().sync(true));
@@ -61,6 +50,7 @@ public class LevelDB {
         }
     }
 
+    @Override
     public void put(Map<String, String> map) {
         try (DB db = getSystemContractHash()) {
             WriteBatch writeBatch = db.createWriteBatch();
@@ -78,6 +68,7 @@ public class LevelDB {
         }
     }
 
+    @Override
     public String get(String key) {
         try (DB db = getSystemContractHash()) {
             return new String(db.get(key.getBytes("UTF-8")), "UTF-8");
@@ -86,6 +77,7 @@ public class LevelDB {
         return null;
     }
 
+    @Override
     public void put(String contractHash, String key, String value) {
         try (DB db = getCustomContractHash(contractHash)) {
             db.put(key.getBytes("UTF-8"), value.getBytes("UTF-8"), new WriteOptions().sync(true));
@@ -94,6 +86,7 @@ public class LevelDB {
         }
     }
 
+    @Override
     public void put(String contractHash, Map<String, String> map) {
         try (DB db = getCustomContractHash(contractHash)) {
             WriteBatch writeBatch = db.createWriteBatch();
@@ -111,6 +104,7 @@ public class LevelDB {
         }
     }
 
+    @Override
     public String get(String contractHash, String key) {
         try (DB db = getCustomContractHash(contractHash)) {
             return new String(db.get(key.getBytes("UTF-8")), "UTF-8");

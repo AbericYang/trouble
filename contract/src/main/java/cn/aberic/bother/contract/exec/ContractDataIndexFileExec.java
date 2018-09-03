@@ -27,7 +27,9 @@ package cn.aberic.bother.contract.exec;
 import cn.aberic.bother.contract.exec.service.IContractDataIndexFileExec;
 import cn.aberic.bother.storage.Common;
 import cn.aberic.bother.storage.FileComponent;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
 
 /**
  * 智能合约数据索引文件对象操作对象-smart contract
@@ -35,6 +37,7 @@ import org.apache.commons.lang3.StringUtils;
  * 作者：Aberic on 2018/08/31 14:34
  * 邮箱：abericyang@gmail.com
  */
+@Slf4j
 public class ContractDataIndexFileExec implements IContractDataIndexFileExec {
 
     private String contractHash;
@@ -51,6 +54,11 @@ public class ContractDataIndexFileExec implements IContractDataIndexFileExec {
     }
 
     @Override
+    public Logger getLog() {
+        return log;
+    }
+
+    @Override
     public String getContractHash() {
         return contractHash;
     }
@@ -62,5 +70,4 @@ public class ContractDataIndexFileExec implements IContractDataIndexFileExec {
         }
         return FileComponent.getContractDataIndexFileComponent(getContractHash());
     }
-
 }

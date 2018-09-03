@@ -22,23 +22,26 @@
  * SOFTWARE.
  */
 
-package cn.aberic.bother.controller;
+package cn.aberic.bother.storage.db.service;
 
-import cn.aberic.bother.entity.token.Token;
-import org.springframework.web.bind.annotation.*;
+import java.util.Map;
 
 /**
- * 作者：Aberic on 2018/09/03 12:05
+ * 作者：Aberic on 2018/09/03 15:20
  * 邮箱：abericyang@gmail.com
  */
-@CrossOrigin
-@RestController
-@RequestMapping("token")
-public class TokenController {
+public interface IDBExec {
 
-    @PostMapping(value = "create")
-    public String create(@RequestBody Token token) {
-        return token.getName();
-    }
+    void put(String key, String value);
+
+    void put(Map<String, String> map);
+
+    String get(String key);
+
+    void put(String contractHash, String key, String value);
+
+    void put(String contractHash, Map<String, String> map);
+
+    String get(String contractHash, String key);
 
 }

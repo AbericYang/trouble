@@ -40,10 +40,10 @@ public class Common {
     public final static String BLOCK_FILE_END = ".block";
     /** 默认区块文件存储路径 测试/生产 */
     public final static String BLOCK_FILE_DIR = "/Users/Aberic/Documents/tmp/trouble/bf";
-    // public final static String BLOCK_FILE_DIR = "/data/trouble/blockfile";
+    // public final static String BLOCK_FILE_DIR = "/data/trouble/bf";
     /** 自定义区块文件存储路径 测试/生产 */
     public final static String BLOCK_FILE_CUSTOM_DIR = "/Users/Aberic/Documents/tmp/trouble/bfs";
-    // public final static String BLOCK_FILE_CUSTOM_DIR = "/data/trouble/blockfile";
+    // public final static String BLOCK_FILE_CUSTOM_DIR = "/data/trouble/bfs";
 
     /** 默认区块存储索引文件前缀 */
     public final static String BLOCK_INDEX_START = "block_index_file_";
@@ -51,10 +51,10 @@ public class Common {
     public final static String BLOCK_INDEX_END = ".index";
     /** 默认区块存储索引文件路径 测试/生产 */
     public final static String BLOCK_INDEX_DIR = "/Users/Aberic/Documents/tmp/trouble/bif";
-    // public final static String BLOCK_INDEX_DIR = "/data/trouble/blocktxindex";
+    // public final static String BLOCK_INDEX_DIR = "/data/trouble/bif";
     /** 自定义区块存储索引文件路径 测试/生产 */
     public final static String BLOCK_INDEX_CUSTOM_DIR = "/Users/Aberic/Documents/tmp/trouble/bifs";
-    // public final static String BLOCK_INDEX_CUSTOM_DIR = "/data/trouble/blocktxindex";
+    // public final static String BLOCK_INDEX_CUSTOM_DIR = "/data/trouble/bifs";
 
     /** 默认区块交易索引文件前缀 */
     public final static String BLOCK_TRANSACTION_INDEX_START = "block_transaction_index_file_";
@@ -84,16 +84,34 @@ public class Common {
     public final static String CONTRACT_DATA_INDEX_FILE_END = ".data";
     /** 默认合约数据索引文件存储路径 测试/生产 */
     public final static String CONTRACT_DATA_INDEX_FILE_DIR = "/Users/Aberic/Documents/tmp/trouble/cdif";
-    // public final static String CONTRACT_DATA_INDEX_FILE_DIR = "/data/trouble/cdf";
+    // public final static String CONTRACT_DATA_INDEX_FILE_DIR = "/data/trouble/cdif";
     /** 自定义合约数据索引文件存储路径 测试/生产 */
     public final static String CONTRACT_DATA_INDEX_FILE_CUSTOM_DIR = "/Users/Aberic/Documents/tmp/trouble/cdifs";
-    // public final static String CONTRACT_DATA_INDEX_FILE_CUSTOM_DIR = "/data/trouble/cdfs";
+    // public final static String CONTRACT_DATA_INDEX_FILE_CUSTOM_DIR = "/data/trouble/cdifs";
 
     /** 默认LevelDB合约数据文件存储路径 测试/生产 */
     public final static String CONTRACT_DATA_LEVEL_DB_FILE_DIR = "/Users/Aberic/Documents/tmp/trouble/cdfleveldb";
-    // public final static String CONTRACT_DATA_INDEX_FILE_DIR = "/data/trouble/cdf";
+    // public final static String CONTRACT_DATA_INDEX_FILE_DIR = "/data/trouble/cdfleveldb";
     /** 自定义LevelDB合约数据文件存储路径 测试/生产 */
     public final static String CONTRACT_DATA_LEVEL_DB_FILE_CUSTOM_DIR = "/Users/Aberic/Documents/tmp/trouble/cdfsleveldb";
-    // public final static String CONTRACT_DATA_INDEX_FILE_CUSTOM_DIR = "/data/trouble/cdfs";
+    // public final static String CONTRACT_DATA_INDEX_FILE_CUSTOM_DIR = "/data/trouble/cdfsleveldb";
+
+    /** 默认LevelDB合约数据文件存储路径 测试/生产 */
+    public final static String CONTRACT_DATA_ROCKS_DB_FILE_DIR = "/Users/Aberic/Documents/tmp/trouble/cdfrocksdb";
+    // public final static String CONTRACT_DATA_INDEX_FILE_DIR = "/data/trouble/cdflevecdfrocksdbldb";
+    /** 自定义LevelDB合约数据文件存储路径 测试/生产 */
+    public final static String CONTRACT_DATA_ROCKS_DB_FILE_CUSTOM_DIR = "/Users/Aberic/Documents/tmp/trouble/cdfsrocksdb";
+    // public final static String CONTRACT_DATA_INDEX_FILE_CUSTOM_DIR = "/data/trouble/cdfsrocksdb";
+
+    /** 默认账户文件前缀 */
+    public final static String ACCOUNT_FILE_START = "account_file_";
+    /** 默认账户文件后缀 */
+    public final static String ACCOUNT_FILE_END = ".account";
+    /** 默认账户文件存储路径 测试/生产 */
+    public final static String ACCOUNT_FILE_DIR = "/Users/Aberic/Documents/tmp/trouble/af";
+    // public final static String ACCOUNT_FILE_DIR = "/data/trouble/af";
+    /** 自定义账户文件存储路径 测试/生产 */
+    public final static String ACCOUNT_FILE_CUSTOM_DIR = "/Users/Aberic/Documents/tmp/trouble/afs";
+    // public final static String ACCOUNT_FILE_CUSTOM_DIR = "/data/trouble/afs";
 
 }

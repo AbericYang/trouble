@@ -50,8 +50,6 @@ public class FileComponent {
         /** 智能合约对象类型 */
         T_TYPE_CONTRACT(Contract.class),
         /** 智能合约对象类型 */
-        T_TYPE_CONTRACT_DATA(String.class),
-        /** 智能合约对象类型 */
         T_TYPE_CONTRACT_INDEX_DATA(ContractInfo.class);
 
         /** 交易结果码 */

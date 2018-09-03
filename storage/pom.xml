@@ -61,6 +61,11 @@
             <artifactId>leveldb-api</artifactId>
             <version>0.10</version>
         </dependency>
+        <dependency>
+            <groupId>org.rocksdb</groupId>
+            <artifactId>rocksdbjni</artifactId>
+            <version>5.14.2</version>
+        </dependency>
     </dependencies>
 
 

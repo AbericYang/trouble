@@ -33,19 +33,17 @@ import cn.aberic.bother.entity.block.ValueWrite;
 import cn.aberic.bother.entity.contract.ContractInfo;
 import cn.aberic.bother.storage.FileComponent;
 import cn.aberic.bother.storage.IFile;
-import cn.aberic.bother.storage.leveldb.LevelDB;
+import cn.aberic.bother.storage.db.DBExec;
 import cn.aberic.bother.tools.FileTool;
 import cn.aberic.bother.tools.thread.ThreadTroublePool;
 import com.alibaba.fastjson.JSON;
 import com.google.common.io.Files;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -56,6 +54,8 @@ import java.util.concurrent.Future;
  * 邮箱：abericyang@gmail.com
  */
 public interface IContractDataIndexFileExec extends IInit, IFile<ContractInfo> {
+
+    Logger getLog();
 
     /**
      * 将根据旧版hash所指定智能合约数据文件夹重命名为新版hash
@@ -99,15 +99,15 @@ public interface IContractDataIndexFileExec extends IInit, IFile<ContractInfo> {
                 long indexSize = jsonString.getBytes().length;
                 // 如果智能合约数据文件和待写入对象之和已经大于或等于 256 MB，则开辟新智能合约数据文件写入智能合约数据
                 if (indexFile.length() + indexSize >= 256 * 1000 * 1000) {
-                    System.out.println(String.format("contract data index file size great than 256 MB, now size = %s", indexFile.length()));
+                    getLog().debug("contract data index file size great than 256 MB, now size = {}", indexFile.length());
                     indexFile = getNextFileByCurrentFile(indexFile);
-                    System.out.println(String.format("next contract data index file name = %s", indexFile.getName()));
+                    getLog().debug("next contract data index file name = {}", indexFile.getName());
                     FileTool.writeFirstLine(indexFile, jsonString);
                 } else {
                     FileTool.writeAppendLine(indexFile, jsonString);
                 }
             }
-            LevelDB.obtain().put(map);
+            DBExec.obtain().put(map);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -121,13 +121,21 @@ public interface IContractDataIndexFileExec extends IInit, IFile<ContractInfo> {
      */
     default String get(BlockAcquire acquire, String key) {
         String[] results = new String[]{null};
-        String[] strings = LevelDB.obtain().get(key).split(",");
+        long time = new Date().getTime();
+        String[] strings = DBExec.obtain().get(key).split(",");
+        getLog().debug("LevelDBExec getKey 耗时 = {}", (new Date().getTime() - time));
+
+        time = new Date().getTime();
         Block block = acquire.getBlockByNumAndLine(Integer.valueOf(strings[0]), Integer.valueOf(strings[1]));
+        getLog().debug("block getBlockByNumAndLine 耗时 = {}", (new Date().getTime() - time));
+
+        time = new Date().getTime();
         block.getBody().getTransactions().forEach(transaction -> transaction.getRwSet().getWrites().forEach(write -> {
             if (StringUtils.equals(write.getStrings()[0], key)) {
                 results[0] = write.getStrings()[1];
             }
         }));
+        getLog().debug("write getStrings 耗时 = {}", (new Date().getTime() - time));
         return results[0];
     }
 
