@@ -126,15 +126,6 @@ public class FileComponent {
                 TType.T_TYPE_CONTRACT);
     }
 
-    /** 获取默认智能合约数据文件可操作状态 */
-    public static FileComponent getContractDataFileComponentDefault() {
-        return new FileComponent(
-                Common.CONTRACT_DATA_FILE_START,
-                Common.CONTRACT_DATA_FILE_END,
-                Common.CONTRACT_DATA_FILE_DIR,
-                TType.T_TYPE_CONTRACT_DATA);
-    }
-
     /** 获取默认智能合约数据索引文件可操作状态 */
     public static FileComponent getContractDataIndexFileComponentDefault() {
         return new FileComponent(
@@ -199,15 +190,6 @@ public class FileComponent {
                 Common.CONTRACT_FILE_END,
                 Common.CONTRACT_FILE_CUSTOM_DIR,
                 TType.T_TYPE_CONTRACT);
-    }
-
-    /** 获取指定智能合约hash的智能合约数据文件可操作状态 */
-    public static FileComponent getContractDataFileComponent(String contractHash) {
-        return new FileComponent(
-                Common.CONTRACT_DATA_FILE_START,
-                Common.CONTRACT_DATA_FILE_END,
-                getCustomDirByContractHash(Common.CONTRACT_DATA_FILE_CUSTOM_DIR, contractHash),
-                TType.T_TYPE_CONTRACT_DATA);
     }
 
     /** 获取默认智能合约数据索引文件可操作状态 */
