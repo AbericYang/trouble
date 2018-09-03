@@ -25,10 +25,6 @@
 package cn.aberic.bother.block.exec.service;
 
 import cn.aberic.bother.entity.block.BlockInfo;
-import cn.aberic.bother.tools.FileTool;
-
-import java.io.File;
-import java.io.IOException;
 
 /**
  * 索引文件本地读写公共接口——数据操作层-data manipulation
@@ -39,28 +35,7 @@ import java.io.IOException;
 public interface IIndexExec extends IExec<String> {
 
     default BlockInfo createOrUpdate(String blockInfo) {
-        // 获取最新写入的区块文件
-        File indexFile = getLastFile();
-        try {
-            // 如果最新写入的区块文件为null，则从0开始重新写入
-            if (null == indexFile) {
-                // 定义新的区块文件
-                indexFile = createFirstFile();
-                FileTool.writeFirstLine(indexFile, blockInfo);
-            } else {
-                // 计算该内容的字节长度
-                long blockIndexSize = blockInfo.getBytes().length;
-                // 如果区块文件和待写入对象之和已经大于或等于 256 MB，则开辟新区块文件写入区块对象
-                if (indexFile.length() + blockIndexSize >= 256 * 1000 * 1000) {
-                    indexFile = getNextFileByCurrentFile(indexFile);
-                    FileTool.writeFirstLine(indexFile, blockInfo);
-                } else {
-                    FileTool.writeAppendLine(indexFile, blockInfo);
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        cou(blockInfo);
         return null;
     }
 

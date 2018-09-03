@@ -26,8 +26,10 @@ package cn.aberic.bother.storage;
 
 import cn.aberic.bother.entity.block.Block;
 import cn.aberic.bother.entity.block.BlockInfo;
+import cn.aberic.bother.entity.contract.Account;
 import cn.aberic.bother.entity.contract.Contract;
 import cn.aberic.bother.entity.contract.ContractInfo;
+import cn.aberic.bother.entity.token.Token;
 import cn.aberic.bother.tools.DeflaterTool;
 import cn.aberic.bother.tools.FileTool;
 import com.alibaba.fastjson.JSON;
@@ -101,6 +103,12 @@ public interface IFile<T> {
                                 break;
                             case T_TYPE_CONTRACT_INDEX_DATA:
                                 ts[0] = (T) JSON.parseObject(DeflaterTool.uncompress(lineString), new TypeReference<ContractInfo>() {});
+                                break;
+                            case T_TYPE_ACCOUNT:
+                                ts[0] = (T) JSON.parseObject(DeflaterTool.uncompress(lineString), new TypeReference<Account>() {});
+                                break;
+                            case T_TYPE_TOKEN:
+                                ts[0] = (T) JSON.parseObject(DeflaterTool.uncompress(lineString), new TypeReference<Token>() {});
                                 break;
                         }
                     }
@@ -222,6 +230,39 @@ public interface IFile<T> {
      */
     default int getFileLineCount(int num) {
         return FileTool.getFileLineCount(getFileByNum(num));
+    }
+
+    /**
+     * 创建或更新对象信息进入文件
+     * <p>
+     * 此方法与实现本接口的类中的createOrUpdate方法相同。
+     * <p>
+     * 此方法只是对通用行为进行了一次封装
+     *
+     * @param result 对象字符串信息
+     */
+    default void cou(String result) {
+        File freshFile = getLastFile();
+        try {
+            // 如果最新写入的文件为null，则从0开始重新写入
+            if (null == freshFile) {
+                // 定义新的文件
+                freshFile = createFirstFile();
+                FileTool.writeFirstLine(freshFile, result);
+            } else {
+                // 计算该内容的字节长度
+                long accountSize = result.getBytes().length;
+                // 如果文件和待写入对象之和已经大于或等于 256 MB，则开辟新文件写入对象
+                if (freshFile.length() + accountSize >= 256 * 1000 * 1000) {
+                    freshFile = getNextFileByCurrentFile(freshFile);
+                    FileTool.writeFirstLine(freshFile, result);
+                } else {
+                    FileTool.writeAppendLine(freshFile, result);
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 }

@@ -26,7 +26,8 @@ package cn.aberic.bother.block.exec;
 
 import cn.aberic.bother.block.exec.service.IExecFactory;
 import cn.aberic.bother.block.exec.service.IExecInit;
-import cn.aberic.bother.block.exec.service.IInit;
+import cn.aberic.bother.storage.IInit;
+import cn.aberic.bother.storage.Init;
 
 /**
  * 索引文件初始化接口实现基类——数据操作层-data manipulation

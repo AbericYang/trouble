@@ -20,19 +20,40 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
+ *
  */
 
-package cn.aberic.bother.block.exec.service;
+package cn.aberic.bother.account;
+
+import cn.aberic.bother.account.exec.AccountExec;
+import cn.aberic.bother.account.exec.AccountTmpExec;
+import cn.aberic.bother.account.exec.service.IAccountExec;
+import cn.aberic.bother.entity.contract.Account;
 
 /**
- * 文件基类待初始化接口——数据操作层-data manipulation
- * <p>
- * 作者：Aberic on 2018/08/28 11:55
+ * 账户基本操作对象
+ *
+ * 作者：Aberic on 2018/9/3 19:36
  * 邮箱：abericyang@gmail.com
  */
-public interface IInit {
+public class AccountManager {
 
-    /** 获取合约hash */
-    String getContractHash();
+    private IAccountExec accountExec;
+    private IAccountExec accountTmpExec;
+
+    public AccountManager(String tokenHash) {
+        accountExec = new AccountExec(tokenHash);
+        accountTmpExec = new AccountTmpExec(tokenHash);
+    }
+
+    /** 创建或更新账户信息 */
+    public void createOrUpdate(Account account){
+        accountExec.createOrUpdate(account);
+    }
+
+    /** 创建或更新账户信息 */
+    public void createOrUpdateTmp(Account account){
+        accountTmpExec.createOrUpdate(account);
+    }
 
 }

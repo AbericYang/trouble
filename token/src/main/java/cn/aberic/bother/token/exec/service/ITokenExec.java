@@ -20,41 +20,26 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
+ *
  */
 
-package cn.aberic.bother.block.exec;
+package cn.aberic.bother.token.exec.service;
 
-import cn.aberic.bother.block.exec.service.IBlockExec;
-import cn.aberic.bother.storage.Common;
-import cn.aberic.bother.storage.FileComponent;
-import cn.aberic.bother.storage.Init;
-import org.apache.commons.lang3.StringUtils;
+import cn.aberic.bother.entity.token.Token;
+import cn.aberic.bother.storage.IFile;
+import com.alibaba.fastjson.JSON;
 
 /**
- * 区块文件本地读写——数据操作层-data manipulation
+ * Token 文件本地读写接口
  * <p>
- * 作者：Aberic on 2018/08/24 11:44
+ * 作者：Aberic on 2018/9/3 20:45
  * 邮箱：abericyang@gmail.com
  */
-public class BlockExec extends Init implements IBlockExec {
+public interface ITokenExec extends IFile<Token> {
 
-    /**
-     * 根据智能合约hash值操作区块文件；
-     * 在智能合约被安装的时候就根据合约内容计算该合约hash；
-     * 并以此hash匹配所有安装该合约的节点且同步数据
-     *
-     * @param contractHash 智能合约hash值
-     */
-    BlockExec(String contractHash) {
-        super(contractHash);
-    }
-
-    @Override
-    public FileComponent getFileStatus() {
-        if (StringUtils.equals(getContractHash(), Common.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH)) {
-            return FileComponent.getBlockFileComponentDefault();
-        }
-        return FileComponent.getBlockFileComponent(getContractHash());
+    /** 创建或更新账户信息 */
+    default void createOrUpdate(Token token) {
+        cou(JSON.toJSONString(token));
     }
 
 }

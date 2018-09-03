@@ -20,41 +20,40 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
+ *
  */
 
-package cn.aberic.bother.block.exec;
+package cn.aberic.bother.account.exec;
 
-import cn.aberic.bother.block.exec.service.IBlockExec;
+import cn.aberic.bother.account.exec.service.IAccountExec;
 import cn.aberic.bother.storage.Common;
 import cn.aberic.bother.storage.FileComponent;
 import cn.aberic.bother.storage.Init;
 import org.apache.commons.lang3.StringUtils;
 
 /**
- * 区块文件本地读写——数据操作层-data manipulation
- * <p>
- * 作者：Aberic on 2018/08/24 11:44
+ * 账户文件本地读写接口实现
+ *
+ * 作者：Aberic on 2018/9/3 19:37
  * 邮箱：abericyang@gmail.com
  */
-public class BlockExec extends Init implements IBlockExec {
+public class AccountExec extends Init implements IAccountExec {
 
     /**
-     * 根据智能合约hash值操作区块文件；
-     * 在智能合约被安装的时候就根据合约内容计算该合约hash；
-     * 并以此hash匹配所有安装该合约的节点且同步数据
+     * 根据token hash值操作账户文件；
      *
-     * @param contractHash 智能合约hash值
+     * @param tokenHash token hash值
      */
-    BlockExec(String contractHash) {
-        super(contractHash);
+    public AccountExec(String tokenHash) {
+        super(tokenHash);
     }
 
     @Override
     public FileComponent getFileStatus() {
         if (StringUtils.equals(getContractHash(), Common.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH)) {
-            return FileComponent.getBlockFileComponentDefault();
+            return FileComponent.getAccountFileComponentDefault();
         }
-        return FileComponent.getBlockFileComponent(getContractHash());
+        return FileComponent.getAccountFileComponent(getContractHash());
     }
 
 }

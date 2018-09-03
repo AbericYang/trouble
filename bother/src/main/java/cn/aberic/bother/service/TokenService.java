@@ -20,41 +20,41 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
+ *
  */
 
-package cn.aberic.bother.block.exec;
+package cn.aberic.bother.service;
 
-import cn.aberic.bother.block.exec.service.IBlockExec;
-import cn.aberic.bother.storage.Common;
-import cn.aberic.bother.storage.FileComponent;
-import cn.aberic.bother.storage.Init;
-import org.apache.commons.lang3.StringUtils;
+import cn.aberic.bother.entity.contract.Account;
+import cn.aberic.bother.entity.token.Token;
 
 /**
- * 区块文件本地读写——数据操作层-data manipulation
+ * Token 操作接口
  * <p>
- * 作者：Aberic on 2018/08/24 11:44
+ * 作者：Aberic on 2018/9/3 22:12
  * 邮箱：abericyang@gmail.com
  */
-public class BlockExec extends Init implements IBlockExec {
+public interface TokenService {
 
     /**
-     * 根据智能合约hash值操作区块文件；
-     * 在智能合约被安装的时候就根据合约内容计算该合约hash；
-     * 并以此hash匹配所有安装该合约的节点且同步数据
+     * 临时存储待发布 Token
      *
-     * @param contractHash 智能合约hash值
+     * @param token 待发布 Token
+     *
+     * @return Token 带有 hash 的 Token
      */
-    BlockExec(String contractHash) {
-        super(contractHash);
-    }
+    Token saveTmp(Token token);
 
-    @Override
-    public FileComponent getFileStatus() {
-        if (StringUtils.equals(getContractHash(), Common.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH)) {
-            return FileComponent.getBlockFileComponentDefault();
-        }
-        return FileComponent.getBlockFileComponent(getContractHash());
-    }
+    /**
+     * 发布 Token
+     * <p>
+     * 该操作会将此 Token 发布至公链，全网账本同步，需要附带可用账户且余额充足
+     * <p>
+     * 发布信息至公网账本将按字节收取手续费
+     *
+     * @param account 附带可用账户
+     * @param token   Token
+     */
+    void publish(Account account, Token token);
 
 }

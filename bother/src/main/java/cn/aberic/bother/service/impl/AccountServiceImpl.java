@@ -20,36 +20,45 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
+ *
  */
 
-package cn.aberic.bother.controller;
+package cn.aberic.bother.service.impl;
 
+import cn.aberic.bother.account.AccountManager;
+import cn.aberic.bother.encryption.key.KeyExec;
+import cn.aberic.bother.encryption.key.bean.Key;
 import cn.aberic.bother.entity.contract.Account;
 import cn.aberic.bother.entity.token.Token;
 import cn.aberic.bother.service.AccountService;
-import cn.aberic.bother.service.TokenService;
-import org.springframework.web.bind.annotation.*;
+import com.google.common.hash.Hashing;
+import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
+import java.math.BigDecimal;
+import java.nio.charset.Charset;
+import java.util.Date;
 
 /**
- * 作者：Aberic on 2018/09/03 12:05
+ * 账户操作接口实现
+ * <p>
+ * 作者：Aberic on 2018/9/3 22:34
  * 邮箱：abericyang@gmail.com
  */
-@CrossOrigin
-@RestController
-@RequestMapping("token")
-public class TokenController {
+@Service("accountService")
+public class AccountServiceImpl implements AccountService {
 
-    @Resource
-    private TokenService tokenService;
-    @Resource
-    private AccountService accountService;
-
-    @PostMapping(value = "create")
-    public Account create(@RequestBody Token token) {
-        token = tokenService.saveTmp(token);
-        return accountService.saveTmp(token);
+    @Override
+    public Account saveTmp(Token token) {
+        Account account = new Account();
+        Key key = KeyExec.obtain().createECCDSAKeyPair();
+        BigDecimal count = BigDecimal.valueOf(token.getTotalSupply());
+        String address = Hashing.sha256().hashString(key.getPrivateKey(), Charset.forName("UTF-8")).toString();
+        account.setPubKey(key.getPublicKey());
+        account.setCount(count);
+        account.setAddress(address);
+        account.setTimestamp(new Date().getTime());
+        AccountManager manager = new AccountManager(token.getHash());
+        manager.createOrUpdateTmp(account);
+        return account;
     }
-
 }

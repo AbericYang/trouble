@@ -25,6 +25,7 @@
 
 package cn.aberic.bother.entity.contract;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -40,10 +41,16 @@ import java.math.BigDecimal;
 public class Account {
 
     /** 账户唯一地址码 */
+    @JSONField(name="a")
     private String address;
     /** 账户余额 */
+    @JSONField(name="c")
     private BigDecimal count;
     /** 账户公钥 */
+    @JSONField(name="k")
     private String pubKey;
+    /** 账户创建时间戳 */
+    @JSONField(name="t")
+    private long timestamp;
 
 }

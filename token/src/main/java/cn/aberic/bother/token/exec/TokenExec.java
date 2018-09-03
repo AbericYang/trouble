@@ -20,36 +20,40 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
+ *
  */
 
-package cn.aberic.bother.block.exec;
+package cn.aberic.bother.token.exec;
 
-import cn.aberic.bother.block.exec.service.IInit;
+import cn.aberic.bother.storage.Common;
+import cn.aberic.bother.storage.FileComponent;
+import cn.aberic.bother.storage.Init;
+import cn.aberic.bother.token.exec.service.ITokenExec;
+import org.apache.commons.lang3.StringUtils;
 
 /**
- * 文件初始化接口实现基类——数据操作层-data manipulation
- * <p>
- * 作者：Aberic on 2018/08/28 11:57
+ * Token 文件本地读写接口实现
+ *
+ * 作者：Aberic on 2018/9/3 20:47
  * 邮箱：abericyang@gmail.com
  */
-public class Init implements IInit {
-
-    private String contractHash;
+public class TokenExec extends Init implements ITokenExec {
 
     /**
-     * 根据智能合约hash值操作区块文件；
-     * 在智能合约被安装的时候就根据合约内容计算该合约hash；
-     * 并以此hash匹配所有安装该合约的节点且同步数据
+     * 根据token hash值操作账户文件；
      *
-     * @param contractHash 智能合约hash值
+     * @param tokenHash token hash值
      */
-    Init(String contractHash) {
-        this.contractHash = contractHash;
+    public TokenExec(String tokenHash) {
+        super(tokenHash);
     }
 
     @Override
-    public String getContractHash() {
-        return contractHash;
+    public FileComponent getFileStatus() {
+        if (StringUtils.equals(getContractHash(), Common.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH)) {
+            return FileComponent.getTokenFileComponentDefault();
+        }
+        return FileComponent.getTokenFileComponent(getContractHash());
     }
 
 }

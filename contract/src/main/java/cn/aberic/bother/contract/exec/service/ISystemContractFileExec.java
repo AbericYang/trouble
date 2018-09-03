@@ -25,10 +25,10 @@
 
 package cn.aberic.bother.contract.exec.service;
 
-import cn.aberic.bother.block.exec.service.IInit;
 import cn.aberic.bother.entity.contract.Contract;
 import cn.aberic.bother.storage.Common;
 import cn.aberic.bother.storage.IFile;
+import cn.aberic.bother.storage.IInit;
 
 /**
  * 系统级智能合约文件对象操作接口-smart contract

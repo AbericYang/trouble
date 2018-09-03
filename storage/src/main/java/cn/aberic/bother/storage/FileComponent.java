@@ -26,8 +26,10 @@ package cn.aberic.bother.storage;
 
 import cn.aberic.bother.entity.block.Block;
 import cn.aberic.bother.entity.block.BlockInfo;
+import cn.aberic.bother.entity.contract.Account;
 import cn.aberic.bother.entity.contract.Contract;
 import cn.aberic.bother.entity.contract.ContractInfo;
+import cn.aberic.bother.entity.token.Token;
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 
@@ -50,7 +52,11 @@ public class FileComponent {
         /** 智能合约对象类型 */
         T_TYPE_CONTRACT(Contract.class),
         /** 智能合约对象类型 */
-        T_TYPE_CONTRACT_INDEX_DATA(ContractInfo.class);
+        T_TYPE_CONTRACT_INDEX_DATA(ContractInfo.class),
+        /** 账户对象类型 */
+        T_TYPE_ACCOUNT(Account .class),
+        /** Token 对象类型 */
+        T_TYPE_TOKEN(Token.class);
 
         /** 交易结果码 */
         private Class aClass;
@@ -133,6 +139,42 @@ public class FileComponent {
                 TType.T_TYPE_CONTRACT_INDEX_DATA);
     }
 
+    /** 获取默认账户数据索引文件可操作状态 */
+    public static FileComponent getAccountFileComponentDefault() {
+        return new FileComponent(
+                Common.ACCOUNT_FILE_START,
+                Common.ACCOUNT_FILE_END,
+                Common.ACCOUNT_FILE_DIR,
+                TType.T_TYPE_ACCOUNT);
+    }
+
+    /** 获取默认账户数据索引文件可操作状态 */
+    public static FileComponent getAccountTmpFileComponentDefault() {
+        return new FileComponent(
+                Common.ACCOUNT_FILE_START,
+                Common.ACCOUNT_FILE_END,
+                Common.ACCOUNT_TMP_FILE_DIR,
+                TType.T_TYPE_ACCOUNT);
+    }
+
+    /** 获取默认 Token 数据索引文件可操作状态 */
+    public static FileComponent getTokenFileComponentDefault() {
+        return new FileComponent(
+                Common.TOKEN_FILE_START,
+                Common.TOKEN_FILE_END,
+                Common.TOKEN_FILE_DIR,
+                TType.T_TYPE_TOKEN);
+    }
+
+    /** 获取默认 Token 数据索引文件可操作状态 */
+    public static FileComponent getTokenTmpFileComponentDefault() {
+        return new FileComponent(
+                Common.TOKEN_FILE_START,
+                Common.TOKEN_FILE_END,
+                Common.TOKEN_TMP_FILE_DIR,
+                TType.T_TYPE_TOKEN);
+    }
+
     /**
      * 获取指定智能合约hash的区块文件可操作状态
      *
@@ -145,7 +187,7 @@ public class FileComponent {
         return new FileComponent(
                 Common.BLOCK_FILE_START,
                 Common.BLOCK_FILE_END,
-                getCustomDirByContractHash(Common.BLOCK_FILE_CUSTOM_DIR, contractHash),
+                getCustomDirByHash(Common.BLOCK_FILE_CUSTOM_DIR, contractHash),
                 TType.T_TYPE_BLOCK);
     }
 
@@ -161,7 +203,7 @@ public class FileComponent {
         return new FileComponent(
                 Common.BLOCK_INDEX_START,
                 Common.BLOCK_INDEX_END,
-                getCustomDirByContractHash(Common.BLOCK_INDEX_CUSTOM_DIR, contractHash),
+                getCustomDirByHash(Common.BLOCK_INDEX_CUSTOM_DIR, contractHash),
                 TType.T_TYPE_BLOCK_INDEX);
     }
 
@@ -177,7 +219,7 @@ public class FileComponent {
         return new FileComponent(
                 Common.BLOCK_TRANSACTION_INDEX_START,
                 Common.BLOCK_TRANSACTION_INDEX_END,
-                getCustomDirByContractHash(Common.BLOCK_TRANSACTION_INDEX_CUSTOM_DIR, contractHash),
+                getCustomDirByHash(Common.BLOCK_TRANSACTION_INDEX_CUSTOM_DIR, contractHash),
                 TType.T_TYPE_BLOCK_INDEX);
     }
 
@@ -195,8 +237,44 @@ public class FileComponent {
         return new FileComponent(
                 Common.CONTRACT_DATA_INDEX_FILE_START,
                 Common.CONTRACT_DATA_INDEX_FILE_END,
-                getCustomDirByContractHash(Common.CONTRACT_DATA_INDEX_FILE_CUSTOM_DIR, contractHash),
+                getCustomDirByHash(Common.CONTRACT_DATA_INDEX_FILE_CUSTOM_DIR, contractHash),
                 TType.T_TYPE_CONTRACT_INDEX_DATA);
+    }
+
+    /** 获取默认智能合约数据索引文件可操作状态 */
+    public static FileComponent getAccountFileComponent(String tokenHash) {
+        return new FileComponent(
+                Common.ACCOUNT_FILE_START,
+                Common.ACCOUNT_FILE_END,
+                getCustomDirByHash(Common.ACCOUNT_FILE_CUSTOM_DIR, tokenHash),
+                TType.T_TYPE_ACCOUNT);
+    }
+
+    /** 获取默认智能合约数据索引文件可操作状态 */
+    public static FileComponent getAccountTmpFileComponent(String tokenHash) {
+        return new FileComponent(
+                Common.ACCOUNT_FILE_START,
+                Common.ACCOUNT_FILE_END,
+                getCustomDirByHash(Common.ACCOUNT_TMP_FILE_CUSTOM_DIR, tokenHash),
+                TType.T_TYPE_ACCOUNT);
+    }
+
+    /** 获取默认 Token 数据索引文件可操作状态 */
+    public static FileComponent getTokenFileComponent(String tokenHash) {
+        return new FileComponent(
+                Common.TOKEN_FILE_START,
+                Common.TOKEN_FILE_END,
+                getCustomDirByHash(Common.TOKEN_FILE_CUSTOM_DIR, tokenHash),
+                TType.T_TYPE_TOKEN);
+    }
+
+    /** 获取默认 Token 数据索引文件可操作状态 */
+    public static FileComponent getTokenTmpFileComponent(String tokenHash) {
+        return new FileComponent(
+                Common.TOKEN_FILE_START,
+                Common.TOKEN_FILE_END,
+                getCustomDirByHash(Common.TOKEN_TMP_FILE_CUSTOM_DIR, tokenHash),
+                TType.T_TYPE_TOKEN);
     }
 
     /**
@@ -206,7 +284,7 @@ public class FileComponent {
      * @param contractHash 智能合约hash
      * @return 当前文件操作目录
      */
-    private static String getCustomDirByContractHash(String dir, String contractHash) {
+    private static String getCustomDirByHash(String dir, String contractHash) {
         return String.format("%s/%s", dir, contractHash);
     }
 

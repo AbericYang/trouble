@@ -113,6 +113,29 @@ public class Common {
     /** 自定义账户文件存储路径 测试/生产 */
     public final static String ACCOUNT_FILE_CUSTOM_DIR = "/Users/Aberic/Documents/tmp/trouble/afs";
     // public final static String ACCOUNT_FILE_CUSTOM_DIR = "/data/trouble/afs";
+    /** 默认账户文件临时存储路径 测试/生产 */
+    public final static String ACCOUNT_TMP_FILE_DIR = "/Users/Aberic/Documents/tmp/trouble/aftmp";
+    // public final static String ACCOUNT_FILE_DIR = "/data/trouble/af";
+    /** 自定义账户文件临时存储路径 测试/生产 */
+    public final static String ACCOUNT_TMP_FILE_CUSTOM_DIR = "/Users/Aberic/Documents/tmp/trouble/afstmp";
+    // public final static String ACCOUNT_FILE_CUSTOM_DIR = "/data/trouble/afs";
+
+    /** 默认账户文件前缀 */
+    public final static String TOKEN_FILE_START = "token_file_";
+    /** 默认账户文件后缀 */
+    public final static String TOKEN_FILE_END = ".token";
+    /** 默认账户文件存储路径 测试/生产 */
+    public final static String TOKEN_FILE_DIR = "/Users/Aberic/Documents/tmp/trouble/tf";
+    // public final static String TOKEN_FILE_DIR = "/data/trouble/tf";
+    /** 自定义账户文件存储路径 测试/生产 */
+    public final static String TOKEN_FILE_CUSTOM_DIR = "/Users/Aberic/Documents/tmp/trouble/tfs";
+    // public final static String TOKEN_FILE_CUSTOM_DIR = "/data/trouble/tfs";
+    /** 默认账户文件临时存储路径 测试/生产 */
+    public final static String TOKEN_TMP_FILE_DIR = "/Users/Aberic/Documents/tmp/trouble/tftmp";
+    // public final static String TOKEN_FILE_DIR = "/data/trouble/tf";
+    /** 自定义账户文件临时存储路径 测试/生产 */
+    public final static String TOKEN_TMP_FILE_CUSTOM_DIR = "/Users/Aberic/Documents/tmp/trouble/tfstmp";
+    // public final static String TOKEN_FILE_CUSTOM_DIR = "/data/trouble/tfs";
 
 
     /** Key键值对保存路径 测试/生产 */
