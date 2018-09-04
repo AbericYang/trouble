@@ -31,6 +31,7 @@ import cn.aberic.bother.encryption.key.exec.KeyExec;
 import cn.aberic.bother.entity.IResponse;
 import cn.aberic.bother.entity.contract.Account;
 import cn.aberic.bother.entity.contract.AccountBusiness;
+import cn.aberic.bother.entity.contract.AccountBusinessEncrypt;
 import cn.aberic.bother.entity.contract.AccountInfo;
 import cn.aberic.bother.entity.token.Token;
 import cn.aberic.bother.service.AccountService;
@@ -59,9 +60,8 @@ public class AccountServiceImpl implements AccountService, IResponse {
     }
 
     @Override
-    public String encryptBusiness(AccountBusiness business) {
-        // TODO: 2018/9/4
-        return null;
+    public String encryptBusiness(AccountBusinessEncrypt businessEncrypt) {
+        return KeyExec.obtain().encryptPriStrRSA(businessEncrypt.getPriKey(), businessEncrypt.getEncryption());
     }
 
     @Override

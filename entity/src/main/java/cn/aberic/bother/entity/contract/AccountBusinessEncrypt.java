@@ -23,47 +23,22 @@
  *
  */
 
-package cn.aberic.bother.service;
+package cn.aberic.bother.entity.contract;
 
-import cn.aberic.bother.bean.AccountUser;
-import cn.aberic.bother.entity.contract.AccountBusinessEncrypt;
-import cn.aberic.bother.entity.token.Token;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
- * 账户操作接口
- * <p>
- * 作者：Aberic on 2018/9/3 22:28
+ * 作者：Aberic on 2018/9/4 23:59
  * 邮箱：abericyang@gmail.com
  */
-public interface AccountService {
+@Setter
+@Getter
+public class AccountBusinessEncrypt {
 
-    /**
-     * 根据用户持有账户信息获取改账户的 RSA 私钥
-     *
-     * @param user 用户持有账户信息
-     *
-     * @return RSA 私钥
-     */
-    String getRSAPri(AccountUser user);
-
-    /**
-     * 对即将处理的业务进行账户 RSA 私钥加密
-     * <p>
-     * 改业务最终将提交到网络，并由账户 RSA 公钥解密后处理
-     *
-     * @param businessEncrypt 即将处理的业务
-     *
-     * @return 业务密文
-     */
-    String encryptBusiness(AccountBusinessEncrypt businessEncrypt);
-
-    /**
-     * 存已发布 Token 的账户
-     *
-     * @param token 待发布 Token
-     *
-     * @return 账户对象及其私钥
-     */
-    String save(Token token);
+    /** 即将处理的具体事务，由该账户进行加密 */
+    private String encryption;
+    /** RSA 私钥 */
+    private String priKey;
 
 }

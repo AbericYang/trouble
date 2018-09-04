@@ -26,6 +26,8 @@
 package cn.aberic.bother.controller;
 
 import cn.aberic.bother.bean.AccountUser;
+import cn.aberic.bother.entity.contract.AccountBusiness;
+import cn.aberic.bother.entity.contract.AccountBusinessEncrypt;
 import cn.aberic.bother.service.AccountService;
 import org.springframework.web.bind.annotation.*;
 
@@ -53,6 +55,26 @@ public class AccountController {
     @PostMapping(value = "pri")
     public String getRSAPri(@RequestBody AccountUser user) {
         return accountService.getRSAPri(user);
+    }
+
+    /**
+     * 对即将处理的业务进行账户 RSA 私钥加密
+     * <p>
+     * 改业务最终将提交到网络，并由账户 RSA 公钥解密后处理
+     *
+     * @param businessEncrypt 即将处理的业务
+     *
+     * @return 业务密文
+     */
+    @PostMapping(value = "encrypt")
+    public String encryptBusiness(AccountBusinessEncrypt businessEncrypt) {
+        return accountService.encryptBusiness(businessEncrypt);
+    }
+
+    @PostMapping(value = "business")
+    public String encryptBusiness(AccountBusiness business) {
+        // TODO: 2018/9/5
+        return null;
     }
 
 }
