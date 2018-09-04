@@ -33,6 +33,7 @@ package cn.aberic.bother.storage;
 public class Common {
 
     public final static String BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH = "d11d842aca8ee9b82ea1634791f98e83";
+    public final static String TOKEN_DEFAULT_SYSTEM_HASH = "52fdb3191d203b4d17c0630a7d759bc8afbb708e49419de0fd0a26ab6d79acb4";
 
     /** 默认区块文件前缀 */
     public final static String BLOCK_FILE_START = "block_file_";

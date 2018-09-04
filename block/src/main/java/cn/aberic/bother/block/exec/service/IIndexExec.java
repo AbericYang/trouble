@@ -35,7 +35,7 @@ import cn.aberic.bother.entity.block.BlockInfo;
 public interface IIndexExec extends IExec<String> {
 
     default BlockInfo createOrUpdate(String blockInfo) {
-        cou(blockInfo);
+        cou(blockInfo, false);
         return null;
     }
 

@@ -57,6 +57,8 @@ public class TokenServiceImpl implements TokenService {
     @Override
     public Token publish(AccountBusiness accountBusiness) {
         // TODO: 2018/9/3 存储费收取待实现
+        // 解密事务意图
+        // Account pubAccount =
         // 判断该事务是否用于发布 Token
         if (accountBusiness.getBusiness() != AccountBusiness.Business.PUBLISH) {
             throw new AccountBusinessTypeException();

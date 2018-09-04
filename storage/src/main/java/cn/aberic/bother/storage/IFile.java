@@ -61,7 +61,6 @@ public interface IFile<T> {
      *
      * @param num  文件编号
      * @param line 区块文件中的行号
-     *
      * @return {@link T}对象
      */
     default T getByNumAndLine(int num, int line) {
@@ -76,7 +75,6 @@ public interface IFile<T> {
      *
      * @param file 文件
      * @param line 在区块文件中的行号
-     *
      * @return {@link T}对象
      */
     @SuppressWarnings("unchecked")
@@ -127,7 +125,6 @@ public interface IFile<T> {
      * 根据当前区块文件获取下一区块文件，如果下一区块不存在，则直接返回新创建的下一区块文件
      *
      * @param file 当前区块文件
-     *
      * @return 下一区块文件
      */
     default File getNextFileByCurrentFile(File file) {
@@ -167,7 +164,6 @@ public interface IFile<T> {
      * 根据{@link T}文件名获取当前文件编号
      *
      * @param fileName {@link T}文件名
-     *
      * @return 文件编号
      */
     default int getNumByFileName(String fileName) {
@@ -178,7 +174,6 @@ public interface IFile<T> {
      * 根据{@link T}文件编号获取当前文件名，编号从0开始计算
      *
      * @param num {@link T}文件编号
-     *
      * @return 文件名
      */
     default String getFileNameByNum(int num) {
@@ -189,7 +184,6 @@ public interface IFile<T> {
      * 根据{@link T}文件编号读取文件，如果文件不存在，则直接返回新创建的{@link T}文件
      *
      * @param num 当前待读取{@link T}文件编号
-     *
      * @return {@link T}文件
      */
     default File getFileByNum(int num) {
@@ -224,7 +218,6 @@ public interface IFile<T> {
      * 获取指定文件编号文件中的总行数，适合单行内容较多较长的情况
      *
      * @param num 文件编号
-     *
      * @return 文件总行数
      */
     default int getFileLineCount(int num) {
@@ -238,11 +231,15 @@ public interface IFile<T> {
      * <p>
      * 此方法只是对通用行为进行了一次封装
      *
-     * @param result 对象字符串信息
+     * @param result   对象字符串信息
+     * @param compress 是否压缩字符串信息
      */
-    default void cou(String result) {
+    default void cou(String result, boolean compress) {
         File freshFile = getLastFile();
         try {
+            if (compress) {
+                result = DeflaterTool.compress(result);
+            }
             // 如果最新写入的文件为null，则从0开始重新写入
             if (null == freshFile) {
                 // 定义新的文件

@@ -27,6 +27,7 @@ package cn.aberic.bother.token.exec.service;
 
 import cn.aberic.bother.entity.token.Token;
 import cn.aberic.bother.storage.IFile;
+import cn.aberic.bother.tools.DeflaterTool;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import com.google.common.io.Files;
@@ -47,7 +48,7 @@ public interface ITokenExec extends IFile<Token> {
 
     /** 创建或更新账户信息 */
     default void createOrUpdate(Token token) {
-        cou(JSON.toJSONString(token));
+        cou(JSON.toJSONString(token), true);
     }
 
     default Token publish(String accountAddress) {
@@ -61,7 +62,7 @@ public interface ITokenExec extends IFile<Token> {
                         if (StringUtils.isEmpty(lineString)) {
                             continue;
                         }
-                        Token token = JSON.parseObject(lineString, new TypeReference<Token>() {});
+                        Token token = JSON.parseObject(DeflaterTool.uncompress(lineString), new TypeReference<Token>() {});
                         if (StringUtils.equals(token.getAccount().getAddress(), accountAddress)) {
                             tokens[0] = token;
                         } else {
