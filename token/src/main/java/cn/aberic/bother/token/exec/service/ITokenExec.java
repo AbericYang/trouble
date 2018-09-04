@@ -25,14 +25,8 @@
 
 package cn.aberic.bother.token.exec.service;
 
-import cn.aberic.bother.entity.block.Block;
-import cn.aberic.bother.entity.block.BlockInfo;
-import cn.aberic.bother.entity.contract.Account;
-import cn.aberic.bother.entity.contract.Contract;
-import cn.aberic.bother.entity.contract.ContractInfo;
 import cn.aberic.bother.entity.token.Token;
 import cn.aberic.bother.storage.IFile;
-import cn.aberic.bother.tools.DeflaterTool;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import com.google.common.io.Files;
@@ -42,7 +36,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 
 /**
  * Token 文件本地读写接口
@@ -68,7 +61,7 @@ public interface ITokenExec extends IFile<Token> {
                         if (StringUtils.isEmpty(lineString)) {
                             continue;
                         }
-                        Token token = JSON.parseObject(it.nextLine(), new TypeReference<Token>() {});
+                        Token token = JSON.parseObject(lineString, new TypeReference<Token>() {});
                         if (StringUtils.equals(token.getAccount().getAddress(), accountAddress)) {
                             tokens[0] = token;
                         } else {

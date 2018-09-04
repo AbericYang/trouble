@@ -47,13 +47,19 @@ public class TokenManager {
     }
 
     /** 创建或更新账户信息 */
-    public void publish(String accountAddress){
-        tokenExec.publish(accountAddress);
+    public Token publish(String accountAddress){
+        return tokenTmpExec.publish(accountAddress);
     }
 
     /** 创建或更新账户信息 */
     public void createOrUpdateTmp(Token token){
         tokenTmpExec.createOrUpdate(token);
+    }
+
+    /** 创建或更新账户信息 */
+    public void createOrUpdate(Token token){
+        token.setAccount(null);
+        tokenExec.createOrUpdate(token);
     }
 
 }

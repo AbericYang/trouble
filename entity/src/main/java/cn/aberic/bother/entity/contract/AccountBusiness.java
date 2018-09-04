@@ -57,7 +57,7 @@ public class AccountBusiness {
         /** 授权，批准 addressSpender 账户从自己的账户转移 count 个 Token */
         APPROVE("addressSpender,count", 12),
         /** 授权转账，与上述APPROVE类型配合使用，当前address被addressFrom授权转账后，将 addressFrom 账户中 count 个 Token转移给 addressTo */
-        TRANSFERFROM("addressFrom,addressTo,count", 13),
+        TRANSFER_FROM("addressFrom,addressTo,count", 13),
         /** 授权转账余额查询，与上述APPROVE类型配合使用，返回 addressSpender 还能提取 Token 的个数 */
         ALLOWANCE("address", 14);
 

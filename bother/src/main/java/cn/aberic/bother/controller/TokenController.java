@@ -25,6 +25,7 @@
 package cn.aberic.bother.controller;
 
 import cn.aberic.bother.entity.contract.Account;
+import cn.aberic.bother.entity.contract.AccountBusiness;
 import cn.aberic.bother.entity.token.Token;
 import cn.aberic.bother.service.AccountService;
 import cn.aberic.bother.service.TokenService;
@@ -55,11 +56,17 @@ public class TokenController {
     }
 
     @PostMapping(value = "publish")
-    public Account publish(@RequestBody Token token) {
-        Account account = accountService.getByToken(token);
-        token.setAccount(account);
-        tokenService.saveTmp(token);
-        return account;
+    public Token publish(@RequestBody AccountBusiness accountBusiness) {
+        return tokenService.publish(accountBusiness);
+    }
+
+    @GetMapping(value = "test")
+    public AccountBusiness test() {
+        AccountBusiness accountBusiness = new AccountBusiness();
+        accountBusiness.setAddress("123");
+        accountBusiness.setEncryption("123");
+        accountBusiness.setBusiness(AccountBusiness.Business.ALLOWANCE);
+        return accountBusiness;
     }
 
 }

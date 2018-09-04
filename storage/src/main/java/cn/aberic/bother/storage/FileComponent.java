@@ -237,7 +237,7 @@ public class FileComponent {
         return new FileComponent(
                 Common.TOKEN_FILE_START,
                 Common.TOKEN_FILE_END,
-                Common.TOKEN_TMP_FILE_CUSTOM_DIR,
+                Common.TOKEN_TMP_FILE_DIR,
                 TType.T_TYPE_TOKEN);
     }
 

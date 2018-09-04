@@ -51,8 +51,7 @@ public interface TokenService {
      * 发布信息至公网账本将按字节收取存储手续费
      *
      * @param accountBusiness 附带可用账户处理事务对象
-     * @param accountAddress  Token 的根账户
      */
-    void publish(AccountBusiness accountBusiness, String accountAddress);
+    Token publish(AccountBusiness accountBusiness);
 
 }

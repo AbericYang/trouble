@@ -25,6 +25,8 @@
 
 package cn.aberic.bother.service.impl;
 
+import cn.aberic.bother.account.AccountManager;
+import cn.aberic.bother.entity.contract.Account;
 import cn.aberic.bother.entity.contract.AccountBusiness;
 import cn.aberic.bother.entity.token.Token;
 import cn.aberic.bother.service.TokenService;
@@ -53,12 +55,10 @@ public class TokenServiceImpl implements TokenService {
     }
 
     @Override
-    public void publish(AccountBusiness accountBusiness, String accountAddress) {
+    public Token publish(AccountBusiness accountBusiness) {
         // TODO: 2018/9/3 存储费收取待实现
-        // 获取该账户的加密事务
-        AccountBusiness.Business business = accountBusiness.getBusiness();
         // 判断该事务是否用于发布 Token
-        if (business.getCode() != AccountBusiness.Business.PUBLISH.getCode()) {
+        if (accountBusiness.getBusiness() != AccountBusiness.Business.PUBLISH) {
             throw new AccountBusinessTypeException();
         }
         // 根据当前待发布 Token 存储空间计算存储费
@@ -66,7 +66,15 @@ public class TokenServiceImpl implements TokenService {
         // 如果没有，返回余额不足异常
         // 如果有，则继续下面步骤
 
-        TokenManager manager = new TokenManager();
-        manager.publish(accountAddress);
+        TokenManager tokenManager = new TokenManager();
+        Token token = tokenManager.publish(accountBusiness.getAddress());
+        Account account = token.getAccount();
+
+        tokenManager.createOrUpdate(token);
+
+        AccountManager accountManager = new AccountManager(token.getHash());
+        accountManager.createOrUpdate(account);
+
+        return token;
     }
 }
