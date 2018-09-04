@@ -32,7 +32,7 @@ import cn.aberic.bother.token.exec.service.ITokenExec;
 
 /**
  * 账户基本操作对象
- *
+ * <p>
  * 作者：Aberic on 2018/9/3 20:56
  * 邮箱：abericyang@gmail.com
  */
@@ -46,20 +46,39 @@ public class TokenManager {
         tokenTmpExec = new TokenTmpExec();
     }
 
-    /** 创建或更新账户信息 */
-    public Token publish(String accountAddress){
+    /**
+     * 通过根账户地址发布 Token
+     * <p>
+     * 注：此方法仅限未发布 Token 使用
+     *
+     * @param accountAddress 账户地址
+     *
+     * @return Token 信息
+     */
+    public Token publish(String accountAddress) {
         return tokenTmpExec.publish(accountAddress);
     }
 
     /** 创建或更新账户信息 */
-    public void createOrUpdateTmp(Token token){
+    public void createOrUpdateTmp(Token token) {
         tokenTmpExec.createOrUpdate(token);
     }
 
     /** 创建或更新账户信息 */
-    public void createOrUpdate(Token token){
+    public void createOrUpdate(Token token) {
         token.setAccount(null);
         tokenExec.createOrUpdate(token);
     }
+
+    /**
+     * 通过账户地址得到 Token 信息
+     * <p>
+     * 注：此方法仅限未发布 Token 使用
+     *
+     * @param accountAddress 账户地址
+     *
+     * @return Token 信息
+     */
+    public Token getUnPublish(String accountAddress) { return tokenTmpExec.getUnPublish(accountAddress); }
 
 }

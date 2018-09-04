@@ -25,7 +25,8 @@
 
 package cn.aberic.bother.service;
 
-import cn.aberic.bother.entity.contract.Account;
+import cn.aberic.bother.bean.AccountUser;
+import cn.aberic.bother.entity.contract.AccountBusiness;
 import cn.aberic.bother.entity.token.Token;
 
 /**
@@ -37,17 +38,30 @@ import cn.aberic.bother.entity.token.Token;
 public interface AccountService {
 
     /**
-     * 通过新创建的 Token 生成初始账户
+     * 根据用户持有账户信息获取改账户的 RSA 私钥
      *
-     * @param token 新创建的 Token
-     * @return 初始账户
+     * @param user 用户持有账户信息
+     *
+     * @return RSA 私钥
      */
-    Account getByToken(Token token);
+    String getRSAPri(AccountUser user);
+
+    /**
+     * 对即将处理的业务进行账户 RSA 私钥加密
+     * <p>
+     * 改业务最终将提交到网络，并由账户 RSA 公钥解密后处理
+     *
+     * @param business 即将处理的业务
+     *
+     * @return 业务密文
+     */
+    String encryptBusiness(AccountBusiness business);
 
     /**
      * 存已发布 Token 的账户
      *
      * @param token 待发布 Token
+     *
      * @return 账户对象及其私钥
      */
     String save(Token token);

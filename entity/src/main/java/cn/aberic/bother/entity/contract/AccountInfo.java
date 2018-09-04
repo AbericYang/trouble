@@ -23,36 +23,32 @@
  *
  */
 
-package cn.aberic.bother.controller;
+package cn.aberic.bother.entity.contract;
 
-import cn.aberic.bother.bean.AccountUser;
-import cn.aberic.bother.service.AccountService;
-import org.springframework.web.bind.annotation.*;
+import com.alibaba.fastjson.annotation.JSONField;
+import lombok.Getter;
+import lombok.Setter;
 
-import javax.annotation.Resource;
+import java.math.BigDecimal;
 
 /**
- * 作者：Aberic on 2018/9/2 19:10
+ * 账户信息详情，此对象存储时必须执行ECC加密
+ * <p>
+ * 作者：Aberic on 2018/9/4 21:27
  * 邮箱：abericyang@gmail.com
  */
-@CrossOrigin
-@RestController
-@RequestMapping("account")
-public class AccountController {
+@Setter
+@Getter
+public class AccountInfo {
 
-    @Resource
-    private AccountService accountService;
-
-    /**
-     * 根据用户持有账户信息获取改账户的 RSA 私钥
-     *
-     * @param user 用户持有账户信息
-     *
-     * @return RSA 私钥
-     */
-    @PostMapping(value = "pri")
-    public String getRSAPri(@RequestBody AccountUser user) {
-        return accountService.getRSAPri(user);
-    }
+    /** 账户余额 */
+    @JSONField(name = "c")
+    private BigDecimal count;
+    /** 账户RSA私钥 */
+    @JSONField(name = "k")
+    private String priKey;
+    /** 账户创建时间戳 */
+    @JSONField(name = "t")
+    private long timestamp;
 
 }

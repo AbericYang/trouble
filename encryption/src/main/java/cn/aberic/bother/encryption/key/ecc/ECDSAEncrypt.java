@@ -33,10 +33,7 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
-import java.security.InvalidKeyException;
-import java.security.KeyFactory;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
+import java.security.*;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
@@ -57,6 +54,7 @@ public class ECDSAEncrypt {
      */
     private ECPublicKey getPublicKeyByStr(String keyStr) {
         X509EncodedKeySpec keySpec = new X509EncodedKeySpec(Base64.decodeBase64(keyStr));
+        Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
         try {
             KeyFactory keyFactory = KeyFactory.getInstance("EC", "BC");
             return (ECPublicKey) keyFactory.generatePublic(keySpec);
@@ -80,6 +78,7 @@ public class ECDSAEncrypt {
      */
     private ECPrivateKey getPrivateKeyByStr(String keyStr) {
         PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(Base64.decodeBase64(keyStr));
+        Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
         try {
             KeyFactory keyFactory = KeyFactory.getInstance("EC", "BC");
             return (ECPrivateKey) keyFactory.generatePrivate(keySpec);

@@ -25,6 +25,7 @@
 
 package cn.aberic.bother.service;
 
+import cn.aberic.bother.bean.AccountUser;
 import cn.aberic.bother.entity.contract.AccountBusiness;
 import cn.aberic.bother.entity.token.Token;
 
@@ -41,7 +42,7 @@ public interface TokenService {
      *
      * @param token 待发布 Token
      */
-    void saveTmp(Token token);
+    AccountUser create(Token token);
 
     /**
      * 发布 Token

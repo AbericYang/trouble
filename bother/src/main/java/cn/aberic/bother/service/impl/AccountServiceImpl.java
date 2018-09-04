@@ -26,18 +26,18 @@
 package cn.aberic.bother.service.impl;
 
 import cn.aberic.bother.account.AccountManager;
+import cn.aberic.bother.bean.AccountUser;
 import cn.aberic.bother.encryption.key.exec.KeyExec;
-import cn.aberic.bother.encryption.key.bean.Key;
 import cn.aberic.bother.entity.IResponse;
 import cn.aberic.bother.entity.contract.Account;
+import cn.aberic.bother.entity.contract.AccountBusiness;
+import cn.aberic.bother.entity.contract.AccountInfo;
 import cn.aberic.bother.entity.token.Token;
 import cn.aberic.bother.service.AccountService;
-import com.google.common.hash.Hashing;
+import cn.aberic.bother.token.TokenManager;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
 import org.springframework.stereotype.Service;
-
-import java.math.BigDecimal;
-import java.nio.charset.Charset;
-import java.util.Date;
 
 /**
  * 账户操作接口实现
@@ -49,17 +49,19 @@ import java.util.Date;
 public class AccountServiceImpl implements AccountService, IResponse {
 
     @Override
-    public Account getByToken(Token token) {
-        Account account = new Account();
-        Key key = KeyExec.obtain().createECCDSAKeyPair();
-        BigDecimal count = BigDecimal.valueOf(token.getTotalSupply());
-        String address = Hashing.sha256().hashString(key.getPrivateKey(), Charset.forName("UTF-8")).toString();
-        account.setPubKey(key.getPublicKey());
-        account.setPriKey(key.getPrivateKey());
-        account.setCount(count);
-        account.setAddress(address);
-        account.setTimestamp(new Date().getTime());
-        return account;
+    public String getRSAPri(AccountUser user) {
+        TokenManager tokenManager = new TokenManager();
+        Token token = tokenManager.getUnPublish(user.getAddress());
+        Account account = token.getAccount();
+        AccountInfo info = JSON.parseObject(KeyExec.obtain().decryptPriStrECDSA(user.getPriKey(), account.getJsonAccountInfoString()),
+                new TypeReference<AccountInfo>() {});
+        return info.getPriKey();
+    }
+
+    @Override
+    public String encryptBusiness(AccountBusiness business) {
+        // TODO: 2018/9/4
+        return null;
     }
 
     @Override

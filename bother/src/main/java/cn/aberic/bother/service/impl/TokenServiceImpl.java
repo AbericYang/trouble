@@ -26,16 +26,23 @@
 package cn.aberic.bother.service.impl;
 
 import cn.aberic.bother.account.AccountManager;
+import cn.aberic.bother.bean.AccountUser;
+import cn.aberic.bother.encryption.key.bean.Key;
 import cn.aberic.bother.encryption.key.exec.KeyExec;
 import cn.aberic.bother.entity.contract.Account;
 import cn.aberic.bother.entity.contract.AccountBusiness;
+import cn.aberic.bother.entity.contract.AccountInfo;
 import cn.aberic.bother.entity.token.Token;
 import cn.aberic.bother.service.TokenService;
 import cn.aberic.bother.storage.Common;
 import cn.aberic.bother.token.TokenManager;
 import cn.aberic.bother.tools.exception.AccountBusinessTypeException;
+import com.alibaba.fastjson.JSON;
+import com.google.common.hash.Hashing;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.nio.charset.Charset;
 import java.util.Date;
 
 /**
@@ -48,12 +55,32 @@ import java.util.Date;
 public class TokenServiceImpl implements TokenService {
 
     @Override
-    public void saveTmp(Token token) {
-        token.setTimestamp(new Date().getTime());
+    public AccountUser create(Token token) {
+        Account account = new Account();
+        Key rsaKey = KeyExec.obtain().createRSAKeyPair();
+        Key eccKey = KeyExec.obtain().createECCDSAKeyPair();
+
+        long timestamp = new Date().getTime();
+
+        AccountInfo info = new AccountInfo();
+        info.setCount(BigDecimal.valueOf(token.getTotalSupply()));
+        info.setPriKey(rsaKey.getPrivateKey());
+        info.setTimestamp(timestamp);
+
+        String address = Hashing.sha256().hashString(eccKey.getPublicKey(), Charset.forName("UTF-8")).toString();
+
+        account.setAddress(address);
+        account.setPubKey(eccKey.getPublicKey());
+        account.setJsonAccountInfoString(KeyExec.obtain().encryptByStrECDSA(eccKey.getPublicKey(), JSON.toJSONString(info)));
+
+        token.setAccount(account);
+        token.setTimestamp(timestamp);
         token.checkParams();
         token.build();
-        TokenManager manager = new TokenManager();
-        manager.createOrUpdateTmp(token);
+        TokenManager tokenManager = new TokenManager();
+        tokenManager.createOrUpdateTmp(token);
+
+        return new AccountUser(address, eccKey.getPrivateKey(), token.getHash());
     }
 
     @Override

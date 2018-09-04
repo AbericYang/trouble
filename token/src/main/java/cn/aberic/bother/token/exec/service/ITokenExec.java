@@ -51,6 +51,15 @@ public interface ITokenExec extends IFile<Token> {
         cou(JSON.toJSONString(token), true);
     }
 
+    /**
+     * 通过根账户地址发布 Token
+     * <p>
+     * 注：此方法仅限未发布 Token 使用
+     *
+     * @param accountAddress 账户地址
+     *
+     * @return Token 信息
+     */
     default Token publish(String accountAddress) {
         Token[] tokens = new Token[]{null};
         Files.fileTraverser().breadthFirst(new File(getFileStatus().getDir())).forEach(file -> {
@@ -76,6 +85,39 @@ public interface ITokenExec extends IFile<Token> {
                     }
                     if (null != tokens[0]) {
                         Files.write(null == sb ? new byte[]{} : sb.toString().getBytes(), file);
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        return tokens[0];
+    }
+
+    /**
+     * 通过账户地址得到 Token 信息
+     * <p>
+     * 注：此方法仅限未发布 Token 使用
+     *
+     * @param accountAddress 账户地址
+     *
+     * @return Token 信息
+     */
+    default Token getUnPublish(String accountAddress) {
+        Token[] tokens = new Token[]{null};
+        Files.fileTraverser().breadthFirst(new File(getFileStatus().getDir())).forEach(file -> {
+            if (StringUtils.startsWith(file.getName(), getFileStatus().getStart())) {
+                try (LineIterator it = FileUtils.lineIterator(file, "UTF-8")) {
+                    while (it.hasNext()) {
+                        String lineString = it.nextLine();
+                        if (StringUtils.isEmpty(lineString)) {
+                            continue;
+                        }
+                        Token token = JSON.parseObject(DeflaterTool.uncompress(lineString), new TypeReference<Token>() {});
+                        if (StringUtils.equals(token.getAccount().getAddress(), accountAddress)) {
+                            tokens[0] = token;
+                            break;
+                        }
                     }
                 } catch (IOException e) {
                     e.printStackTrace();

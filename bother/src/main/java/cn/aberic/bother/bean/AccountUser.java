@@ -23,36 +23,36 @@
  *
  */
 
-package cn.aberic.bother.controller;
+package cn.aberic.bother.bean;
 
-import cn.aberic.bother.bean.AccountUser;
-import cn.aberic.bother.service.AccountService;
-import org.springframework.web.bind.annotation.*;
-
-import javax.annotation.Resource;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
- * 作者：Aberic on 2018/9/2 19:10
+ * 用户持有的账户信息，必须妥善保管，丢失后将无法找回
+ * <p>
+ * 作者：Aberic on 2018/9/4 22:51
  * 邮箱：abericyang@gmail.com
  */
-@CrossOrigin
-@RestController
-@RequestMapping("account")
-public class AccountController {
+@Setter
+@Getter
+public class AccountUser {
 
-    @Resource
-    private AccountService accountService;
+    /** 账户唯一地址码 */
+    private String address;
+    /** 账户 ECC 私钥 */
+    private String priKey;
+    /** 账户所属 Token hash */
+    private String hash;
 
-    /**
-     * 根据用户持有账户信息获取改账户的 RSA 私钥
-     *
-     * @param user 用户持有账户信息
-     *
-     * @return RSA 私钥
-     */
-    @PostMapping(value = "pri")
-    public String getRSAPri(@RequestBody AccountUser user) {
-        return accountService.getRSAPri(user);
+    // JSON 用
+    public AccountUser() {
+    }
+
+    public AccountUser(String address, String priKey, String hash) {
+        this.address = address;
+        this.priKey = priKey;
+        this.hash = hash;
     }
 
 }

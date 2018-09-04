@@ -248,8 +248,8 @@ public interface IFile<T> {
             } else {
                 // 计算该内容的字节长度
                 long accountSize = result.getBytes().length;
-                // 如果文件和待写入对象之和已经大于或等于 256 MB，则开辟新文件写入对象
-                if (freshFile.length() + accountSize >= 256 * 1000 * 1000) {
+                // 如果文件和待写入对象之和已经大于或等于 128 MB，则开辟新文件写入对象
+                if (freshFile.length() + accountSize >= 128 * 1000 * 1000) {
                     freshFile = getNextFileByCurrentFile(freshFile);
                     FileTool.writeFirstLine(freshFile, result);
                 } else {
