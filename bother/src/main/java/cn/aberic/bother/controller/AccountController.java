@@ -71,10 +71,16 @@ public class AccountController {
         return accountService.encryptBusiness(businessEncrypt);
     }
 
+    /**
+     * 根据账户事务对象处理业务
+     *
+     * @param business 账户事务对象
+     *
+     * @return 业务结果
+     */
     @PostMapping(value = "business")
-    public String encryptBusiness(AccountBusiness business) {
-        // TODO: 2018/9/5
-        return null;
+    public String business(AccountBusiness business) {
+        return accountService.business(business);
     }
 
 }

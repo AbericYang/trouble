@@ -65,6 +65,26 @@ public class AccountServiceImpl implements AccountService, IResponse {
     }
 
     @Override
+    public String business(AccountBusiness business) {
+        // TODO: 2018/9/5
+        switch (business.getBusiness()) {
+            case PUBLISH:
+                break;
+            case QUERY:
+                break;
+            case TRANSFER:
+                break;
+            case APPROVE:
+                break;
+            case TRANSFER_FROM:
+                break;
+            case ALLOWANCE:
+                break;
+        }
+        return null;
+    }
+
+    @Override
     public String save(Token token) {
         Account account = token.getAccount();
         AccountManager manager = new AccountManager(token.getHash());

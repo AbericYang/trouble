@@ -26,6 +26,7 @@
 package cn.aberic.bother.service;
 
 import cn.aberic.bother.bean.AccountUser;
+import cn.aberic.bother.entity.contract.AccountBusiness;
 import cn.aberic.bother.entity.contract.AccountBusinessEncrypt;
 import cn.aberic.bother.entity.token.Token;
 
@@ -56,6 +57,15 @@ public interface AccountService {
      * @return 业务密文
      */
     String encryptBusiness(AccountBusinessEncrypt businessEncrypt);
+
+    /**
+     * 根据账户事务对象处理业务
+     *
+     * @param business 账户事务对象
+     *
+     * @return 业务结果
+     */
+    String business(AccountBusiness business);
 
     /**
      * 存已发布 Token 的账户
