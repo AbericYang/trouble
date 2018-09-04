@@ -41,16 +41,19 @@ import java.math.BigDecimal;
 public class Account {
 
     /** 账户唯一地址码 */
-    @JSONField(name="a")
+    @JSONField(name = "a")
     private String address;
     /** 账户余额 */
-    @JSONField(name="c")
+    @JSONField(name = "c")
     private BigDecimal count;
     /** 账户公钥 */
-    @JSONField(name="k")
+    @JSONField(name = "k")
     private String pubKey;
+    /** 账户私钥，序列化时不写入 */
+    @JSONField(serialize = false)
+    private String priKey;
     /** 账户创建时间戳 */
-    @JSONField(name="t")
+    @JSONField(name = "t")
     private long timestamp;
 
 }

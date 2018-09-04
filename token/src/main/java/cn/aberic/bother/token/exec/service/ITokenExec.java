@@ -25,9 +25,24 @@
 
 package cn.aberic.bother.token.exec.service;
 
+import cn.aberic.bother.entity.block.Block;
+import cn.aberic.bother.entity.block.BlockInfo;
+import cn.aberic.bother.entity.contract.Account;
+import cn.aberic.bother.entity.contract.Contract;
+import cn.aberic.bother.entity.contract.ContractInfo;
 import cn.aberic.bother.entity.token.Token;
 import cn.aberic.bother.storage.IFile;
+import cn.aberic.bother.tools.DeflaterTool;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
+import com.google.common.io.Files;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.LineIterator;
+import org.apache.commons.lang3.StringUtils;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
 
 /**
  * Token 文件本地读写接口
@@ -40,6 +55,40 @@ public interface ITokenExec extends IFile<Token> {
     /** 创建或更新账户信息 */
     default void createOrUpdate(Token token) {
         cou(JSON.toJSONString(token));
+    }
+
+    default Token publish(String accountAddress) {
+        Token[] tokens = new Token[]{null};
+        Files.fileTraverser().breadthFirst(new File(getFileStatus().getDir())).forEach(file -> {
+            if (StringUtils.startsWith(file.getName(), getFileStatus().getStart())) {
+                StringBuilder sb = null;
+                try (LineIterator it = FileUtils.lineIterator(file, "UTF-8")) {
+                    while (it.hasNext()) {
+                        String lineString = it.nextLine();
+                        if (StringUtils.isEmpty(lineString)) {
+                            continue;
+                        }
+                        Token token = JSON.parseObject(it.nextLine(), new TypeReference<Token>() {});
+                        if (StringUtils.equals(token.getAccount().getAddress(), accountAddress)) {
+                            tokens[0] = token;
+                        } else {
+                            if (null == sb) {
+                                sb = new StringBuilder();
+                                sb.append(lineString);
+                            } else {
+                                sb.append("\r\n").append(lineString);
+                            }
+                        }
+                    }
+                    if (null != tokens[0]) {
+                        Files.write(null == sb ? new byte[]{} : sb.toString().getBytes(), file);
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        return tokens[0];
     }
 
 }

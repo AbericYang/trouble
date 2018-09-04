@@ -28,11 +28,11 @@ package cn.aberic.bother.service.impl;
 import cn.aberic.bother.account.AccountManager;
 import cn.aberic.bother.encryption.key.KeyExec;
 import cn.aberic.bother.encryption.key.bean.Key;
+import cn.aberic.bother.entity.IResponse;
 import cn.aberic.bother.entity.contract.Account;
 import cn.aberic.bother.entity.token.Token;
 import cn.aberic.bother.service.AccountService;
 import com.google.common.hash.Hashing;
-import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -46,22 +46,27 @@ import java.util.Date;
  * 邮箱：abericyang@gmail.com
  */
 @Service("accountService")
-public class AccountServiceImpl implements AccountService {
+public class AccountServiceImpl implements AccountService, IResponse {
 
     @Override
-    public String saveTmp(Token token) {
+    public Account getByToken(Token token) {
         Account account = new Account();
         Key key = KeyExec.obtain().createECCDSAKeyPair();
         BigDecimal count = BigDecimal.valueOf(token.getTotalSupply());
         String address = Hashing.sha256().hashString(key.getPrivateKey(), Charset.forName("UTF-8")).toString();
         account.setPubKey(key.getPublicKey());
+        account.setPriKey(key.getPrivateKey());
         account.setCount(count);
         account.setAddress(address);
         account.setTimestamp(new Date().getTime());
+        return account;
+    }
+
+    @Override
+    public String save(Token token) {
+        Account account = token.getAccount();
         AccountManager manager = new AccountManager(token.getHash());
-        manager.createOrUpdateTmp(account);
-        JSONObject aJson = new JSONObject(account);
-        aJson.put("privateKey", key.getPrivateKey());
-        return aJson.toString();
+        manager.createOrUpdate(account);
+        return response();
     }
 }

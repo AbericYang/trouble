@@ -51,10 +51,10 @@ public class BlockExec extends Init implements IBlockExec {
 
     @Override
     public FileComponent getFileStatus() {
-        if (StringUtils.equals(getContractHash(), Common.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH)) {
+        if (StringUtils.equals(getStorageHash(), Common.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH)) {
             return FileComponent.getBlockFileComponentDefault();
         }
-        return FileComponent.getBlockFileComponent(getContractHash());
+        return FileComponent.getBlockFileComponent(getStorageHash());
     }
 
 }

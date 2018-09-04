@@ -36,7 +36,7 @@ import cn.aberic.bother.storage.FileComponent;
 public class SystemContractFileExec implements ISystemContractFileExec {
 
     @Override
-    public String getContractHash() {
+    public String getStorageHash() {
         return Common.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH;
     }
 

@@ -50,9 +50,9 @@ public class BlockTransactionIndexExec extends ExecInit implements IBlockTransac
 
     @Override
     public FileComponent getFileStatus() {
-        if (StringUtils.equals(getContractHash(), Common.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH)) {
+        if (StringUtils.equals(getStorageHash(), Common.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH)) {
             return FileComponent.getBlockTransactionIndexFileComponentDefault();
         }
-        return FileComponent.getBlockTransactionIndexFileComponent(getContractHash());
+        return FileComponent.getBlockTransactionIndexFileComponent(getStorageHash());
     }
 }

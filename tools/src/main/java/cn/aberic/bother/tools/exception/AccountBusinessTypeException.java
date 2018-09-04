@@ -20,39 +20,20 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- *
  */
 
-package cn.aberic.bother.account.exec;
-
-import cn.aberic.bother.account.exec.service.IAccountExec;
-import cn.aberic.bother.storage.Common;
-import cn.aberic.bother.storage.FileComponent;
-import cn.aberic.bother.storage.Init;
-import org.apache.commons.lang3.StringUtils;
+package cn.aberic.bother.tools.exception;
 
 /**
- * 账户临时文件本地读写接口实现
+ * 账户事务类型异常——公共方法包
  * <p>
- * 作者：Aberic on 2018/9/3 22:07
+ * 作者：Aberic on 2018/09/04 12:09
  * 邮箱：abericyang@gmail.com
  */
-public class AccountTmpExec extends Init implements IAccountExec {
+public class AccountBusinessTypeException extends NullPointerException {
 
-    /**
-     * 根据token hash值操作账户文件；
-     *
-     * @param tokenHash token hash值
-     */
-    public AccountTmpExec(String tokenHash) {
-        super(tokenHash);
+    public AccountBusinessTypeException() {
+        super("account business type is invalid");
     }
 
-    @Override
-    public FileComponent getFileStatus() {
-        if (StringUtils.equals(getContractHash(), Common.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH)) {
-            return FileComponent.getAccountTmpFileComponentDefault();
-        }
-        return FileComponent.getAccountTmpFileComponent(getContractHash());
-    }
 }

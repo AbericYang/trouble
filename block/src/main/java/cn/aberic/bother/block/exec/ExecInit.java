@@ -55,7 +55,7 @@ public class ExecInit extends Init implements IInit, IExecInit {
     @Override
     public BlockExec getBlockExec() {
         if (null == blockExec) {
-            blockExec = execFactory.createBlockExec(getContractHash());
+            blockExec = execFactory.createBlockExec(getStorageHash());
         }
         return blockExec;
     }

@@ -47,13 +47,13 @@ public interface IContractFileExec extends ISystemContractFileExec {
     /**
      * 安装或者升级智能合约。
      * <p>
-     * 首先判断当前 {@link #getContractHash()} 是否为空，如果为空则表示当前操作需要实例化，该智能合约是被首次安装。
+     * 首先判断当前 {@link #getStorageHash()} 是否为空，如果为空则表示当前操作需要实例化，该智能合约是被首次安装。
      * <p>
      * 安装智能合约需要获取上传路径，在
      * <p>
-     * 如果 {@link #getContractHash()} 不为空，则表示直接安装并在安装完成后加入该智能合约创世节点。
+     * 如果 {@link #getStorageHash()} 不为空，则表示直接安装并在安装完成后加入该智能合约创世节点。
      * <p>
-     * 如果 {@link #getContractHash()} 不为空，还会判断本地合约是否有相同hash值得存在。
+     * 如果 {@link #getStorageHash()} 不为空，还会判断本地合约是否有相同hash值得存在。
      * <p>
      * 如果有，则创建失败，如果没有，则返回当前合约的完整对象，包括提供给第三方进行安装部署的hash字段
      *
@@ -80,7 +80,7 @@ public interface IContractFileExec extends ISystemContractFileExec {
                         if (null == lineContract) {
                             continue;
                         }
-                        if (StringUtils.equalsIgnoreCase(lineContract.getHash(), getContractHash())) {
+                        if (StringUtils.equalsIgnoreCase(lineContract.getHash(), getStorageHash())) {
                             contracts[0] = lineContract;
                             break;
                         }

@@ -41,14 +41,14 @@ public class TokenManager {
     private ITokenExec tokenExec;
     private ITokenExec tokenTmpExec;
 
-    public TokenManager(String tokenHash) {
-        tokenExec = new TokenExec(tokenHash);
-        tokenTmpExec = new TokenTmpExec(tokenHash);
+    public TokenManager() {
+        tokenExec = new TokenExec();
+        tokenTmpExec = new TokenTmpExec();
     }
 
     /** 创建或更新账户信息 */
-    public void createOrUpdate(Token token){
-        tokenExec.createOrUpdate(token);
+    public void publish(String accountAddress){
+        tokenExec.publish(accountAddress);
     }
 
     /** 创建或更新账户信息 */

@@ -26,7 +26,6 @@
 package cn.aberic.bother.account;
 
 import cn.aberic.bother.account.exec.AccountExec;
-import cn.aberic.bother.account.exec.AccountTmpExec;
 import cn.aberic.bother.account.exec.service.IAccountExec;
 import cn.aberic.bother.entity.contract.Account;
 
@@ -39,21 +38,14 @@ import cn.aberic.bother.entity.contract.Account;
 public class AccountManager {
 
     private IAccountExec accountExec;
-    private IAccountExec accountTmpExec;
 
     public AccountManager(String tokenHash) {
         accountExec = new AccountExec(tokenHash);
-        accountTmpExec = new AccountTmpExec(tokenHash);
     }
 
     /** 创建或更新账户信息 */
     public void createOrUpdate(Account account){
         accountExec.createOrUpdate(account);
-    }
-
-    /** 创建或更新账户信息 */
-    public void createOrUpdateTmp(Account account){
-        accountTmpExec.createOrUpdate(account);
     }
 
 }

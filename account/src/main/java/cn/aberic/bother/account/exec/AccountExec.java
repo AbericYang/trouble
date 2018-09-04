@@ -50,10 +50,10 @@ public class AccountExec extends Init implements IAccountExec {
 
     @Override
     public FileComponent getFileStatus() {
-        if (StringUtils.equals(getContractHash(), Common.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH)) {
+        if (StringUtils.equals(getStorageHash(), Common.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH)) {
             return FileComponent.getAccountFileComponentDefault();
         }
-        return FileComponent.getAccountFileComponent(getContractHash());
+        return FileComponent.getAccountFileComponent(getStorageHash());
     }
 
 }

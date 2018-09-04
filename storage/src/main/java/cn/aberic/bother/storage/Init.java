@@ -33,22 +33,22 @@ package cn.aberic.bother.storage;
  */
 public class Init implements IInit {
 
-    private String contractHash;
+    private String storageHash;
 
     /**
      * 根据智能合约hash值操作区块文件；
      * 在智能合约被安装的时候就根据合约内容计算该合约hash；
      * 并以此hash匹配所有安装该合约的节点且同步数据
      *
-     * @param contractHash 智能合约hash值
+     * @param storageHash 智能合约hash值
      */
-    public Init(String contractHash) {
-        this.contractHash = contractHash;
+    public Init(String storageHash) {
+        this.storageHash = storageHash;
     }
 
     @Override
-    public String getContractHash() {
-        return contractHash;
+    public String getStorageHash() {
+        return storageHash;
     }
 
 }

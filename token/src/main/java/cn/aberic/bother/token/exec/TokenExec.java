@@ -25,35 +25,20 @@
 
 package cn.aberic.bother.token.exec;
 
-import cn.aberic.bother.storage.Common;
 import cn.aberic.bother.storage.FileComponent;
-import cn.aberic.bother.storage.Init;
 import cn.aberic.bother.token.exec.service.ITokenExec;
-import org.apache.commons.lang3.StringUtils;
 
 /**
  * Token 文件本地读写接口实现
- *
+ * <p>
  * 作者：Aberic on 2018/9/3 20:47
  * 邮箱：abericyang@gmail.com
  */
-public class TokenExec extends Init implements ITokenExec {
-
-    /**
-     * 根据token hash值操作账户文件；
-     *
-     * @param tokenHash token hash值
-     */
-    public TokenExec(String tokenHash) {
-        super(tokenHash);
-    }
+public class TokenExec implements ITokenExec {
 
     @Override
     public FileComponent getFileStatus() {
-        if (StringUtils.equals(getContractHash(), Common.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH)) {
-            return FileComponent.getTokenFileComponentDefault();
-        }
-        return FileComponent.getTokenFileComponent(getContractHash());
+        return FileComponent.getTokenFileComponentDefault();
     }
 
 }

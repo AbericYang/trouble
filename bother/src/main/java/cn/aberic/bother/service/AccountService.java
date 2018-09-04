@@ -25,6 +25,7 @@
 
 package cn.aberic.bother.service;
 
+import cn.aberic.bother.entity.contract.Account;
 import cn.aberic.bother.entity.token.Token;
 
 /**
@@ -36,12 +37,19 @@ import cn.aberic.bother.entity.token.Token;
 public interface AccountService {
 
     /**
-     * 临时存储待发布 Token 的账户
+     * 通过新创建的 Token 生成初始账户
+     *
+     * @param token 新创建的 Token
+     * @return 初始账户
+     */
+    Account getByToken(Token token);
+
+    /**
+     * 存已发布 Token 的账户
      *
      * @param token 待发布 Token
-     *
      * @return 账户对象及其私钥
      */
-    String saveTmp(Token token);
+    String save(Token token);
 
 }

@@ -75,7 +75,7 @@ public class ContractExec extends SystemContractExec implements IContractExec, I
 
     @Override
     public BlockAcquire getBlockAcquire() {
-        return new BlockAcquire(StringUtils.isEmpty(contractHash) ? getContractFileExec().getContractHash() : contractHash);
+        return new BlockAcquire(StringUtils.isEmpty(contractHash) ? getContractFileExec().getStorageHash() : contractHash);
     }
 
     @Override

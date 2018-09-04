@@ -140,9 +140,8 @@ public interface IFile<T> {
     /** 获取最新写入的文件 */
     default File getLastFile() {
         final File[] lastFile = {null};
-        Iterable<File> files = Files.fileTraverser().breadthFirst(new File(getFileStatus().getDir()));
         final int[] lastFileNum = {-1};
-        files.forEach(file -> {
+        Files.fileTraverser().breadthFirst(new File(getFileStatus().getDir())).forEach(file -> {
             if (StringUtils.startsWith(file.getName(), getFileStatus().getStart())) {
                 String fileName = file.getName();
                 int fileNum = getNumByFileName(fileName);

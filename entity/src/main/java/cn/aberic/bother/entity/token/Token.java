@@ -24,6 +24,7 @@
 
 package cn.aberic.bother.entity.token;
 
+import cn.aberic.bother.entity.contract.Account;
 import cn.aberic.bother.tools.exception.TokenParamException;
 import com.alibaba.fastjson.annotation.JSONField;
 import com.google.common.hash.Hashing;
@@ -42,26 +43,31 @@ import java.nio.charset.Charset;
 public class Token {
 
     /** ERC20 Token 的名字，例如：NoTroubleBother */
-    @JSONField(name="n")
+    @JSONField(name = "n")
     private String name;
     /** ERC20 Token 的符号，也就是代币的简称，例如：NTB。 */
-    @JSONField(name="s")
+    @JSONField(name = "s")
     private String symbol;
     /** 支持几位小数点后几位。如果设置为3。也就是支持0.001表示。 */
-    @JSONField(name="d")
+    @JSONField(name = "d")
     private int decimals;
     /** 发行 Token 的总量 */
-    @JSONField(name="ts")
+    @JSONField(name = "ts")
     private int totalSupply;
     /** Token 摘要 */
-    @JSONField(name="b")
+    @JSONField(name = "b")
     private String brief;
     /** 账户创建时间戳 */
-    @JSONField(name="t")
+    @JSONField(name = "t")
     private long timestamp;
+    /** 根账户，拥有首发资产的账户，Token 发布后将不会再依赖于 Token 对象 */
+    @JSONField(name = "a")
+    private Account account;
+    @JSONField(name = "h")
+    private String hash;
 
-    public String getHash() {
-        return Hashing.sha256().hashString(
+    public void build() {
+        hash = Hashing.sha256().hashString(
                 String.format("%s%s%s%s%s%s", name, symbol, decimals, totalSupply, brief, timestamp), Charset.forName("UTF-8"))
                 .toString();
     }

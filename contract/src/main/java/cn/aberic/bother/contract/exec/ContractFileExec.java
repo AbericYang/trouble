@@ -88,7 +88,7 @@ public class ContractFileExec implements IContractFileExec {
     }
 
     @Override
-    public String getContractHash() {
+    public String getStorageHash() {
         return contractHash;
     }
 

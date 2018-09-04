@@ -59,15 +59,15 @@ public class ContractDataIndexFileExec implements IContractDataIndexFileExec {
     }
 
     @Override
-    public String getContractHash() {
+    public String getStorageHash() {
         return contractHash;
     }
 
     @Override
     public FileComponent getFileStatus() {
-        if (StringUtils.equals(getContractHash(), Common.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH)) {
+        if (StringUtils.equals(getStorageHash(), Common.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH)) {
             return FileComponent.getContractDataIndexFileComponentDefault();
         }
-        return FileComponent.getContractDataIndexFileComponent(getContractHash());
+        return FileComponent.getContractDataIndexFileComponent(getStorageHash());
     }
 }

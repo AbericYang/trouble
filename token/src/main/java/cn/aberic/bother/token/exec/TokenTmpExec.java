@@ -25,11 +25,8 @@
 
 package cn.aberic.bother.token.exec;
 
-import cn.aberic.bother.storage.Common;
 import cn.aberic.bother.storage.FileComponent;
-import cn.aberic.bother.storage.Init;
 import cn.aberic.bother.token.exec.service.ITokenExec;
-import org.apache.commons.lang3.StringUtils;
 
 /**
  * Token 临时文件本地读写接口实现
@@ -37,23 +34,11 @@ import org.apache.commons.lang3.StringUtils;
  * 作者：Aberic on 2018/9/3 22:05
  * 邮箱：abericyang@gmail.com
  */
-public class TokenTmpExec extends Init implements ITokenExec {
-
-    /**
-     * 根据token hash值操作账户文件；
-     *
-     * @param tokenHash token hash值
-     */
-    public TokenTmpExec(String tokenHash) {
-        super(tokenHash);
-    }
+public class TokenTmpExec implements ITokenExec {
 
     @Override
     public FileComponent getFileStatus() {
-        if (StringUtils.equals(getContractHash(), Common.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH)) {
-            return FileComponent.getTokenTmpFileComponentDefault();
-        }
-        return FileComponent.getTokenTmpFileComponent(getContractHash());
+        return FileComponent.getTokenTmpFileComponent();
     }
 
 }

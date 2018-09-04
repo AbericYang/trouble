@@ -25,7 +25,7 @@
 
 package cn.aberic.bother.service;
 
-import cn.aberic.bother.entity.contract.Account;
+import cn.aberic.bother.entity.contract.AccountBusiness;
 import cn.aberic.bother.entity.token.Token;
 
 /**
@@ -40,21 +40,19 @@ public interface TokenService {
      * 临时存储待发布 Token
      *
      * @param token 待发布 Token
-     *
-     * @return Token 带有 hash 的 Token
      */
-    Token saveTmp(Token token);
+    void saveTmp(Token token);
 
     /**
      * 发布 Token
      * <p>
      * 该操作会将此 Token 发布至公链，全网账本同步，需要附带可用账户且余额充足
      * <p>
-     * 发布信息至公网账本将按字节收取手续费
+     * 发布信息至公网账本将按字节收取存储手续费
      *
-     * @param account 附带可用账户
-     * @param token   Token
+     * @param accountBusiness 附带可用账户处理事务对象
+     * @param accountAddress  Token 的根账户
      */
-    void publish(Account account, Token token);
+    void publish(AccountBusiness accountBusiness, String accountAddress);
 
 }

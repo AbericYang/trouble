@@ -50,9 +50,9 @@ public class BlockIndexExec extends ExecInit implements IBlockIndexExec {
 
     @Override
     public FileComponent getFileStatus() {
-        if (StringUtils.equals(getContractHash(), Common.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH)) {
+        if (StringUtils.equals(getStorageHash(), Common.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH)) {
             return FileComponent.getBlockIndexFileComponentDefault();
         }
-        return FileComponent.getBlockIndexFileComponent(getContractHash());
+        return FileComponent.getBlockIndexFileComponent(getStorageHash());
     }
 }

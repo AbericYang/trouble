@@ -165,7 +165,7 @@ public class SystemContractExec implements ISystemContractExec, IContractBaseExe
 
     @Override
     public String getContractHash() {
-        return getContractFileExec().getContractHash();
+        return getContractFileExec().getStorageHash();
     }
 
     @Override

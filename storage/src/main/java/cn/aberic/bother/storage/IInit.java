@@ -33,7 +33,7 @@ package cn.aberic.bother.storage;
  */
 public interface IInit {
 
-    /** 获取合约hash */
-    String getContractHash();
+    /** 获取存储目录hash */
+    String getStorageHash();
 
 }

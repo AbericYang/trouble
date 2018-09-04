@@ -148,30 +148,12 @@ public class FileComponent {
                 TType.T_TYPE_ACCOUNT);
     }
 
-    /** 获取默认账户数据索引文件可操作状态 */
-    public static FileComponent getAccountTmpFileComponentDefault() {
-        return new FileComponent(
-                Common.ACCOUNT_FILE_START,
-                Common.ACCOUNT_FILE_END,
-                Common.ACCOUNT_TMP_FILE_DIR,
-                TType.T_TYPE_ACCOUNT);
-    }
-
     /** 获取默认 Token 数据索引文件可操作状态 */
     public static FileComponent getTokenFileComponentDefault() {
         return new FileComponent(
                 Common.TOKEN_FILE_START,
                 Common.TOKEN_FILE_END,
                 Common.TOKEN_FILE_DIR,
-                TType.T_TYPE_TOKEN);
-    }
-
-    /** 获取默认 Token 数据索引文件可操作状态 */
-    public static FileComponent getTokenTmpFileComponentDefault() {
-        return new FileComponent(
-                Common.TOKEN_FILE_START,
-                Common.TOKEN_FILE_END,
-                Common.TOKEN_TMP_FILE_DIR,
                 TType.T_TYPE_TOKEN);
     }
 
@@ -250,30 +232,12 @@ public class FileComponent {
                 TType.T_TYPE_ACCOUNT);
     }
 
-    /** 获取默认智能合约数据索引文件可操作状态 */
-    public static FileComponent getAccountTmpFileComponent(String tokenHash) {
-        return new FileComponent(
-                Common.ACCOUNT_FILE_START,
-                Common.ACCOUNT_FILE_END,
-                getCustomDirByHash(Common.ACCOUNT_TMP_FILE_CUSTOM_DIR, tokenHash),
-                TType.T_TYPE_ACCOUNT);
-    }
-
     /** 获取默认 Token 数据索引文件可操作状态 */
-    public static FileComponent getTokenFileComponent(String tokenHash) {
+    public static FileComponent getTokenTmpFileComponent() {
         return new FileComponent(
                 Common.TOKEN_FILE_START,
                 Common.TOKEN_FILE_END,
-                getCustomDirByHash(Common.TOKEN_FILE_CUSTOM_DIR, tokenHash),
-                TType.T_TYPE_TOKEN);
-    }
-
-    /** 获取默认 Token 数据索引文件可操作状态 */
-    public static FileComponent getTokenTmpFileComponent(String tokenHash) {
-        return new FileComponent(
-                Common.TOKEN_FILE_START,
-                Common.TOKEN_FILE_END,
-                getCustomDirByHash(Common.TOKEN_TMP_FILE_CUSTOM_DIR, tokenHash),
+                Common.TOKEN_TMP_FILE_CUSTOM_DIR,
                 TType.T_TYPE_TOKEN);
     }
 
