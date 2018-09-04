@@ -53,7 +53,7 @@ public class AccountBusiness {
         /** 发布新 Token，根据指定地址返回该 Token 的余额 */
         PUBLISH("publish", 0),
         /** 查询，根据指定地址返回该 Token 的余额 */
-        QUERY("", 10),
+        QUERY("query", 10),
         /** 转账，转给 toAddress 账户 count 个 Token */
         TRANSFER("toAddress,count", 11),
         /** 授权，批准 addressSpender 账户从自己的账户转移 count 个 Token */
