@@ -28,10 +28,11 @@ package cn.aberic.bother.account;
 import cn.aberic.bother.account.exec.AccountExec;
 import cn.aberic.bother.account.exec.service.IAccountExec;
 import cn.aberic.bother.entity.contract.Account;
+import cn.aberic.bother.storage.Common;
 
 /**
  * 账户基本操作对象
- *
+ * <p>
  * 作者：Aberic on 2018/9/3 19:36
  * 邮箱：abericyang@gmail.com
  */
@@ -44,8 +45,28 @@ public class AccountManager {
     }
 
     /** 创建或更新账户信息 */
-    public void createOrUpdate(Account account){
+    public void createOrUpdate(Account account) {
         accountExec.createOrUpdate(account);
+    }
+
+    /**
+     * 根据账户地址获取账户对象
+     *
+     * @param address 账户地址
+     * @return 账户对象
+     */
+    public Account getByAddress(String address) {
+        return accountExec.getByAddress(address);
+    }
+
+    /**
+     * 根据公网账户地址获取公网账户对象
+     *
+     * @param address 公网账户地址
+     * @return 公网账户对象
+     */
+    public Account getPubByAddress(String address) {
+        return accountExec.getPubByAddress(address);
     }
 
 }

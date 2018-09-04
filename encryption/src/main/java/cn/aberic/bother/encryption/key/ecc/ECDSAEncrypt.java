@@ -24,14 +24,22 @@
 
 package cn.aberic.bother.encryption.key.ecc;
 
-import cn.aberic.bother.encryption.key.KeyExec;
+import cn.aberic.bother.encryption.key.exec.KeyExec;
 import org.apache.commons.codec.binary.Base64;
 import org.bouncycastle.jce.interfaces.ECPrivateKey;
 import org.bouncycastle.jce.interfaces.ECPublicKey;
 
-import javax.crypto.*;
-import java.security.*;
-import java.security.spec.*;
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+import java.security.InvalidKeyException;
+import java.security.KeyFactory;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.PKCS8EncodedKeySpec;
+import java.security.spec.X509EncodedKeySpec;
 
 /**
  * ECDSA（椭圆加密算法）加解密工具类
@@ -40,21 +48,6 @@ import java.security.spec.*;
  * 邮箱：abericyang@gmail.com
  */
 public class ECDSAEncrypt {
-
-    private static ECDSAEncrypt instance = null;
-
-    public static ECDSAEncrypt obtain() {
-        if (null == instance) {
-            synchronized (ECDSAEncrypt.class) {
-                if (null == instance) {
-                    instance = new ECDSAEncrypt();
-                }
-            }
-        }
-        return instance;
-    }
-
-    private ECDSAEncrypt() {}
 
     /**
      * 通过公钥字符串获取公钥

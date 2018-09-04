@@ -24,7 +24,7 @@
 
 package cn.aberic.bother.encryption.key.rsa;
 
-import cn.aberic.bother.encryption.key.KeyExec;
+import cn.aberic.bother.encryption.key.exec.KeyExec;
 import org.apache.commons.codec.binary.Base64;
 
 import javax.annotation.Nullable;
@@ -42,22 +42,8 @@ import java.security.spec.X509EncodedKeySpec;
  */
 public class RSASignature {
 
-    private static RSASignature instance = null;
     /** 签名算法 */
-    private final String SIGN_ALGORITHMS = "SHA1WithRSA";
-
-    public static RSASignature obtain() {
-        if (null == instance) {
-            synchronized (RSASignature.class) {
-                if (null == instance) {
-                    instance = new RSASignature();
-                }
-            }
-        }
-        return instance;
-    }
-
-    private RSASignature() {}
+    private final String SIGN_ALGORITHMS = "SHA256WithRSA";
 
     /**
      * RSA私钥签名字符串

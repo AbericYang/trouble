@@ -26,10 +26,12 @@
 package cn.aberic.bother.service.impl;
 
 import cn.aberic.bother.account.AccountManager;
+import cn.aberic.bother.encryption.key.exec.KeyExec;
 import cn.aberic.bother.entity.contract.Account;
 import cn.aberic.bother.entity.contract.AccountBusiness;
 import cn.aberic.bother.entity.token.Token;
 import cn.aberic.bother.service.TokenService;
+import cn.aberic.bother.storage.Common;
 import cn.aberic.bother.token.TokenManager;
 import cn.aberic.bother.tools.exception.AccountBusinessTypeException;
 import org.springframework.stereotype.Service;
@@ -56,13 +58,18 @@ public class TokenServiceImpl implements TokenService {
 
     @Override
     public Token publish(AccountBusiness accountBusiness) {
-        // TODO: 2018/9/3 存储费收取待实现
-        // 解密事务意图
-        // Account pubAccount =
         // 判断该事务是否用于发布 Token
         if (accountBusiness.getBusiness() != AccountBusiness.Business.PUBLISH) {
             throw new AccountBusinessTypeException();
         }
+        // TODO: 2018/9/3 存储费收取待实现
+        // 获取公网账户管理器
+        AccountManager accountPubManager = new AccountManager(Common.TOKEN_DEFAULT_SYSTEM_HASH);
+        // 获取公网账户
+        Account pubAccount = accountPubManager.getPubByAddress(accountBusiness.getPubAddress());
+        // 解密事务意图
+        String intent = KeyExec.obtain().decryptPriFileECDSA(pubAccount.getPubKey(), accountBusiness.getEncryption());
+        // Account pubAccount = accountPubManager.getPubByAddress(accountBusiness.getPubAddress());
         // 根据当前待发布 Token 存储空间计算存储费
         // 根据account查询余额判断该账户是否有足够费用执行该笔操作
         // 如果没有，返回余额不足异常

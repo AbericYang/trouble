@@ -24,7 +24,7 @@
 
 package cn.aberic.bother.encryption.key.ecc;
 
-import cn.aberic.bother.encryption.key.KeyExec;
+import cn.aberic.bother.encryption.key.exec.KeyExec;
 import org.apache.commons.codec.binary.Base64;
 
 import javax.annotation.Nullable;
@@ -41,23 +41,9 @@ import java.security.spec.X509EncodedKeySpec;
  * 邮箱：abericyang@gmail.com
  */
 public class ECDSASignature {
+
     /** 签名算法 */
-    private final String SIGN_ALGORITHMS = "SHA1WithECDSA";
-
-    private static ECDSASignature instance = null;
-
-    public static ECDSASignature obtain() {
-        if (null == instance) {
-            synchronized (ECDSASignature.class) {
-                if (null == instance) {
-                    instance = new ECDSASignature();
-                }
-            }
-        }
-        return instance;
-    }
-
-    private ECDSASignature() {}
+    private final String SIGN_ALGORITHMS = "SHA256WithECDSA";
 
     /**
      * ECDSA私钥签名字符串

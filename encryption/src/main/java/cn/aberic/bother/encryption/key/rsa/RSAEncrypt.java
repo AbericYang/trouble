@@ -24,7 +24,7 @@
 
 package cn.aberic.bother.encryption.key.rsa;
 
-import cn.aberic.bother.encryption.key.KeyExec;
+import cn.aberic.bother.encryption.key.exec.KeyExec;
 import org.apache.commons.codec.binary.Base64;
 
 import javax.crypto.BadPaddingException;
@@ -47,21 +47,6 @@ import java.security.spec.X509EncodedKeySpec;
  * 邮箱：abericyang@gmail.com
  */
 public class RSAEncrypt {
-
-    private static RSAEncrypt instance = null;
-
-    public static RSAEncrypt obtain() {
-        if (null == instance) {
-            synchronized (RSAEncrypt.class) {
-                if (null == instance) {
-                    instance = new RSAEncrypt();
-                }
-            }
-        }
-        return instance;
-    }
-
-    private RSAEncrypt() {}
 
     /**
      * 通过公钥字符串获取公钥

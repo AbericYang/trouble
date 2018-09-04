@@ -22,9 +22,15 @@
  * SOFTWARE.
  */
 
-package cn.aberic.bother.encryption.key;
+package cn.aberic.bother.encryption.key.exec;
 
 import cn.aberic.bother.encryption.key.bean.Key;
+import cn.aberic.bother.encryption.key.ecc.ECDSAEncrypt;
+import cn.aberic.bother.encryption.key.ecc.ECDSASignature;
+import cn.aberic.bother.encryption.key.exec.service.IKeyECDSA;
+import cn.aberic.bother.encryption.key.exec.service.IKeyRSA;
+import cn.aberic.bother.encryption.key.rsa.RSAEncrypt;
+import cn.aberic.bother.encryption.key.rsa.RSASignature;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Base64;
 import org.bouncycastle.jce.interfaces.ECPrivateKey;
@@ -44,9 +50,15 @@ import java.util.Objects;
  * 邮箱：abericyang@gmail.com
  */
 @Slf4j
-public class KeyExec {
+public class KeyExec implements IKeyECDSA, IKeyRSA {
 
     private static KeyExec instance = null;
+
+    private ECDSAEncrypt ecdsaEncrypt;
+    private ECDSASignature ecdsaSignature;
+
+    private RSAEncrypt rsaEncrypt;
+    private RSASignature rsaSignature;
 
     public static KeyExec obtain() {
         if (null == instance) {
@@ -59,7 +71,32 @@ public class KeyExec {
         return instance;
     }
 
-    private KeyExec() {}
+    private KeyExec() {
+        ecdsaEncrypt = new ECDSAEncrypt();
+        ecdsaSignature = new ECDSASignature();
+        rsaEncrypt = new RSAEncrypt();
+        rsaSignature = new RSASignature();
+    }
+
+    @Override
+    public ECDSAEncrypt getECDSAEncrypt() {
+        return ecdsaEncrypt;
+    }
+
+    @Override
+    public ECDSASignature getECDSASignature() {
+        return ecdsaSignature;
+    }
+
+    @Override
+    public RSAEncrypt getRSAEncrypt() {
+        return rsaEncrypt;
+    }
+
+    @Override
+    public RSASignature getRSASignature() {
+        return rsaSignature;
+    }
 
     /**
      * 在指定路径的目录下随机创建以".keystore"为后缀的公私钥。
@@ -207,7 +244,6 @@ public class KeyExec {
      * 根据path获取指定file中的字符串内容
      *
      * @param filePath 指定路径的文件
-     *
      * @return 文件中字符串内容
      */
     public String getStringByFile(String filePath) {
@@ -225,5 +261,4 @@ public class KeyExec {
             throw new RuntimeException("IOException：公钥数据流读取错误");
         }
     }
-
 }

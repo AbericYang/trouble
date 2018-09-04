@@ -38,7 +38,7 @@ import lombok.Setter;
 public class AccountBusiness {
 
     /** 处理该事务的公网账户地址 */
-    private String publicAddress;
+    private String pubAddress;
     /** 处理该事务的账户地址 */
     private String address;
     /** 即将处理的具体事务，由该账户进行加密 */
