@@ -20,22 +20,21 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- *
  */
 
 package cn.aberic.bother.service;
 
 import cn.aberic.bother.bean.AccountUser;
 import cn.aberic.bother.entity.contract.AccountBusiness;
+import cn.aberic.bother.entity.contract.AccountBusinessEncrypt;
 import cn.aberic.bother.entity.token.Token;
 
 /**
- * Token 操作接口
- * <p>
- * 作者：Aberic on 2018/9/3 22:12
+ * 账户、Token 操作业务
+ * 作者：Aberic on 2018/09/05 11:08
  * 邮箱：abericyang@gmail.com
  */
-public interface TokenService {
+public interface BusinessService {
 
     /**
      * 临时存储待发布 Token
@@ -43,6 +42,35 @@ public interface TokenService {
      * @param token 待发布 Token
      */
     AccountUser create(Token token);
+
+    /**
+     * 根据用户持有账户信息获取改账户的 RSA 私钥
+     *
+     * @param user 用户持有账户信息
+     *
+     * @return RSA 私钥
+     */
+    String getRSAPri(AccountUser user);
+
+    /**
+     * 对即将处理的业务进行账户 RSA 私钥加密
+     * <p>
+     * 改业务最终将提交到网络，并由账户 RSA 公钥解密后处理
+     *
+     * @param businessEncrypt 即将处理的业务
+     *
+     * @return 业务密文
+     */
+    String encryptBusiness(AccountBusinessEncrypt businessEncrypt);
+
+    /**
+     * 根据账户事务对象处理业务
+     *
+     * @param business 账户事务对象
+     *
+     * @return 业务结果
+     */
+    String business(AccountBusiness business);
 
     /**
      * 发布 Token
@@ -54,5 +82,14 @@ public interface TokenService {
      * @param accountBusiness 附带可用账户处理事务对象
      */
     Token publish(AccountBusiness accountBusiness);
+
+    /**
+     * 存已发布 Token 的账户
+     *
+     * @param token 待发布 Token
+     *
+     * @return 账户对象及其私钥
+     */
+    String save(Token token);
 
 }
