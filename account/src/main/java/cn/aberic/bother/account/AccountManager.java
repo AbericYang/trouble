@@ -44,9 +44,13 @@ public class AccountManager {
         accountExec = new AccountExec(tokenHash);
     }
 
-    /** 创建或更新账户信息 */
-    public void createOrUpdate(Account account) {
-        accountExec.createOrUpdate(account);
+    /**
+     * 创建或更新账户信息
+     *
+     * @param accountStr {@link Account} 字符串
+     */
+    public void createOrUpdate(String accountStr) {
+        accountExec.createOrUpdate(accountStr);
     }
 
     /**

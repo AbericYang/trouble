@@ -28,7 +28,6 @@ package cn.aberic.bother.account.exec.service;
 import cn.aberic.bother.entity.contract.Account;
 import cn.aberic.bother.storage.Common;
 import cn.aberic.bother.storage.IFile;
-import cn.aberic.bother.tools.DeflaterTool;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import com.google.common.io.Files;
@@ -47,9 +46,13 @@ import java.io.IOException;
  */
 public interface IAccountExec extends IFile<Account> {
 
-    /** 创建或更新账户信息 */
-    default void createOrUpdate(Account account) {
-        cou(JSON.toJSONString(account), true);
+    /**
+     * 创建或更新账户信息
+     *
+     * @param accountStr {@link Account} 字符串
+     */
+    default void createOrUpdate(String accountStr) {
+        cou(accountStr);
     }
 
     /**
@@ -90,7 +93,7 @@ public interface IAccountExec extends IFile<Account> {
                         if (StringUtils.isEmpty(lineString)) {
                             continue;
                         }
-                        Account account = JSON.parseObject(DeflaterTool.uncompress(lineString), new TypeReference<Account>() {});
+                        Account account = JSON.parseObject(lineString, new TypeReference<Account>() {});
                         if (StringUtils.equals(account.getAddress(), address)) {
                             accounts[0] = account;
                             break;

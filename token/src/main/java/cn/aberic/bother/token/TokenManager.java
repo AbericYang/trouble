@@ -46,28 +46,18 @@ public class TokenManager {
         tokenTmpExec = new TokenTmpExec();
     }
 
+    /** 创建或更新账户信息 */
+    public void createOrUpdateTmp(String tokenStr) {
+        tokenTmpExec.createOrUpdate(tokenStr);
+    }
+
     /**
-     * 通过根账户地址发布 Token
-     * <p>
-     * 注：此方法仅限未发布 Token 使用
+     * 创建或更新 Token 信息
      *
-     * @param accountAddress 账户地址
-     *
-     * @return Token 信息
+     * @param tokenStr {@link Token} 字符串
      */
-    public Token publish(String accountAddress) {
-        return tokenTmpExec.publish(accountAddress);
-    }
-
-    /** 创建或更新账户信息 */
-    public void createOrUpdateTmp(Token token) {
-        tokenTmpExec.createOrUpdate(token);
-    }
-
-    /** 创建或更新账户信息 */
-    public void createOrUpdate(Token token) {
-        token.setAccount(null);
-        tokenExec.createOrUpdate(token);
+    public void createOrUpdate(String tokenStr) {
+        tokenExec.createOrUpdate(tokenStr);
     }
 
     /**

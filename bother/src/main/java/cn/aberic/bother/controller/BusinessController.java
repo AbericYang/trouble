@@ -90,20 +90,6 @@ public class BusinessController {
         return businessService.business(business);
     }
 
-    /**
-     * 发布 Token
-     * <p>
-     * 该操作会将此 Token 发布至公链，全网账本同步，需要附带可用账户且余额充足
-     * <p>
-     * 发布信息至公网账本将按字节收取存储手续费
-     *
-     * @param accountBusiness 附带可用账户处理事务对象
-     */
-    @PostMapping(value = "publish")
-    public Token publish(@RequestBody AccountBusiness accountBusiness) {
-        return businessService.publish(accountBusiness);
-    }
-
     @GetMapping(value = "test")
     public AccountBusiness test() {
         AccountBusiness accountBusiness = new AccountBusiness();

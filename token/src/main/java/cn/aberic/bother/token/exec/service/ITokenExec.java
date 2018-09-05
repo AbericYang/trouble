@@ -27,7 +27,6 @@ package cn.aberic.bother.token.exec.service;
 
 import cn.aberic.bother.entity.token.Token;
 import cn.aberic.bother.storage.IFile;
-import cn.aberic.bother.tools.DeflaterTool;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import com.google.common.io.Files;
@@ -46,52 +45,13 @@ import java.io.IOException;
  */
 public interface ITokenExec extends IFile<Token> {
 
-    /** 创建或更新账户信息 */
-    default void createOrUpdate(Token token) {
-        cou(JSON.toJSONString(token), true);
-    }
-
     /**
-     * 通过根账户地址发布 Token
-     * <p>
-     * 注：此方法仅限未发布 Token 使用
+     * 创建或更新 Token 信息
      *
-     * @param accountAddress 账户地址
-     *
-     * @return Token 信息
+     * @param tokenStr {@link Token} 字符串
      */
-    default Token publish(String accountAddress) {
-        Token[] tokens = new Token[]{null};
-        Files.fileTraverser().breadthFirst(new File(getFileStatus().getDir())).forEach(file -> {
-            if (StringUtils.startsWith(file.getName(), getFileStatus().getStart())) {
-                StringBuilder sb = null;
-                try (LineIterator it = FileUtils.lineIterator(file, "UTF-8")) {
-                    while (it.hasNext()) {
-                        String lineString = it.nextLine();
-                        if (StringUtils.isEmpty(lineString)) {
-                            continue;
-                        }
-                        Token token = JSON.parseObject(DeflaterTool.uncompress(lineString), new TypeReference<Token>() {});
-                        if (StringUtils.equals(token.getAccount().getAddress(), accountAddress)) {
-                            tokens[0] = token;
-                        } else {
-                            if (null == sb) {
-                                sb = new StringBuilder();
-                                sb.append(lineString);
-                            } else {
-                                sb.append("\r\n").append(lineString);
-                            }
-                        }
-                    }
-                    if (null != tokens[0]) {
-                        Files.write(null == sb ? new byte[]{} : sb.toString().getBytes(), file);
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-        return tokens[0];
+    default void createOrUpdate(String tokenStr) {
+        cou(tokenStr);
     }
 
     /**
@@ -100,7 +60,6 @@ public interface ITokenExec extends IFile<Token> {
      * 注：此方法仅限未发布 Token 使用
      *
      * @param accountAddress 账户地址
-     *
      * @return Token 信息
      */
     default Token getUnPublish(String accountAddress) {
@@ -113,7 +72,7 @@ public interface ITokenExec extends IFile<Token> {
                         if (StringUtils.isEmpty(lineString)) {
                             continue;
                         }
-                        Token token = JSON.parseObject(DeflaterTool.uncompress(lineString), new TypeReference<Token>() {});
+                        Token token = JSON.parseObject(lineString, new TypeReference<Token>() {});
                         if (StringUtils.equals(token.getAccount().getAddress(), accountAddress)) {
                             tokens[0] = token;
                             break;

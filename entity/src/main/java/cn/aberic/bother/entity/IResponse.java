@@ -36,29 +36,40 @@ import com.alibaba.fastjson.JSONObject;
  */
 public interface IResponse {
 
-    /** 返回的成功码 */
-    int SUCCESS_CODE = 200;
-
     /**
-     * 通用且简单点成功返回，仅需接收方知道此次请求状态即可。
+     * 请求结果枚举
      * <p>
-     * 返回格式是一个json字符串，此json有两个key，分别是code和data。
-     * <p>
-     * code默认值是 {@link #SUCCESS_CODE} ，data默认返回success字符串
-     *
-     * @return 返回 success json字符串
+     * 作者：Aberic on 2018/09/05 14:04
+     * 邮箱：abericyang@gmail.com
      */
-    default String response() {
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("code", SUCCESS_CODE);
-        jsonObject.put("data", "success");
-        return jsonObject.toString();
+    enum Response {
+        /** 返回码 200，返回信息 success */
+        SUCCESS(200, "success"),
+        /** 返回码 9000，返回信息 账户余额不足 */
+        ACCOUNT_LACK_OF_BALANCE(9000, "账户余额不足"),
+        /** 返回码 9001，返回信息 账户信息无效 */
+        ACCOUNT_INFO_INVALID(9001, "账户信息无效");
+
+
+        /** 交易结果信息 */
+        private String msg;
+        /** 交易结果码 */
+        private int code;
+
+        /**
+         * 请求结果
+         *
+         * @param code 请求结果码
+         * @param msg  请求结果信息
+         */
+        Response(int code, String msg) {
+            this.msg = msg;
+            this.code = code;
+        }
     }
 
     /**
      * 根据传入字符串 {@param result} 返回一个json字符串，此json有两个key，分别是code和data。
-     * <p>
-     * code默认值是 {@link #SUCCESS_CODE}。
      * <p>
      * data会验证 {@param result} 是否为json对象或json array对象
      * <p>
@@ -73,14 +84,12 @@ public interface IResponse {
      */
     default String response(String result) {
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("code", SUCCESS_CODE);
+        jsonObject.put("code", Response.SUCCESS.code);
         return VerifyTool.verifyJSON(jsonObject, result).toString();
     }
 
     /**
      * 根据传入对象 {@param obj} 返回一个json字符串，此json有两个key，分别是code和data。
-     * <p>
-     * code默认值是 {@link #SUCCESS_CODE}。
      * <p>
      * {@param obj} 直接作为data的值。
      *
@@ -92,7 +101,7 @@ public interface IResponse {
             return responseBean((BeanJsonField) obj);
         }
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("code", SUCCESS_CODE);
+        jsonObject.put("code", Response.SUCCESS.code);
         jsonObject.put("data", obj);
         return jsonObject.toString();
     }
@@ -102,8 +111,6 @@ public interface IResponse {
      * <p>
      * 此json有两个key，分别是code和data。
      * <p>
-     * code默认值是 {@link #SUCCESS_CODE}。
-     * <p>
      * {@param bean} 在调用接口方法toJsonString后直接作为data的值。
      *
      * @param bean 实现 BeanJsonField 接口的对象
@@ -112,5 +119,19 @@ public interface IResponse {
     default String responseBean(BeanJsonField bean) {
         return response(bean.toJsonString());
     }
+
+    /**
+     * 通用错误信息返回，返回内容内置且匹配返回码
+     *
+     * @param response 返回枚举对象
+     * @return 返回 success json字符串
+     */
+    default String response(Response response) {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("code", response.code);
+        jsonObject.put("data", response.msg);
+        return jsonObject.toString();
+    }
+
 
 }

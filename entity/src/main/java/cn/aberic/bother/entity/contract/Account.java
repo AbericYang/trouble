@@ -42,11 +42,14 @@ public class Account implements BeanJsonField {
     /** 账户唯一地址码 */
     @JSONField(name = "a")
     private String address;
-    /** 账户信息详情，经由ECC加密 */
+    /** 账户信息详情 {@link AccountInfo}，经由ECC加密 */
     @JSONField(name = "i")
     private String jsonAccountInfoString;
-    /** 账户RSA公钥 */
-    @JSONField(name = "k")
-    private String pubKey;
+    /** 账户 RSA 公钥 */
+    @JSONField(name = "r")
+    private String pubRSAKey;
+    /** 账户 ECC 公钥 */
+    @JSONField(name = "e")
+    private String pubECCKey;
 
 }

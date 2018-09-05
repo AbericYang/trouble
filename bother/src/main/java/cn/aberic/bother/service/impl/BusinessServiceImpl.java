@@ -37,12 +37,16 @@ import cn.aberic.bother.entity.token.Token;
 import cn.aberic.bother.service.BusinessService;
 import cn.aberic.bother.storage.Common;
 import cn.aberic.bother.token.TokenManager;
+import cn.aberic.bother.tools.DeflaterTool;
 import cn.aberic.bother.tools.exception.AccountBusinessTypeException;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import com.google.common.hash.Hashing;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.nio.charset.Charset;
 import java.util.Date;
@@ -53,6 +57,7 @@ import java.util.Date;
  * 作者：Aberic on 2018/09/05 11:09
  * 邮箱：abericyang@gmail.com
  */
+@Slf4j
 @Service("businessService")
 public class BusinessServiceImpl implements BusinessService, IResponse {
 
@@ -72,7 +77,8 @@ public class BusinessServiceImpl implements BusinessService, IResponse {
         String address = Hashing.sha256().hashString(eccKey.getPublicKey(), Charset.forName("UTF-8")).toString();
 
         account.setAddress(address);
-        account.setPubKey(eccKey.getPublicKey());
+        account.setPubRSAKey(rsaKey.getPublicKey());
+        account.setPubECCKey(eccKey.getPublicKey());
         account.setJsonAccountInfoString(KeyExec.obtain().encryptByStrECDSA(eccKey.getPublicKey(), JSON.toJSONString(info)));
 
         token.setAccount(account);
@@ -80,7 +86,7 @@ public class BusinessServiceImpl implements BusinessService, IResponse {
         token.checkParams();
         token.build();
         TokenManager tokenManager = new TokenManager();
-        tokenManager.createOrUpdateTmp(token);
+        tokenManager.createOrUpdateTmp(JSON.toJSONString(token));
 
         return new AccountUser(address, eccKey.getPrivateKey(), token.getHash());
     }
@@ -92,71 +98,131 @@ public class BusinessServiceImpl implements BusinessService, IResponse {
         Account account = token.getAccount();
         AccountInfo info = JSON.parseObject(KeyExec.obtain().decryptPriStrECDSA(user.getPriKey(), account.getJsonAccountInfoString()),
                 new TypeReference<AccountInfo>() {});
-        return info.getPriKey();
+        return response(info.getPriKey());
     }
 
     @Override
     public String encryptBusiness(AccountBusinessEncrypt businessEncrypt) {
-        return KeyExec.obtain().encryptPriStrRSA(businessEncrypt.getPriKey(), businessEncrypt.getEncryption());
+        return response(KeyExec.obtain().encryptPriStrRSA(businessEncrypt.getPriKey(), businessEncrypt.getEncryption()));
     }
 
     @Override
     public String business(AccountBusiness business) {
         // TODO: 2018/9/5
+        TokenManager tokenManager = new TokenManager();
+        Token token = tokenManager.getUnPublish(business.getAddress());
+        Account account = token.getAccount();
+        String execStr = KeyExec.obtain().decryptPubStrRSA(account.getPubRSAKey(), business.getEncryption());
         switch (business.getBusiness()) {
             case PUBLISH:
-                break;
+                return publishSystem(business, token, account, execStr, tokenManager);
             case QUERY:
-                break;
+                return null;
             case TRANSFER:
-                break;
+                return null;
             case APPROVE:
-                break;
+                return null;
             case TRANSFER_FROM:
-                break;
+                return null;
             case ALLOWANCE:
-                break;
+                return null;
         }
-        return null;
+        throw new AccountBusinessTypeException();
     }
 
     @Override
-    public Token publish(AccountBusiness accountBusiness) {
-        // 判断该事务是否用于发布 Token
-        if (accountBusiness.getBusiness() != AccountBusiness.Business.PUBLISH) {
+    public AccountInfo getCount(String tokenHash, String address, String priECCKey) {
+        return getCountForAccount(tokenHash, address, priECCKey);
+    }
+
+    /**
+     * 该操作会将此 Token 发布至公链，全网账本同步，需要附带可用账户且余额充足
+     * <p>
+     * 发布信息至公网账本将按字节收取存储手续费
+     *
+     * @param business     账户处理事务对象
+     * @param token        待发布 Token
+     * @param account      待发布 Token 根账户
+     * @param execStr      本次事务字符串
+     * @param tokenManager Token 管理器
+     * @return 发布结果
+     */
+    private String publishSystem(AccountBusiness business, Token token, Account account, String execStr, TokenManager tokenManager) {
+        if (!StringUtils.equals(execStr, business.getBusiness().getFormat())) {
             throw new AccountBusinessTypeException();
         }
-        // TODO: 2018/9/3 存储费收取待实现
-        // 获取公网账户管理器
-        AccountManager accountPubManager = new AccountManager(Common.TOKEN_DEFAULT_SYSTEM_HASH);
-        // 获取公网账户
-        Account pubAccount = accountPubManager.getPubByAddress(accountBusiness.getPubAddress());
-        // 解密事务意图
-        String intent = KeyExec.obtain().decryptPriFileECDSA(pubAccount.getPubKey(), accountBusiness.getEncryption());
-        // Account pubAccount = accountPubManager.getPubByAddress(accountBusiness.getPubAddress());
-        // 根据当前待发布 Token 存储空间计算存储费
-        // 根据account查询余额判断该账户是否有足够费用执行该笔操作
-        // 如果没有，返回余额不足异常
-        // 如果有，则继续下面步骤
-
-        TokenManager tokenManager = new TokenManager();
-        Token token = tokenManager.publish(accountBusiness.getAddress());
-        Account account = token.getAccount();
-
-        tokenManager.createOrUpdate(token);
-
-        AccountManager accountManager = new AccountManager(token.getHash());
-        accountManager.createOrUpdate(account);
-
-        return token;
+        try {
+            long accountSize = DeflaterTool.compress(JSON.toJSONString(account)).length();
+            long accountSizeJSON = JSON.toJSONString(account).length();
+            long tokenSize = DeflaterTool.compress(JSON.toJSONString(token)).length();
+            long tokenSizeJSON = JSON.toJSONString(token).length();
+            log.debug("accountSize = {} | accountSizeJSON = {} | tokenSize = {} | tokenSizeJSON = {}", accountSize, accountSizeJSON, tokenSize, tokenSizeJSON);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        // 验证该账户是否具备发布该 Token 的权限，即确认 Token 创始人信息
+        if (StringUtils.equals(account.getAddress(), business.getAddress())) {
+            tokenManager.createOrUpdate(JSON.toJSONString(token));
+            AccountManager accountManager = new AccountManager(token.getHash());
+            accountManager.createOrUpdate(JSON.toJSONString(account));
+        }
+        return response(Response.SUCCESS);
     }
 
-    @Override
-    public String save(Token token) {
-        Account account = token.getAccount();
-        AccountManager manager = new AccountManager(token.getHash());
-        manager.createOrUpdate(account);
-        return response();
+    /**
+     * 该操作会将此 Token 发布至公链，全网账本同步，需要附带可用账户且余额充足
+     * <p>
+     * 发布信息至公网账本将按字节收取存储手续费
+     *
+     * @param business     账户处理事务对象
+     * @param token        待发布 Token
+     * @param account      待发布 Token 根账户
+     * @param execStr      本次事务字符串
+     * @param tokenManager Token 管理器
+     * @return 发布结果
+     */
+    private String publish(AccountBusiness business, Token token, Account account, String execStr, TokenManager tokenManager) {
+        // 发布私有 Token 时，execStr需为以半角逗号分隔的 publish 和 公网账户私钥组合
+        String[] execStrs = execStr.split(",");
+        if (!StringUtils.equals(execStrs[0], business.getBusiness().getFormat())) {
+            throw new AccountBusinessTypeException();
+        }
+        // 获取公网账户管理器
+        AccountManager pubAccountManager = new AccountManager(Common.TOKEN_DEFAULT_SYSTEM_HASH);
+        // 获取公网账户
+        Account pubAccount = pubAccountManager.getByAddress(business.getPubAddress());
+        // 得到即将存储的账户字符串
+        String accountStr = JSON.toJSONString(account);
+        // 得到即将存储的 Token 不含账户信息的字符串
+        token.setAccount(null);
+        String tokenStr = JSON.toJSONString(token);
+        // 计算本次账户及 Token 创建所需存储大小
+        long size = accountStr.getBytes().length + tokenStr.getBytes().length;
+        // 计算本次账户及 Token 创建所需存储费用
+        BigDecimal consumption = new BigDecimal(size * 0.0001);
+        BigDecimal pubAccountCount = getCountForAccount(Common.TOKEN_DEFAULT_SYSTEM_HASH, pubAccount.getAddress(), execStrs[1]).getCount();
+        // 检查该公网账户是否有足够余额支付
+        if (consumption.compareTo(pubAccountCount) < 0) {
+            // 如果余额不足，则返回对应信息
+            return response(Response.ACCOUNT_LACK_OF_BALANCE);
+        }
+        // 验证该账户是否具备发布该 Token 的权限，即确认 Token 创始人信息
+        if (StringUtils.equals(account.getAddress(), business.getAddress())) {
+            // TODO: 2018/9/5 将公网账户本次支出转给公共账户
+            //
+            tokenManager.createOrUpdate(tokenStr);
+            AccountManager accountManager = new AccountManager(token.getHash());
+            accountManager.createOrUpdate(accountStr);
+        } else {
+            return response(Response.ACCOUNT_INFO_INVALID);
+        }
+        return response(Response.SUCCESS);
+    }
+
+    private AccountInfo getCountForAccount(String tokenHash, String address, String priECCKey) {
+        AccountManager manager = new AccountManager(tokenHash);
+        Account account = manager.getByAddress(address);
+        return JSON.parseObject(KeyExec.obtain().decryptPriStrECDSA(priECCKey, account.getJsonAccountInfoString()), new TypeReference<AccountInfo>() {});
     }
 
 }

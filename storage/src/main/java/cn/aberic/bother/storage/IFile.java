@@ -231,15 +231,29 @@ public interface IFile<T> {
      * <p>
      * 此方法只是对通用行为进行了一次封装
      *
-     * @param result   对象字符串信息
-     * @param compress 是否压缩字符串信息
+     * @param result 对象字符串信息将会被压缩存储
      */
-    default void cou(String result, boolean compress) {
+    default void couCompress(String result) {
+        try {
+            result = DeflaterTool.compress(result);
+            cou(result);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 创建或更新对象信息进入文件
+     * <p>
+     * 此方法与实现本接口的类中的createOrUpdate方法相同。
+     * <p>
+     * 此方法只是对通用行为进行了一次封装
+     *
+     * @param result 对象字符串信息
+     */
+    default void cou(String result) {
         File freshFile = getLastFile();
         try {
-            if (compress) {
-                result = DeflaterTool.compress(result);
-            }
             // 如果最新写入的文件为null，则从0开始重新写入
             if (null == freshFile) {
                 // 定义新的文件
@@ -247,7 +261,7 @@ public interface IFile<T> {
                 FileTool.writeFirstLine(freshFile, result);
             } else {
                 // 计算该内容的字节长度
-                long accountSize = result.getBytes().length;
+                long accountSize = result.getBytes("UTF-8").length;
                 // 如果文件和待写入对象之和已经大于或等于 128 MB，则开辟新文件写入对象
                 if (freshFile.length() + accountSize >= 128 * 1000 * 1000) {
                     freshFile = getNextFileByCurrentFile(freshFile);

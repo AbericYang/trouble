@@ -27,6 +27,7 @@ package cn.aberic.bother.service;
 import cn.aberic.bother.bean.AccountUser;
 import cn.aberic.bother.entity.contract.AccountBusiness;
 import cn.aberic.bother.entity.contract.AccountBusinessEncrypt;
+import cn.aberic.bother.entity.contract.AccountInfo;
 import cn.aberic.bother.entity.token.Token;
 
 /**
@@ -73,23 +74,13 @@ public interface BusinessService {
     String business(AccountBusiness business);
 
     /**
-     * 发布 Token
-     * <p>
-     * 该操作会将此 Token 发布至公链，全网账本同步，需要附带可用账户且余额充足
-     * <p>
-     * 发布信息至公网账本将按字节收取存储手续费
+     * 在指定 Token 下根据账户地址以及账户 ECC 私钥获取账户信息
      *
-     * @param accountBusiness 附带可用账户处理事务对象
+     * @param tokenHash 指定 Token 的 hash
+     * @param address   账户地址
+     * @param priECCKey 账户 ECC 私钥
+     * @return 账户信息
      */
-    Token publish(AccountBusiness accountBusiness);
-
-    /**
-     * 存已发布 Token 的账户
-     *
-     * @param token 待发布 Token
-     *
-     * @return 账户对象及其私钥
-     */
-    String save(Token token);
+    AccountInfo getCount(String tokenHash, String address, String priECCKey);
 
 }

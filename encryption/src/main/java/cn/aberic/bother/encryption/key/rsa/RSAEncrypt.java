@@ -61,7 +61,7 @@ public class RSAEncrypt {
             return (RSAPublicKey) keyFactory.generatePublic(keySpec);
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
-            throw new RuntimeException("算法异常错误");
+            throw new RuntimeException("加密算法异常");
         } catch (InvalidKeySpecException e) {
             e.printStackTrace();
             throw new RuntimeException("无效X509EncodedKeySpec异常错误");
@@ -81,7 +81,7 @@ public class RSAEncrypt {
             return (RSAPrivateKey) keyFactory.generatePrivate(keySpec);
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
-            throw new RuntimeException("算法异常错误");
+            throw new RuntimeException("加密算法异常");
         } catch (InvalidKeySpecException e) {
             e.printStackTrace();
             throw new RuntimeException("无效PKCS8EncodedKeySpec异常错误");
@@ -219,10 +219,10 @@ public class RSAEncrypt {
             throw new RuntimeException("加密公钥非法,请检查");
         } catch (BadPaddingException e) {
             e.printStackTrace();
-            throw new RuntimeException("内容数据已损坏");
+            throw new RuntimeException("加密内容数据已损坏");
         } catch (IllegalBlockSizeException e) {
             e.printStackTrace();
-            throw new RuntimeException("内容长度非法");
+            throw new RuntimeException("加密内容长度非法");
         }
     }
 
