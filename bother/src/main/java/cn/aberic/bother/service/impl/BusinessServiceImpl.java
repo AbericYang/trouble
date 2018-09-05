@@ -187,10 +187,10 @@ public class BusinessServiceImpl implements BusinessService, IResponse {
         if (!StringUtils.equals(execStrs[0], business.getBusiness().getFormat())) {
             throw new AccountBusinessTypeException();
         }
-        // 获取公网账户管理器
-        AccountManager pubAccountManager = new AccountManager(Common.TOKEN_DEFAULT_SYSTEM_HASH);
+        // 获取账户管理器
+        AccountManager accountManager = new AccountManager(token.getHash());
         // 获取公网账户
-        Account pubAccount = pubAccountManager.getByAddress(business.getPubAddress());
+        Account pubAccount = accountManager.getPubByAddress(business.getPubAddress());
         // 得到即将存储的账户字符串
         String accountStr = JSON.toJSONString(account);
         // 得到即将存储的 Token 不含账户信息的字符串
@@ -209,9 +209,8 @@ public class BusinessServiceImpl implements BusinessService, IResponse {
         // 验证该账户是否具备发布该 Token 的权限，即确认 Token 创始人信息
         if (StringUtils.equals(account.getAddress(), business.getAddress())) {
             // TODO: 2018/9/5 将公网账户本次支出转给公共账户
-            //
+            // 此操作需要根据系统智能合约进行交互，所操作结果将会写入账本
             tokenManager.createOrUpdate(tokenStr);
-            AccountManager accountManager = new AccountManager(token.getHash());
             accountManager.createOrUpdate(accountStr);
         } else {
             return response(Response.ACCOUNT_INFO_INVALID);
