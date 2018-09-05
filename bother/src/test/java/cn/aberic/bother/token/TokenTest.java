@@ -26,6 +26,8 @@
 package cn.aberic.bother.token;
 
 import cn.aberic.bother.contract.exec.ERC20Token;
+import cn.aberic.bother.contract.exec.SystemContractExec;
+import cn.aberic.bother.contract.exec.service.ISystemContractExec;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -44,7 +46,8 @@ public class TokenTest {
     }
 
     private static ERC20Token getERC20Token() {
-        return new ERC20Token("3d14dadf5c6f37e94f67efde76591a1eea37c032b1b2025a5b8b9b3a167d6cf3");
+        ISystemContractExec systemContractExec = new SystemContractExec();
+        return new ERC20Token("3d14dadf5c6f37e94f67efde76591a1eea37c032b1b2025a5b8b9b3a167d6cf3", systemContractExec);
     }
 
 }

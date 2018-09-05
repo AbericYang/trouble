@@ -25,7 +25,10 @@
 package cn.aberic.bother.contract;
 
 import cn.aberic.bother.contract.exec.ContractExec;
+import cn.aberic.bother.contract.exec.ERC20Token;
 import cn.aberic.bother.contract.exec.SystemContractExec;
+import cn.aberic.bother.contract.exec.service.IERC20Token;
+import cn.aberic.bother.contract.exec.service.ISystemContractExec;
 import cn.aberic.bother.entity.contract.Request;
 import cn.aberic.bother.tools.exception.ContractParamException;
 import com.alibaba.fastjson.JSON;
@@ -42,16 +45,23 @@ import java.util.Scanner;
 public class SCTest {
 
     public static void main(String[] args) {
-//        systemContract();
+        systemContract();
 //         simpleContract();
-        input();
+//        input();
         // scanner();
     }
 
     private static void systemContract() throws ContractParamException {
         SystemContract contract = new SystemContract();
-        log.debug("system contract invoke result = {}", contract.invoke(new SystemContractExec()));
-        log.debug("system contract query  result = {}", contract.query(new SystemContractExec()));
+        ISystemContractExec contractExec = new SystemContractExec();
+        Request request = new Request();
+        request.setKey("test1");
+        request.setValue("value1");
+        ((SystemContractExec) contractExec).setRequest(request);
+        log.debug("system contract invoke result = {}", contract.invoke(contractExec));
+        log.debug("system contract query  result = {}", contract.query(contractExec));
+        IERC20Token erc20Token = new ERC20Token("3d14dadf5c6f37e94f67efde76591a1eea37c032b1b2025a5b8b9b3a167d6cf3", contractExec);
+        log.debug("system contract token result = {}", contract.token(erc20Token));
     }
 
     private static void simpleContract() {
@@ -61,7 +71,7 @@ public class SCTest {
 
     private static void input() {
         Request request = new Request();
-        for (int i = 15440; i < 1000000; i++) {
+        for (int i = 1; i < 1000000; i++) {
             request.setKey("key" + i);
             request.setValue("value" + i);
             request.setValue(JSON.toJSONString(request));

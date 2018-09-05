@@ -66,7 +66,8 @@ public class SystemContract implements ISystemContract, IERC20TokenContract {
 
     @Override
     public String token(IERC20Token erc20Token) {
-        return null;
+        log.debug("symbol = {}", erc20Token.symbol());
+        return erc20Token.name();
     }
 
     private String queryTest(ISystemContractExec exec) {

@@ -26,6 +26,8 @@
 package cn.aberic.bother.contract.exec;
 
 import cn.aberic.bother.contract.exec.service.IERC20Token;
+import cn.aberic.bother.contract.exec.service.ISystemContract;
+import cn.aberic.bother.contract.exec.service.ISystemContractExec;
 import cn.aberic.bother.entity.token.Token;
 import cn.aberic.bother.token.TokenManager;
 
@@ -39,12 +41,14 @@ import java.math.BigDecimal;
  */
 public class ERC20Token implements IERC20Token {
 
+    private ISystemContractExec systemContractExec;
     private TokenManager manager;
     private String tokenHash;
     private Token token;
 
-    public ERC20Token(String tokenHash) {
+    public ERC20Token(String tokenHash, ISystemContractExec systemContractExec) {
         this.tokenHash = tokenHash;
+        this.systemContractExec = systemContractExec;
         this.manager = new TokenManager();
         this.token = manager.getByHash(tokenHash);
     }
