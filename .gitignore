@@ -10,6 +10,8 @@ gen
 /bother/mvnw
 /bother/mvnw.cmd
 /bother/.mvn/
+/trouble/target/
+/account/target/
 /app/target/
 /block/target/
 /bother/target/
@@ -18,4 +20,5 @@ gen
 /encryption/target/
 /entity/target/
 /storage/target/
+/token/target/
 /tools/target/
