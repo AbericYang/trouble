@@ -27,15 +27,15 @@ package cn.aberic.bother.token.exec.service;
 
 import cn.aberic.bother.entity.token.Token;
 import cn.aberic.bother.storage.IFile;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.TypeReference;
+import cn.aberic.bother.token.runnable.RunnableSearchToken;
+import cn.aberic.bother.tools.ITimeOut;
+import cn.aberic.bother.tools.thread.ThreadTroublePool;
 import com.google.common.io.Files;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.LineIterator;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
-import java.io.IOException;
+import java.util.Date;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Token 文件本地读写接口
@@ -43,7 +43,7 @@ import java.io.IOException;
  * 作者：Aberic on 2018/9/3 20:45
  * 邮箱：abericyang@gmail.com
  */
-public interface ITokenExec extends IFile<Token> {
+public interface ITokenExec extends IFile<Token>, ITimeOut {
 
     /**
      * 创建或更新 Token 信息
@@ -55,34 +55,38 @@ public interface ITokenExec extends IFile<Token> {
     }
 
     /**
-     * 通过账户地址得到 Token 信息
-     * <p>
-     * 注：此方法仅限未发布 Token 使用
+     * 根据 Token hash 获取 Token 对象
      *
-     * @param accountAddress 账户地址
-     * @return Token 信息
+     * @param tokenHash Token hash
+     *
+     * @return Token 对象
      */
-    default Token getUnPublish(String accountAddress) {
+    default Token getByHash(String tokenHash) {
         Token[] tokens = new Token[]{null};
-        Files.fileTraverser().breadthFirst(new File(getFileStatus().getDir())).forEach(file -> {
+        int fileCount = getFileCount();
+        AtomicInteger count = new AtomicInteger(0);
+        ThreadTroublePool troublePool = new ThreadTroublePool();
+        boolean found = false;
+        Iterable<File> files = Files.fileTraverser().breadthFirst(new File(getFileStatus().getDir()));
+        for (File file : files) {
             if (StringUtils.startsWith(file.getName(), getFileStatus().getStart())) {
-                try (LineIterator it = FileUtils.lineIterator(file, "UTF-8")) {
-                    while (it.hasNext()) {
-                        String lineString = it.nextLine();
-                        if (StringUtils.isEmpty(lineString)) {
-                            continue;
-                        }
-                        Token token = JSON.parseObject(lineString, new TypeReference<Token>() {});
-                        if (StringUtils.equals(token.getAccount().getAddress(), accountAddress)) {
-                            tokens[0] = token;
-                            break;
-                        }
+                troublePool.submit(new RunnableSearchToken(tokenHash, file, getNumByFileName(file.getName()), token -> {
+                    if (null != token) {
+                        tokens[0] = token;
+                        troublePool.shutdown();
                     }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                    count.getAndIncrement();
+                }));
             }
-        });
+            if (null != tokens[0]) {
+                break;
+            }
+        }
+        long time = new Date().getTime();
+        while (!found) {
+            found = checkTimeOut(fileCount, count, tokens[0], time, 300000);
+        }
+        troublePool.shutdown();
         return tokens[0];
     }
 

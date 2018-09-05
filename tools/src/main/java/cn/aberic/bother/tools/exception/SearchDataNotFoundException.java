@@ -23,22 +23,16 @@
  *
  */
 
-package cn.aberic.bother.token.exec;
-
-import cn.aberic.bother.storage.FileComponent;
-import cn.aberic.bother.token.exec.service.ITokenTmpExec;
+package cn.aberic.bother.tools.exception;
 
 /**
- * Token 临时文件本地读写接口实现
- * <p>
- * 作者：Aberic on 2018/9/3 22:05
+ * 作者：Aberic on 2018/9/5 22:34
  * 邮箱：abericyang@gmail.com
  */
-public class TokenTmpExec implements ITokenTmpExec {
+public class SearchDataNotFoundException extends RuntimeException {
 
-    @Override
-    public FileComponent getFileStatus() {
-        return FileComponent.getTokenTmpFileComponent();
+    public SearchDataNotFoundException() {
+        super("try to search data from file, but not found");
     }
 
 }

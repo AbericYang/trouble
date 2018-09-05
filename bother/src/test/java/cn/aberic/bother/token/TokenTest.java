@@ -23,22 +23,28 @@
  *
  */
 
-package cn.aberic.bother.token.exec;
+package cn.aberic.bother.token;
 
-import cn.aberic.bother.storage.FileComponent;
-import cn.aberic.bother.token.exec.service.ITokenTmpExec;
+import cn.aberic.bother.contract.exec.ERC20Token;
+import lombok.extern.slf4j.Slf4j;
 
 /**
- * Token 临时文件本地读写接口实现
- * <p>
- * 作者：Aberic on 2018/9/3 22:05
+ * 作者：Aberic on 2018/9/5 22:12
  * 邮箱：abericyang@gmail.com
  */
-public class TokenTmpExec implements ITokenTmpExec {
+@Slf4j
+public class TokenTest {
 
-    @Override
-    public FileComponent getFileStatus() {
-        return FileComponent.getTokenTmpFileComponent();
+    public static void main(String[] args) {
+        ERC20Token erc20Token = getERC20Token();
+        log.debug("token name = {}", erc20Token.name());
+        log.debug("token symbol = {}", erc20Token.symbol());
+        log.debug("token decimals = {}", erc20Token.decimals());
+        log.debug("token totalSupply = {}", erc20Token.totalSupply());
+    }
+
+    private static ERC20Token getERC20Token() {
+        return new ERC20Token("3d14dadf5c6f37e94f67efde76591a1eea37c032b1b2025a5b8b9b3a167d6cf3");
     }
 
 }

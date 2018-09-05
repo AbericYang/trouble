@@ -52,12 +52,12 @@ public class RunnableSearchBlockHeightIndex implements Runnable {
     private int blockFileNum;
     private SearchBlockHeightIndexListener listener;
 
-    public RunnableSearchBlockHeightIndex(BlockExec blockExec, int height, File file, int blockFileNum, SearchBlockHeightIndexListener lintener) {
+    public RunnableSearchBlockHeightIndex(BlockExec blockExec, int height, File file, int blockFileNum, SearchBlockHeightIndexListener listener) {
         this.blockExec = blockExec;
         this.height = height;
         this.file = file;
         this.blockFileNum = blockFileNum;
-        this.listener = lintener;
+        this.listener = listener;
 
     }
 
@@ -76,14 +76,15 @@ public class RunnableSearchBlockHeightIndex implements Runnable {
                     blockInfo.setHeight(Integer.valueOf(strs[3]));
                 }
                 if (null != blockInfo && blockInfo.getHeight() == height) {
-                    log.debug("找到file，block-height-index-file-num = {}" , blockFileNum);
+                    log.debug("找到file，block-height-index-file-num = {}", blockFileNum);
                     found = true;
                     listener.find(blockExec.getByNumAndLine(blockInfo.getNum(), blockInfo.getLine()));
                     break;
                 }
             }
             if (!found) {
-                log.debug("未找到file，block-height-index-file-num = {}" , blockFileNum);
+                listener.find(null);
+                log.debug("未找到file，block-height-index-file-num = {}", blockFileNum);
             }
         } catch (IOException e) {
             e.printStackTrace();

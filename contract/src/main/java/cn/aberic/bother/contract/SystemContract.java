@@ -25,6 +25,8 @@
 
 package cn.aberic.bother.contract;
 
+import cn.aberic.bother.contract.exec.service.IERC20Token;
+import cn.aberic.bother.contract.exec.service.IERC20TokenContract;
 import cn.aberic.bother.contract.exec.service.ISystemContract;
 import cn.aberic.bother.contract.exec.service.ISystemContractExec;
 import cn.aberic.bother.entity.contract.Request;
@@ -38,7 +40,7 @@ import lombok.extern.slf4j.Slf4j;
  * 邮箱：abericyang@gmail.com
  */
 @Slf4j
-public class SystemContract implements ISystemContract {
+public class SystemContract implements ISystemContract, IERC20TokenContract {
 
     @Override
     public String invoke(ISystemContractExec exec) {
@@ -58,7 +60,13 @@ public class SystemContract implements ISystemContract {
 //        });
 //        Contract test = JSON.parseObject(exec.get("test"), new TypeReference<Contract>() {});
 //        log.debug("test = {}", test.toJsonString());
+        log.debug("getBlockByHeight 1024 = {}", exec.getBlockByHeight(1024));
         return queryTest(exec);
+    }
+
+    @Override
+    public String token(IERC20Token erc20Token) {
+        return null;
     }
 
     private String queryTest(ISystemContractExec exec) {
@@ -71,5 +79,4 @@ public class SystemContract implements ISystemContract {
         }
         return null;
     }
-
 }

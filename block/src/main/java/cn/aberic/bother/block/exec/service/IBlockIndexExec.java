@@ -28,12 +28,14 @@ import cn.aberic.bother.block.runnable.RunnableSearchBlockHashIndex;
 import cn.aberic.bother.block.runnable.RunnableSearchBlockHeightIndex;
 import cn.aberic.bother.entity.block.Block;
 import cn.aberic.bother.storage.IInit;
+import cn.aberic.bother.tools.ITimeOut;
 import cn.aberic.bother.tools.thread.ThreadTroublePool;
 import com.google.common.io.Files;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
 import java.util.Date;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * 区块索引文件本地读写接口——数据操作层-data manipulation
@@ -41,7 +43,7 @@ import java.util.Date;
  * 作者：Aberic on 2018/08/27 16:54
  * 邮箱：abericyang@gmail.com
  */
-public interface IBlockIndexExec extends IInit, IExecInit, IIndexExec {
+public interface IBlockIndexExec extends IInit, IExecInit, IIndexExec, ITimeOut {
 
     /**
      * 根据区块高度获取区块对象
@@ -51,6 +53,8 @@ public interface IBlockIndexExec extends IInit, IExecInit, IIndexExec {
      */
     default Block getByHeight(int height) {
         Block[] blocks = new Block[]{null};
+        int fileCount = getFileCount();
+        AtomicInteger count = new AtomicInteger(0);
         ThreadTroublePool troublePool = new ThreadTroublePool();
         boolean found = false;
         Iterable<File> files = Files.fileTraverser().breadthFirst(new File(getFileStatus().getDir()));
@@ -61,6 +65,7 @@ public interface IBlockIndexExec extends IInit, IExecInit, IIndexExec {
                         blocks[0] = block;
                         troublePool.shutdown();
                     }
+                    count.getAndIncrement();
                 }));
             }
             if (null != blocks[0]) {
@@ -69,7 +74,7 @@ public interface IBlockIndexExec extends IInit, IExecInit, IIndexExec {
         }
         long time = new Date().getTime();
         while (!found) {
-            found = checkFoundToDo(blocks, time);
+            found = checkTimeOut(fileCount, count, blocks[0], time, 300000);
         }
         troublePool.shutdown();
         return blocks[0];
@@ -83,6 +88,8 @@ public interface IBlockIndexExec extends IInit, IExecInit, IIndexExec {
      */
     default Block getByCurrentDataHash(String currentDataHash) {
         Block[] blocks = new Block[]{null};
+        int fileCount = getFileCount();
+        AtomicInteger count = new AtomicInteger(0);
         ThreadTroublePool troublePool = new ThreadTroublePool();
         boolean found = false;
         Iterable<File> files = Files.fileTraverser().breadthFirst(new File(getFileStatus().getDir()));
@@ -93,6 +100,7 @@ public interface IBlockIndexExec extends IInit, IExecInit, IIndexExec {
                         blocks[0] = block;
                         troublePool.shutdown();
                     }
+                    count.getAndIncrement();
                 }));
             }
             if (null != blocks[0]) {
@@ -101,26 +109,10 @@ public interface IBlockIndexExec extends IInit, IExecInit, IIndexExec {
         }
         long time = new Date().getTime();
         while (!found) {
-            found = checkFoundToDo(blocks, time);
+            found = checkTimeOut(fileCount, count, blocks[0], time, 300000);
         }
         troublePool.shutdown();
         return blocks[0];
-    }
-
-    default boolean checkFoundToDo(Block[] blocks, long time) {
-        if (null != blocks[0]) {
-            return true;
-        } else {
-            if (new Date().getTime() - time > 15000) {
-                return true;
-            }
-            try {
-                Thread.sleep(10);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-        return false;
     }
 
 }

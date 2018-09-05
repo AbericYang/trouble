@@ -29,6 +29,7 @@ import cn.aberic.bother.entity.token.Token;
 import cn.aberic.bother.token.exec.TokenExec;
 import cn.aberic.bother.token.exec.TokenTmpExec;
 import cn.aberic.bother.token.exec.service.ITokenExec;
+import cn.aberic.bother.token.exec.service.ITokenTmpExec;
 
 /**
  * 账户基本操作对象
@@ -39,16 +40,11 @@ import cn.aberic.bother.token.exec.service.ITokenExec;
 public class TokenManager {
 
     private ITokenExec tokenExec;
-    private ITokenExec tokenTmpExec;
+    private ITokenTmpExec tokenTmpExec;
 
     public TokenManager() {
         tokenExec = new TokenExec();
         tokenTmpExec = new TokenTmpExec();
-    }
-
-    /** 创建或更新账户信息 */
-    public void createOrUpdateTmp(String tokenStr) {
-        tokenTmpExec.createOrUpdate(tokenStr);
     }
 
     /**
@@ -58,6 +54,22 @@ public class TokenManager {
      */
     public void createOrUpdate(String tokenStr) {
         tokenExec.createOrUpdate(tokenStr);
+    }
+
+    /**
+     * 根据 Token hash 获取 Token 对象
+     *
+     * @param tokenHash Token hash
+     *
+     * @return Token 对象
+     */
+    public Token getByHash(String tokenHash) {
+        return tokenExec.getByHash(tokenHash);
+    }
+
+    /** 创建或更新账户信息 */
+    public void createOrUpdateTmp(String tokenStr) {
+        tokenTmpExec.createOrUpdate(tokenStr);
     }
 
     /**

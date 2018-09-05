@@ -20,13 +20,14 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
+ *
  */
 
-package cn.aberic.bother.block.runnable;
+package cn.aberic.bother.token.runnable;
 
-import cn.aberic.bother.block.exec.BlockExec;
-import cn.aberic.bother.entity.block.Block;
-import cn.aberic.bother.entity.block.BlockInfo;
+import cn.aberic.bother.entity.token.Token;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.LineIterator;
@@ -36,27 +37,25 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * 作者：Aberic on 2018/08/28 15:27
+ * 作者：Aberic on 2018/9/5 21:28
  * 邮箱：abericyang@gmail.com
  */
 @Slf4j
-public class RunnableSearchBlockHashIndex implements Runnable {
+public class RunnableSearchToken implements Runnable {
 
-    public interface SearchBlockHashIndexListener {
-        void find(Block block);
+    public interface SearchTokenListener {
+        void find(Token token);
     }
 
-    private BlockExec blockExec;
-    private String currentDataHash;
+    private String tokenHash;
     private File file;
-    private int blockFileNum;
-    private SearchBlockHashIndexListener listener;
+    private int tokenFileNum;
+    private SearchTokenListener listener;
 
-    public RunnableSearchBlockHashIndex(BlockExec blockExec, String currentDataHash, File file, int blockFileNum, SearchBlockHashIndexListener listener) {
-        this.blockExec = blockExec;
-        this.currentDataHash = currentDataHash;
+    public RunnableSearchToken(String tokenHash, File file, int tokenFileNum, SearchTokenListener listener) {
+        this.tokenHash = tokenHash;
         this.file = file;
-        this.blockFileNum = blockFileNum;
+        this.tokenFileNum = tokenFileNum;
         this.listener = listener;
 
     }
@@ -66,25 +65,21 @@ public class RunnableSearchBlockHashIndex implements Runnable {
         try (LineIterator it = FileUtils.lineIterator(file, "UTF-8")) {
             boolean found = false;
             while (it.hasNext()) {
-                BlockInfo blockInfo = null;
+                Token token = null;
                 String lineString = it.nextLine();
                 if (StringUtils.isNotEmpty(lineString)) {
-                    String[] strs = lineString.split(",");
-                    blockInfo = new BlockInfo();
-                    blockInfo.setNum(Integer.valueOf(strs[0]));
-                    blockInfo.setLine(Integer.valueOf(strs[1]));
-                    blockInfo.setBlockHash(strs[2]);
+                    token = JSON.parseObject(lineString, new TypeReference<Token>() {});
                 }
-                if (null != blockInfo && StringUtils.equalsIgnoreCase(blockInfo.getBlockHash(), currentDataHash)) {
-                    log.debug("找到file，block-hash-index-file-num = {}", blockFileNum);
+                if (null != token && StringUtils.equalsIgnoreCase(token.getHash(), tokenHash)) {
+                    log.debug("找到file，token-file-num = {}", tokenFileNum);
                     found = true;
-                    listener.find(blockExec.getByNumAndLine(blockInfo.getNum(), blockInfo.getLine()));
+                    listener.find(token);
                     break;
                 }
             }
             if (!found) {
                 listener.find(null);
-                log.debug("未找到file，block-hash-index-file-num = {}", blockFileNum);
+                log.debug("未找到file，block-hash-index-file-num = {}", tokenFileNum);
             }
         } catch (IOException e) {
             e.printStackTrace();

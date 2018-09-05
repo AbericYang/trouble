@@ -84,7 +84,7 @@ public class RunnableSearchTransactionHashIndex implements Runnable {
                 if (null != blockInfo) {
                     for (String transaction : blockInfo.getTransactionHashList()) {
                         if (StringUtils.equalsIgnoreCase(transaction, transactionHash)) {
-                            log.debug("找到file，block-transaction-hash-index-file-num = {}" , blockFileNum);
+                            log.debug("找到file，block-transaction-hash-index-file-num = {}", blockFileNum);
                             found = true;
                             listener.find(blockExec.getByNumAndLine(blockInfo.getNum(), blockInfo.getLine()));
                             troublePool.shutdown();
@@ -93,7 +93,7 @@ public class RunnableSearchTransactionHashIndex implements Runnable {
                 }
             }
             if (!found) {
-                log.debug("未找到file，block-transaction-hash-index-file-num = {}" , blockFileNum);
+                log.debug("未找到file，block-transaction-hash-index-file-num = {}", blockFileNum);
             }
         } catch (IOException e) {
             e.printStackTrace();

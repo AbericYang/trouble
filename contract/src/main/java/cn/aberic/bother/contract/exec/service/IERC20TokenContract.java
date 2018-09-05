@@ -23,22 +23,23 @@
  *
  */
 
-package cn.aberic.bother.token.exec;
-
-import cn.aberic.bother.storage.FileComponent;
-import cn.aberic.bother.token.exec.service.ITokenTmpExec;
+package cn.aberic.bother.contract.exec.service;
 
 /**
- * Token 临时文件本地读写接口实现
+ * 智能合约 ERC20 Token 常规操作接口-smart contract
  * <p>
- * 作者：Aberic on 2018/9/3 22:05
+ * 作者：Aberic on 2018/9/5 20:59
  * 邮箱：abericyang@gmail.com
  */
-public class TokenTmpExec implements ITokenTmpExec {
+public interface IERC20TokenContract {
 
-    @Override
-    public FileComponent getFileStatus() {
-        return FileComponent.getTokenTmpFileComponent();
-    }
+    /**
+     * 执行 ERC20 接口合约
+     *
+     * @param erc20Token ERC20 接口
+     *
+     * @return 执行结果
+     */
+    String token(IERC20Token erc20Token);
 
 }
