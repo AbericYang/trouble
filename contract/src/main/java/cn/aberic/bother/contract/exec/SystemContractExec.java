@@ -31,7 +31,6 @@ import cn.aberic.bother.contract.exec.service.IContractBaseExec;
 import cn.aberic.bother.contract.exec.service.IContractDataIndexFileExec;
 import cn.aberic.bother.contract.exec.service.ISystemContractExec;
 import cn.aberic.bother.contract.exec.service.ISystemContractFileExec;
-import cn.aberic.bother.encryption.MD5;
 import cn.aberic.bother.entity.block.*;
 import cn.aberic.bother.entity.contract.Contract;
 import cn.aberic.bother.entity.contract.Request;
@@ -54,8 +53,6 @@ public class SystemContractExec implements ISystemContractExec, IContractBaseExe
     private List<ValueRead> reads;
     private List<ValueWrite> writes;
     private Request request;
-    /** 是否有写入数据 */
-    private boolean hasBeenWritten = false;
 
     public SystemContractExec() {
         rwSet = new RWSet();
@@ -104,16 +101,13 @@ public class SystemContractExec implements ISystemContractExec, IContractBaseExe
 
     @Override
     public Transaction getTransaction() {
-        if (!hasBeenWritten) {
-            return null;
-        }
         rwSet.setReads(reads);
         rwSet.setWrites(writes);
         Transaction transaction = new Transaction();
-        transaction.setCreator("");
+        transaction.setCreator(request.getAddress());
         transaction.setTimestamp(new Date().getTime());
         transaction.setRwSet(rwSet);
-        return transaction.build();
+        return transaction.build(request.getPriECCKey());
     }
 
     @Override
@@ -145,7 +139,6 @@ public class SystemContractExec implements ISystemContractExec, IContractBaseExe
         write.setContractVersion(getContract().getVersionName());
         write.setStrings(new String[]{key, value});
         writes.add(write);
-        hasBeenWritten = true;
     }
 
     @Override

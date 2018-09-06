@@ -24,6 +24,7 @@
 
 package cn.aberic.bother.contract.system;
 
+import cn.aberic.bother.contract.exec.ERC20Token;
 import cn.aberic.bother.contract.exec.service.ISystemContractExec;
 import cn.aberic.bother.encryption.key.exec.KeyExec;
 import cn.aberic.bother.entity.IResponse;
@@ -47,17 +48,14 @@ class TokenHelper {
     /**
      * 发布新 Token
      *
-     * @param exec 系统级智能合约操作接口
+     * @param erc20Token ERC20 接口实现
      * @return 执行结果
      */
-    String publishToken(ISystemContractExec exec) {
+    String publishToken(ERC20Token erc20Token) {
+        ISystemContractExec exec = erc20Token.getSystemContractExec();
         JSONObject jsonObject = JSON.parseObject(exec.get("publish"));
-        // 发布者公网账户地址
-        String pubAddress = jsonObject.getString("pubAddress");
-        // 发布者公网账户 ECC 私钥
-        String priECCKey = jsonObject.getString("priECCKey");
         // 发布者公网账户
-        Account pubAccount = JSON.parseObject(exec.get(pubAddress), new TypeReference<Account>() {});
+        Account pubAccount = JSON.parseObject(exec.get(erc20Token.getAddress()), new TypeReference<Account>() {});
         // 发布者该 Token 下账户
         Account account = (Account) jsonObject.get("account");
         // 待发布 Token
@@ -74,7 +72,7 @@ class TokenHelper {
         BigDecimal consumption = new BigDecimal(size * 0.0001);
 
         // 发布者公网账户详情
-        AccountInfo pubInfo = JSON.parseObject(KeyExec.obtain().decryptPriStrECDSA(priECCKey, pubAccount.getJsonAccountInfoString()),
+        AccountInfo pubInfo = JSON.parseObject(KeyExec.obtain().decryptPriStrECDSA(erc20Token.getPriECCKey(), pubAccount.getJsonAccountInfoString()),
                 new TypeReference<AccountInfo>() {});
         // 发布者公网账户余额
         BigDecimal pubCount = pubInfo.getCount();
@@ -101,7 +99,7 @@ class TokenHelper {
         // 更新公网账户
         pubAccount.setJsonAccountInfoString(KeyExec.obtain().encryptByStrECDSA(pubAccount.getPubECCKey(), JSON.toJSONString(pubInfo)));
         // 更新后数据上链
-        exec.put(pubAddress, JSON.toJSONString(pubAccount));
+        exec.put(erc20Token.getAddress(), JSON.toJSONString(pubAccount));
 
         return exec.response(IResponse.Response.SUCCESS);
     }

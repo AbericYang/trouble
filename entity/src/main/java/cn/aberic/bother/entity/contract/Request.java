@@ -25,7 +25,6 @@
 
 package cn.aberic.bother.entity.contract;
 
-import cn.aberic.bother.entity.token.Token;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -43,6 +42,8 @@ public class Request {
     private String value;
     /** Token hash */
     private String tokenHash;
+    /** 账户地址 */
+    private String address;
     /** 账户 ECC 私钥 */
     private String priECCKey;
 

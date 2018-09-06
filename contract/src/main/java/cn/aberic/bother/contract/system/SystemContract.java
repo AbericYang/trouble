@@ -29,6 +29,7 @@ import cn.aberic.bother.contract.exec.service.ISystemContract;
 import cn.aberic.bother.contract.exec.service.ISystemContractExec;
 import cn.aberic.bother.entity.IResponse;
 import cn.aberic.bother.entity.contract.Request;
+import cn.aberic.bother.storage.Common;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
@@ -50,10 +51,11 @@ public class SystemContract implements ISystemContract {
     @Override
     public String invoke(ISystemContractExec exec) {
         Request request = exec.getRequest();
+        ERC20Token erc20Token = new ERC20Token(Common.TOKEN_DEFAULT_SYSTEM_HASH, request.getAddress(), request.getPriECCKey(), exec);
         switch (request.getKey()) {
             // 发布新 Token
             case "publish":
-                return tokenHelper.publishToken(exec);
+                return tokenHelper.publishToken(erc20Token);
         }
         // 无特殊要求，则直接将 k/v 数据上链
         exec.put(request.getKey(), request.getValue());
@@ -62,10 +64,10 @@ public class SystemContract implements ISystemContract {
 
     @Override
     public String query(ISystemContractExec exec) {
-        ERC20Token erc20Token = new ERC20Token(exec);
+        ERC20Token erc20Token = new ERC20Token(Common.TOKEN_DEFAULT_SYSTEM_HASH, exec);
         Request request = exec.getRequest();
-        if (!StringUtils.isEmpty(request.getTokenHash())) {
-            erc20Token.setTokenHash(request.getTokenHash());
+        if (!StringUtils.isEmpty(request.getAddress())) {
+            erc20Token.setAddress(request.getAddress());
         }
         if (!StringUtils.isEmpty(request.getPriECCKey())) {
             erc20Token.setPriECCKey(request.getPriECCKey());
@@ -83,8 +85,14 @@ public class SystemContract implements ISystemContract {
             // 发行 Token 的总量
             case "totalSupply":
                 return exec.response(erc20Token.totalSupply());
+            // 发行 Token 的总量
+            case "balanceOf":
+                return exec.response(erc20Token.balanceOf(request.getValue()));
             // 根据高度查询区块对象
             case "height":
+                return exec.response(exec.getHeight());
+            // 根据高度查询区块对象
+            case "byHeight":
                 return exec.response(exec.getBlockByHeight(Integer.valueOf(request.getValue())));
             // 根据区块hash查询区块对象
             case "hash":

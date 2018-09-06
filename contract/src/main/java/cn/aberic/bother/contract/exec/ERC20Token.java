@@ -33,6 +33,8 @@ import cn.aberic.bother.entity.contract.AccountInfo;
 import cn.aberic.bother.entity.token.Token;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 
@@ -42,20 +44,20 @@ import java.math.BigDecimal;
  * 作者：Aberic on 2018/9/5 21:09
  * 邮箱：abericyang@gmail.com
  */
+@Setter
+@Getter
 public class ERC20Token implements IERC20Token {
 
-    private ISystemContractExec systemContractExec;
     private String tokenHash;
     private Token token;
+    private String address;
     private String priECCKey;
+    private ISystemContractExec systemContractExec;
 
-    /**
-     * 无用构造函数，仅借助智能合约初始化判定使用
-     *
-     * @param systemContractExec 系统级智能合约操作接口
-     */
-    public ERC20Token(ISystemContractExec systemContractExec) {
+    public ERC20Token(String tokenHash, ISystemContractExec systemContractExec) {
+        this.tokenHash = tokenHash;
         this.systemContractExec = systemContractExec;
+        this.token = JSON.parseObject(systemContractExec.get(tokenHash), new TypeReference<Token>() {});
     }
 
     public ERC20Token(String tokenHash, String priECCKey, ISystemContractExec systemContractExec) {
@@ -65,8 +67,12 @@ public class ERC20Token implements IERC20Token {
         this.token = JSON.parseObject(systemContractExec.get(tokenHash), new TypeReference<Token>() {});
     }
 
-    public void setTokenHash(String tokenHash) {
+    public ERC20Token(String tokenHash, String address, String priECCKey, ISystemContractExec systemContractExec) {
+        // TODO: 2018/9/6 Address 不能为空
         this.tokenHash = tokenHash;
+        this.address = address;
+        this.priECCKey = priECCKey;
+        this.systemContractExec = systemContractExec;
         this.token = JSON.parseObject(systemContractExec.get(tokenHash), new TypeReference<Token>() {});
     }
 

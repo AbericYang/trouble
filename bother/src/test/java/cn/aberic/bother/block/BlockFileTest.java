@@ -113,7 +113,7 @@ public class BlockFileTest {
 
                 transaction.setRwSet(rwSet);
 
-                transactions.add(transaction.build());
+                transactions.add(transaction.build(null));
             }
             body.setTxCount(transactions.size());
             body.setTransactions(transactions);

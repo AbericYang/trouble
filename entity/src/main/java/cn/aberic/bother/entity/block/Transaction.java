@@ -25,6 +25,7 @@
 package cn.aberic.bother.entity.block;
 
 import cn.aberic.bother.encryption.MD5;
+import cn.aberic.bother.encryption.key.exec.KeyExec;
 import cn.aberic.bother.entity.enums.TransactionStatus;
 import cn.aberic.bother.tools.DateTool;
 import com.alibaba.fastjson.JSON;
@@ -48,42 +49,54 @@ import java.nio.charset.Charset;
 public class Transaction {
 
     /** 发起方 */
-    @JSONField(name="c")
+    @JSONField(name = "c")
     private String creator;
     /** 发起方签名 */
-    @JSONField(name="s")
+    @JSONField(name = "s")
     private String sign;
     /** 交易读写集 */
-    @JSONField(name="rw")
+    @JSONField(name = "rw")
     private RWSet rwSet;
     /** 交易时间戳 */
-    @JSONField(name="t")
+    @JSONField(name = "t")
     private Long timestamp;
     /**
      * 交易hash
      * <p>
      * 为creator、sign、JSON.toJSONString(readSet)、JSON.toJSONString(writeSet)及timestamp拼接后md5
      */
-    @JSONField(name="h")
+    @JSONField(name = "h")
     private String hash;
     /** 交易状态 */
-    @JSONField(name="ts")
+    @JSONField(name = "ts")
     private int transactionStatusCode = TransactionStatus.SUCCESS.getCode();
     /** 交易错误信息 */
-    @JSONField(name="e")
+    @JSONField(name = "e")
     private String errorMessage;
-    /**交易索引hash*/
-    @JSONField(serialize=false)
+    /** 交易索引hash */
+    @JSONField(serialize = false)
     private String dataStorageHash; // 序列化时不写入
-    /**交易时间戳转字符串——yyyy/MM/dd HH:mm:ss*/
-    @JSONField(serialize=false)
+    /** 交易时间戳转字符串——yyyy/MM/dd HH:mm:ss */
+    @JSONField(serialize = false)
     private String time; // 序列化时不写入
 
-    public Transaction build() {
+    public Transaction build(String priECCKey) {
+        sign = signStringResult(priECCKey);
         hash = Hashing.sha256().hashString(String.format("%s%s%s%s",
                 creator, sign, JSON.toJSONString(rwSet), timestamp), Charset.forName("UTF-8")).toString();
         dataStorageHash = MD5.md516(hash);
         return this;
+    }
+
+    /**
+     * 对交易进行签名
+     *
+     * @param priECCKey 本次交易请求账户私钥
+     * @return 签名结果字符串
+     */
+    public String signStringResult(String priECCKey) {
+        String signString = String.format("%s%s%s", creator, rwSet.toString(), timestamp);
+        return KeyExec.obtain().signByStrECDSA(signString, priECCKey, "UTF-8");
     }
 
     public String getTime() {
