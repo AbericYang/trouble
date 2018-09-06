@@ -44,7 +44,7 @@ public class EACTest {
     }
 
     private static void md5() {
-        String str = "123456";
+        String str = "287c4d9f7279bfe03b84c8f95d755c41711823a3f2c25c8b639da3f044982013";
         try {
             SecretKey MD5_KEY = new SecretKeySpec("secret key".getBytes("UTF-8"), "HmacMD5");
             log.debug("hmacMd5 -----> {} = {}", str, Hashing.hmacMd5(MD5_KEY).hashString(str, Charset.forName("UTF-8")));

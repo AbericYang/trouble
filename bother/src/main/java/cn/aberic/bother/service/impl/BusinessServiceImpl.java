@@ -26,7 +26,7 @@ package cn.aberic.bother.service.impl;
 
 import cn.aberic.bother.account.AccountManager;
 import cn.aberic.bother.bean.AccountUser;
-import cn.aberic.bother.contract.SystemContract;
+import cn.aberic.bother.contract.system.SystemContract;
 import cn.aberic.bother.contract.exec.SystemContractExec;
 import cn.aberic.bother.encryption.key.bean.Key;
 import cn.aberic.bother.encryption.key.exec.KeyExec;
@@ -160,12 +160,12 @@ public class BusinessServiceImpl implements BusinessService, IResponse {
         token.setAccount(null);
         request.setValue(JSON.toJSONString(token));
         systemContractExec.setRequest(request);
-        log.debug("invoke token = {}", systemContract.invoke(systemContractExec, null));
+        log.debug("invoke token = {}", systemContract.invoke(systemContractExec));
         // 账户上链
         request.setKey(account.getAddress());
         request.setValue(JSON.toJSONString(account));
         systemContractExec.setRequest(request);
-        log.debug("invoke account = {}", systemContract.invoke(systemContractExec, null));
+        log.debug("invoke account = {}", systemContract.invoke(systemContractExec));
         systemContractExec.sendTransaction();
         return response(Response.SUCCESS);
     }
@@ -199,7 +199,7 @@ public class BusinessServiceImpl implements BusinessService, IResponse {
         request.setKey("publish");
         request.setValue(jsonObject.toJSONString());
         systemContractExec.setRequest(request);
-        String requestStr = systemContract.invoke(systemContractExec, null);
+        String requestStr = systemContract.invoke(systemContractExec);
         systemContractExec.sendTransaction();
         return requestStr;
     }

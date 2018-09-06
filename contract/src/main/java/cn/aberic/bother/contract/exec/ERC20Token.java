@@ -47,13 +47,31 @@ public class ERC20Token implements IERC20Token {
     private ISystemContractExec systemContractExec;
     private String tokenHash;
     private Token token;
-    private String priKey;
+    private String priECCKey;
 
-    public ERC20Token(String tokenHash, String priKey, ISystemContractExec systemContractExec) {
+    /**
+     * 无用构造函数，仅借助智能合约初始化判定使用
+     *
+     * @param systemContractExec 系统级智能合约操作接口
+     */
+    public ERC20Token(ISystemContractExec systemContractExec) {
+        this.systemContractExec = systemContractExec;
+    }
+
+    public ERC20Token(String tokenHash, String priECCKey, ISystemContractExec systemContractExec) {
         this.tokenHash = tokenHash;
-        this.priKey = priKey;
+        this.priECCKey = priECCKey;
         this.systemContractExec = systemContractExec;
         this.token = JSON.parseObject(systemContractExec.get(tokenHash), new TypeReference<Token>() {});
+    }
+
+    public void setTokenHash(String tokenHash) {
+        this.tokenHash = tokenHash;
+        this.token = JSON.parseObject(systemContractExec.get(tokenHash), new TypeReference<Token>() {});
+    }
+
+    public void setPriECCKey(String priECCKey) {
+        this.priECCKey = priECCKey;
     }
 
     @Override
@@ -79,7 +97,7 @@ public class ERC20Token implements IERC20Token {
     @Override
     public BigDecimal balanceOf(String address) {
         Account account = JSON.parseObject(systemContractExec.get(address), new TypeReference<Account>() {});
-        AccountInfo info = JSON.parseObject(KeyExec.obtain().decryptPriStrECDSA(priKey, account.getJsonAccountInfoString()),
+        AccountInfo info = JSON.parseObject(KeyExec.obtain().decryptPriStrECDSA(priECCKey, account.getJsonAccountInfoString()),
                 new TypeReference<AccountInfo>() {});
         return info.getCount();
     }

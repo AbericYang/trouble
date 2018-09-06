@@ -25,7 +25,7 @@
 
 package cn.aberic.bother.controller;
 
-import cn.aberic.bother.contract.SystemContract;
+import cn.aberic.bother.contract.system.SystemContract;
 import cn.aberic.bother.contract.exec.SystemContractExec;
 import cn.aberic.bother.entity.contract.Request;
 import org.springframework.web.bind.annotation.*;

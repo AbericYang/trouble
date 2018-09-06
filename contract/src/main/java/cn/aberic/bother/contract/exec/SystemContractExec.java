@@ -185,11 +185,11 @@ public class SystemContractExec implements ISystemContractExec, IContractBaseExe
 
     @Override
     public Block getBlockByHash(String currentDataHash) {
-        return getBlockAcquire().getBlockByHash(MD5.md516(currentDataHash));
+        return getBlockAcquire().getBlockByHash(currentDataHash);
     }
 
     @Override
     public Block getBlockByTransactionHash(String transactionHash) {
-        return getBlockAcquire().getBlockByTransactionHash(MD5.md516(transactionHash));
+        return getBlockAcquire().getBlockByTransactionHash(transactionHash);
     }
 }

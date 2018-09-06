@@ -88,7 +88,11 @@ public class RunnableSearchTransactionHashIndex implements Runnable {
                             found = true;
                             listener.find(blockExec.getByNumAndLine(blockInfo.getNum(), blockInfo.getLine()));
                             troublePool.shutdown();
+                            break;
                         }
+                    }
+                    if (found) {
+                        break;
                     }
                 }
             }

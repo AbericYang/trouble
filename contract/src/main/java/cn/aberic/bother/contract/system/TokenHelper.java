@@ -20,66 +20,37 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- *
  */
 
-package cn.aberic.bother.contract;
+package cn.aberic.bother.contract.system;
 
-import cn.aberic.bother.contract.exec.service.IERC20Token;
-import cn.aberic.bother.contract.exec.service.ISystemContract;
 import cn.aberic.bother.contract.exec.service.ISystemContractExec;
 import cn.aberic.bother.encryption.key.exec.KeyExec;
 import cn.aberic.bother.entity.IResponse;
 import cn.aberic.bother.entity.contract.Account;
 import cn.aberic.bother.entity.contract.AccountInfo;
-import cn.aberic.bother.entity.contract.Request;
 import cn.aberic.bother.entity.token.Token;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
-import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
 
 /**
- * 系统应用智能合约-app support
+ * 智能合约 Token 相关辅助对象
  * <p>
- * 作者：Aberic on 2018/8/29 20:49
+ * 作者：Aberic on 2018/09/06 15:30
  * 邮箱：abericyang@gmail.com
  */
-@Slf4j
-public class SystemContract implements ISystemContract {
+class TokenHelper {
 
-    @Override
-    public String invoke(ISystemContractExec exec, IERC20Token erc20Token) {
-        Request request = exec.getRequest();
-        switch (request.getKey()) {
-            case "publish":
-                return publishToken(exec);
-        }
-        exec.put(request.getKey(), request.getValue());
-//        Contract test = new Contract("Aberic", "1", 18, "2");
-//        exec.put("test", JSON.toJSONString(test));
-        return exec.response(request);
-    }
-
-    @Override
-    public String query(ISystemContractExec exec, IERC20Token erc20Token) {
-//        log.debug("o = {}", exec.get("haha"));
-//        List<String> strings = exec.getHistory("haha");
-//        strings.forEach(o1 -> {
-//            log.debug("oh = {}", o1);
-//        });
-//        Contract test = JSON.parseObject(exec.get("test"), new TypeReference<Contract>() {});
-//        log.debug("test = {}", test.toJsonString());
-        log.debug("symbol = {}", erc20Token.symbol());
-        log.debug("name = {}", erc20Token.name());
-        log.debug("getBlockByHeight 1024 = {}", exec.getBlockByHeight(1024));
-        return queryTest(exec);
-    }
-
-    /** 发布新 Token */
-    private String publishToken(ISystemContractExec exec) {
+    /**
+     * 发布新 Token
+     *
+     * @param exec 系统级智能合约操作接口
+     * @return 执行结果
+     */
+    String publishToken(ISystemContractExec exec) {
         JSONObject jsonObject = JSON.parseObject(exec.get("publish"));
         // 发布者公网账户地址
         String pubAddress = jsonObject.getString("pubAddress");
@@ -135,14 +106,4 @@ public class SystemContract implements ISystemContract {
         return exec.response(IResponse.Response.SUCCESS);
     }
 
-    private String queryTest(ISystemContractExec exec) {
-        Request request = exec.getRequest();
-        switch (request.getValue()) {
-            case "query":
-                return exec.get(request.getKey());
-            case "history":
-                return JSON.toJSONString(exec.getHistory(request.getKey()));
-        }
-        return null;
-    }
 }
