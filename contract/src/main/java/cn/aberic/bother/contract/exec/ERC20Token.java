@@ -27,6 +27,9 @@ package cn.aberic.bother.contract.exec;
 
 import cn.aberic.bother.contract.exec.service.IERC20Token;
 import cn.aberic.bother.contract.exec.service.ISystemContractExec;
+import cn.aberic.bother.encryption.key.exec.KeyExec;
+import cn.aberic.bother.entity.contract.Account;
+import cn.aberic.bother.entity.contract.AccountInfo;
 import cn.aberic.bother.entity.token.Token;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
@@ -44,9 +47,11 @@ public class ERC20Token implements IERC20Token {
     private ISystemContractExec systemContractExec;
     private String tokenHash;
     private Token token;
+    private String priKey;
 
-    public ERC20Token(String tokenHash, ISystemContractExec systemContractExec) {
+    public ERC20Token(String tokenHash, String priKey, ISystemContractExec systemContractExec) {
         this.tokenHash = tokenHash;
+        this.priKey = priKey;
         this.systemContractExec = systemContractExec;
         this.token = JSON.parseObject(systemContractExec.get(tokenHash), new TypeReference<Token>() {});
     }
@@ -73,7 +78,10 @@ public class ERC20Token implements IERC20Token {
 
     @Override
     public BigDecimal balanceOf(String address) {
-        return null;
+        Account account = JSON.parseObject(systemContractExec.get(address), new TypeReference<Account>() {});
+        AccountInfo info = JSON.parseObject(KeyExec.obtain().decryptPriStrECDSA(priKey, account.getJsonAccountInfoString()),
+                new TypeReference<AccountInfo>() {});
+        return info.getCount();
     }
 
     @Override

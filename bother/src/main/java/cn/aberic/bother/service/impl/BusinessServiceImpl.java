@@ -34,18 +34,16 @@ import cn.aberic.bother.entity.IResponse;
 import cn.aberic.bother.entity.contract.*;
 import cn.aberic.bother.entity.token.Token;
 import cn.aberic.bother.service.BusinessService;
-import cn.aberic.bother.storage.Common;
 import cn.aberic.bother.token.TokenManager;
-import cn.aberic.bother.tools.DeflaterTool;
 import cn.aberic.bother.tools.exception.AccountBusinessTypeException;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
 import com.google.common.hash.Hashing;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.nio.charset.Charset;
 import java.util.Date;
@@ -102,7 +100,7 @@ public class BusinessServiceImpl implements BusinessService, IResponse {
 
     @Override
     public String encryptBusiness(AccountBusinessEncrypt businessEncrypt) {
-        return response(KeyExec.obtain().encryptPriStrRSA(businessEncrypt.getPriKey(), businessEncrypt.getEncryption()));
+        return response(KeyExec.obtain().encryptPriStrRSA(businessEncrypt.getPriRSAKey(), businessEncrypt.getEncryption()));
     }
 
     @Override
@@ -114,7 +112,12 @@ public class BusinessServiceImpl implements BusinessService, IResponse {
         String execStr = KeyExec.obtain().decryptPubStrRSA(account.getPubRSAKey(), business.getEncryption());
         switch (business.getBusiness()) {
             case PUBLISH:
-                return publishSystem(business, token, account, execStr, tokenManager);
+                // 验证该账户是否具备发布该 Token 的权限，即确认 Token 创始人信息
+                if (!StringUtils.equals(account.getAddress(), business.getAddress())) {
+                    return response(Response.ACCOUNT_INFO_INVALID);
+                }
+                tokenManager.clear(business.getAddress());
+                return publishSystem(business, token, account, execStr);
             case QUERY:
                 return null;
             case TRANSFER:
@@ -139,29 +142,15 @@ public class BusinessServiceImpl implements BusinessService, IResponse {
      * <p>
      * 发布信息至公网账本将按字节收取存储手续费
      *
-     * @param business     账户处理事务对象
-     * @param token        待发布 Token
-     * @param account      待发布 Token 根账户
-     * @param execStr      本次事务字符串
-     * @param tokenManager Token 管理器
+     * @param business 账户处理事务对象
+     * @param token    待发布 Token
+     * @param account  待发布 Token 根账户
+     * @param execStr  本次事务字符串
      * @return 发布结果
      */
-    private String publishSystem(AccountBusiness business, Token token, Account account, String execStr, TokenManager tokenManager) {
+    private String publishSystem(AccountBusiness business, Token token, Account account, String execStr) {
         if (!StringUtils.equals(execStr, business.getBusiness().getFormat())) {
             throw new AccountBusinessTypeException();
-        }
-        try {
-            long accountSize = DeflaterTool.compress(JSON.toJSONString(account)).length();
-            long accountSizeJSON = JSON.toJSONString(account).length();
-            long tokenSize = DeflaterTool.compress(JSON.toJSONString(token)).length();
-            long tokenSizeJSON = JSON.toJSONString(token).length();
-            log.debug("accountSize = {} | accountSizeJSON = {} | tokenSize = {} | tokenSizeJSON = {}", accountSize, accountSizeJSON, tokenSize, tokenSizeJSON);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        // 验证该账户是否具备发布该 Token 的权限，即确认 Token 创始人信息
-        if (!StringUtils.equals(account.getAddress(), business.getAddress())) {
-            return response(Response.ACCOUNT_INFO_INVALID);
         }
         SystemContract systemContract = new SystemContract();
         SystemContractExec systemContractExec = new SystemContractExec();
@@ -171,12 +160,12 @@ public class BusinessServiceImpl implements BusinessService, IResponse {
         token.setAccount(null);
         request.setValue(JSON.toJSONString(token));
         systemContractExec.setRequest(request);
-        log.debug("invoke token = {}", systemContract.invoke(systemContractExec));
+        log.debug("invoke token = {}", systemContract.invoke(systemContractExec, null));
         // 账户上链
         request.setKey(account.getAddress());
         request.setValue(JSON.toJSONString(account));
         systemContractExec.setRequest(request);
-        log.debug("invoke account = {}", systemContract.invoke(systemContractExec));
+        log.debug("invoke account = {}", systemContract.invoke(systemContractExec, null));
         systemContractExec.sendTransaction();
         return response(Response.SUCCESS);
     }
@@ -186,45 +175,33 @@ public class BusinessServiceImpl implements BusinessService, IResponse {
      * <p>
      * 发布信息至公网账本将按字节收取存储手续费
      *
-     * @param business     账户处理事务对象
-     * @param token        待发布 Token
-     * @param account      待发布 Token 根账户
-     * @param execStr      本次事务字符串
-     * @param tokenManager Token 管理器
+     * @param business 账户处理事务对象
+     * @param token    待发布 Token
+     * @param account  待发布 Token 根账户
+     * @param execStr  本次事务字符串
      * @return 发布结果
      */
-    private String publish(AccountBusiness business, Token token, Account account, String execStr, TokenManager tokenManager) {
-        // 发布私有 Token 时，execStr需为以半角逗号分隔的 publish 和 公网账户私钥组合
-        String[] execStrs = execStr.split(",");
-        if (!StringUtils.equals(execStrs[0], business.getBusiness().getFormat())) {
+    private String publish(AccountBusiness business, Token token, Account account, String execStr) {
+        if (!StringUtils.equals(execStr, business.getBusiness().getFormat())) {
             throw new AccountBusinessTypeException();
         }
-        // 获取账户管理器
-        AccountManager accountManager = new AccountManager(token.getHash());
-        // 获取公网账户
-        Account pubAccount = accountManager.getPubByAddress(business.getPubAddress());
-        // 得到即将存储的账户字符串
-        String accountStr = JSON.toJSONString(account);
-        // 得到即将存储的 Token 不含账户信息的字符串
-        token.setAccount(null);
-        String tokenStr = JSON.toJSONString(token);
-        // 计算本次账户及 Token 创建所需存储大小
-        long size = accountStr.getBytes().length + tokenStr.getBytes().length;
-        // 计算本次账户及 Token 创建所需存储费用
-        BigDecimal consumption = new BigDecimal(size * 0.0001);
-        BigDecimal pubAccountCount = getCountForAccount(Common.TOKEN_DEFAULT_SYSTEM_HASH, pubAccount.getAddress(), execStrs[1]).getCount();
-        // 检查该公网账户是否有足够余额支付
-        if (consumption.compareTo(pubAccountCount) < 0) {
-            // 如果余额不足，则返回对应信息
-            return response(Response.ACCOUNT_LACK_OF_BALANCE);
-        }
-        // 验证该账户是否具备发布该 Token 的权限，即确认 Token 创始人信息
-        if (!StringUtils.equals(account.getAddress(), business.getAddress())) {
-            return response(Response.ACCOUNT_INFO_INVALID);
-        }
-        // TODO: 2018/9/5 将公网账户本次支出转给公共账户
-        //
-        return response(Response.SUCCESS);
+        SystemContract systemContract = new SystemContract();
+        SystemContractExec systemContractExec = new SystemContractExec();
+        // 拼接上链数据
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("pubAddress", business.getPubAddress());
+        jsonObject.put("priECCKey", business.getPriECCKey());
+        jsonObject.put("account", account);
+        jsonObject.put("token", token);
+
+        // 智能合约请求数据
+        Request request = new Request();
+        request.setKey("publish");
+        request.setValue(jsonObject.toJSONString());
+        systemContractExec.setRequest(request);
+        String requestStr = systemContract.invoke(systemContractExec, null);
+        systemContractExec.sendTransaction();
+        return requestStr;
     }
 
     private AccountInfo getCountForAccount(String tokenHash, String address, String priECCKey) {

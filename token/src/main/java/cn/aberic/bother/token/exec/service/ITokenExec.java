@@ -27,7 +27,17 @@ package cn.aberic.bother.token.exec.service;
 
 import cn.aberic.bother.entity.token.Token;
 import cn.aberic.bother.storage.IFile;
+import cn.aberic.bother.tools.DeflaterTool;
 import cn.aberic.bother.tools.ITimeOut;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
+import com.google.common.io.Files;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.LineIterator;
+import org.apache.commons.lang3.StringUtils;
+
+import java.io.File;
+import java.io.IOException;
 
 /**
  * Token 文件本地读写接口
@@ -44,6 +54,42 @@ public interface ITokenExec extends IFile<Token>, ITimeOut {
      */
     default void createOrUpdate(String tokenStr) {
         cou(tokenStr);
+    }
+
+    /**
+     * 通过根账户地址删除未发布 Token 文件中的已发布 Token
+     * <p>
+     * 注：此方法仅限未发布 Token 使用
+     *
+     * @param accountAddress 账户地址
+     */
+    default void clear(String accountAddress) {
+        Token[] tokens = new Token[]{null};
+        Files.fileTraverser().breadthFirst(new File(getFileStatus().getDir())).forEach(file -> {
+            if (StringUtils.startsWith(file.getName(), getFileStatus().getStart())) {
+                StringBuilder sb = null;
+                try (LineIterator it = FileUtils.lineIterator(file, "UTF-8")) {
+                    while (it.hasNext()) {
+                        String lineString = it.nextLine();
+                        if (StringUtils.isEmpty(lineString)) {
+                            continue;
+                        }
+                        Token token = JSON.parseObject(DeflaterTool.uncompress(lineString), new TypeReference<Token>() {});
+                        if (!StringUtils.equals(token.getAccount().getAddress(), accountAddress)) {
+                            if (null == sb) {
+                                sb = new StringBuilder();
+                                sb.append(lineString);
+                            } else {
+                                sb.append("\r\n").append(lineString);
+                            }
+                        }
+                    }
+                    Files.write(null == sb ? new byte[]{} : sb.toString().getBytes(), file);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 
 }

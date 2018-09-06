@@ -28,7 +28,6 @@ package cn.aberic.bother.account;
 import cn.aberic.bother.account.exec.AccountExec;
 import cn.aberic.bother.account.exec.service.IAccountExec;
 import cn.aberic.bother.entity.contract.Account;
-import cn.aberic.bother.storage.Common;
 
 /**
  * 账户基本操作对象
@@ -45,15 +44,6 @@ public class AccountManager {
     }
 
     /**
-     * 创建或更新账户信息
-     *
-     * @param accountStr {@link Account} 字符串
-     */
-    public void createOrUpdate(String accountStr) {
-        accountExec.createOrUpdate(accountStr);
-    }
-
-    /**
      * 根据账户地址获取账户对象
      *
      * @param address 账户地址
@@ -61,16 +51,6 @@ public class AccountManager {
      */
     public Account getByAddress(String address) {
         return accountExec.getByAddress(address);
-    }
-
-    /**
-     * 根据公网账户地址获取公网账户对象
-     *
-     * @param address 公网账户地址
-     * @return 公网账户对象
-     */
-    public Account getPubByAddress(String address) {
-        return accountExec.getPubByAddress(address);
     }
 
 }

@@ -20,26 +20,44 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- *
  */
 
 package cn.aberic.bother.contract.exec.service;
 
 /**
- * 智能合约 ERC20 Token 常规操作接口-smart contract
+ * 带 Token 的智能合约常规操作接口-smart contract
  * <p>
- * 作者：Aberic on 2018/9/5 20:59
+ * 作者：Aberic on 2018/09/06 13:55
  * 邮箱：abericyang@gmail.com
  */
-public interface IERC20TokenContract {
+public interface ITokenContract {
 
     /**
-     * 执行 ERC20 接口合约
+     * 智能合约初始化方法，相同版本合约只能初始化一次，重复初始化无效。
+     * 初始化操作执行完成后会返回当前智能合约唯一hash，该hash值是用于提供给其它节点安装本合约使用。
      *
+     * @param exec       智能合约区块操作接口
      * @param erc20Token ERC20 接口
+     * @return 智能合约唯一hash
+     */
+    String init(IContractExec exec, IERC20Token erc20Token);
+
+    /**
+     * 执行智能合约
      *
+     * @param exec       智能合约区块操作接口
+     * @param erc20Token ERC20 接口
      * @return 执行结果
      */
-    String token(IERC20Token erc20Token);
+    String invoke(IContractExec exec, IERC20Token erc20Token);
+
+    /**
+     * 查询智能合约
+     *
+     * @param exec       智能合约区块操作接口
+     * @param erc20Token ERC20 接口
+     * @return 查询结果
+     */
+    String query(IContractExec exec, IERC20Token erc20Token);
 
 }

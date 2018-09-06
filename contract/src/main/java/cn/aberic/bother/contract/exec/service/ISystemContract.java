@@ -36,19 +36,19 @@ public interface ISystemContract {
     /**
      * 执行智能合约
      *
-     * @param exec 智能合约区块操作接口
-     *
+     * @param exec       智能合约区块操作接口
+     * @param erc20Token ERC20 接口
      * @return 执行结果
      */
-    String invoke(ISystemContractExec exec);
+    String invoke(ISystemContractExec exec, IERC20Token erc20Token);
 
     /**
      * 查询智能合约
      *
-     * @param exec 智能合约区块操作接口
-     *
+     * @param exec       智能合约区块操作接口
+     * @param erc20Token ERC20 接口
      * @return 查询结果
      */
-    String query(ISystemContractExec exec);
+    String query(ISystemContractExec exec, IERC20Token erc20Token);
 
 }

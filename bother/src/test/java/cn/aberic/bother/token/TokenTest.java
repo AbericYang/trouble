@@ -43,11 +43,12 @@ public class TokenTest {
         log.debug("token symbol = {}", erc20Token.symbol());
         log.debug("token decimals = {}", erc20Token.decimals());
         log.debug("token totalSupply = {}", erc20Token.totalSupply());
+        log.debug("token balanceOf = {}", erc20Token.balanceOf("f7980356d5c6985ca4d19291b734858b063250a81dd07e82d624c191abcd7228"));
     }
 
     private static ERC20Token getERC20Token() {
         ISystemContractExec systemContractExec = new SystemContractExec();
-        return new ERC20Token("3d14dadf5c6f37e94f67efde76591a1eea37c032b1b2025a5b8b9b3a167d6cf3", systemContractExec);
+        return new ERC20Token("56e2360d5a6b539b20eea8fbcc3a9a40d8b5f40780a0d90646da5d9ceadeae0c", "MIGTAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBHkwdwIBAQQgqh8aDKmlbeG/TRLiINYYY+klj7qvZtEmUNJ6j1PQkZ+gCgYIKoZIzj0DAQehRANCAAToKYqfQKVb80n7rhpyOz6N8aFMVcJAeS6YTtUALc5tA7iQEG77/4Sv4xJ1WQRljdRpmIMAX4fddsvOlc1E9hVj", systemContractExec);
     }
 
 }

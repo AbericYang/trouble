@@ -36,6 +36,7 @@ public interface IContract {
      * 智能合约初始化方法，相同版本合约只能初始化一次，重复初始化无效。
      * 初始化操作执行完成后会返回当前智能合约唯一hash，该hash值是用于提供给其它节点安装本合约使用。
      *
+     * @param exec 智能合约区块操作接口
      * @return 智能合约唯一hash
      */
     String init(IContractExec exec);
@@ -44,7 +45,6 @@ public interface IContract {
      * 执行智能合约
      *
      * @param exec 智能合约区块操作接口
-     *
      * @return 执行结果
      */
     String invoke(IContractExec exec);
@@ -53,7 +53,6 @@ public interface IContract {
      * 查询智能合约
      *
      * @param exec 智能合约区块操作接口
-     *
      * @return 查询结果
      */
     String query(IContractExec exec);

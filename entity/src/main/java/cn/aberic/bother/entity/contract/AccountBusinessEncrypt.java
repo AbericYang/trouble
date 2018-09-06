@@ -39,6 +39,8 @@ public class AccountBusinessEncrypt {
     /** 即将处理的具体事务，由该账户进行加密 */
     private String encryption;
     /** RSA 私钥 */
-    private String priKey;
+    private String priRSAKey;
+    /** ECC 私钥 */
+    private String priECCKey;
 
 }

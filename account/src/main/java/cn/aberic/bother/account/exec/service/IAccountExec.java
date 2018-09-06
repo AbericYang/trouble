@@ -26,7 +26,6 @@
 package cn.aberic.bother.account.exec.service;
 
 import cn.aberic.bother.entity.contract.Account;
-import cn.aberic.bother.storage.Common;
 import cn.aberic.bother.storage.IFile;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
@@ -47,15 +46,6 @@ import java.io.IOException;
 public interface IAccountExec extends IFile<Account> {
 
     /**
-     * 创建或更新账户信息
-     *
-     * @param accountStr {@link Account} 字符串
-     */
-    default void createOrUpdate(String accountStr) {
-        cou(accountStr);
-    }
-
-    /**
      * 根据账户地址获取账户对象
      *
      * @param address 账户地址
@@ -63,16 +53,6 @@ public interface IAccountExec extends IFile<Account> {
      */
     default Account getByAddress(String address) {
         return getAccount(address, getFileStatus().getDir());
-    }
-
-    /**
-     * 根据公网账户地址获取公网账户对象
-     *
-     * @param address 公网账户地址
-     * @return 公网账户对象
-     */
-    default Account getPubByAddress(String address) {
-        return getAccount(address, Common.TOKEN_DEFAULT_SYSTEM_HASH);
     }
 
 

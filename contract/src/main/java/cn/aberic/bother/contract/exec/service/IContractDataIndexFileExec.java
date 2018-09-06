@@ -122,8 +122,11 @@ public interface IContractDataIndexFileExec extends IInit, IFile<ContractInfo> {
     default String get(BlockAcquire acquire, String key) {
         String[] results = new String[]{null};
         long time = new Date().getTime();
-        String r = DBExec.obtain().get(key);
-        String[] strings = r.split(",");
+        String dbResultStr = DBExec.obtain().get(key);
+        if (null == dbResultStr) {
+            return null;
+        }
+        String[] strings = dbResultStr.split(",");
         getLog().debug("DBExec getKey 耗时 = {}", (new Date().getTime() - time));
 
         time = new Date().getTime();

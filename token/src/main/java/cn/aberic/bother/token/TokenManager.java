@@ -54,9 +54,19 @@ public class TokenManager {
      * 注：此方法仅限未发布 Token 使用
      *
      * @param accountAddress 账户地址
-     *
      * @return Token 信息
      */
     public Token getUnPublish(String accountAddress) { return tokenTmpExec.getUnPublish(accountAddress); }
+
+    /**
+     * 通过根账户地址删除未发布 Token 文件中的已发布 Token
+     * <p>
+     * 注：此方法仅限未发布 Token 使用
+     *
+     * @param accountAddress 账户地址
+     */
+    public void clear(String accountAddress) {
+        tokenTmpExec.clear(accountAddress);
+    }
 
 }
