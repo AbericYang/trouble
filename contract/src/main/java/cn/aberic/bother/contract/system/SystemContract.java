@@ -30,6 +30,8 @@ import cn.aberic.bother.contract.exec.service.ISystemContractExec;
 import cn.aberic.bother.entity.IResponse;
 import cn.aberic.bother.entity.contract.Request;
 import cn.aberic.bother.storage.Common;
+import cn.aberic.bother.tools.exception.ERC20TokenAddressNullException;
+import cn.aberic.bother.tools.exception.ERC20TokenECCPrivateKeyNullException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
@@ -51,6 +53,12 @@ public class SystemContract implements ISystemContract {
     @Override
     public String invoke(ISystemContractExec exec) {
         Request request = exec.getRequest();
+        if (StringUtils.isEmpty(request.getAddress())) { // invoke 请求账户地址不能为空
+            throw new ERC20TokenAddressNullException();
+        }
+        if (StringUtils.isEmpty(request.getPriECCKey())) { // invoke 请求账户 ECC 私钥不能为空
+            throw new ERC20TokenECCPrivateKeyNullException();
+        }
         ERC20Token erc20Token = new ERC20Token(Common.TOKEN_DEFAULT_SYSTEM_HASH, request.getAddress(), request.getPriECCKey(), exec);
         switch (request.getKey()) {
             // 发布新 Token

@@ -105,19 +105,19 @@ public class BusinessServiceImpl implements BusinessService, IResponse {
 
     @Override
     public String business(AccountBusiness business) {
-        // TODO: 2018/9/5
-        TokenManager tokenManager = new TokenManager();
-        Token token = tokenManager.getUnPublish(business.getAddress());
-        Account account = token.getAccount();
-        String execStr = KeyExec.obtain().decryptPubStrRSA(account.getPubRSAKey(), business.getEncryption());
         switch (business.getBusiness()) {
             case PUBLISH:
+                TokenManager tokenManager = new TokenManager();
+                Token token = tokenManager.getUnPublish(business.getAddress());
+                Account account = token.getAccount();
+                String execStr = KeyExec.obtain().decryptPubStrRSA(account.getPubRSAKey(), business.getEncryption());
                 // 验证该账户是否具备发布该 Token 的权限，即确认 Token 创始人信息
                 if (!StringUtils.equals(account.getAddress(), business.getAddress())) {
                     return response(Response.ACCOUNT_INFO_INVALID);
                 }
+                String result = publishSystem(business, token, account, execStr);
                 tokenManager.clear(business.getAddress());
-                return publishSystem(business, token, account, execStr);
+                return result;
             case QUERY:
                 return null;
             case TRANSFER:
@@ -159,6 +159,9 @@ public class BusinessServiceImpl implements BusinessService, IResponse {
         request.setKey(token.getHash());
         token.setAccount(null);
         request.setValue(JSON.toJSONString(token));
+        request.setAddress(account.getAddress());
+        request.setPriECCKey(business.getPriECCKey());
+        request.setTokenHash(token.getHash());
         systemContractExec.setRequest(request);
         log.debug("invoke token = {}", systemContract.invoke(systemContractExec));
         // 账户上链

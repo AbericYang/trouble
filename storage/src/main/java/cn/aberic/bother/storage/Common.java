@@ -33,39 +33,39 @@ package cn.aberic.bother.storage;
 public class Common {
 
     public final static String BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH = "d11d842aca8ee9b82ea1634791f98e83";
-    public final static String TOKEN_DEFAULT_SYSTEM_HASH = "547e961251a0a5d780ca3dfa8ce0ecdc4085979099d5b36875d60b9ae5278bfb";
+    public final static String TOKEN_DEFAULT_SYSTEM_HASH = "d092f3f87668fcedd41203f8c06564a6218cd8595590624182153de9601e33bb";
 
     /** 默认区块文件前缀 */
     public final static String BLOCK_FILE_START = "block_file_";
     /** 默认区块文件后缀 */
     public final static String BLOCK_FILE_END = ".block";
     /** 默认区块文件存储路径 测试/生产 */
-    public final static String BLOCK_FILE_DIR = "/Users/Aberic/Documents/tmp/trouble/bf";
-    // public final static String BLOCK_FILE_DIR = "/data/trouble/bf";
+    public final static String BLOCK_FILE_DIR = "/Users/Aberic/Documents/tmp/trouble/block/bf";
+    // public final static String BLOCK_FILE_DIR = "/data/trouble/block/bf";
     /** 自定义区块文件存储路径 测试/生产 */
-    public final static String BLOCK_FILE_CUSTOM_DIR = "/Users/Aberic/Documents/tmp/trouble/bfs";
-    // public final static String BLOCK_FILE_CUSTOM_DIR = "/data/trouble/bfs";
+    public final static String BLOCK_FILE_CUSTOM_DIR = "/Users/Aberic/Documents/tmp/trouble/block/bfs";
+    // public final static String BLOCK_FILE_CUSTOM_DIR = "/data/trouble/block/bfs";
 
     /** 默认区块存储索引文件前缀 */
     public final static String BLOCK_INDEX_START = "block_index_file_";
     /** 默认区块存储索引文件后缀 */
     public final static String BLOCK_INDEX_END = ".index";
     /** 默认区块存储索引文件路径 测试/生产 */
-    public final static String BLOCK_INDEX_DIR = "/Users/Aberic/Documents/tmp/trouble/bif";
-    // public final static String BLOCK_INDEX_DIR = "/data/trouble/bif";
+    public final static String BLOCK_INDEX_DIR = "/Users/Aberic/Documents/tmp/trouble/block/bif";
+    // public final static String BLOCK_INDEX_DIR = "/data/trouble/block/bif";
     /** 自定义区块存储索引文件路径 测试/生产 */
-    public final static String BLOCK_INDEX_CUSTOM_DIR = "/Users/Aberic/Documents/tmp/trouble/bifs";
-    // public final static String BLOCK_INDEX_CUSTOM_DIR = "/data/trouble/bifs";
+    public final static String BLOCK_INDEX_CUSTOM_DIR = "/Users/Aberic/Documents/tmp/trouble/block/bifs";
+    // public final static String BLOCK_INDEX_CUSTOM_DIR = "/data/trouble/block/bifs";
 
     /** 默认区块交易索引文件前缀 */
     public final static String BLOCK_TRANSACTION_INDEX_START = "block_transaction_index_file_";
     /** 默认区块交易索引文件后缀 */
     public final static String BLOCK_TRANSACTION_INDEX_END = ".index";
     /** 默认区块交易索引文件路径 测试/生产 */
-    public final static String BLOCK_TRANSACTION_INDEX_DIR = "/Users/Aberic/Documents/tmp/trouble/btif";
-    // public final static String BLOCK_TRANSACTION_INDEX_DIR = "/data/trouble/btif";
+    public final static String BLOCK_TRANSACTION_INDEX_DIR = "/Users/Aberic/Documents/tmp/trouble/block/btif";
+    // public final static String BLOCK_TRANSACTION_INDEX_DIR = "/data/trouble/block/btif";
     /** 自定义区块交易索引文件路径 测试/生产 */
-    public final static String BLOCK_TRANSACTION_INDEX_CUSTOM_DIR = "/Users/Aberic/Documents/tmp/trouble/btifs";
+    public final static String BLOCK_TRANSACTION_INDEX_CUSTOM_DIR = "/Users/Aberic/Documents/tmp/trouble/block/btifs";
     // public final static String BLOCK_TRANSACTION_INDEX_CUSTOM_DIR = "/data/trouble/btifs";
 
     /** 默认合约文件前缀 */
@@ -73,10 +73,10 @@ public class Common {
     /** 默认合约文件后缀 */
     public final static String CONTRACT_FILE_END = ".contract";
     /** 默认合约文件存储路径 测试/生产 */
-    public final static String CONTRACT_FILE_DIR = "/Users/Aberic/Documents/tmp/trouble/cf";
+    public final static String CONTRACT_FILE_DIR = "/Users/Aberic/Documents/tmp/trouble/block/cf";
     // public final static String CONTRACT_FILE_DIR = "/data/trouble/cf";
     /** 自定义合约文件存储路径 测试/生产 */
-    public final static String CONTRACT_FILE_CUSTOM_DIR = "/Users/Aberic/Documents/tmp/trouble/cfs";
+    public final static String CONTRACT_FILE_CUSTOM_DIR = "/Users/Aberic/Documents/tmp/trouble/block/cfs";
     // public final static String CONTRACT_FILE_CUSTOM_DIR = "/data/trouble/cfs";
 
     /** 默认合约数据索引文件前缀 */
@@ -84,24 +84,24 @@ public class Common {
     /** 默认合约数据索引文件后缀 */
     public final static String CONTRACT_DATA_INDEX_FILE_END = ".data";
     /** 默认合约数据索引文件存储路径 测试/生产 */
-    public final static String CONTRACT_DATA_INDEX_FILE_DIR = "/Users/Aberic/Documents/tmp/trouble/cdif";
+    public final static String CONTRACT_DATA_INDEX_FILE_DIR = "/Users/Aberic/Documents/tmp/trouble/block/cdif";
     // public final static String CONTRACT_DATA_INDEX_FILE_DIR = "/data/trouble/cdif";
     /** 自定义合约数据索引文件存储路径 测试/生产 */
-    public final static String CONTRACT_DATA_INDEX_FILE_CUSTOM_DIR = "/Users/Aberic/Documents/tmp/trouble/cdifs";
+    public final static String CONTRACT_DATA_INDEX_FILE_CUSTOM_DIR = "/Users/Aberic/Documents/tmp/trouble/block/cdifs";
     // public final static String CONTRACT_DATA_INDEX_FILE_CUSTOM_DIR = "/data/trouble/cdifs";
 
     /** 默认LevelDB合约数据文件存储路径 测试/生产 */
-    public final static String CONTRACT_DATA_LEVEL_DB_FILE_DIR = "/Users/Aberic/Documents/tmp/trouble/cdfleveldb";
+    public final static String CONTRACT_DATA_LEVEL_DB_FILE_DIR = "/Users/Aberic/Documents/tmp/trouble/db/cdfleveldb";
     // public final static String CONTRACT_DATA_INDEX_FILE_DIR = "/data/trouble/cdfleveldb";
     /** 自定义LevelDB合约数据文件存储路径 测试/生产 */
-    public final static String CONTRACT_DATA_LEVEL_DB_FILE_CUSTOM_DIR = "/Users/Aberic/Documents/tmp/trouble/cdfsleveldb";
+    public final static String CONTRACT_DATA_LEVEL_DB_FILE_CUSTOM_DIR = "/Users/Aberic/Documents/tmp/trouble/db/cdfsleveldb";
     // public final static String CONTRACT_DATA_INDEX_FILE_CUSTOM_DIR = "/data/trouble/cdfsleveldb";
 
     /** 默认RocksDB合约数据文件存储路径 测试/生产 */
-    public final static String CONTRACT_DATA_ROCKS_DB_FILE_DIR = "/Users/Aberic/Documents/tmp/trouble/cdfrocksdb";
+    public final static String CONTRACT_DATA_ROCKS_DB_FILE_DIR = "/Users/Aberic/Documents/tmp/trouble/db/cdfrocksdb";
     // public final static String CONTRACT_DATA_INDEX_FILE_DIR = "/data/trouble/cdflevecdfrocksdbldb";
     /** 自定义RocksDB合约数据文件存储路径 测试/生产 */
-    public final static String CONTRACT_DATA_ROCKS_DB_FILE_CUSTOM_DIR = "/Users/Aberic/Documents/tmp/trouble/cdfsrocksdb";
+    public final static String CONTRACT_DATA_ROCKS_DB_FILE_CUSTOM_DIR = "/Users/Aberic/Documents/tmp/trouble/db/cdfsrocksdb";
     // public final static String CONTRACT_DATA_INDEX_FILE_CUSTOM_DIR = "/data/trouble/cdfsrocksdb";
 
     /** 默认账户文件前缀 */

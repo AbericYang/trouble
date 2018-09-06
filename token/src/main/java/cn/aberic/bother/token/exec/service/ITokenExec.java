@@ -64,7 +64,6 @@ public interface ITokenExec extends IFile<Token>, ITimeOut {
      * @param accountAddress 账户地址
      */
     default void clear(String accountAddress) {
-        Token[] tokens = new Token[]{null};
         Files.fileTraverser().breadthFirst(new File(getFileStatus().getDir())).forEach(file -> {
             if (StringUtils.startsWith(file.getName(), getFileStatus().getStart())) {
                 StringBuilder sb = null;
@@ -74,7 +73,7 @@ public interface ITokenExec extends IFile<Token>, ITimeOut {
                         if (StringUtils.isEmpty(lineString)) {
                             continue;
                         }
-                        Token token = JSON.parseObject(DeflaterTool.uncompress(lineString), new TypeReference<Token>() {});
+                        Token token = JSON.parseObject(lineString, new TypeReference<Token>() {});
                         if (!StringUtils.equals(token.getAccount().getAddress(), accountAddress)) {
                             if (null == sb) {
                                 sb = new StringBuilder();

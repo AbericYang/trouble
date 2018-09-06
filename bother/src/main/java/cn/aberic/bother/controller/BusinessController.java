@@ -90,12 +90,4 @@ public class BusinessController {
         return businessService.business(business);
     }
 
-    @GetMapping(value = "test")
-    public AccountBusiness test() {
-        AccountBusiness accountBusiness = new AccountBusiness();
-        accountBusiness.setAddress("123");
-        accountBusiness.setEncryption("123");
-        accountBusiness.setBusiness(AccountBusiness.Business.ALLOWANCE);
-        return accountBusiness;
-    }
 }
