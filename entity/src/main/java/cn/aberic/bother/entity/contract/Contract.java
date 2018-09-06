@@ -28,7 +28,6 @@ import cn.aberic.bother.entity.BeanJsonField;
 import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Getter;
 import lombok.Setter;
-import org.json.JSONObject;
 
 import java.util.Date;
 

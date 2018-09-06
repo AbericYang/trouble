@@ -41,7 +41,7 @@ public class AccountUser {
     /** 账户唯一地址码 */
     private String address;
     /** 账户 ECC 私钥 */
-    private String priKey;
+    private String priECCKey;
     /** 账户所属 Token hash */
     private String hash;
 
@@ -49,9 +49,9 @@ public class AccountUser {
     public AccountUser() {
     }
 
-    public AccountUser(String address, String priKey, String hash) {
+    public AccountUser(String address, String priECCKey, String hash) {
         this.address = address;
-        this.priKey = priKey;
+        this.priECCKey = priECCKey;
         this.hash = hash;
     }
 

@@ -24,11 +24,23 @@
 
 package cn.aberic.bother.block;
 
+import cn.aberic.bother.block.exec.service.IDataExec;
 import cn.aberic.bother.consensus.exec.Proactive;
+import cn.aberic.bother.encryption.key.exec.KeyExec;
 import cn.aberic.bother.entity.block.Block;
 import cn.aberic.bother.entity.block.BlockInfo;
+import cn.aberic.bother.entity.block.Transaction;
 import cn.aberic.bother.entity.consensus.ConsensusStatus;
+import cn.aberic.bother.entity.contract.Account;
+import cn.aberic.bother.storage.Common;
+import cn.aberic.bother.storage.FileComponent;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+
+import java.util.List;
 
 /**
  * 存储区块——数据操作层-data manipulation
@@ -36,13 +48,34 @@ import org.apache.commons.lang3.StringUtils;
  * 作者：Aberic on 2018/08/24 11:27
  * 邮箱：abericyang@gmail.com
  */
-public class BlockStorage extends BlockAS {
+@Slf4j
+public class BlockStorage extends BlockAS implements IDataExec {
 
     /** 主动发起共识操作对象 */
     private Proactive proactive;
+    private BlockAcquire acquire;
 
     public BlockStorage(String contractHash) {
         super(contractHash);
+        acquire = new BlockAcquire(contractHash);
+    }
+
+    @Override
+    public Logger getLog() {
+        return log;
+    }
+
+    @Override
+    public FileComponent getFileStatus() {
+        if (StringUtils.equals(getStorageHash(), Common.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH)) {
+            return FileComponent.getContractDataIndexFileComponentDefault();
+        }
+        return FileComponent.getContractDataIndexFileComponent(getStorageHash());
+    }
+
+    @Override
+    public String getStorageHash() {
+        return contractHash;
     }
 
     /**
@@ -86,8 +119,23 @@ public class BlockStorage extends BlockAS {
         }
     }
 
+    /**
+     * 验证区块中每一笔提交进来的交易签名
+     *
+     * @param block 区块对象
+     *
+     * @return 验证结果
+     */
     private boolean checkBlockVerify(Block block) {
-        return false;
+        // 获取交易集合
+        List<Transaction> transactions = block.getBody().getTransactions();
+        for (Transaction transaction : transactions) {
+            Account account = JSON.parseObject(get(acquire, transaction.getCreator()), new TypeReference<Account>() {});
+            if (!KeyExec.obtain().verifyByStrECDSA(transaction.signString(), transaction.getSign(), account.getPubECCKey(), "UTF-8")) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**

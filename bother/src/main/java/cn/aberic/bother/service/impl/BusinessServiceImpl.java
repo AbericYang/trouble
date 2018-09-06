@@ -93,7 +93,7 @@ public class BusinessServiceImpl implements BusinessService, IResponse {
         TokenManager tokenManager = new TokenManager();
         Token token = tokenManager.getUnPublish(user.getAddress());
         Account account = token.getAccount();
-        AccountInfo info = JSON.parseObject(KeyExec.obtain().decryptPriStrECDSA(user.getPriKey(), account.getJsonAccountInfoString()),
+        AccountInfo info = JSON.parseObject(KeyExec.obtain().decryptPriStrECDSA(user.getPriECCKey(), account.getJsonAccountInfoString()),
                 new TypeReference<AccountInfo>() {});
         return response(info.getPriKey());
     }
@@ -152,8 +152,8 @@ public class BusinessServiceImpl implements BusinessService, IResponse {
         if (!StringUtils.equals(execStr, business.getBusiness().getFormat())) {
             throw new AccountBusinessTypeException();
         }
-        PublicContract systemContract = new PublicContract();
-        PublicContractExec systemContractExec = new PublicContractExec();
+        PublicContract publicContract = new PublicContract();
+        PublicContractExec publicContractExec = new PublicContractExec();
         // Token 上链
         Request request = new Request();
         request.setKey(token.getHash());
@@ -162,14 +162,14 @@ public class BusinessServiceImpl implements BusinessService, IResponse {
         request.setAddress(account.getAddress());
         request.setPriECCKey(business.getPriECCKey());
         request.setTokenHash(token.getHash());
-        systemContractExec.setRequest(request);
-        log.debug("invoke token = {}", systemContract.invoke(systemContractExec));
+        publicContractExec.setRequest(request);
+        log.debug("invoke token = {}", publicContract.invoke(publicContractExec));
         // 账户上链
         request.setKey(account.getAddress());
         request.setValue(JSON.toJSONString(account));
-        systemContractExec.setRequest(request);
-        log.debug("invoke account = {}", systemContract.invoke(systemContractExec));
-        systemContractExec.sendTransaction();
+        publicContractExec.setRequest(request);
+        log.debug("invoke account = {}", publicContract.invoke(publicContractExec));
+        publicContractExec.sendTransaction();
         return response(Response.SUCCESS);
     }
 
@@ -188,8 +188,8 @@ public class BusinessServiceImpl implements BusinessService, IResponse {
         if (!StringUtils.equals(execStr, business.getBusiness().getFormat())) {
             throw new AccountBusinessTypeException();
         }
-        PublicContract systemContract = new PublicContract();
-        PublicContractExec systemContractExec = new PublicContractExec();
+        PublicContract publicContract = new PublicContract();
+        PublicContractExec publicContractExec = new PublicContractExec();
         // 拼接上链数据
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("pubAddress", business.getPubAddress());
@@ -201,9 +201,9 @@ public class BusinessServiceImpl implements BusinessService, IResponse {
         Request request = new Request();
         request.setKey("publish");
         request.setValue(jsonObject.toJSONString());
-        systemContractExec.setRequest(request);
-        String requestStr = systemContract.invoke(systemContractExec);
-        systemContractExec.sendTransaction();
+        publicContractExec.setRequest(request);
+        String requestStr = publicContract.invoke(publicContractExec);
+        publicContractExec.sendTransaction();
         return requestStr;
     }
 

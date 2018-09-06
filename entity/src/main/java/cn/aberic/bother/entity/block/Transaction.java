@@ -95,8 +95,11 @@ public class Transaction {
      * @return 签名结果字符串
      */
     public String signStringResult(String priECCKey) {
-        String signString = String.format("%s%s%s", creator, rwSet.toString(), timestamp);
-        return KeyExec.obtain().signByStrECDSA(signString, priECCKey, "UTF-8");
+        return KeyExec.obtain().signByStrECDSA(signString(), priECCKey, "UTF-8");
+    }
+
+    public String signString() {
+        return String.format("%s%s%s", creator, rwSet.toString(), timestamp);
     }
 
     public String getTime() {

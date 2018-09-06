@@ -44,7 +44,7 @@ public interface IPublicContractFileExec extends IInit, IFile<Contract> {
      * @return 智能合约对象
      */
     default Contract getContract() {
-        Contract contract = new Contract("tb", "1.0", 1, "让连接更有价值！no trouble, no bother!");
+        Contract contract = new Contract("pub", "1.0", 1, "让连接更有价值！no trouble, no bother!");
         contract.setTimestamp(515260800000L);
         contract.setHash(Common.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH);
         contract.setDir("6c5ea876d5220135ee0c05d0f0840efe");

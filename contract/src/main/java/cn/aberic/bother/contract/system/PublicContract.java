@@ -93,14 +93,14 @@ public class PublicContract implements IPublicContract {
             // 发行 Token 的总量
             case "totalSupply":
                 return exec.response(erc20Token.totalSupply());
-            // 发行 Token 的总量
+            // 根据指定地址返回该 Token 的余额
             case "balanceOf":
                 return exec.response(erc20Token.balanceOf(request.getValue()));
-            // 根据高度查询区块对象
-            case "height":
+            // 查询区块高度
+            case "heightNum":
                 return exec.response(exec.getHeight());
             // 根据高度查询区块对象
-            case "byHeight":
+            case "height":
                 return exec.response(exec.getBlockByHeight(Integer.valueOf(request.getValue())));
             // 根据区块hash查询区块对象
             case "hash":
@@ -108,6 +108,7 @@ public class PublicContract implements IPublicContract {
             // 根据交易hash查询区块对象
             case "txHash":
                 return exec.response(exec.getBlockByTransactionHash(request.getValue()));
+            // 根据 key 查询 value 历史记录
             case "history":
                 return exec.response(exec.getHistory(request.getValue()));
         }
