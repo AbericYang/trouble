@@ -45,12 +45,16 @@ public interface IResponse {
     enum Response {
         /** 返回码 200，返回信息 success */
         SUCCESS(200, "success"),
+        /** 返回码 8000，返回信息 fail */
+        FAIL(8000, "fail"),
+        /** 返回码 8990，返回信息 请求类型不存在 */
+        REQUEST_TYPE_NOT_FOUND(8990, "请求类型不存在"),
         /** 返回码 9000，返回信息 账户余额不足 */
         ACCOUNT_LACK_OF_BALANCE(9000, "账户余额不足"),
         /** 返回码 9001，返回信息 账户信息无效 */
         ACCOUNT_INFO_INVALID(9001, "账户信息无效"),
         /** 返回码 9010，返回信息 Token 已存在 */
-        TOKEN_IS_ALLREADY_EXIST(9001, "Token 已存在");
+        TOKEN_IS_ALLREADY_EXIST(9010, "Token 已存在");
 
 
         /** 交易结果信息 */

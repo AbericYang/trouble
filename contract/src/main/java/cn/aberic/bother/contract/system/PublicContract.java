@@ -64,10 +64,17 @@ public class PublicContract implements IPublicContract {
             // 发布新 Token
             case "publish":
                 return tokenHelper.publishToken(erc20Token);
+            // 将自己的 count 个 Token 转给 addressTo 地址
+            case "transfer":
+                return tokenHelper.transfer(erc20Token, exec);
+            // 批准 addressSpender 账户从自己的账户转移 count 个 Token。
+            case "approve":
+                return tokenHelper.approve(erc20Token, exec);
+            // 与approve搭配使用，approve批准之后，调用本函数来转移token。
+            case "transferFrom":
+                return tokenHelper.transferFrom(erc20Token, exec);
         }
-        // 无特殊要求，则直接将 k/v 数据上链
-        exec.put(request.getKey(), request.getValue());
-        return exec.response(IResponse.Response.SUCCESS);
+        return exec.response(IResponse.Response.REQUEST_TYPE_NOT_FOUND);
     }
 
     @Override

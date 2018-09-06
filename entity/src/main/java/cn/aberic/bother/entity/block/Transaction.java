@@ -94,7 +94,7 @@ public class Transaction {
      * @param priECCKey 本次交易请求账户私钥
      * @return 签名结果字符串
      */
-    public String signStringResult(String priECCKey) {
+    private String signStringResult(String priECCKey) {
         return KeyExec.obtain().signByStrECDSA(signString(), priECCKey, "UTF-8");
     }
 

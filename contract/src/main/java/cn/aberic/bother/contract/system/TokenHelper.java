@@ -49,6 +49,7 @@ class TokenHelper {
      * 发布新 Token
      *
      * @param erc20Token ERC20 接口实现
+     *
      * @return 执行结果
      */
     String publishToken(ERC20Token erc20Token) {
@@ -102,6 +103,72 @@ class TokenHelper {
         exec.put(erc20Token.getAddress(), JSON.toJSONString(pubAccount));
 
         return exec.response(IResponse.Response.SUCCESS);
+    }
+
+    /**
+     * 将自己的 count 个 Token 转给 addressTo 地址
+     *
+     * @param erc20Token ERC20 接口实现
+     * @param exec       系统级智能合约操作接口
+     *
+     * @return 成功与否
+     */
+    public String transfer(ERC20Token erc20Token, IPublicContractExec exec) {
+        JSONObject json = JSON.parseObject(exec.getRequest().getValue());
+        if (erc20Token.transfer(json.getString("addressTo"), json.getBigDecimal("count"))) {
+            return exec.response(IResponse.Response.SUCCESS);
+        }
+        return exec.response(IResponse.Response.FAIL);
+    }
+
+    /**
+     * 批准 addressSpender 账户从自己的账户转移 count 个 Token。
+     *
+     * @param erc20Token ERC20 接口实现
+     * @param exec       系统级智能合约操作接口
+     *
+     * @return 成功与否
+     */
+    public String approve(ERC20Token erc20Token, IPublicContractExec exec) {
+        JSONObject json = JSON.parseObject(exec.getRequest().getValue());
+        if (erc20Token.approve(json.getString("addressSpender"), json.getBigDecimal("count"))) {
+            return exec.response(IResponse.Response.SUCCESS);
+        }
+        return exec.response(IResponse.Response.FAIL);
+    }
+
+    /**
+     * 与approve搭配使用，approve批准之后，调用本函数来转移token。
+     *
+     * @param erc20Token ERC20 接口实现
+     * @param exec       系统级智能合约操作接口
+     *
+     * @return 成功与否
+     */
+    public String transferFrom(ERC20Token erc20Token, IPublicContractExec exec) {
+        JSONObject json = JSON.parseObject(exec.getRequest().getValue());
+        if (erc20Token.transferFrom(json.getString("addressFrom"), json.getString("addressTo"), json.getBigDecimal("count"))) {
+            return exec.response(IResponse.Response.SUCCESS);
+        }
+        return exec.response(IResponse.Response.FAIL);
+    }
+
+    /**
+     * 返回 addressSpender 还能提取token的个数。
+     * <p>
+     * 账户A有1000个 Token，想允许B账户随意调用100个 Token。
+     * A账户按照以下形式调用approve函数approve(B,100)。
+     * 当B账户想用这100个 Token 中的10个 Token 给C账户时，则调用transferFrom(A, C, 10)。
+     * 这时调用allowance(A, B)可以查看B账户还能够调用A账户多少个token。
+     *
+     * @param erc20Token ERC20 接口实现
+     * @param exec       系统级智能合约操作接口
+     *
+     * @return 能提取token的个数
+     */
+    public String allowance(ERC20Token erc20Token, IPublicContractExec exec) {
+        JSONObject json = JSON.parseObject(exec.getRequest().getValue());
+        return exec.response(erc20Token.allowance(json.getString("addressOwner"), json.getString("addressSpender")).toPlainString());
     }
 
 }
