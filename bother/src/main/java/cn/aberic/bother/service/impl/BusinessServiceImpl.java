@@ -26,13 +26,12 @@ package cn.aberic.bother.service.impl;
 
 import cn.aberic.bother.account.AccountManager;
 import cn.aberic.bother.bean.AccountUser;
+import cn.aberic.bother.contract.SystemContract;
+import cn.aberic.bother.contract.exec.SystemContractExec;
 import cn.aberic.bother.encryption.key.bean.Key;
 import cn.aberic.bother.encryption.key.exec.KeyExec;
 import cn.aberic.bother.entity.IResponse;
-import cn.aberic.bother.entity.contract.Account;
-import cn.aberic.bother.entity.contract.AccountBusiness;
-import cn.aberic.bother.entity.contract.AccountBusinessEncrypt;
-import cn.aberic.bother.entity.contract.AccountInfo;
+import cn.aberic.bother.entity.contract.*;
 import cn.aberic.bother.entity.token.Token;
 import cn.aberic.bother.service.BusinessService;
 import cn.aberic.bother.storage.Common;
@@ -161,11 +160,24 @@ public class BusinessServiceImpl implements BusinessService, IResponse {
             e.printStackTrace();
         }
         // 验证该账户是否具备发布该 Token 的权限，即确认 Token 创始人信息
-        if (StringUtils.equals(account.getAddress(), business.getAddress())) {
-            tokenManager.createOrUpdate(JSON.toJSONString(token));
-            AccountManager accountManager = new AccountManager(token.getHash());
-            accountManager.createOrUpdate(JSON.toJSONString(account));
+        if (!StringUtils.equals(account.getAddress(), business.getAddress())) {
+            return response(Response.ACCOUNT_INFO_INVALID);
         }
+        SystemContract systemContract = new SystemContract();
+        SystemContractExec systemContractExec = new SystemContractExec();
+        // Token 上链
+        Request request = new Request();
+        request.setKey(token.getHash());
+        token.setAccount(null);
+        request.setValue(JSON.toJSONString(token));
+        systemContractExec.setRequest(request);
+        log.debug("invoke token = {}", systemContract.invoke(systemContractExec));
+        // 账户上链
+        request.setKey(account.getAddress());
+        request.setValue(JSON.toJSONString(account));
+        systemContractExec.setRequest(request);
+        log.debug("invoke account = {}", systemContract.invoke(systemContractExec));
+        systemContractExec.sendTransaction();
         return response(Response.SUCCESS);
     }
 
@@ -207,14 +219,11 @@ public class BusinessServiceImpl implements BusinessService, IResponse {
             return response(Response.ACCOUNT_LACK_OF_BALANCE);
         }
         // 验证该账户是否具备发布该 Token 的权限，即确认 Token 创始人信息
-        if (StringUtils.equals(account.getAddress(), business.getAddress())) {
-            // TODO: 2018/9/5 将公网账户本次支出转给公共账户
-            // 此操作需要根据系统智能合约进行交互，所操作结果将会写入账本
-            tokenManager.createOrUpdate(tokenStr);
-            accountManager.createOrUpdate(accountStr);
-        } else {
+        if (!StringUtils.equals(account.getAddress(), business.getAddress())) {
             return response(Response.ACCOUNT_INFO_INVALID);
         }
+        // TODO: 2018/9/5 将公网账户本次支出转给公共账户
+        //
         return response(Response.SUCCESS);
     }
 

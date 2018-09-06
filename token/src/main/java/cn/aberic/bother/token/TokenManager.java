@@ -26,9 +26,7 @@
 package cn.aberic.bother.token;
 
 import cn.aberic.bother.entity.token.Token;
-import cn.aberic.bother.token.exec.TokenExec;
 import cn.aberic.bother.token.exec.TokenTmpExec;
-import cn.aberic.bother.token.exec.service.ITokenExec;
 import cn.aberic.bother.token.exec.service.ITokenTmpExec;
 
 /**
@@ -39,32 +37,10 @@ import cn.aberic.bother.token.exec.service.ITokenTmpExec;
  */
 public class TokenManager {
 
-    private ITokenExec tokenExec;
     private ITokenTmpExec tokenTmpExec;
 
     public TokenManager() {
-        tokenExec = new TokenExec();
         tokenTmpExec = new TokenTmpExec();
-    }
-
-    /**
-     * 创建或更新 Token 信息
-     *
-     * @param tokenStr {@link Token} 字符串
-     */
-    public void createOrUpdate(String tokenStr) {
-        tokenExec.createOrUpdate(tokenStr);
-    }
-
-    /**
-     * 根据 Token hash 获取 Token 对象
-     *
-     * @param tokenHash Token hash
-     *
-     * @return Token 对象
-     */
-    public Token getByHash(String tokenHash) {
-        return tokenExec.getByHash(tokenHash);
     }
 
     /** 创建或更新账户信息 */

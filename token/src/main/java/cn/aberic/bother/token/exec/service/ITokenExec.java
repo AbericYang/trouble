@@ -27,15 +27,7 @@ package cn.aberic.bother.token.exec.service;
 
 import cn.aberic.bother.entity.token.Token;
 import cn.aberic.bother.storage.IFile;
-import cn.aberic.bother.token.runnable.RunnableSearchToken;
 import cn.aberic.bother.tools.ITimeOut;
-import cn.aberic.bother.tools.thread.ThreadTroublePool;
-import com.google.common.io.Files;
-import org.apache.commons.lang3.StringUtils;
-
-import java.io.File;
-import java.util.Date;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Token 文件本地读写接口
@@ -52,42 +44,6 @@ public interface ITokenExec extends IFile<Token>, ITimeOut {
      */
     default void createOrUpdate(String tokenStr) {
         cou(tokenStr);
-    }
-
-    /**
-     * 根据 Token hash 获取 Token 对象
-     *
-     * @param tokenHash Token hash
-     *
-     * @return Token 对象
-     */
-    default Token getByHash(String tokenHash) {
-        Token[] tokens = new Token[]{null};
-        int fileCount = getFileCount();
-        AtomicInteger count = new AtomicInteger(0);
-        ThreadTroublePool troublePool = new ThreadTroublePool();
-        boolean found = false;
-        Iterable<File> files = Files.fileTraverser().breadthFirst(new File(getFileStatus().getDir()));
-        for (File file : files) {
-            if (StringUtils.startsWith(file.getName(), getFileStatus().getStart())) {
-                troublePool.submit(new RunnableSearchToken(tokenHash, file, getNumByFileName(file.getName()), token -> {
-                    if (null != token) {
-                        tokens[0] = token;
-                        troublePool.shutdown();
-                    }
-                    count.getAndIncrement();
-                }));
-            }
-            if (null != tokens[0]) {
-                break;
-            }
-        }
-        long time = new Date().getTime();
-        while (!found) {
-            found = checkTimeOut(fileCount, count, tokens[0], time, 300000);
-        }
-        troublePool.shutdown();
-        return tokens[0];
     }
 
 }
