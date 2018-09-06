@@ -38,7 +38,7 @@ import java.util.List;
  * 作者：Aberic on 2018/8/30 21:45
  * 邮箱：abericyang@gmail.com
  */
-public interface ISystemContractExec extends IResponse {
+public interface IPublicContractExec extends IResponse {
 
     /**
      * 获取当前智能合约对象

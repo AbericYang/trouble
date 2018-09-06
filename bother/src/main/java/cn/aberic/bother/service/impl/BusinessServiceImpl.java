@@ -26,8 +26,8 @@ package cn.aberic.bother.service.impl;
 
 import cn.aberic.bother.account.AccountManager;
 import cn.aberic.bother.bean.AccountUser;
-import cn.aberic.bother.contract.system.SystemContract;
-import cn.aberic.bother.contract.exec.SystemContractExec;
+import cn.aberic.bother.contract.system.PublicContract;
+import cn.aberic.bother.contract.exec.PublicContractExec;
 import cn.aberic.bother.encryption.key.bean.Key;
 import cn.aberic.bother.encryption.key.exec.KeyExec;
 import cn.aberic.bother.entity.IResponse;
@@ -152,8 +152,8 @@ public class BusinessServiceImpl implements BusinessService, IResponse {
         if (!StringUtils.equals(execStr, business.getBusiness().getFormat())) {
             throw new AccountBusinessTypeException();
         }
-        SystemContract systemContract = new SystemContract();
-        SystemContractExec systemContractExec = new SystemContractExec();
+        PublicContract systemContract = new PublicContract();
+        PublicContractExec systemContractExec = new PublicContractExec();
         // Token 上链
         Request request = new Request();
         request.setKey(token.getHash());
@@ -188,8 +188,8 @@ public class BusinessServiceImpl implements BusinessService, IResponse {
         if (!StringUtils.equals(execStr, business.getBusiness().getFormat())) {
             throw new AccountBusinessTypeException();
         }
-        SystemContract systemContract = new SystemContract();
-        SystemContractExec systemContractExec = new SystemContractExec();
+        PublicContract systemContract = new PublicContract();
+        PublicContractExec systemContractExec = new PublicContractExec();
         // 拼接上链数据
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("pubAddress", business.getPubAddress());

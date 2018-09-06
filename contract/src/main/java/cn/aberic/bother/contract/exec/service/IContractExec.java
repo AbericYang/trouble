@@ -32,7 +32,7 @@ import cn.aberic.bother.entity.contract.Contract;
  * 作者：Aberic on 2018/08/29 16:41
  * 邮箱：abericyang@gmail.com
  */
-public interface IContractExec extends ISystemContractExec {
+public interface IContractExec extends IPublicContractExec {
 
     /**
      * 安装或者升级智能合约。

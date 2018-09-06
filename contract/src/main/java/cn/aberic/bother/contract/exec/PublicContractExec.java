@@ -29,8 +29,8 @@ import cn.aberic.bother.block.BlockAcquire;
 import cn.aberic.bother.block.BlockStorage;
 import cn.aberic.bother.contract.exec.service.IContractBaseExec;
 import cn.aberic.bother.contract.exec.service.IContractDataIndexFileExec;
-import cn.aberic.bother.contract.exec.service.ISystemContractExec;
-import cn.aberic.bother.contract.exec.service.ISystemContractFileExec;
+import cn.aberic.bother.contract.exec.service.IPublicContractExec;
+import cn.aberic.bother.contract.exec.service.IPublicContractFileExec;
 import cn.aberic.bother.entity.block.*;
 import cn.aberic.bother.entity.contract.Contract;
 import cn.aberic.bother.entity.contract.Request;
@@ -47,14 +47,14 @@ import java.util.List;
  * 作者：Aberic on 2018/8/30 20:54
  * 邮箱：abericyang@gmail.com
  */
-public class SystemContractExec implements ISystemContractExec, IContractBaseExec {
+public class PublicContractExec implements IPublicContractExec, IContractBaseExec {
 
     private RWSet rwSet;
     private List<ValueRead> reads;
     private List<ValueWrite> writes;
     private Request request;
 
-    public SystemContractExec() {
+    public PublicContractExec() {
         rwSet = new RWSet();
         reads = new ArrayList<>();
         writes = new ArrayList<>();
@@ -90,8 +90,8 @@ public class SystemContractExec implements ISystemContractExec, IContractBaseExe
     }
 
     @Override
-    public ISystemContractFileExec getContractFileExec() {
-        return new SystemContractFileExec();
+    public IPublicContractFileExec getContractFileExec() {
+        return new PublicContractFileExec();
     }
 
     @Override

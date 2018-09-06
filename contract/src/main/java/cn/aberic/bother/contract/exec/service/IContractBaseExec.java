@@ -31,9 +31,9 @@ import cn.aberic.bother.entity.block.Transaction;
 /**
  * 智能合约基本操作接口-smart contract
  * <p>
- * 当前接口原本可由 {@link ISystemContractExec} 以及 {@link IContractExec} 直接继承
+ * 当前接口原本可由 {@link IPublicContractExec} 以及 {@link IContractExec} 直接继承
  * <p>
- * 但为了不在用户编写的智能合约接口层暴露出来，故此接口需由 {@link ISystemContractExec} 以及 {@link IContractExec} 的实现对象来继承实现。
+ * 但为了不在用户编写的智能合约接口层暴露出来，故此接口需由 {@link IPublicContractExec} 以及 {@link IContractExec} 的实现对象来继承实现。
  * <p>
  * 作者：Aberic on 2018/8/30 23:11
  * 邮箱：abericyang@gmail.com
@@ -62,7 +62,7 @@ public interface IContractBaseExec {
      *
      * @return {@link cn.aberic.bother.storage.IFile} 实现
      */
-    ISystemContractFileExec getContractFileExec();
+    IPublicContractFileExec getContractFileExec();
 
     /**
      * 智能合约数据索引文件对象操作接口

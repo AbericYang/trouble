@@ -78,11 +78,16 @@ public class BlockStorage extends BlockAS {
         // 根据高度查询是否已存在本地区块对象
         Block blockFromFile = getBlockIndexExec().getByHeight(height);
         if (null == blockFromFile) { // 如果不存在，则执行存储操作
-            BlockInfo blockInfo = getBlockExec().createOrUpdate(block);
-            // getBlockIndexExec().createOrUpdate(blockInfo);
+            if (checkBlockVerify(block)) {
+                save(block);
+            }
         } else { // 如果存在，则进入下一步判断两者区块有效性
             checkVerify(height, block, blockFromFile);
         }
+    }
+
+    private boolean checkBlockVerify(Block block) {
+        return false;
     }
 
     /**

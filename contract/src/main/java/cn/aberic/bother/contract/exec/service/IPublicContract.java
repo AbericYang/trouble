@@ -31,7 +31,7 @@ package cn.aberic.bother.contract.exec.service;
  * 作者：Aberic on 2018/8/30 21:36
  * 邮箱：abericyang@gmail.com
  */
-public interface ISystemContract {
+public interface IPublicContract {
 
     /**
      * 执行智能合约
@@ -39,7 +39,7 @@ public interface ISystemContract {
      * @param exec       智能合约区块操作接口
      * @return 执行结果
      */
-    String invoke(ISystemContractExec exec);
+    String invoke(IPublicContractExec exec);
 
     /**
      * 查询智能合约
@@ -47,6 +47,6 @@ public interface ISystemContract {
      * @param exec       智能合约区块操作接口
      * @return 查询结果
      */
-    String query(ISystemContractExec exec);
+    String query(IPublicContractExec exec);
 
 }

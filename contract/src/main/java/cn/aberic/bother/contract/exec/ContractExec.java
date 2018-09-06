@@ -38,7 +38,7 @@ import java.io.File;
  * 作者：Aberic on 2018/08/29 16:43
  * 邮箱：abericyang@gmail.com
  */
-public class ContractExec extends SystemContractExec implements IContractExec, IContractBaseExec {
+public class ContractExec extends PublicContractExec implements IContractExec, IContractBaseExec {
 
     /** 智能合约hash */
     private String contractHash;

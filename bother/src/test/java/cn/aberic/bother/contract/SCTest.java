@@ -25,8 +25,8 @@
 package cn.aberic.bother.contract;
 
 import cn.aberic.bother.contract.exec.ContractExec;
-import cn.aberic.bother.contract.exec.SystemContractExec;
-import cn.aberic.bother.contract.system.SystemContract;
+import cn.aberic.bother.contract.exec.PublicContractExec;
+import cn.aberic.bother.contract.system.PublicContract;
 import cn.aberic.bother.entity.contract.Request;
 import cn.aberic.bother.tools.exception.ContractParamException;
 import com.alibaba.fastjson.JSON;
@@ -50,8 +50,8 @@ public class SCTest {
     }
 
     private static void systemContract() throws ContractParamException {
-        SystemContract contract = new SystemContract();
-        SystemContractExec contractExec = new SystemContractExec();
+        PublicContract contract = new PublicContract();
+        PublicContractExec contractExec = new PublicContractExec();
         Request request = new Request();
         request.setKey("test1");
         request.setValue("value1");
@@ -71,8 +71,8 @@ public class SCTest {
             request.setKey("key" + i);
             request.setValue("value" + i);
             request.setValue(JSON.toJSONString(request));
-            SystemContract contract = new SystemContract();
-            SystemContractExec contractExec = new SystemContractExec();
+            PublicContract contract = new PublicContract();
+            PublicContractExec contractExec = new PublicContractExec();
             contractExec.setRequest(request);
             String result = contract.invoke(contractExec);
             log.debug("result = {}", result);

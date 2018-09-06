@@ -25,8 +25,8 @@
 
 package cn.aberic.bother.controller;
 
-import cn.aberic.bother.contract.system.SystemContract;
-import cn.aberic.bother.contract.exec.SystemContractExec;
+import cn.aberic.bother.contract.system.PublicContract;
+import cn.aberic.bother.contract.exec.PublicContractExec;
 import cn.aberic.bother.entity.contract.Request;
 import org.springframework.web.bind.annotation.*;
 
@@ -41,8 +41,8 @@ public class ContractController {
 
     @PostMapping(value = "invoke")
     public String invoke(@RequestBody Request request) {
-        SystemContract contract = new SystemContract();
-        SystemContractExec contractExec = new SystemContractExec();
+        PublicContract contract = new PublicContract();
+        PublicContractExec contractExec = new PublicContractExec();
         contractExec.setRequest(request);
         String result = contract.invoke(contractExec);
         contractExec.sendTransaction();
@@ -51,8 +51,8 @@ public class ContractController {
 
     @PostMapping(value = "query")
     public String query(@RequestBody Request request) {
-        SystemContract contract = new SystemContract();
-        SystemContractExec contractExec = new SystemContractExec();
+        PublicContract contract = new PublicContract();
+        PublicContractExec contractExec = new PublicContractExec();
         contractExec.setRequest(request);
         return contract.query(contractExec);
     }

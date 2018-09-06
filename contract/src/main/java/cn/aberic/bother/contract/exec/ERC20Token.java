@@ -26,7 +26,7 @@
 package cn.aberic.bother.contract.exec;
 
 import cn.aberic.bother.contract.exec.service.IERC20Token;
-import cn.aberic.bother.contract.exec.service.ISystemContractExec;
+import cn.aberic.bother.contract.exec.service.IPublicContractExec;
 import cn.aberic.bother.encryption.key.exec.KeyExec;
 import cn.aberic.bother.entity.contract.Account;
 import cn.aberic.bother.entity.contract.AccountInfo;
@@ -52,28 +52,27 @@ public class ERC20Token implements IERC20Token {
     private Token token;
     private String address;
     private String priECCKey;
-    private ISystemContractExec systemContractExec;
+    private IPublicContractExec publicContractExec;
 
-    public ERC20Token(String tokenHash, ISystemContractExec systemContractExec) {
+    public ERC20Token(String tokenHash, IPublicContractExec publicContractExec) {
         this.tokenHash = tokenHash;
-        this.systemContractExec = systemContractExec;
-        this.token = JSON.parseObject(systemContractExec.get(tokenHash), new TypeReference<Token>() {});
+        this.publicContractExec = publicContractExec;
+        this.token = JSON.parseObject(publicContractExec.get(tokenHash), new TypeReference<Token>() {});
     }
 
-    public ERC20Token(String tokenHash, String priECCKey, ISystemContractExec systemContractExec) {
+    public ERC20Token(String tokenHash, String priECCKey, IPublicContractExec publicContractExec) {
         this.tokenHash = tokenHash;
         this.priECCKey = priECCKey;
-        this.systemContractExec = systemContractExec;
-        this.token = JSON.parseObject(systemContractExec.get(tokenHash), new TypeReference<Token>() {});
+        this.publicContractExec = publicContractExec;
+        this.token = JSON.parseObject(publicContractExec.get(tokenHash), new TypeReference<Token>() {});
     }
 
-    public ERC20Token(String tokenHash, String address, String priECCKey, ISystemContractExec systemContractExec) {
-        // TODO: 2018/9/6 Address 不能为空
+    public ERC20Token(String tokenHash, String address, String priECCKey, IPublicContractExec publicContractExec) {
         this.tokenHash = tokenHash;
         this.address = address;
         this.priECCKey = priECCKey;
-        this.systemContractExec = systemContractExec;
-        this.token = JSON.parseObject(systemContractExec.get(tokenHash), new TypeReference<Token>() {});
+        this.publicContractExec = publicContractExec;
+        this.token = JSON.parseObject(publicContractExec.get(tokenHash), new TypeReference<Token>() {});
     }
 
     public void setPriECCKey(String priECCKey) {
@@ -102,7 +101,7 @@ public class ERC20Token implements IERC20Token {
 
     @Override
     public BigDecimal balanceOf(String address) {
-        Account account = JSON.parseObject(systemContractExec.get(address), new TypeReference<Account>() {});
+        Account account = JSON.parseObject(publicContractExec.get(address), new TypeReference<Account>() {});
         AccountInfo info = JSON.parseObject(KeyExec.obtain().decryptPriStrECDSA(priECCKey, account.getJsonAccountInfoString()),
                 new TypeReference<AccountInfo>() {});
         return info.getCount();

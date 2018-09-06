@@ -36,7 +36,7 @@ import cn.aberic.bother.storage.IInit;
  * 作者：Aberic on 2018/8/30 23:33
  * 邮箱：abericyang@gmail.com
  */
-public interface ISystemContractFileExec extends IInit, IFile<Contract> {
+public interface IPublicContractFileExec extends IInit, IFile<Contract> {
 
     /**
      * 获取当前智能合约对象

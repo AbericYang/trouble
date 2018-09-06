@@ -25,7 +25,7 @@
 
 package cn.aberic.bother.contract.exec;
 
-import cn.aberic.bother.contract.exec.service.ISystemContractFileExec;
+import cn.aberic.bother.contract.exec.service.IPublicContractFileExec;
 import cn.aberic.bother.storage.Common;
 import cn.aberic.bother.storage.FileComponent;
 
@@ -33,7 +33,7 @@ import cn.aberic.bother.storage.FileComponent;
  * 作者：Aberic on 2018/8/30 21:00
  * 邮箱：abericyang@gmail.com
  */
-public class SystemContractFileExec implements ISystemContractFileExec {
+public class PublicContractFileExec implements IPublicContractFileExec {
 
     @Override
     public String getStorageHash() {

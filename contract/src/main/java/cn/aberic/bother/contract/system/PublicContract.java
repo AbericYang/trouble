@@ -25,8 +25,8 @@
 package cn.aberic.bother.contract.system;
 
 import cn.aberic.bother.contract.exec.ERC20Token;
-import cn.aberic.bother.contract.exec.service.ISystemContract;
-import cn.aberic.bother.contract.exec.service.ISystemContractExec;
+import cn.aberic.bother.contract.exec.service.IPublicContract;
+import cn.aberic.bother.contract.exec.service.IPublicContractExec;
 import cn.aberic.bother.entity.IResponse;
 import cn.aberic.bother.entity.contract.Request;
 import cn.aberic.bother.storage.Common;
@@ -42,16 +42,16 @@ import org.apache.commons.lang3.StringUtils;
  * 邮箱：abericyang@gmail.com
  */
 @Slf4j
-public class SystemContract implements ISystemContract {
+public class PublicContract implements IPublicContract {
 
     private TokenHelper tokenHelper;
 
-    public SystemContract() {
+    public PublicContract() {
         tokenHelper = new TokenHelper();
     }
 
     @Override
-    public String invoke(ISystemContractExec exec) {
+    public String invoke(IPublicContractExec exec) {
         Request request = exec.getRequest();
         if (StringUtils.isEmpty(request.getAddress())) { // invoke 请求账户地址不能为空
             throw new ERC20TokenAddressNullException();
@@ -71,7 +71,7 @@ public class SystemContract implements ISystemContract {
     }
 
     @Override
-    public String query(ISystemContractExec exec) {
+    public String query(IPublicContractExec exec) {
         ERC20Token erc20Token = new ERC20Token(Common.TOKEN_DEFAULT_SYSTEM_HASH, exec);
         Request request = exec.getRequest();
         if (!StringUtils.isEmpty(request.getAddress())) {

@@ -42,7 +42,7 @@ import java.io.IOException;
  * 作者：Aberic on 2018/8/30 21:28
  * 邮箱：abericyang@gmail.com
  */
-public interface IContractFileExec extends ISystemContractFileExec {
+public interface IContractFileExec extends IPublicContractFileExec {
 
     /**
      * 安装或者升级智能合约。

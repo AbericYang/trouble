@@ -25,7 +25,7 @@
 package cn.aberic.bother.contract.system;
 
 import cn.aberic.bother.contract.exec.ERC20Token;
-import cn.aberic.bother.contract.exec.service.ISystemContractExec;
+import cn.aberic.bother.contract.exec.service.IPublicContractExec;
 import cn.aberic.bother.encryption.key.exec.KeyExec;
 import cn.aberic.bother.entity.IResponse;
 import cn.aberic.bother.entity.contract.Account;
@@ -52,7 +52,7 @@ class TokenHelper {
      * @return 执行结果
      */
     String publishToken(ERC20Token erc20Token) {
-        ISystemContractExec exec = erc20Token.getSystemContractExec();
+        IPublicContractExec exec = erc20Token.getPublicContractExec();
         JSONObject jsonObject = JSON.parseObject(exec.get("publish"));
         // 发布者公网账户
         Account pubAccount = JSON.parseObject(exec.get(erc20Token.getAddress()), new TypeReference<Account>() {});
