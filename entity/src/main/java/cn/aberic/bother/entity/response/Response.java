@@ -20,35 +20,28 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- *
  */
 
-package cn.aberic.bother.contract.exec.service;
+package cn.aberic.bother.entity.response;
 
-import cn.aberic.bother.entity.response.Response;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
- * 系统级智能合约常规操作接口-smart contract
+ * Controller 接收返回对象
  * <p>
- * 作者：Aberic on 2018/8/30 21:36
+ * 作者：Aberic on 2018/09/07 17:22
  * 邮箱：abericyang@gmail.com
  */
-public interface IPublicContract {
+@Setter
+@Getter
+public class Response {
 
-    /**
-     * 执行智能合约
-     *
-     * @param exec       智能合约区块操作接口
-     * @return 执行结果
-     */
-    Response invoke(IPublicContractExec exec);
+    private boolean send;
+    private String resultResponse;
 
-    /**
-     * 查询智能合约
-     *
-     * @param exec       智能合约区块操作接口
-     * @return 查询结果
-     */
-    Response query(IPublicContractExec exec);
-
+    public Response(boolean send, String resultResponse) {
+        this.send = send;
+        this.resultResponse = resultResponse;
+    }
 }

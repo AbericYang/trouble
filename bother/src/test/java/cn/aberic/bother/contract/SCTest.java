@@ -74,7 +74,7 @@ public class SCTest {
             PublicContract contract = new PublicContract();
             PublicContractExec contractExec = new PublicContractExec();
             contractExec.setRequest(request);
-            String result = contract.invoke(contractExec);
+            String result = contract.invoke(contractExec).getResultResponse();
             log.debug("result = {}", result);
             contractExec.sendTransaction();
         }

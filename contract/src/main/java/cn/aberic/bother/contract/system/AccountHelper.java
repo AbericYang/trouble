@@ -30,12 +30,13 @@ import cn.aberic.bother.contract.exec.service.IPublicContractExec;
 import cn.aberic.bother.encryption.MD5;
 import cn.aberic.bother.encryption.key.bean.Key;
 import cn.aberic.bother.encryption.key.exec.KeyExec;
-import cn.aberic.bother.entity.IResponse;
+import cn.aberic.bother.entity.response.IResponse;
 import cn.aberic.bother.entity.account.AccountUser;
 import cn.aberic.bother.entity.account.Cheque;
 import cn.aberic.bother.entity.contract.Account;
 import cn.aberic.bother.entity.contract.AccountBusiness;
 import cn.aberic.bother.entity.contract.AccountInfo;
+import cn.aberic.bother.entity.response.Response;
 import cn.aberic.bother.entity.token.Token;
 import cn.aberic.bother.tools.DateTool;
 import com.alibaba.fastjson.JSON;
@@ -63,7 +64,7 @@ class AccountHelper {
      * @param business 账户处理事务
      * @return 支票流转字符串信息
      */
-    String cheque(IPublicContractExec exec, AccountBusiness business) throws Exception {
+    Response cheque(IPublicContractExec exec, AccountBusiness business) throws Exception {
         // 开支票的公网账户
         Account pubAccount = JSON.parseObject(exec.get(business.getAddress()), new TypeReference<Account>() {});
         // 开支票的公网账户余额
@@ -79,14 +80,14 @@ class AccountHelper {
         // 检查开支票的金额是否小于0
         if (cheque.getCount().compareTo(new BigDecimal(0)) < 0) {
             log.debug("支票金额 = {}", cheque.getCount().toPlainString());
-            return exec.response(IResponse.Response.PARAM_ERROR);
+            return exec.response(IResponse.ResponseType.PARAM_ERROR);
         }
 
         // 检查该公网账户是否有足够余额开此支票
         if (cheque.getCount().compareTo(pubCount) > 0) {
             log.debug("账户金额 = {}", pubCount.toPlainString());
             // 如果余额不足，则返回对应信息
-            return exec.response(IResponse.Response.ACCOUNT_LACK_OF_BALANCE);
+            return exec.response(IResponse.ResponseType.ACCOUNT_LACK_OF_BALANCE);
         }
 
         // 获取账户详情对象
@@ -104,7 +105,7 @@ class AccountHelper {
      * @param business   账户处理事务
      * @return 支票流转字符串信息
      */
-    String openAccount(PublicContractExec exec, ERC20Token erc20Token, AccountBusiness business) {
+    Response openAccount(PublicContractExec exec, ERC20Token erc20Token, AccountBusiness business) {
         Token token = erc20Token.getToken();
         // 创建账户需要支付支票
         // 获取支票账户
@@ -114,24 +115,24 @@ class AccountHelper {
                 new TypeReference<Cheque>() {});
         // 如果链上已经记录了该支票信息，则表示该支票已被消费过
         if (null != exec.get(MD5.md516(cheque.toString()))) {
-            return exec.response(IResponse.Response.CHEQUE_INVALID);
+            return exec.response(IResponse.ResponseType.CHEQUE_INVALID);
         }
         // 如果支票已经过期，则此支票无效
         if (new Date().getTime() > cheque.getEndTimestamp()) {
-            return exec.response(IResponse.Response.CHEQUE_OVERDUE);
+            return exec.response(IResponse.ResponseType.CHEQUE_OVERDUE);
         }
 
         log.debug("开户 支票金额 = {}", cheque.getCount().toPlainString());
         // 检查开支票的金额是否小于0
         if (cheque.getCount().compareTo(new BigDecimal(0)) < 0) {
-            return exec.response(IResponse.Response.PARAM_ERROR);
+            return exec.response(IResponse.ResponseType.PARAM_ERROR);
         }
 
         log.debug("开户 账户金额 = {}", chequeAccount.getCount().toPlainString());
         // 检查该公网账户是否有足够余额支付此支票
         if (cheque.getCount().compareTo(chequeAccount.getCount()) > 0) {
             // 如果余额不足，则返回对应信息
-            return exec.response(IResponse.Response.ACCOUNT_LACK_OF_BALANCE);
+            return exec.response(IResponse.ResponseType.ACCOUNT_LACK_OF_BALANCE);
         }
 
         // 支票满足使用条件，开始创建新账户
@@ -165,7 +166,7 @@ class AccountHelper {
         // 检查该支票是否有足够金额支付
         if (consumption.compareTo(cheque.getCount()) > 0) {
             // 如果支票金额不足，则返回对应信息
-            return exec.response(IResponse.Response.CHEQUE_LACK_OF_BALANCE);
+            return exec.response(IResponse.ResponseType.CHEQUE_LACK_OF_BALANCE);
         }
 
         // 扣减存储费，并将多出来的 Token 根据支票属性判定所有

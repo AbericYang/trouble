@@ -20,11 +20,11 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- *
  */
 
-package cn.aberic.bother.entity;
+package cn.aberic.bother.entity.response;
 
+import cn.aberic.bother.entity.BeanJsonField;
 import cn.aberic.bother.tools.VerifyTool;
 import com.alibaba.fastjson.JSONObject;
 
@@ -42,7 +42,7 @@ public interface IResponse {
      * 作者：Aberic on 2018/09/05 14:04
      * 邮箱：abericyang@gmail.com
      */
-    enum Response {
+    enum ResponseType {
         /** 返回码 200，返回信息 success */
         SUCCESS(200, "success"),
         /** 返回码 8000，返回信息 fail */
@@ -76,7 +76,7 @@ public interface IResponse {
          * @param code 请求结果码
          * @param msg  请求结果信息
          */
-        Response(int code, String msg) {
+        ResponseType(int code, String msg) {
             this.msg = msg;
             this.code = code;
         }
@@ -96,10 +96,10 @@ public interface IResponse {
      * @param result 传入字符串
      * @return json字符串
      */
-    default String response(String result) {
+    default Response response(String result) {
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("code", Response.SUCCESS.code);
-        return VerifyTool.verifyJSON(jsonObject, result).toString();
+        jsonObject.put("code", ResponseType.SUCCESS.code);
+        return new Response(true, VerifyTool.verifyJSON(jsonObject, result).toString());
     }
 
     /**
@@ -110,14 +110,14 @@ public interface IResponse {
      * @param obj 传入对象
      * @return json字符串
      */
-    default String response(Object obj) {
+    default Response response(Object obj) {
         if (obj instanceof BeanJsonField) {
             return responseBean((BeanJsonField) obj);
         }
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("code", Response.SUCCESS.code);
+        jsonObject.put("code", ResponseType.SUCCESS.code);
         jsonObject.put("data", obj);
-        return jsonObject.toString();
+        return new Response(true, jsonObject.toString());
     }
 
     /**
@@ -130,35 +130,35 @@ public interface IResponse {
      * @param bean 实现 BeanJsonField 接口的对象
      * @return json字符串
      */
-    default String responseBean(BeanJsonField bean) {
+    default Response responseBean(BeanJsonField bean) {
         return response(bean.toJsonString());
     }
 
     /**
      * 通用错误信息返回，返回内容内置且匹配返回码
      *
-     * @param response 返回枚举对象
+     * @param responseType 返回枚举对象
      * @return 返回 success json字符串
      */
-    default String response(Response response) {
+    default Response response(ResponseType responseType) {
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("code", response.code);
-        jsonObject.put("data", response.msg);
-        return jsonObject.toString();
+        jsonObject.put("code", responseType.code);
+        jsonObject.put("data", responseType.msg);
+        return new Response(responseType.code == 200, jsonObject.toString());
     }
 
     /**
      * 通用错误信息返回，返回内容内置且匹配返回码
      *
-     * @param response 返回枚举对象
+     * @param responseType 返回枚举对象
      * @param msg      返回自定义信息
      * @return 返回 success json字符串
      */
-    default String response(Response response, String msg) {
+    default Response response(ResponseType responseType, String msg) {
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("code", response.code);
+        jsonObject.put("code", responseType.code);
         jsonObject.put("data", msg);
-        return jsonObject.toString();
+        return new Response(responseType.code == 200, jsonObject.toString());
     }
 
 

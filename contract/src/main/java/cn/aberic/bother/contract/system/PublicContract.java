@@ -28,9 +28,10 @@ import cn.aberic.bother.contract.exec.ERC20Token;
 import cn.aberic.bother.contract.exec.PublicContractExec;
 import cn.aberic.bother.contract.exec.service.IPublicContract;
 import cn.aberic.bother.contract.exec.service.IPublicContractExec;
-import cn.aberic.bother.entity.IResponse;
+import cn.aberic.bother.entity.response.IResponse;
 import cn.aberic.bother.entity.contract.AccountBusiness;
 import cn.aberic.bother.entity.contract.Request;
+import cn.aberic.bother.entity.response.Response;
 import cn.aberic.bother.storage.Common;
 import cn.aberic.bother.tools.exception.ERC20TokenAddressNullException;
 import cn.aberic.bother.tools.exception.RequestTypeNotFoundException;
@@ -55,7 +56,7 @@ public class PublicContract implements IPublicContract {
     }
 
     @Override
-    public String invoke(IPublicContractExec exec) {
+    public Response invoke(IPublicContractExec exec) {
         Request request = exec.getRequest();
         AccountBusiness business = request.getBusiness();
         if (StringUtils.isEmpty(business.getAddress())) { // invoke 请求账户地址不能为空
@@ -75,11 +76,11 @@ public class PublicContract implements IPublicContract {
                 return tokenHelper.transferFrom(erc20Token);
         }
 //         exec.put(request.getKey(), request.getValue());
-        return exec.response(IResponse.Response.REQUEST_TYPE_NOT_FOUND);
+        return exec.response(IResponse.ResponseType.REQUEST_TYPE_NOT_FOUND);
     }
 
     @Override
-    public String query(IPublicContractExec exec) {
+    public Response query(IPublicContractExec exec) {
         ERC20Token erc20Token = new ERC20Token(Common.TOKEN_DEFAULT_SYSTEM_HASH, exec);
         Request request = exec.getRequest();
         AccountBusiness business = request.getBusiness();
@@ -102,13 +103,13 @@ public class PublicContract implements IPublicContract {
      * @param business 账户处理事务
      * @return 查询结果
      */
-    private String intentExec(IPublicContractExec exec, AccountBusiness business) {
+    private Response intentExec(IPublicContractExec exec, AccountBusiness business) {
         switch (business.getIntent()) {
             case CHEQUE:
                 try {
                     return accountHelper.cheque(exec, business);
                 } catch (Exception e) {
-                    return exec.response(IResponse.Response.FAIL, e.getMessage());
+                    return exec.response(IResponse.ResponseType.FAIL, e.getMessage());
                 }
             case ALLOWANCE:
         }
@@ -123,7 +124,7 @@ public class PublicContract implements IPublicContract {
      * @param erc20Token ERC20 接口实现
      * @return 查询结果
      */
-    private String keyExec(IPublicContractExec exec, Request request, ERC20Token erc20Token) {
+    private Response keyExec(IPublicContractExec exec, Request request, ERC20Token erc20Token) {
         switch (request.getKey()) {
             // 返回string类型的ERC20 Token 的名字，例如：NoTroubleBother
             case "name":

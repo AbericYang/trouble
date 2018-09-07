@@ -26,8 +26,9 @@ package cn.aberic.bother.contract.system;
 
 import cn.aberic.bother.contract.exec.ERC20Token;
 import cn.aberic.bother.contract.exec.service.IPublicContractExec;
-import cn.aberic.bother.entity.IResponse;
+import cn.aberic.bother.entity.response.IResponse;
 import cn.aberic.bother.entity.contract.Account;
+import cn.aberic.bother.entity.response.Response;
 import cn.aberic.bother.entity.token.Token;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -49,7 +50,7 @@ class TokenHelper {
      * @param erc20Token ERC20 接口实现
      * @return 执行结果
      */
-    String publishToken(ERC20Token erc20Token) {
+    Response publishToken(ERC20Token erc20Token) {
         IPublicContractExec exec = erc20Token.getPublicContractExec();
         JSONObject jsonObject = JSON.parseObject(exec.get("publish"));
         // 发布者公网账户
@@ -75,13 +76,13 @@ class TokenHelper {
         // 检查该公网账户是否有足够余额支付
         if (consumption.compareTo(pubCount) > 0) {
             // 如果余额不足，则返回对应信息
-            return exec.response(IResponse.Response.ACCOUNT_LACK_OF_BALANCE);
+            return exec.response(IResponse.ResponseType.ACCOUNT_LACK_OF_BALANCE);
         }
 
         // 扣减存储费
         pubCount = pubCount.subtract(consumption);
         if (pubCount.doubleValue() < 0) {
-            return exec.response(IResponse.Response.ACCOUNT_LACK_OF_BALANCE);
+            return exec.response(IResponse.ResponseType.ACCOUNT_LACK_OF_BALANCE);
         }
 
         // Token 上链
@@ -94,7 +95,7 @@ class TokenHelper {
         // 更新后数据上链
         exec.put(erc20Token.getAddress(), JSON.toJSONString(pubAccount));
 
-        return exec.response(IResponse.Response.SUCCESS);
+        return exec.response(IResponse.ResponseType.SUCCESS);
     }
 
     /**
@@ -103,13 +104,13 @@ class TokenHelper {
      * @param erc20Token ERC20 接口实现
      * @return 成功与否
      */
-    String transfer(ERC20Token erc20Token) {
+    Response transfer(ERC20Token erc20Token) {
         IPublicContractExec exec = erc20Token.getPublicContractExec();
         JSONObject json = exec.getRequest().getJsonValue();
         if (erc20Token.transfer(json.getString("addressTo"), json.getBigDecimal("count"))) {
-            return exec.response(IResponse.Response.SUCCESS);
+            return exec.response(IResponse.ResponseType.SUCCESS);
         }
-        return exec.response(IResponse.Response.FAIL);
+        return exec.response(IResponse.ResponseType.FAIL);
     }
 
     /**
@@ -118,13 +119,13 @@ class TokenHelper {
      * @param erc20Token ERC20 接口实现
      * @return 成功与否
      */
-    String approve(ERC20Token erc20Token) {
+    Response approve(ERC20Token erc20Token) {
         IPublicContractExec exec = erc20Token.getPublicContractExec();
         JSONObject json = exec.getRequest().getJsonValue();
         if (erc20Token.approve(json.getString("addressSpender"), json.getBigDecimal("count"))) {
-            return exec.response(IResponse.Response.SUCCESS);
+            return exec.response(IResponse.ResponseType.SUCCESS);
         }
-        return exec.response(IResponse.Response.FAIL);
+        return exec.response(IResponse.ResponseType.FAIL);
     }
 
     /**
@@ -133,13 +134,13 @@ class TokenHelper {
      * @param erc20Token ERC20 接口实现
      * @return 成功与否
      */
-    String transferFrom(ERC20Token erc20Token) {
+    Response transferFrom(ERC20Token erc20Token) {
         IPublicContractExec exec = erc20Token.getPublicContractExec();
         JSONObject json = exec.getRequest().getJsonValue();
         if (erc20Token.transferFrom(json.getString("addressFrom"), json.getString("addressTo"), json.getBigDecimal("count"))) {
-            return exec.response(IResponse.Response.SUCCESS);
+            return exec.response(IResponse.ResponseType.SUCCESS);
         }
-        return exec.response(IResponse.Response.FAIL);
+        return exec.response(IResponse.ResponseType.FAIL);
     }
 
     /**
@@ -153,7 +154,7 @@ class TokenHelper {
      * @param erc20Token ERC20 接口实现
      * @return 能提取token的个数
      */
-    String allowance(ERC20Token erc20Token) {
+    Response allowance(ERC20Token erc20Token) {
         IPublicContractExec exec = erc20Token.getPublicContractExec();
         JSONObject json = exec.getRequest().getJsonValue();
         return exec.response(erc20Token.allowance(json.getString("addressOwner"), json.getString("addressSpender")).toPlainString());

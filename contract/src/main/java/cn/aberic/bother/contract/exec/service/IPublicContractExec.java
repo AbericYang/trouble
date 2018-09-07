@@ -25,7 +25,7 @@
 
 package cn.aberic.bother.contract.exec.service;
 
-import cn.aberic.bother.entity.IResponse;
+import cn.aberic.bother.entity.response.IResponse;
 import cn.aberic.bother.entity.block.Block;
 import cn.aberic.bother.entity.contract.Contract;
 import cn.aberic.bother.entity.contract.Request;

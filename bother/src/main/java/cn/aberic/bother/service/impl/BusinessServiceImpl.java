@@ -28,7 +28,7 @@ import cn.aberic.bother.contract.exec.PublicContractExec;
 import cn.aberic.bother.contract.system.PublicContract;
 import cn.aberic.bother.encryption.key.bean.Key;
 import cn.aberic.bother.encryption.key.exec.KeyExec;
-import cn.aberic.bother.entity.IResponse;
+import cn.aberic.bother.entity.response.IResponse;
 import cn.aberic.bother.entity.account.AccountUser;
 import cn.aberic.bother.entity.contract.Account;
 import cn.aberic.bother.entity.contract.AccountBusiness;
@@ -123,7 +123,7 @@ public class BusinessServiceImpl implements BusinessService, IResponse {
         publicContractExec.setRequest(request);
         log.debug("invoke account = {}", publicContract.invoke(publicContractExec));
         publicContractExec.sendTransaction();
-        return response(Response.SUCCESS);
+        return response(ResponseType.SUCCESS).getResultResponse();
     }
 
 }
