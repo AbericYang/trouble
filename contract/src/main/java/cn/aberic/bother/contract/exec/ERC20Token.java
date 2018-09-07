@@ -27,15 +27,15 @@ package cn.aberic.bother.contract.exec;
 
 import cn.aberic.bother.contract.exec.service.IERC20Token;
 import cn.aberic.bother.contract.exec.service.IPublicContractExec;
-import cn.aberic.bother.encryption.key.exec.KeyExec;
+import cn.aberic.bother.contract.system.IHelper;
 import cn.aberic.bother.entity.contract.Account;
-import cn.aberic.bother.entity.contract.AccountInfo;
 import cn.aberic.bother.entity.token.Token;
 import cn.aberic.bother.tools.exception.AccountNotFoundException;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
 
@@ -45,9 +45,10 @@ import java.math.BigDecimal;
  * 作者：Aberic on 2018/9/5 21:09
  * 邮箱：abericyang@gmail.com
  */
+@Slf4j
 @Setter
 @Getter
-public class ERC20Token implements IERC20Token {
+public class ERC20Token implements IERC20Token, IHelper {
 
     private String tokenHash;
     private Token token;
@@ -108,6 +109,7 @@ public class ERC20Token implements IERC20Token {
 
     @Override
     public boolean transfer(String addressTo, BigDecimal count) {
+        count = count.setScale(token.getDecimals(), BigDecimal.ROUND_HALF_UP);
         Account accountFrom = JSON.parseObject(publicContractExec.get(address), new TypeReference<Account>() {});
         Account accountTo = JSON.parseObject(publicContractExec.get(addressTo), new TypeReference<Account>() {});
         if (null == accountTo) {
@@ -117,8 +119,17 @@ public class ERC20Token implements IERC20Token {
         if (accountFrom.getCount().compareTo(count) < 0) {
             return false;
         }
-        accountFrom.getCount().subtract(count);
-        accountTo.getCount().add(count);
+        // 计算本次账户及 Token 创建所需存储大小
+        long size = JSON.toJSONString(accountFrom).getBytes().length + JSON.toJSONString(accountTo).getBytes().length;
+        // 计算本次账户创建所需存储费用
+        BigDecimal cost = new BigDecimal(size * 0.0001).setScale(token.getDecimals(), BigDecimal.ROUND_HALF_UP);
+        log.debug("计算本次账户创建所需存储费用 cost = {}", cost);
+
+        accountFrom.setCount(accountFrom.getCount().subtract(count));
+        accountTo.setCount(accountTo.getCount().add(count.subtract(cost)));
+        publicContractExec.put(accountFrom.getAddress(), JSON.toJSONString(accountFrom));
+        publicContractExec.put(accountTo.getAddress(), JSON.toJSONString(accountTo));
+        cost(publicContractExec, cost, token);
         return true;
     }
 

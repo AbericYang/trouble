@@ -55,13 +55,14 @@ import java.util.Date;
  * 邮箱：abericyang@gmail.com
  */
 @Slf4j
-class AccountHelper {
+class AccountHelper implements IHelper {
 
     /**
      * 账户开支票
      *
      * @param exec     系统级智能合约操作接口
      * @param business 账户处理事务
+     *
      * @return 支票流转字符串信息
      */
     Response cheque(IPublicContractExec exec, AccountBusiness business) throws Exception {
@@ -103,6 +104,7 @@ class AccountHelper {
      * @param exec       系统级智能合约操作接口
      * @param erc20Token ERC20 接口实现
      * @param business   账户处理事务
+     *
      * @return 支票流转字符串信息
      */
     Response openAccount(PublicContractExec exec, ERC20Token erc20Token, AccountBusiness business) {
@@ -156,45 +158,46 @@ class AccountHelper {
         // 得到即将存储的账户字符串
         String accountStr = JSON.toJSONString(account);
         // 计算本次账户及 Token 创建所需存储大小
-        long size = accountStr.getBytes().length;
+        long size = accountStr.getBytes().length + JSON.toJSONString(chequeAccount).getBytes().length;
         // 计算本次账户创建所需存储费用
-        BigDecimal consumption = new BigDecimal(size * 0.0001).setScale(token.getDecimals(), BigDecimal.ROUND_HALF_UP);
-        log.debug("开户 存储费用 = {}", consumption.toPlainString());
+        BigDecimal cost = new BigDecimal(size * 0.0001).setScale(token.getDecimals(), BigDecimal.ROUND_HALF_UP);
+        log.debug("开户 计算本次账户创建所需存储费用 = {}", cost.toPlainString());
         // 支付费用后支票余额
-        BigDecimal balance = cheque.getCount().subtract(consumption);
+        BigDecimal balance = cheque.getCount().subtract(cost).setScale(token.getDecimals(), BigDecimal.ROUND_HALF_UP);
+        log.debug("开户 支付费用后支票余额 = {}", balance.toPlainString());
 
         // 检查该支票是否有足够金额支付
-        if (consumption.compareTo(cheque.getCount()) > 0) {
+        if (cost.compareTo(cheque.getCount()) > 0) {
             // 如果支票金额不足，则返回对应信息
             return exec.response(IResponse.ResponseType.CHEQUE_LACK_OF_BALANCE);
         }
 
         // 扣减存储费，并将多出来的 Token 根据支票属性判定所有
-        if (cheque.getType() == 1 && balance.compareTo(new BigDecimal(0.0001)) <= 0) {
+        if (cheque.getType() == 1 && balance.compareTo(new BigDecimal(0.0001)) > 0) {
             // 先让账户创建所需存储费用增加0.0001，进入循环后循环减去0.0001，直到算出正确费用
-            consumption = consumption.add(new BigDecimal(0.0001)).setScale(token.getDecimals(), BigDecimal.ROUND_HALF_UP);
+            cost = cost.add(new BigDecimal(0.0001)).setScale(token.getDecimals(), BigDecimal.ROUND_HALF_UP);
             do {
-                consumption = consumption.subtract(new BigDecimal(0.0001)).setScale(token.getDecimals(), BigDecimal.ROUND_HALF_UP);
+                cost = cost.subtract(new BigDecimal(0.0001)).setScale(token.getDecimals(), BigDecimal.ROUND_HALF_UP);
                 // 支付费用后支票余额
-                balance = cheque.getCount().subtract(consumption);
+                balance = cheque.getCount().subtract(cost).setScale(token.getDecimals(), BigDecimal.ROUND_HALF_UP);
                 log.debug("开户 支票余额 = {}", balance.toPlainString());
                 // 重新设置账户余额
                 account.setCount(balance);
                 // 得到新的即将存储的账户字符串
                 accountStr = JSON.toJSONString(account);
                 // 重新计算本次账户及 Token 创建所需存储大小
-                size = accountStr.getBytes().length;
+                size = accountStr.getBytes().length + JSON.toJSONString(chequeAccount).getBytes().length;
                 // 重新计算本次账户及 Token 创建所需存储费用
-                consumption = new BigDecimal(size * 0.0001).setScale(token.getDecimals(), BigDecimal.ROUND_HALF_UP);
-                log.debug("开户 新存储费用 = {}", consumption.toPlainString());
+                cost = new BigDecimal(size * 0.0001).setScale(token.getDecimals(), BigDecimal.ROUND_HALF_UP);
+                log.debug("开户 新存储费用 = {}", cost.toPlainString());
                 // 支票开票账户消费本次支票金额
-                chequeAccount.setCount(chequeAccount.getCount().subtract(cheque.getCount()));
+                chequeAccount.setCount(chequeAccount.getCount().subtract(cheque.getCount()).setScale(token.getDecimals(), BigDecimal.ROUND_HALF_UP));
 
                 // 检查该支票是否有足够金额支付
-            } while (consumption.compareTo(cheque.getCount()) > 0);
+            } while (cost.compareTo(cheque.getCount()) > 0);
         } else {
             // 支票开票账户消费本次支票金额
-            chequeAccount.setCount(chequeAccount.getCount().subtract(consumption));
+            chequeAccount.setCount(chequeAccount.getCount().subtract(cost).setScale(token.getDecimals(), BigDecimal.ROUND_HALF_UP));
         }
 
         exec.setPriECCKey(eccKey.getPrivateKey());
@@ -202,6 +205,7 @@ class AccountHelper {
         exec.put(account.getAddress(), JSON.toJSONString(account));
         // 更新支票开票账户金额
         exec.put(chequeAccount.getAddress(), JSON.toJSONString(chequeAccount));
+        cost(exec, cost, token);
         // 支票消费记录上链
         exec.put(MD5.md516(cheque.toString()), "1");
 

@@ -62,7 +62,7 @@ public class PublicContract implements IPublicContract {
         if (StringUtils.isEmpty(business.getAddress())) { // invoke 请求账户地址不能为空
             throw new ERC20TokenAddressNullException();
         }
-        ERC20Token erc20Token = new ERC20Token(Common.TOKEN_DEFAULT_SYSTEM_HASH, business.getAddress(), business.getPriECCKey(), exec);
+        ERC20Token erc20Token = new ERC20Token(Common.TOKEN_DEFAULT_PUBLIC_HASH, business.getAddress(), business.getPriECCKey(), exec);
         switch (business.getIntent()) {
             case PUBLISH:
                 return tokenHelper.publishToken(erc20Token);
@@ -81,7 +81,7 @@ public class PublicContract implements IPublicContract {
 
     @Override
     public Response query(IPublicContractExec exec) {
-        ERC20Token erc20Token = new ERC20Token(Common.TOKEN_DEFAULT_SYSTEM_HASH, exec);
+        ERC20Token erc20Token = new ERC20Token(Common.TOKEN_DEFAULT_PUBLIC_HASH, exec);
         Request request = exec.getRequest();
         AccountBusiness business = request.getBusiness();
         if (null != business && !StringUtils.isEmpty(business.getAddress())) {

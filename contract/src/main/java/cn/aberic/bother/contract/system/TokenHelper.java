@@ -110,7 +110,7 @@ class TokenHelper {
         if (erc20Token.transfer(json.getString("addressTo"), json.getBigDecimal("count"))) {
             return exec.response(IResponse.ResponseType.SUCCESS);
         }
-        return exec.response(IResponse.ResponseType.FAIL);
+        return exec.response(IResponse.ResponseType.ACCOUNT_LACK_OF_BALANCE);
     }
 
     /**
