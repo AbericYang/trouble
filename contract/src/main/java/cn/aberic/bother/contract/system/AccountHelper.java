@@ -24,20 +24,20 @@
 
 package cn.aberic.bother.contract.system;
 
-import cn.aberic.bother.contract.exec.ERC20Token;
 import cn.aberic.bother.contract.exec.PublicContractExec;
 import cn.aberic.bother.contract.exec.service.IPublicContractExec;
 import cn.aberic.bother.encryption.MD5;
 import cn.aberic.bother.encryption.key.bean.Key;
 import cn.aberic.bother.encryption.key.exec.KeyExec;
-import cn.aberic.bother.entity.response.IResponse;
 import cn.aberic.bother.entity.account.AccountUser;
 import cn.aberic.bother.entity.account.Cheque;
 import cn.aberic.bother.entity.contract.Account;
 import cn.aberic.bother.entity.contract.AccountBusiness;
 import cn.aberic.bother.entity.contract.AccountInfo;
+import cn.aberic.bother.entity.response.IResponse;
 import cn.aberic.bother.entity.response.Response;
 import cn.aberic.bother.entity.token.Token;
+import cn.aberic.bother.storage.Common;
 import cn.aberic.bother.tools.DateTool;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
@@ -102,13 +102,12 @@ class AccountHelper implements IHelper {
      * 开户
      *
      * @param exec       系统级智能合约操作接口
-     * @param erc20Token ERC20 接口实现
      * @param business   账户处理事务
      *
      * @return 支票流转字符串信息
      */
-    Response openAccount(PublicContractExec exec, ERC20Token erc20Token, AccountBusiness business) {
-        Token token = erc20Token.getToken();
+    Response openAccount(PublicContractExec exec, AccountBusiness business) {
+        Token token = JSON.parseObject(exec.get(Common.TOKEN_DEFAULT_PUBLIC_HASH), new TypeReference<Token>() {});
         // 创建账户需要支付支票
         // 获取支票账户
         Account chequeAccount = JSON.parseObject(exec.get(business.getAddress()), new TypeReference<Account>() {});
@@ -209,7 +208,7 @@ class AccountHelper implements IHelper {
         // 支票消费记录上链
         exec.put(MD5.md516(cheque.toString()), "1");
 
-        return exec.response(new AccountUser(address, eccKey.getPrivateKey(), erc20Token.getTokenHash()));
+        return exec.response(new AccountUser(address, eccKey.getPrivateKey(), Common.TOKEN_DEFAULT_PUBLIC_HASH));
     }
 
 }

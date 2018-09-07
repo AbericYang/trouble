@@ -24,15 +24,13 @@
 
 package cn.aberic.bother.contract.system;
 
-import cn.aberic.bother.contract.exec.ERC20Token;
 import cn.aberic.bother.contract.exec.PublicContractExec;
 import cn.aberic.bother.contract.exec.service.IPublicContract;
 import cn.aberic.bother.contract.exec.service.IPublicContractExec;
-import cn.aberic.bother.entity.response.IResponse;
 import cn.aberic.bother.entity.contract.AccountBusiness;
 import cn.aberic.bother.entity.contract.Request;
+import cn.aberic.bother.entity.response.IResponse;
 import cn.aberic.bother.entity.response.Response;
-import cn.aberic.bother.storage.Common;
 import cn.aberic.bother.tools.exception.ERC20TokenAddressNullException;
 import cn.aberic.bother.tools.exception.RequestTypeNotFoundException;
 import lombok.extern.slf4j.Slf4j;
@@ -47,33 +45,31 @@ import org.apache.commons.lang3.StringUtils;
 @Slf4j
 public class PublicContract implements IPublicContract {
 
-    private TokenHelper tokenHelper;
     private AccountHelper accountHelper;
 
     public PublicContract() {
-        tokenHelper = new TokenHelper();
         accountHelper = new AccountHelper();
     }
 
     @Override
     public Response invoke(IPublicContractExec exec) {
+        TokenHelper tokenHelper = new TokenHelper(exec);
         Request request = exec.getRequest();
         AccountBusiness business = request.getBusiness();
         if (StringUtils.isEmpty(business.getAddress())) { // invoke 请求账户地址不能为空
             throw new ERC20TokenAddressNullException();
         }
-        ERC20Token erc20Token = new ERC20Token(Common.TOKEN_DEFAULT_PUBLIC_HASH, business.getAddress(), business.getPriECCKey(), exec);
         switch (business.getIntent()) {
             case PUBLISH:
-                return tokenHelper.publishToken(erc20Token);
+                return tokenHelper.publishToken();
             case OPEN_ACCOUNT:
-                return accountHelper.openAccount((PublicContractExec) exec, erc20Token, business);
+                return accountHelper.openAccount((PublicContractExec) exec, business);
             case TRANSFER:
-                return tokenHelper.transfer(erc20Token);
+                return tokenHelper.transfer();
             case APPROVE:
-                return tokenHelper.approve(erc20Token);
+                return tokenHelper.approve();
             case TRANSFER_FROM:
-                return tokenHelper.transferFrom(erc20Token);
+                return tokenHelper.transferFrom();
         }
 //         exec.put(request.getKey(), request.getValue());
         return exec.response(IResponse.ResponseType.REQUEST_TYPE_NOT_FOUND);
@@ -81,19 +77,12 @@ public class PublicContract implements IPublicContract {
 
     @Override
     public Response query(IPublicContractExec exec) {
-        ERC20Token erc20Token = new ERC20Token(Common.TOKEN_DEFAULT_PUBLIC_HASH, exec);
         Request request = exec.getRequest();
         AccountBusiness business = request.getBusiness();
-        if (null != business && !StringUtils.isEmpty(business.getAddress())) {
-            erc20Token.setAddress(business.getAddress());
-        }
-        if (null != business && !StringUtils.isEmpty(business.getPriECCKey())) {
-            erc20Token.setPriECCKey(business.getPriECCKey());
-        }
         if (null != business && null != business.getIntent()) {
             return intentExec(exec, business);
         }
-        return keyExec(exec, request, erc20Token);
+        return keyExec(exec, request);
     }
 
     /**
@@ -101,6 +90,7 @@ public class PublicContract implements IPublicContract {
      *
      * @param exec     系统级智能合约操作接口
      * @param business 账户处理事务
+     *
      * @return 查询结果
      */
     private Response intentExec(IPublicContractExec exec, AccountBusiness business) {
@@ -112,6 +102,7 @@ public class PublicContract implements IPublicContract {
                     return exec.response(IResponse.ResponseType.FAIL, e.getMessage());
                 }
             case ALLOWANCE:
+                return new TokenHelper(exec).allowance();
         }
         return null;
     }
@@ -119,28 +110,29 @@ public class PublicContract implements IPublicContract {
     /**
      * 处理键查询事务
      *
-     * @param exec       系统级智能合约操作接口
-     * @param request    智能合约请求对象
-     * @param erc20Token ERC20 接口实现
+     * @param exec    系统级智能合约操作接口
+     * @param request 智能合约请求对象
+     *
      * @return 查询结果
      */
-    private Response keyExec(IPublicContractExec exec, Request request, ERC20Token erc20Token) {
+    private Response keyExec(IPublicContractExec exec, Request request) {
+        TokenHelper tokenHelper = new TokenHelper(exec);
         switch (request.getKey()) {
             // 返回string类型的ERC20 Token 的名字，例如：NoTroubleBother
             case "name":
-                return exec.response(erc20Token.name());
+                return exec.response(tokenHelper.name());
             // 返回string类型的ERC20 Token 的符号，也就是代币的简称，例如：NTB。
             case "symbol":
-                return exec.response(erc20Token.symbol());
+                return exec.response(tokenHelper.symbol());
             // 支持几位小数点后几位。如果设置为3。也就是支持0.001表示。
             case "decimals":
-                return exec.response(erc20Token.decimals());
+                return exec.response(tokenHelper.decimals());
             // 发行 Token 的总量
             case "totalSupply":
-                return exec.response(erc20Token.totalSupply());
+                return exec.response(tokenHelper.totalSupply());
             // 根据指定地址返回该 Token 的余额
             case "balanceOf":
-                return exec.response(erc20Token.balanceOf(request.getValue()));
+                return exec.response(tokenHelper.balanceOf(request.getValue()));
             // 查询区块高度
             case "heightNum":
                 return exec.response(exec.getHeight());

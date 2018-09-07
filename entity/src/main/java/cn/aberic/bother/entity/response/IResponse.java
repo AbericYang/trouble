@@ -55,6 +55,8 @@ public interface IResponse {
         ACCOUNT_LACK_OF_BALANCE(9000, "账户余额不足"),
         /** 返回码 9001，返回信息 账户信息无效 */
         ACCOUNT_INFO_INVALID(9001, "账户信息无效"),
+        /** 返回码 9002，返回信息 账户未找到 */
+        ACCOUNT_NOT_FOUND(9002, "账户未找到"),
         /** 返回码 9010，返回信息 Token 已存在 */
         TOKEN_IS_ALLREADY_EXIST(9010, "Token 已存在"),
         /** 返回码 9020，返回信息 支票金额不足 */
@@ -62,7 +64,9 @@ public interface IResponse {
         /** 返回码 9021，返回信息 支票无效 */
         CHEQUE_INVALID(9021, "支票无效"),
         /** 返回码 9022，返回信息 支票过期 */
-        CHEQUE_OVERDUE(9022, "支票过期");
+        CHEQUE_OVERDUE(9022, "支票过期"),
+        /** 返回码 9030，返回信息 授权余额不足 */
+        APPROVE_LACK_OF_BALANCE(9030, "授权余额不足");
 
 
         /** 交易结果信息 */
@@ -80,6 +84,10 @@ public interface IResponse {
             this.msg = msg;
             this.code = code;
         }
+    }
+
+    default Response response() {
+        return response(ResponseType.SUCCESS);
     }
 
     /**

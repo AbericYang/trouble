@@ -40,9 +40,9 @@ import java.math.BigDecimal;
  */
 public interface IHelper {
 
-    default void cost(IPublicContractExec exec, BigDecimal count, Token token) {
+    default void cost(IPublicContractExec exec, BigDecimal cost, Token token) {
         Account account = JSON.parseObject(exec.get(Common.TOKEN_DEFAULT_SECOND_HASH), new TypeReference<Account>() {});
-        account.setCount(account.getCount().add(count).setScale(token.getDecimals(), BigDecimal.ROUND_HALF_UP));
+        account.setCount(account.getCount().add(cost).setScale(token.getDecimals(), BigDecimal.ROUND_HALF_UP));
         exec.put(account.getAddress(), JSON.toJSONString(account));
     }
 
