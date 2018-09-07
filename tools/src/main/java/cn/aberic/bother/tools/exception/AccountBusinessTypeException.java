@@ -33,7 +33,7 @@ package cn.aberic.bother.tools.exception;
 public class AccountBusinessTypeException extends NullPointerException {
 
     public AccountBusinessTypeException() {
-        super("account business type is invalid");
+        super("account intent type is invalid");
     }
 
 }

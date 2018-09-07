@@ -25,9 +25,6 @@
 package cn.aberic.bother.service;
 
 import cn.aberic.bother.bean.AccountUser;
-import cn.aberic.bother.entity.contract.AccountBusiness;
-import cn.aberic.bother.entity.contract.AccountBusinessEncrypt;
-import cn.aberic.bother.entity.contract.AccountInfo;
 import cn.aberic.bother.entity.token.Token;
 
 /**
@@ -45,42 +42,11 @@ public interface BusinessService {
     AccountUser create(Token token);
 
     /**
-     * 根据用户持有账户信息获取改账户的 RSA 私钥
+     * 发布 Token
      *
-     * @param user 用户持有账户信息
-     *
-     * @return RSA 私钥
+     * @param user 用户持有的账户信息，必须妥善保管，丢失后将无法找回
+     * @return 发布结果
      */
-    String getRSAPri(AccountUser user);
-
-    /**
-     * 对即将处理的业务进行账户 RSA 私钥加密
-     * <p>
-     * 改业务最终将提交到网络，并由账户 RSA 公钥解密后处理
-     *
-     * @param businessEncrypt 即将处理的业务
-     *
-     * @return 业务密文
-     */
-    String encryptBusiness(AccountBusinessEncrypt businessEncrypt);
-
-    /**
-     * 根据账户事务对象处理业务
-     *
-     * @param business 账户事务对象
-     *
-     * @return 业务结果
-     */
-    String business(AccountBusiness business);
-
-    /**
-     * 在指定 Token 下根据账户地址以及账户 ECC 私钥获取账户信息
-     *
-     * @param tokenHash 指定 Token 的 hash
-     * @param address   账户地址
-     * @param priECCKey 账户 ECC 私钥
-     * @return 账户信息
-     */
-    AccountInfo getCount(String tokenHash, String address, String priECCKey);
+    String publish(AccountUser user);
 
 }

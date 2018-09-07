@@ -35,23 +35,23 @@ import lombok.Setter;
  */
 @Setter
 @Getter
-public class AccountBusiness extends AccountBusinessEncrypt{
+public class AccountBusiness extends AccountBusinessEncrypt {
 
     /** 处理该事务的公网账户地址 */
     private String pubAddress;
-    /** 处理该事务的账户地址 */
+    /** 处理该事务的第三方账户地址 */
     private String address;
-    /** 加密事务 */
-    private Business business;
+    /** 账户事务意图 */
+    private Intent intent;
 
     /** 加密事务，所操作地址均与加密后字符串一同传入 */
     @Getter
-    public enum Business {
+    public enum Intent {
 
         /** 发布新 Token，根据指定地址返回该 Token 的余额 */
         PUBLISH("publish", 0),
-        /** 查询，根据指定地址返回该 Token 的余额 */
-        QUERY("query", 10),
+        /** 开户，返回 {@link #address} 的账户信息 */
+        NEW_ACCOUNT("account", 10),
         /** 转账，转给 toAddress 账户 count 个 Token */
         TRANSFER("toAddress,count", 11),
         /** 授权，批准 addressSpender 账户从自己的账户转移 count 个 Token */
@@ -72,7 +72,7 @@ public class AccountBusiness extends AccountBusinessEncrypt{
          * @param format 事务字符串格式
          * @param code   事务码
          */
-        Business(String format, int code) {
+        Intent(String format, int code) {
             this.format = format;
             this.code = code;
         }

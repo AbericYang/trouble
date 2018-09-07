@@ -39,6 +39,8 @@ public class Request {
 
     /** 智能合约key */
     private String key;
+    /** 账户事务意图 */
+    private AccountBusiness.Intent intent;
     /** 智能合约value */
     private String value;
     /** 智能合约 json value */
