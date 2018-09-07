@@ -72,6 +72,15 @@ public class PublicContractExec implements IPublicContractExec, IContractBaseExe
         business = request.getBusiness();
     }
 
+    /**
+     * 开户操作需创建账户后再指定新账户 ECC 私钥
+     *
+     * @param priECCKey 新账户 ECC 私钥
+     */
+    public void setPriECCKey(String priECCKey) {
+        this.business.setPriECCKey(priECCKey);
+    }
+
     /** 发送交易到 Leader 节点 */
     public void sendTransaction() {
         // TODO: 2018/9/2 临时生成区块，实际应发送至 Leader 节点统一打包

@@ -25,6 +25,7 @@
 package cn.aberic.bother.contract.system;
 
 import cn.aberic.bother.contract.exec.ERC20Token;
+import cn.aberic.bother.contract.exec.PublicContractExec;
 import cn.aberic.bother.contract.exec.service.IPublicContract;
 import cn.aberic.bother.contract.exec.service.IPublicContractExec;
 import cn.aberic.bother.entity.IResponse;
@@ -32,7 +33,7 @@ import cn.aberic.bother.entity.contract.AccountBusiness;
 import cn.aberic.bother.entity.contract.Request;
 import cn.aberic.bother.storage.Common;
 import cn.aberic.bother.tools.exception.ERC20TokenAddressNullException;
-import cn.aberic.bother.tools.exception.ERC20TokenECCPrivateKeyNullException;
+import cn.aberic.bother.tools.exception.RequestTypeNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
@@ -46,9 +47,11 @@ import org.apache.commons.lang3.StringUtils;
 public class PublicContract implements IPublicContract {
 
     private TokenHelper tokenHelper;
+    private AccountHelper accountHelper;
 
     public PublicContract() {
         tokenHelper = new TokenHelper();
+        accountHelper = new AccountHelper();
     }
 
     @Override
@@ -58,33 +61,20 @@ public class PublicContract implements IPublicContract {
         if (StringUtils.isEmpty(business.getAddress())) { // invoke 请求账户地址不能为空
             throw new ERC20TokenAddressNullException();
         }
-        if (StringUtils.isEmpty(business.getPriECCKey())) { // invoke 请求账户 ECC 私钥不能为空
-            throw new ERC20TokenECCPrivateKeyNullException();
-        }
         ERC20Token erc20Token = new ERC20Token(Common.TOKEN_DEFAULT_SYSTEM_HASH, business.getAddress(), business.getPriECCKey(), exec);
         switch (business.getIntent()) {
             case PUBLISH:
-            case NEW_ACCOUNT:
-            case TRANSFER:
-            case APPROVE:
-            case TRANSFER_FROM:
-            case ALLOWANCE:
-        }
-        switch (request.getKey()) {
-            // 发布新 Token
-            case "publish":
                 return tokenHelper.publishToken(erc20Token);
-            // 将自己的 count 个 Token 转给 addressTo 地址
-            case "transfer":
-                return tokenHelper.transfer(erc20Token, exec);
-            // 批准 addressSpender 账户从自己的账户转移 count 个 Token。
-            case "approve":
-                return tokenHelper.approve(erc20Token, exec);
-            // 与approve搭配使用，approve批准之后，调用本函数来转移token。
-            case "transferFrom":
-                return tokenHelper.transferFrom(erc20Token, exec);
+            case OPEN_ACCOUNT:
+                return accountHelper.openAccount((PublicContractExec) exec, erc20Token, business);
+            case TRANSFER:
+                return tokenHelper.transfer(erc20Token);
+            case APPROVE:
+                return tokenHelper.approve(erc20Token);
+            case TRANSFER_FROM:
+                return tokenHelper.transferFrom(erc20Token);
         }
-        exec.put(request.getKey(), request.getValue());
+//         exec.put(request.getKey(), request.getValue());
         return exec.response(IResponse.Response.REQUEST_TYPE_NOT_FOUND);
     }
 
@@ -99,6 +89,41 @@ public class PublicContract implements IPublicContract {
         if (null != business && !StringUtils.isEmpty(business.getPriECCKey())) {
             erc20Token.setPriECCKey(business.getPriECCKey());
         }
+        if (null != business && null != business.getIntent()) {
+            return intentExec(exec, business);
+        }
+        return keyExec(exec, request, erc20Token);
+    }
+
+    /**
+     * 处理意图查询事务
+     *
+     * @param exec     系统级智能合约操作接口
+     * @param business 账户处理事务
+     * @return 查询结果
+     */
+    private String intentExec(IPublicContractExec exec, AccountBusiness business) {
+        switch (business.getIntent()) {
+            case CHEQUE:
+                try {
+                    return accountHelper.cheque(exec, business);
+                } catch (Exception e) {
+                    return exec.response(IResponse.Response.FAIL, e.getMessage());
+                }
+            case ALLOWANCE:
+        }
+        return null;
+    }
+
+    /**
+     * 处理键查询事务
+     *
+     * @param exec       系统级智能合约操作接口
+     * @param request    智能合约请求对象
+     * @param erc20Token ERC20 接口实现
+     * @return 查询结果
+     */
+    private String keyExec(IPublicContractExec exec, Request request, ERC20Token erc20Token) {
         switch (request.getKey()) {
             // 返回string类型的ERC20 Token 的名字，例如：NoTroubleBother
             case "name":
@@ -131,8 +156,7 @@ public class PublicContract implements IPublicContract {
             case "history":
                 return exec.response(exec.getHistory(request.getValue()));
         }
-        // 无特殊要求，则根据 key 查 value 返回值
-        return exec.response(exec.get(request.getKey()));
+        throw new RequestTypeNotFoundException();
     }
 
 }

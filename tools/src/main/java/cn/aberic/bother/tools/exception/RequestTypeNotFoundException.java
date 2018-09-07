@@ -20,39 +20,20 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- *
  */
 
-package cn.aberic.bother.bean;
-
-import lombok.Getter;
-import lombok.Setter;
+package cn.aberic.bother.tools.exception;
 
 /**
- * 用户持有的账户信息，必须妥善保管，丢失后将无法找回
+ * 请求类型异常
  * <p>
- * 作者：Aberic on 2018/9/4 22:51
+ * 作者：Aberic on 2018/09/07 12:44
  * 邮箱：abericyang@gmail.com
  */
-@Setter
-@Getter
-public class AccountUser {
+public class RequestTypeNotFoundException extends RuntimeException {
 
-    /** 账户唯一地址码 */
-    private String address;
-    /** 账户 ECC 私钥 */
-    private String priECCKey;
-    /** 账户所属 Token hash */
-    private String hash;
-
-    // JSON 用
-    public AccountUser() {
-    }
-
-    public AccountUser(String address, String priECCKey, String hash) {
-        this.address = address;
-        this.priECCKey = priECCKey;
-        this.hash = hash;
+    public RequestTypeNotFoundException() {
+        super("request type not found or invalid");
     }
 
 }

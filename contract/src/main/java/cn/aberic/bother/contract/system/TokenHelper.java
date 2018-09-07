@@ -26,10 +26,8 @@ package cn.aberic.bother.contract.system;
 
 import cn.aberic.bother.contract.exec.ERC20Token;
 import cn.aberic.bother.contract.exec.service.IPublicContractExec;
-import cn.aberic.bother.encryption.key.exec.KeyExec;
 import cn.aberic.bother.entity.IResponse;
 import cn.aberic.bother.entity.contract.Account;
-import cn.aberic.bother.entity.contract.AccountInfo;
 import cn.aberic.bother.entity.token.Token;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -49,7 +47,6 @@ class TokenHelper {
      * 发布新 Token
      *
      * @param erc20Token ERC20 接口实现
-     *
      * @return 执行结果
      */
     String publishToken(ERC20Token erc20Token) {
@@ -76,7 +73,7 @@ class TokenHelper {
         BigDecimal pubCount = pubAccount.getCount();
 
         // 检查该公网账户是否有足够余额支付
-        if (consumption.compareTo(pubCount) < 0) {
+        if (consumption.compareTo(pubCount) > 0) {
             // 如果余额不足，则返回对应信息
             return exec.response(IResponse.Response.ACCOUNT_LACK_OF_BALANCE);
         }
@@ -104,11 +101,10 @@ class TokenHelper {
      * 将自己的 count 个 Token 转给 addressTo 地址
      *
      * @param erc20Token ERC20 接口实现
-     * @param exec       系统级智能合约操作接口
-     *
      * @return 成功与否
      */
-    public String transfer(ERC20Token erc20Token, IPublicContractExec exec) {
+    String transfer(ERC20Token erc20Token) {
+        IPublicContractExec exec = erc20Token.getPublicContractExec();
         JSONObject json = exec.getRequest().getJsonValue();
         if (erc20Token.transfer(json.getString("addressTo"), json.getBigDecimal("count"))) {
             return exec.response(IResponse.Response.SUCCESS);
@@ -120,11 +116,10 @@ class TokenHelper {
      * 批准 addressSpender 账户从自己的账户转移 count 个 Token。
      *
      * @param erc20Token ERC20 接口实现
-     * @param exec       系统级智能合约操作接口
-     *
      * @return 成功与否
      */
-    public String approve(ERC20Token erc20Token, IPublicContractExec exec) {
+    String approve(ERC20Token erc20Token) {
+        IPublicContractExec exec = erc20Token.getPublicContractExec();
         JSONObject json = exec.getRequest().getJsonValue();
         if (erc20Token.approve(json.getString("addressSpender"), json.getBigDecimal("count"))) {
             return exec.response(IResponse.Response.SUCCESS);
@@ -136,11 +131,10 @@ class TokenHelper {
      * 与approve搭配使用，approve批准之后，调用本函数来转移token。
      *
      * @param erc20Token ERC20 接口实现
-     * @param exec       系统级智能合约操作接口
-     *
      * @return 成功与否
      */
-    public String transferFrom(ERC20Token erc20Token, IPublicContractExec exec) {
+    String transferFrom(ERC20Token erc20Token) {
+        IPublicContractExec exec = erc20Token.getPublicContractExec();
         JSONObject json = exec.getRequest().getJsonValue();
         if (erc20Token.transferFrom(json.getString("addressFrom"), json.getString("addressTo"), json.getBigDecimal("count"))) {
             return exec.response(IResponse.Response.SUCCESS);
@@ -157,11 +151,10 @@ class TokenHelper {
      * 这时调用allowance(A, B)可以查看B账户还能够调用A账户多少个token。
      *
      * @param erc20Token ERC20 接口实现
-     * @param exec       系统级智能合约操作接口
-     *
      * @return 能提取token的个数
      */
-    public String allowance(ERC20Token erc20Token, IPublicContractExec exec) {
+    String allowance(ERC20Token erc20Token) {
+        IPublicContractExec exec = erc20Token.getPublicContractExec();
         JSONObject json = exec.getRequest().getJsonValue();
         return exec.response(erc20Token.allowance(json.getString("addressOwner"), json.getString("addressSpender")).toPlainString());
     }

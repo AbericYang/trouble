@@ -47,6 +47,8 @@ public interface IResponse {
         SUCCESS(200, "success"),
         /** 返回码 8000，返回信息 fail */
         FAIL(8000, "fail"),
+        /** 返回码 8001，返回信息 param error */
+        PARAM_ERROR(8001, "param error"),
         /** 返回码 8990，返回信息 请求类型不存在 */
         REQUEST_TYPE_NOT_FOUND(8990, "请求类型不存在"),
         /** 返回码 9000，返回信息 账户余额不足 */
@@ -54,7 +56,13 @@ public interface IResponse {
         /** 返回码 9001，返回信息 账户信息无效 */
         ACCOUNT_INFO_INVALID(9001, "账户信息无效"),
         /** 返回码 9010，返回信息 Token 已存在 */
-        TOKEN_IS_ALLREADY_EXIST(9010, "Token 已存在");
+        TOKEN_IS_ALLREADY_EXIST(9010, "Token 已存在"),
+        /** 返回码 9020，返回信息 支票金额不足 */
+        CHEQUE_LACK_OF_BALANCE(9020, "支票金额不足"),
+        /** 返回码 9021，返回信息 支票无效 */
+        CHEQUE_INVALID(9021, "支票无效"),
+        /** 返回码 9022，返回信息 支票过期 */
+        CHEQUE_OVERDUE(9022, "支票过期");
 
 
         /** 交易结果信息 */
@@ -136,6 +144,20 @@ public interface IResponse {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("code", response.code);
         jsonObject.put("data", response.msg);
+        return jsonObject.toString();
+    }
+
+    /**
+     * 通用错误信息返回，返回内容内置且匹配返回码
+     *
+     * @param response 返回枚举对象
+     * @param msg      返回自定义信息
+     * @return 返回 success json字符串
+     */
+    default String response(Response response, String msg) {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("code", response.code);
+        jsonObject.put("data", msg);
         return jsonObject.toString();
     }
 

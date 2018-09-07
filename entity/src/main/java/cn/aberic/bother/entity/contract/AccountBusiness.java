@@ -35,7 +35,7 @@ import lombok.Setter;
  */
 @Setter
 @Getter
-public class AccountBusiness extends AccountBusinessEncrypt {
+public class AccountBusiness {
 
     /** 处理该事务的公网账户地址 */
     private String address;
@@ -43,8 +43,6 @@ public class AccountBusiness extends AccountBusinessEncrypt {
     private String encryption;
     /** 账户事务意图 */
     private Intent intent;
-    /** RSA 私钥 */
-    private String priRSAKey;
     /** ECC 私钥 */
     private String priECCKey;
 
@@ -54,8 +52,10 @@ public class AccountBusiness extends AccountBusinessEncrypt {
 
         /** 发布新 Token，根据指定地址返回该 Token 的余额 */
         PUBLISH("publish", 0),
+        /** 创建 Token 支票，返回 {@link cn.aberic.bother.entity.account.Cheque} 的支票信息 */
+        CHEQUE("count,type,endTimestamp", 1),
         /** 开户，返回 {@link #address} 的账户信息 */
-        NEW_ACCOUNT("account", 10),
+        OPEN_ACCOUNT("cheque意图RSA私钥加密", 2),
         /** 转账，转给 toAddress 账户 count 个 Token */
         TRANSFER("toAddress,count", 11),
         /** 授权，批准 addressSpender 账户从自己的账户转移 count 个 Token */

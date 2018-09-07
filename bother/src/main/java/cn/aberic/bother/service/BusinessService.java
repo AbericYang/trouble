@@ -24,7 +24,7 @@
 
 package cn.aberic.bother.service;
 
-import cn.aberic.bother.bean.AccountUser;
+import cn.aberic.bother.entity.account.AccountUser;
 import cn.aberic.bother.entity.contract.AccountBusiness;
 import cn.aberic.bother.entity.token.Token;
 

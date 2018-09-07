@@ -20,27 +20,38 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- *
  */
 
-package cn.aberic.bother.entity.contract;
+package cn.aberic.bother.entity.account;
 
 import lombok.Getter;
 import lombok.Setter;
 
 /**
- * 作者：Aberic on 2018/9/4 23:59
+ * 用户持有的账户信息，必须妥善保管，丢失后将无法找回
+ * <p>
+ * 作者：Aberic on 2018/9/4 22:51
  * 邮箱：abericyang@gmail.com
  */
 @Setter
 @Getter
-public class AccountBusinessEncrypt {
+public class AccountUser {
 
-    /** RSA 私钥加密事务 */
-    private String encryption;
-    /** RSA 私钥 */
-    private String priRSAKey;
-    /** ECC 私钥 */
+    /** 账户唯一地址码 */
+    private String address;
+    /** 账户 ECC 私钥 */
     private String priECCKey;
+    /** 账户所属 Token hash */
+    private String hash;
+
+    // JSON 用
+    public AccountUser() {
+    }
+
+    public AccountUser(String address, String priECCKey, String hash) {
+        this.address = address;
+        this.priECCKey = priECCKey;
+        this.hash = hash;
+    }
 
 }

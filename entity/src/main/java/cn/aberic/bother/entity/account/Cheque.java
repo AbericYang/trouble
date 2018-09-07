@@ -20,34 +20,38 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- *
  */
 
-package cn.aberic.bother.entity.contract;
+package cn.aberic.bother.entity.account;
 
-import com.alibaba.fastjson.JSONObject;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
+
+import java.math.BigDecimal;
 
 /**
- * 智能合约请求对象
+ * 支票
  * <p>
- * 作者：Aberic on 2018/9/2 19:57
+ * 支票信息初始不会上链，一旦经过有且仅有一次交易之后就会上链，以防被多次重复使用
+ * <p>
+ * 当一个区块打包时，如果出现多个相同支票开销，仅第一笔生效
+ * <p>
+ * 作者：Aberic on 2018/09/07 13:49
  * 邮箱：abericyang@gmail.com
  */
 @Setter
 @Getter
-public class Request {
+@ToString
+public class Cheque {
 
-    /** 智能合约key */
-    private String key;
-    /** 账户事务意图 */
-    private AccountBusiness business;
-    /** 智能合约value */
-    private String value;
-    /** 智能合约 json value */
-    private JSONObject jsonValue;
-    /** Token hash */
-    private String tokenHash;
+    /** 支票金额 */
+    private BigDecimal count;
+    /** 支票属性：0、代付；1、赠予 */
+    private int type;
+    /** 支票开票时间戳 */
+    private long startTimestamp;
+    /** 支票有效截至时间戳 */
+    private long endTimestamp;
 
 }
