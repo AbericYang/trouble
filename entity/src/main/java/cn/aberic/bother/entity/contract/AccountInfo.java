@@ -29,8 +29,6 @@ import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.math.BigDecimal;
-
 /**
  * 账户信息详情，此对象存储时必须执行ECC加密
  * <p>
@@ -41,14 +39,8 @@ import java.math.BigDecimal;
 @Getter
 public class AccountInfo {
 
-    /** 账户余额 */
-    @JSONField(name = "c")
-    private BigDecimal count;
     /** 账户RSA私钥 */
     @JSONField(name = "k")
-    private String priKey;
-    /** 账户创建时间戳 */
-    @JSONField(name = "t")
-    private long timestamp;
+    private String priRSAKey;
 
 }

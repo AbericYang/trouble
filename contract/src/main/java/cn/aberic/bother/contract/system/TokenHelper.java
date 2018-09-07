@@ -72,11 +72,8 @@ class TokenHelper {
         // 计算本次账户及 Token 创建所需存储费用
         BigDecimal consumption = new BigDecimal(size * 0.0001);
 
-        // 发布者公网账户详情
-        AccountInfo pubInfo = JSON.parseObject(KeyExec.obtain().decryptPriStrECDSA(erc20Token.getPriECCKey(), pubAccount.getJsonAccountInfoString()),
-                new TypeReference<AccountInfo>() {});
         // 发布者公网账户余额
-        BigDecimal pubCount = pubInfo.getCount();
+        BigDecimal pubCount = pubAccount.getCount();
 
         // 检查该公网账户是否有足够余额支付
         if (consumption.compareTo(pubCount) < 0) {
@@ -96,9 +93,7 @@ class TokenHelper {
         exec.put(account.getAddress(), JSON.toJSONString(account));
 
         // 更新公网账户详情余额
-        pubInfo.setCount(pubCount);
-        // 更新公网账户
-        pubAccount.setJsonAccountInfoString(KeyExec.obtain().encryptByStrECDSA(pubAccount.getPubECCKey(), JSON.toJSONString(pubInfo)));
+        pubAccount.setCount(pubCount);
         // 更新后数据上链
         exec.put(erc20Token.getAddress(), JSON.toJSONString(pubAccount));
 
@@ -114,7 +109,7 @@ class TokenHelper {
      * @return 成功与否
      */
     public String transfer(ERC20Token erc20Token, IPublicContractExec exec) {
-        JSONObject json = JSON.parseObject(exec.getRequest().getValue());
+        JSONObject json = exec.getRequest().getJsonValue();
         if (erc20Token.transfer(json.getString("addressTo"), json.getBigDecimal("count"))) {
             return exec.response(IResponse.Response.SUCCESS);
         }
@@ -130,7 +125,7 @@ class TokenHelper {
      * @return 成功与否
      */
     public String approve(ERC20Token erc20Token, IPublicContractExec exec) {
-        JSONObject json = JSON.parseObject(exec.getRequest().getValue());
+        JSONObject json = exec.getRequest().getJsonValue();
         if (erc20Token.approve(json.getString("addressSpender"), json.getBigDecimal("count"))) {
             return exec.response(IResponse.Response.SUCCESS);
         }
@@ -146,7 +141,7 @@ class TokenHelper {
      * @return 成功与否
      */
     public String transferFrom(ERC20Token erc20Token, IPublicContractExec exec) {
-        JSONObject json = JSON.parseObject(exec.getRequest().getValue());
+        JSONObject json = exec.getRequest().getJsonValue();
         if (erc20Token.transferFrom(json.getString("addressFrom"), json.getString("addressTo"), json.getBigDecimal("count"))) {
             return exec.response(IResponse.Response.SUCCESS);
         }
@@ -167,7 +162,7 @@ class TokenHelper {
      * @return 能提取token的个数
      */
     public String allowance(ERC20Token erc20Token, IPublicContractExec exec) {
-        JSONObject json = JSON.parseObject(exec.getRequest().getValue());
+        JSONObject json = exec.getRequest().getJsonValue();
         return exec.response(erc20Token.allowance(json.getString("addressOwner"), json.getString("addressSpender")).toPlainString());
     }
 

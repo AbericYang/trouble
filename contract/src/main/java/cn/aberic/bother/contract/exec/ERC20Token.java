@@ -31,6 +31,7 @@ import cn.aberic.bother.encryption.key.exec.KeyExec;
 import cn.aberic.bother.entity.contract.Account;
 import cn.aberic.bother.entity.contract.AccountInfo;
 import cn.aberic.bother.entity.token.Token;
+import cn.aberic.bother.tools.exception.AccountNotFoundException;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import lombok.Getter;
@@ -102,14 +103,23 @@ public class ERC20Token implements IERC20Token {
     @Override
     public BigDecimal balanceOf(String address) {
         Account account = JSON.parseObject(publicContractExec.get(address), new TypeReference<Account>() {});
-        AccountInfo info = JSON.parseObject(KeyExec.obtain().decryptPriStrECDSA(priECCKey, account.getJsonAccountInfoString()),
-                new TypeReference<AccountInfo>() {});
-        return info.getCount();
+        return account.getCount();
     }
 
     @Override
     public boolean transfer(String addressTo, BigDecimal count) {
-        return false;
+        Account accountFrom = JSON.parseObject(publicContractExec.get(address), new TypeReference<Account>() {});
+        Account accountTo = JSON.parseObject(publicContractExec.get(addressTo), new TypeReference<Account>() {});
+        if (null == accountTo) {
+            throw new AccountNotFoundException(addressTo);
+        }
+        // 判断转账方余额是否充足
+        if (accountFrom.getCount().compareTo(count) < 0) {
+            return false;
+        }
+        accountFrom.getCount().subtract(count);
+        accountTo.getCount().add(count);
+        return true;
     }
 
     @Override

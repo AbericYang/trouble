@@ -67,16 +67,16 @@ public class BusinessServiceImpl implements BusinessService, IResponse {
         long timestamp = new Date().getTime();
 
         AccountInfo info = new AccountInfo();
-        info.setCount(BigDecimal.valueOf(token.getTotalSupply()));
-        info.setPriKey(rsaKey.getPrivateKey());
-        info.setTimestamp(timestamp);
+        info.setPriRSAKey(rsaKey.getPrivateKey());
 
         String address = Hashing.sha256().hashString(eccKey.getPublicKey(), Charset.forName("UTF-8")).toString();
 
         account.setAddress(address);
+        account.setCount(BigDecimal.valueOf(token.getTotalSupply()));
         account.setPubRSAKey(rsaKey.getPublicKey());
         account.setPubECCKey(eccKey.getPublicKey());
         account.setJsonAccountInfoString(KeyExec.obtain().encryptByStrECDSA(eccKey.getPublicKey(), JSON.toJSONString(info)));
+        account.setTimestamp(timestamp);
 
         token.setAccount(account);
         token.setTimestamp(timestamp);
@@ -95,7 +95,7 @@ public class BusinessServiceImpl implements BusinessService, IResponse {
         Account account = token.getAccount();
         AccountInfo info = JSON.parseObject(KeyExec.obtain().decryptPriStrECDSA(user.getPriECCKey(), account.getJsonAccountInfoString()),
                 new TypeReference<AccountInfo>() {});
-        return response(info.getPriKey());
+        return response(info.getPriRSAKey());
     }
 
     @Override

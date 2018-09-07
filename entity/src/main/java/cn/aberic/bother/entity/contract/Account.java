@@ -30,6 +30,8 @@ import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigDecimal;
+
 /**
  * 账户
  * 作者：Aberic on 2018/9/2 16:55
@@ -42,6 +44,9 @@ public class Account implements BeanJsonField {
     /** 账户唯一地址码 */
     @JSONField(name = "a")
     private String address;
+    /** 账户余额 */
+    @JSONField(name = "c")
+    private BigDecimal count;
     /** 账户信息详情 {@link AccountInfo}，经由ECC加密 */
     @JSONField(name = "i")
     private String jsonAccountInfoString;
@@ -51,5 +56,8 @@ public class Account implements BeanJsonField {
     /** 账户 ECC 公钥 */
     @JSONField(name = "e")
     private String pubECCKey;
+    /** 账户创建时间戳 */
+    @JSONField(name = "t")
+    private long timestamp;
 
 }

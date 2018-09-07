@@ -74,6 +74,7 @@ public class PublicContract implements IPublicContract {
             case "transferFrom":
                 return tokenHelper.transferFrom(erc20Token, exec);
         }
+        exec.put(request.getKey(), request.getValue());
         return exec.response(IResponse.Response.REQUEST_TYPE_NOT_FOUND);
     }
 

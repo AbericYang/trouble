@@ -20,34 +20,20 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- *
  */
 
-package cn.aberic.bother.entity.contract;
-
-import com.alibaba.fastjson.JSONObject;
-import lombok.Getter;
-import lombok.Setter;
+package cn.aberic.bother.tools.exception;
 
 /**
- * 作者：Aberic on 2018/9/2 19:57
+ * 账户未找到或无效异常——公共方法包
+ * <p>
+ * 作者：Aberic on 2018/09/07 10:57
  * 邮箱：abericyang@gmail.com
  */
-@Setter
-@Getter
-public class Request {
+public class AccountNotFoundException extends RuntimeException {
 
-    /** 智能合约key */
-    private String key;
-    /** 智能合约value */
-    private String value;
-    /** 智能合约 json value */
-    private JSONObject jsonValue;
-    /** Token hash */
-    private String tokenHash;
-    /** 账户地址 */
-    private String address;
-    /** 账户 ECC 私钥 */
-    private String priECCKey;
+    public AccountNotFoundException(String address) {
+        super(String.format("account not found or invalid whit this address %s", address));
+    }
 
 }
