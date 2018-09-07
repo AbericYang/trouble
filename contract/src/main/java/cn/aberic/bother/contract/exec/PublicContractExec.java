@@ -32,6 +32,7 @@ import cn.aberic.bother.contract.exec.service.IContractDataIndexFileExec;
 import cn.aberic.bother.contract.exec.service.IPublicContractExec;
 import cn.aberic.bother.contract.exec.service.IPublicContractFileExec;
 import cn.aberic.bother.entity.block.*;
+import cn.aberic.bother.entity.contract.AccountBusiness;
 import cn.aberic.bother.entity.contract.Contract;
 import cn.aberic.bother.entity.contract.Request;
 import cn.aberic.bother.storage.Common;
@@ -53,6 +54,7 @@ public class PublicContractExec implements IPublicContractExec, IContractBaseExe
     private List<ValueRead> reads;
     private List<ValueWrite> writes;
     private Request request;
+    private AccountBusiness business;
 
     public PublicContractExec() {
         rwSet = new RWSet();
@@ -67,6 +69,7 @@ public class PublicContractExec implements IPublicContractExec, IContractBaseExe
      */
     public void setRequest(Request request) {
         this.request = request;
+        business = request.getBusiness();
     }
 
     /** 发送交易到 Leader 节点 */
@@ -104,10 +107,10 @@ public class PublicContractExec implements IPublicContractExec, IContractBaseExe
         rwSet.setReads(reads);
         rwSet.setWrites(writes);
         Transaction transaction = new Transaction();
-        transaction.setCreator(request.getAddress());
+        transaction.setCreator(business.getAddress());
         transaction.setTimestamp(new Date().getTime());
         transaction.setRwSet(rwSet);
-        return transaction.build(request.getPriECCKey());
+        return transaction.build(business.getPriECCKey());
     }
 
     @Override

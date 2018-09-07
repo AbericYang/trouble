@@ -31,6 +31,7 @@ import cn.aberic.bother.encryption.key.bean.Key;
 import cn.aberic.bother.encryption.key.exec.KeyExec;
 import cn.aberic.bother.entity.IResponse;
 import cn.aberic.bother.entity.contract.Account;
+import cn.aberic.bother.entity.contract.AccountBusiness;
 import cn.aberic.bother.entity.contract.AccountInfo;
 import cn.aberic.bother.entity.contract.Request;
 import cn.aberic.bother.entity.token.Token;
@@ -86,11 +87,11 @@ public class BusinessServiceImpl implements BusinessService, IResponse {
     }
 
     @Override
-    public String publish(AccountUser user) {
+    public String publish(AccountBusiness business) {
         TokenManager tokenManager = new TokenManager();
-        Token token = tokenManager.getUnPublish(user.getAddress());
+        Token token = tokenManager.getUnPublish(business.getAddress());
         Account account = token.getAccount();
-        String result = publish(user.getPriECCKey(), token, account);
+        String result = publish(token, account, business);
         tokenManager.clear(account.getAddress());
         return result;
     }
@@ -100,12 +101,12 @@ public class BusinessServiceImpl implements BusinessService, IResponse {
      * <p>
      * 发布信息至公网账本将按字节收取存储手续费
      *
-     * @param priECCKey 账户 ECC 私钥
-     * @param token     待发布 Token
-     * @param account   待发布 Token 根账户
+     * @param token    待发布 Token
+     * @param account  待发布 Token 根账户
+     * @param business 账户处理事务
      * @return 发布结果
      */
-    private String publish(String priECCKey, Token token, Account account) {
+    private String publish(Token token, Account account, AccountBusiness business) {
         PublicContract publicContract = new PublicContract();
         PublicContractExec publicContractExec = new PublicContractExec();
         // Token 上链
@@ -113,9 +114,7 @@ public class BusinessServiceImpl implements BusinessService, IResponse {
         request.setKey(token.getHash());
         token.setAccount(null);
         request.setValue(JSON.toJSONString(token));
-        request.setAddress(account.getAddress());
-        request.setPriECCKey(priECCKey);
-        request.setTokenHash(token.getHash());
+        request.setBusiness(business);
         publicContractExec.setRequest(request);
         log.debug("invoke token = {}", publicContract.invoke(publicContractExec));
         // 账户上链

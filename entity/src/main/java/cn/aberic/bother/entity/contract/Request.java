@@ -40,16 +40,12 @@ public class Request {
     /** 智能合约key */
     private String key;
     /** 账户事务意图 */
-    private AccountBusiness.Intent intent;
+    private AccountBusiness business;
     /** 智能合约value */
     private String value;
     /** 智能合约 json value */
     private JSONObject jsonValue;
     /** Token hash */
     private String tokenHash;
-    /** 账户地址 */
-    private String address;
-    /** 账户 ECC 私钥 */
-    private String priECCKey;
 
 }

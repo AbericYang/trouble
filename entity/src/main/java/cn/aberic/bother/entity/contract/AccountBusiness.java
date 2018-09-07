@@ -38,11 +38,15 @@ import lombok.Setter;
 public class AccountBusiness extends AccountBusinessEncrypt {
 
     /** 处理该事务的公网账户地址 */
-    private String pubAddress;
-    /** 处理该事务的第三方账户地址 */
     private String address;
+    /** RSA 私钥加密事务 */
+    private String encryption;
     /** 账户事务意图 */
     private Intent intent;
+    /** RSA 私钥 */
+    private String priRSAKey;
+    /** ECC 私钥 */
+    private String priECCKey;
 
     /** 加密事务，所操作地址均与加密后字符串一同传入 */
     @Getter

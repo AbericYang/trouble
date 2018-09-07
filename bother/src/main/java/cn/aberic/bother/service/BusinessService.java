@@ -25,6 +25,7 @@
 package cn.aberic.bother.service;
 
 import cn.aberic.bother.bean.AccountUser;
+import cn.aberic.bother.entity.contract.AccountBusiness;
 import cn.aberic.bother.entity.token.Token;
 
 /**
@@ -44,9 +45,9 @@ public interface BusinessService {
     /**
      * 发布 Token
      *
-     * @param user 用户持有的账户信息，必须妥善保管，丢失后将无法找回
+     * @param business 账户处理事务
      * @return 发布结果
      */
-    String publish(AccountUser user);
+    String publish(AccountBusiness business);
 
 }

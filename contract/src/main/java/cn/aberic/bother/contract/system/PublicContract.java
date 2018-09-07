@@ -28,6 +28,7 @@ import cn.aberic.bother.contract.exec.ERC20Token;
 import cn.aberic.bother.contract.exec.service.IPublicContract;
 import cn.aberic.bother.contract.exec.service.IPublicContractExec;
 import cn.aberic.bother.entity.IResponse;
+import cn.aberic.bother.entity.contract.AccountBusiness;
 import cn.aberic.bother.entity.contract.Request;
 import cn.aberic.bother.storage.Common;
 import cn.aberic.bother.tools.exception.ERC20TokenAddressNullException;
@@ -53,13 +54,22 @@ public class PublicContract implements IPublicContract {
     @Override
     public String invoke(IPublicContractExec exec) {
         Request request = exec.getRequest();
-        if (StringUtils.isEmpty(request.getAddress())) { // invoke 请求账户地址不能为空
+        AccountBusiness business = request.getBusiness();
+        if (StringUtils.isEmpty(business.getAddress())) { // invoke 请求账户地址不能为空
             throw new ERC20TokenAddressNullException();
         }
-        if (StringUtils.isEmpty(request.getPriECCKey())) { // invoke 请求账户 ECC 私钥不能为空
+        if (StringUtils.isEmpty(business.getPriECCKey())) { // invoke 请求账户 ECC 私钥不能为空
             throw new ERC20TokenECCPrivateKeyNullException();
         }
-        ERC20Token erc20Token = new ERC20Token(Common.TOKEN_DEFAULT_SYSTEM_HASH, request.getAddress(), request.getPriECCKey(), exec);
+        ERC20Token erc20Token = new ERC20Token(Common.TOKEN_DEFAULT_SYSTEM_HASH, business.getAddress(), business.getPriECCKey(), exec);
+        switch (business.getIntent()) {
+            case PUBLISH:
+            case NEW_ACCOUNT:
+            case TRANSFER:
+            case APPROVE:
+            case TRANSFER_FROM:
+            case ALLOWANCE:
+        }
         switch (request.getKey()) {
             // 发布新 Token
             case "publish":
@@ -82,11 +92,12 @@ public class PublicContract implements IPublicContract {
     public String query(IPublicContractExec exec) {
         ERC20Token erc20Token = new ERC20Token(Common.TOKEN_DEFAULT_SYSTEM_HASH, exec);
         Request request = exec.getRequest();
-        if (!StringUtils.isEmpty(request.getAddress())) {
-            erc20Token.setAddress(request.getAddress());
+        AccountBusiness business = request.getBusiness();
+        if (null != business && !StringUtils.isEmpty(business.getAddress())) {
+            erc20Token.setAddress(business.getAddress());
         }
-        if (!StringUtils.isEmpty(request.getPriECCKey())) {
-            erc20Token.setPriECCKey(request.getPriECCKey());
+        if (null != business && !StringUtils.isEmpty(business.getPriECCKey())) {
+            erc20Token.setPriECCKey(business.getPriECCKey());
         }
         switch (request.getKey()) {
             // 返回string类型的ERC20 Token 的名字，例如：NoTroubleBother
