@@ -59,13 +59,10 @@ public class ECDSAEncrypt {
             KeyFactory keyFactory = KeyFactory.getInstance("EC", "BC");
             return (ECPublicKey) keyFactory.generatePublic(keySpec);
         } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
             throw new RuntimeException("加密算法异常");
         } catch (InvalidKeySpecException e) {
-            e.printStackTrace();
             throw new RuntimeException("无效X509EncodedKeySpec异常错误");
         } catch (NoSuchProviderException e) {
-            e.printStackTrace();
             throw new RuntimeException("无此加密代理");
         }
     }
@@ -83,13 +80,10 @@ public class ECDSAEncrypt {
             KeyFactory keyFactory = KeyFactory.getInstance("EC", "BC");
             return (ECPrivateKey) keyFactory.generatePrivate(keySpec);
         } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
             throw new RuntimeException("加密算法异常");
         } catch (InvalidKeySpecException e) {
-            e.printStackTrace();
             throw new RuntimeException("无效PKCS8EncodedKeySpec异常错误");
         } catch (NoSuchProviderException e) {
-            e.printStackTrace();
             throw new RuntimeException("无此加密代理");
         }
     }
@@ -127,19 +121,14 @@ public class ECDSAEncrypt {
             e.printStackTrace();
             throw new RuntimeException("加密公钥非法,请检查");
         } catch (BadPaddingException e) {
-            e.printStackTrace();
             throw new RuntimeException("加密内容数据已损坏");
         } catch (IllegalBlockSizeException e) {
-            e.printStackTrace();
             throw new RuntimeException("加密内容长度非法");
         } catch (NoSuchPaddingException e) {
-            e.printStackTrace();
             throw new RuntimeException("无此加密填充类型");
         } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
             throw new RuntimeException("无此加密算法");
         } catch (NoSuchProviderException e) {
-            e.printStackTrace();
             throw new RuntimeException("无此加密代理");
         }
     }
@@ -174,22 +163,16 @@ public class ECDSAEncrypt {
             cipher.init(Cipher.ENCRYPT_MODE, publicKey);
             return Base64.encodeBase64String(cipher.doFinal(infoBytes));
         } catch (InvalidKeyException e) {
-            e.printStackTrace();
             throw new RuntimeException("加密公钥非法,请检查");
         } catch (BadPaddingException e) {
-            e.printStackTrace();
             throw new RuntimeException("加密内容数据已损坏");
         } catch (IllegalBlockSizeException e) {
-            e.printStackTrace();
             throw new RuntimeException("加密内容长度非法");
         } catch (NoSuchPaddingException e) {
-            e.printStackTrace();
             throw new RuntimeException("无此加密填充类型");
         } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
             throw new RuntimeException("无此加密算法");
         } catch (NoSuchProviderException e) {
-            e.printStackTrace();
             throw new RuntimeException("无此加密代理");
         }
     }

@@ -74,7 +74,7 @@ public class ContractServiceImpl implements ContractService {
     private Request approve(Request request, PublicContractExec exec) {
         Token token = JSON.parseObject(exec.get(Common.TOKEN_DEFAULT_PUBLIC_HASH), new TypeReference<Token>() {});
         JSONObject json = request.getJsonValue();
-        // 待转账金额
+        // 待授权金额
         BigDecimal count = json.getBigDecimal("count").setScale(token.getDecimals(), BigDecimal.ROUND_HALF_UP);
         Account accountFrom = JSON.parseObject(exec.get(request.getAddress()), new TypeReference<Account>() {});
         Account accountSpender = JSON.parseObject(exec.get(json.getString("addressSpender")), new TypeReference<Account>() {});
@@ -89,7 +89,6 @@ public class ContractServiceImpl implements ContractService {
                 new TypeReference<AccountInfo>() {});
         String value = KeyExec.obtain().encryptPriStrRSA(info.getPriRSAKey(), count.toPlainString());
         request.getJsonValue().remove("count");
-        request.setPriECCKey(null);
         request.setValue(value);
         return request;
     }

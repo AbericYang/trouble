@@ -27,6 +27,7 @@ package cn.aberic.bother.entity.response;
 import cn.aberic.bother.entity.BeanJsonField;
 import cn.aberic.bother.tools.VerifyTool;
 import com.alibaba.fastjson.JSONObject;
+import lombok.Getter;
 
 /**
  * 返回内容通用接口
@@ -42,6 +43,7 @@ public interface IResponse {
      * 作者：Aberic on 2018/09/05 14:04
      * 邮箱：abericyang@gmail.com
      */
+    @Getter
     enum ResponseType {
         /** 返回码 200，返回信息 success */
         SUCCESS(200, "success"),

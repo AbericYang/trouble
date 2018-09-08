@@ -201,7 +201,19 @@ class TokenHelper implements IHelper {
     Response approve(Request request) {
         JSONObject json = exec.getRequest().getJsonValue();
         Account account = JSON.parseObject(exec.get(request.getAddress()), new TypeReference<Account>() {});
-        String key = MD5.md516(request.getAddress() + json.getString("addressSpender"));
+
+        String keyFormat = request.getAddress() + json.getString("addressSpender");
+        if (keyFormat.length() != 128) {
+            return exec.response(IResponse.ResponseType.FAIL);
+        }
+        String key = MD5.md516(keyFormat);
+
+        // 余额不足，禁止授权操作
+        BigDecimal count = new BigDecimal(KeyExec.obtain().decryptPubStrRSA(account.getPubRSAKey(), request.getValue()));
+        if (count.compareTo(account.getCount()) > 0) {
+            return exec.response(IResponse.ResponseType.ACCOUNT_LACK_OF_BALANCE);
+        }
+
         // 计算本次账户及 Token 创建所需存储大小
         long size = key.getBytes().length +
                 request.getValue().getBytes().length +
@@ -210,7 +222,13 @@ class TokenHelper implements IHelper {
         // 计算本次账户创建所需存储费用
         BigDecimal cost = coefficient(size, token.getDecimals());
         log.debug("计算本次账户创建所需存储费用 cost = {}", cost);
-        account.setCount(account.getCount().subtract(cost));
+
+        // 余额不足消费本次记录
+        if (cost.compareTo(account.getCount()) > 0) {
+            return exec.response(IResponse.ResponseType.ACCOUNT_LACK_OF_BALANCE);
+        }
+
+        account.setCount(account.getCount().subtract(cost).setScale(token.getDecimals(), BigDecimal.ROUND_HALF_UP));
         cost(exec, cost, token);
         exec.put(key, request.getValue());
         return exec.response();
