@@ -78,7 +78,7 @@ public class PublicContract implements IPublicContract {
             case "cheque": // 账户开支票
                 return accountHelper.cheque((PublicContractExec) exec, request);
             case "allowance": // 返回 addressSpender 还能提取token的个数
-                return new TokenHelper(exec).allowance();
+                return new TokenHelper(exec).allowance(request);
             case "name": // 返回string类型的ERC20 Token 的名字，例如：NoTroubleBother
                 return exec.response(tokenHelper.name());
             case "symbol": // 返回string类型的ERC20 Token 的符号，也就是代币的简称，例如：NTB

@@ -169,8 +169,11 @@ class TokenHelper implements IHelper {
         BigDecimal count = json.getBigDecimal("count").setScale(token.getDecimals(), BigDecimal.ROUND_HALF_UP);
         Account accountFrom = JSON.parseObject(exec.get(request.getAddress()), new TypeReference<Account>() {});
         Account accountTo = JSON.parseObject(exec.get(json.getString("addressTo")), new TypeReference<Account>() {});
+        if (null == accountFrom) {
+            return exec.response(IResponse.ResponseType.ACCOUNT_NOT_FOUND, request.getAddress());
+        }
         if (null == accountTo) {
-            throw new AccountNotFoundException(json.getString("addressTo"));
+            return exec.response(IResponse.ResponseType.ACCOUNT_NOT_FOUND, json.getString("addressTo"));
         }
         // 判断转账方余额是否充足
         if (accountFrom.getCount().compareTo(count) < 0) {
@@ -257,15 +260,18 @@ class TokenHelper implements IHelper {
      *
      * @return 能提取token的个数
      */
-    Response allowance() {
+    Response allowance(Request request) {
         JSONObject json = exec.getRequest().getJsonValue();
         Account accountOwner = JSON.parseObject(exec.get(json.getString("addressOwner")), new TypeReference<Account>() {});
-        Account accountSpender = JSON.parseObject(exec.get(json.getString("addressSpender")), new TypeReference<Account>() {});
-        if (null == accountOwner || null == accountSpender) {
-            return exec.response(IResponse.ResponseType.ACCOUNT_NOT_FOUND);
+        Account accountSpender = JSON.parseObject(exec.get(request.getAddress()), new TypeReference<Account>() {});
+        if (null == accountSpender) {
+            return exec.response(IResponse.ResponseType.ACCOUNT_NOT_FOUND, request.getAddress());
+        }
+        if (null == accountOwner) {
+            return exec.response(IResponse.ResponseType.ACCOUNT_NOT_FOUND, json.getString("addressOwner"));
         }
         return exec.response(new BigDecimal(KeyExec.obtain().decryptPubStrRSA(accountOwner.getPubRSAKey(),
-                exec.get(MD5.md516(json.getString("addressOwner") + json.getString("addressSpender"))))));
+                exec.get(MD5.md516(json.getString("addressOwner") + request.getAddress())))));
     }
 
 }
