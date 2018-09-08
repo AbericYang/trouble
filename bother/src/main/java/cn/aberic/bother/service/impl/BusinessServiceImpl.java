@@ -28,12 +28,11 @@ import cn.aberic.bother.contract.exec.PublicContractExec;
 import cn.aberic.bother.contract.system.PublicContract;
 import cn.aberic.bother.encryption.key.bean.Key;
 import cn.aberic.bother.encryption.key.exec.KeyExec;
-import cn.aberic.bother.entity.response.IResponse;
 import cn.aberic.bother.entity.account.AccountUser;
 import cn.aberic.bother.entity.contract.Account;
-import cn.aberic.bother.entity.contract.AccountBusiness;
 import cn.aberic.bother.entity.contract.AccountInfo;
 import cn.aberic.bother.entity.contract.Request;
+import cn.aberic.bother.entity.response.IResponse;
 import cn.aberic.bother.entity.token.Token;
 import cn.aberic.bother.service.BusinessService;
 import cn.aberic.bother.token.TokenManager;
@@ -87,11 +86,11 @@ public class BusinessServiceImpl implements BusinessService, IResponse {
     }
 
     @Override
-    public String publish(AccountBusiness business) {
+    public String publish(Request request) {
         TokenManager tokenManager = new TokenManager();
-        Token token = tokenManager.getUnPublish(business.getAddress());
+        Token token = tokenManager.getUnPublish(request.getAddress());
         Account account = token.getAccount();
-        String result = publish(token, account, business);
+        String result = publish(token, account, request);
         tokenManager.clear(account.getAddress());
         return result;
     }
@@ -101,20 +100,19 @@ public class BusinessServiceImpl implements BusinessService, IResponse {
      * <p>
      * 发布信息至公网账本将按字节收取存储手续费
      *
-     * @param token    待发布 Token
-     * @param account  待发布 Token 根账户
-     * @param business 账户处理事务
+     * @param token   待发布 Token
+     * @param account 待发布 Token 根账户
+     * @param request 智能合约请求对象
+     *
      * @return 发布结果
      */
-    private String publish(Token token, Account account, AccountBusiness business) {
+    private String publish(Token token, Account account, Request request) {
         PublicContract publicContract = new PublicContract();
         PublicContractExec publicContractExec = new PublicContractExec();
         // Token 上链
-        Request request = new Request();
         request.setKey(token.getHash());
         token.setAccount(null);
         request.setValue(JSON.toJSONString(token));
-        request.setBusiness(business);
         publicContractExec.setRequest(request);
         log.debug("invoke token = {}", publicContract.invoke(publicContractExec));
         // 账户上链

@@ -28,8 +28,7 @@ import cn.aberic.bother.contract.exec.service.IPublicContractExec;
 import cn.aberic.bother.encryption.MD5;
 import cn.aberic.bother.encryption.key.exec.KeyExec;
 import cn.aberic.bother.entity.contract.Account;
-import cn.aberic.bother.entity.contract.AccountBusiness;
-import cn.aberic.bother.entity.contract.AccountInfo;
+import cn.aberic.bother.entity.contract.Request;
 import cn.aberic.bother.entity.response.IResponse;
 import cn.aberic.bother.entity.response.Response;
 import cn.aberic.bother.entity.token.Token;
@@ -64,11 +63,10 @@ class TokenHelper implements IHelper {
      *
      * @return 执行结果
      */
-    Response publishToken() {
-        AccountBusiness business = exec.getRequest().getBusiness();
+    Response publishToken(Request request) {
         JSONObject jsonObject = JSON.parseObject(exec.get("publish"));
         // 发布者公网账户
-        Account pubAccount = JSON.parseObject(exec.get(business.getAddress()), new TypeReference<Account>() {});
+        Account pubAccount = JSON.parseObject(exec.get(request.getAddress()), new TypeReference<Account>() {});
         // 发布者该 Token 下账户
         Account account = (Account) jsonObject.get("account");
         // 待发布 Token
@@ -82,19 +80,19 @@ class TokenHelper implements IHelper {
         // 计算本次账户及 Token 创建所需存储大小
         long size = accountStr.getBytes().length + tokenStr.getBytes().length;
         // 计算本次账户及 Token 创建所需存储费用
-        BigDecimal consumption = new BigDecimal(size * 0.0001);
+        BigDecimal cost = coefficient(size, token.getDecimals());
 
         // 发布者公网账户余额
         BigDecimal pubCount = pubAccount.getCount();
 
         // 检查该公网账户是否有足够余额支付
-        if (consumption.compareTo(pubCount) > 0) {
+        if (cost.compareTo(pubCount) > 0) {
             // 如果余额不足，则返回对应信息
             return exec.response(IResponse.ResponseType.ACCOUNT_LACK_OF_BALANCE);
         }
 
         // 扣减存储费
-        pubCount = pubCount.subtract(consumption);
+        pubCount = pubCount.subtract(cost);
         if (pubCount.doubleValue() < 0) {
             return exec.response(IResponse.ResponseType.ACCOUNT_LACK_OF_BALANCE);
         }
@@ -107,7 +105,7 @@ class TokenHelper implements IHelper {
         // 更新公网账户详情余额
         pubAccount.setCount(pubCount);
         // 更新后数据上链
-        exec.put(business.getAddress(), JSON.toJSONString(pubAccount));
+        exec.put(request.getAddress(), JSON.toJSONString(pubAccount));
 
         return exec.response();
     }
@@ -165,12 +163,11 @@ class TokenHelper implements IHelper {
      *
      * @return 成功与否
      */
-    Response transfer() {
-        AccountBusiness business = exec.getRequest().getBusiness();
-        JSONObject json = exec.getRequest().getJsonValue();
+    Response transfer(Request request) {
+        JSONObject json = request.getJsonValue();
         // 待转账金额
         BigDecimal count = json.getBigDecimal("count").setScale(token.getDecimals(), BigDecimal.ROUND_HALF_UP);
-        Account accountFrom = JSON.parseObject(exec.get(business.getAddress()), new TypeReference<Account>() {});
+        Account accountFrom = JSON.parseObject(exec.get(request.getAddress()), new TypeReference<Account>() {});
         Account accountTo = JSON.parseObject(exec.get(json.getString("addressTo")), new TypeReference<Account>() {});
         if (null == accountTo) {
             throw new AccountNotFoundException(json.getString("addressTo"));
@@ -180,9 +177,12 @@ class TokenHelper implements IHelper {
             return exec.response(IResponse.ResponseType.ACCOUNT_LACK_OF_BALANCE);
         }
         // 计算本次账户及 Token 创建所需存储大小
-        long size = JSON.toJSONString(accountFrom).getBytes().length + JSON.toJSONString(accountTo).getBytes().length;
+        long size = accountFrom.getAddress().getBytes().length +
+                JSON.toJSONString(accountFrom).getBytes().length +
+                accountTo.getAddress().getBytes().length +
+                JSON.toJSONString(accountTo).getBytes().length;
         // 计算本次账户创建所需存储费用
-        BigDecimal cost = new BigDecimal(size * 0.0001).setScale(token.getDecimals(), BigDecimal.ROUND_HALF_UP);
+        BigDecimal cost = coefficient(size, token.getDecimals());
         log.debug("计算本次账户创建所需存储费用 cost = {}", cost);
 
         accountFrom.setCount(accountFrom.getCount().subtract(count));
@@ -198,21 +198,21 @@ class TokenHelper implements IHelper {
      *
      * @return 成功与否
      */
-    Response approve() {
-        AccountBusiness business = exec.getRequest().getBusiness();
+    Response approve(Request request) {
         JSONObject json = exec.getRequest().getJsonValue();
-        // 待转账金额
-        BigDecimal count = json.getBigDecimal("count").setScale(token.getDecimals(), BigDecimal.ROUND_HALF_UP);
-        Account accountFrom = JSON.parseObject(exec.get(business.getAddress()), new TypeReference<Account>() {});
-        Account accountSpender = JSON.parseObject(exec.get(json.getString("addressSpender")), new TypeReference<Account>() {});
-        if (null == accountSpender) {
-            return exec.response(IResponse.ResponseType.ACCOUNT_NOT_FOUND);
-        }
-        // 获取账户详情对象
-        AccountInfo info = JSON.parseObject(KeyExec.obtain().decryptPriStrECDSA(business.getPriECCKey(), accountFrom.getJsonAccountInfoString()),
-                new TypeReference<AccountInfo>() {});
-        String value = KeyExec.obtain().encryptPriStrRSA(info.getPriRSAKey(), count.toPlainString());
-        exec.put(MD5.md516(business.getAddress() + json.getString("addressSpender")), value);
+        Account account = JSON.parseObject(exec.get(request.getAddress()), new TypeReference<Account>() {});
+        String key = MD5.md516(request.getAddress() + json.getString("addressSpender"));
+        // 计算本次账户及 Token 创建所需存储大小
+        long size = key.getBytes().length +
+                request.getValue().getBytes().length +
+                account.getAddress().getBytes().length +
+                JSON.toJSONString(account).getBytes().length;
+        // 计算本次账户创建所需存储费用
+        BigDecimal cost = coefficient(size, token.getDecimals());
+        log.debug("计算本次账户创建所需存储费用 cost = {}", cost);
+        account.setCount(account.getCount().subtract(cost));
+        cost(exec, cost, token);
+        exec.put(key, request.getValue());
         return exec.response();
     }
 

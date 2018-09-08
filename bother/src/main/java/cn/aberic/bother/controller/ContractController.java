@@ -25,12 +25,15 @@
 
 package cn.aberic.bother.controller;
 
-import cn.aberic.bother.contract.system.PublicContract;
 import cn.aberic.bother.contract.exec.PublicContractExec;
+import cn.aberic.bother.contract.system.PublicContract;
 import cn.aberic.bother.entity.contract.Request;
 import cn.aberic.bother.entity.response.Response;
+import cn.aberic.bother.service.ContractService;
 import cn.aberic.bother.tools.thread.ThreadTroublePool;
 import org.springframework.web.bind.annotation.*;
+
+import javax.annotation.Resource;
 
 /**
  * 作者：Aberic on 2018/9/1 22:40
@@ -41,16 +44,12 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("contract")
 public class ContractController {
 
+    @Resource
+    private ContractService contractService;
+
     @PostMapping(value = "invoke")
     public String invoke(@RequestBody Request request) {
-        PublicContract contract = new PublicContract();
-        PublicContractExec contractExec = new PublicContractExec();
-        contractExec.setRequest(request);
-        Response response = contract.invoke(contractExec);
-        if (response.isSend()) {
-            new ThreadTroublePool().submit(contractExec::sendTransaction);
-        }
-        return response.getResultResponse();
+        return contractService.invoke(request);
     }
 
     @PostMapping(value = "query")

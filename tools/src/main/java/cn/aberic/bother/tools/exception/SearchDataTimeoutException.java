@@ -29,9 +29,10 @@ package cn.aberic.bother.tools.exception;
  * 作者：Aberic on 2018/9/5 22:38
  * 邮箱：abericyang@gmail.com
  */
-public class SearchDataTimeoutException extends RuntimeException {
+public class SearchDataTimeoutException extends Exception {
 
     public SearchDataTimeoutException() {
         super("try to search data from file, time out");
     }
+
 }

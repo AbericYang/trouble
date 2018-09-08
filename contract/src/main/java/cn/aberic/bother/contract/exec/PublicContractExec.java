@@ -32,11 +32,13 @@ import cn.aberic.bother.contract.exec.service.IContractDataIndexFileExec;
 import cn.aberic.bother.contract.exec.service.IPublicContractExec;
 import cn.aberic.bother.contract.exec.service.IPublicContractFileExec;
 import cn.aberic.bother.entity.block.*;
-import cn.aberic.bother.entity.contract.AccountBusiness;
 import cn.aberic.bother.entity.contract.Contract;
 import cn.aberic.bother.entity.contract.Request;
 import cn.aberic.bother.storage.Common;
 import cn.aberic.bother.tools.exception.ContractPutValueException;
+import cn.aberic.bother.tools.exception.SearchDataNotFoundException;
+import cn.aberic.bother.tools.exception.SearchDataTimeoutException;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -54,12 +56,25 @@ public class PublicContractExec implements IPublicContractExec, IContractBaseExe
     private List<ValueRead> reads;
     private List<ValueWrite> writes;
     private Request request;
-    private AccountBusiness business;
+    private String priECCKey;
+    private String pubECCKey;
 
     public PublicContractExec() {
         rwSet = new RWSet();
         reads = new ArrayList<>();
         writes = new ArrayList<>();
+    }
+
+    public void setPriECCKey(String priECCKey) {
+        this.priECCKey = priECCKey;
+    }
+
+    public String getPriECCKey() {
+        return priECCKey;
+    }
+
+    public void setPubECCKey(String pubECCKey) {
+        this.pubECCKey = pubECCKey;
     }
 
     /**
@@ -69,16 +84,10 @@ public class PublicContractExec implements IPublicContractExec, IContractBaseExe
      */
     public void setRequest(Request request) {
         this.request = request;
-        business = request.getBusiness();
-    }
-
-    /**
-     * 开户操作需创建账户后再指定新账户 ECC 私钥
-     *
-     * @param priECCKey 新账户 ECC 私钥
-     */
-    public void setPriECCKey(String priECCKey) {
-        this.business.setPriECCKey(priECCKey);
+        if (StringUtils.isNotEmpty(request.getPriECCKey())) {
+            setPriECCKey(this.request.getPriECCKey());
+        }
+        this.request.setPriECCKey(null);
     }
 
     /** 发送交易到 Leader 节点 */
@@ -92,7 +101,7 @@ public class PublicContractExec implements IPublicContractExec, IContractBaseExe
         body.setTxCount(transactions.size());
         body.setTransactions(transactions);
         Block block = new Block(header, body);
-        BlockInfo blockInfo = storage.save(block);
+        BlockInfo blockInfo = storage.snyc(block);
         getContractDataIndexFileExec().put(blockInfo, writes);
     }
 
@@ -116,10 +125,10 @@ public class PublicContractExec implements IPublicContractExec, IContractBaseExe
         rwSet.setReads(reads);
         rwSet.setWrites(writes);
         Transaction transaction = new Transaction();
-        transaction.setCreator(business.getAddress());
+        transaction.setCreator(request.getAddress());
         transaction.setTimestamp(new Date().getTime());
         transaction.setRwSet(rwSet);
-        return transaction.build(business.getPriECCKey());
+        return transaction.build(priECCKey);
     }
 
     @Override
@@ -150,6 +159,11 @@ public class PublicContractExec implements IPublicContractExec, IContractBaseExe
         write.setContractName(getContract().getName());
         write.setContractVersion(getContract().getVersionName());
         write.setStrings(new String[]{key, value});
+        getRequest().setPriECCKey(null);
+        write.setRequest(getRequest());
+        if (null != pubECCKey) {
+            write.setPubECCKey(pubECCKey);
+        }
         writes.add(write);
     }
 
@@ -184,17 +198,17 @@ public class PublicContractExec implements IPublicContractExec, IContractBaseExe
     }
 
     @Override
-    public Block getBlockByHeight(int height) {
+    public Block getBlockByHeight(int height) throws SearchDataNotFoundException, SearchDataTimeoutException {
         return getBlockAcquire().getBlockByHeight(height);
     }
 
     @Override
-    public Block getBlockByHash(String currentDataHash) {
+    public Block getBlockByHash(String currentDataHash) throws SearchDataNotFoundException, SearchDataTimeoutException {
         return getBlockAcquire().getBlockByHash(currentDataHash);
     }
 
     @Override
-    public Block getBlockByTransactionHash(String transactionHash) {
+    public Block getBlockByTransactionHash(String transactionHash) throws SearchDataNotFoundException, SearchDataTimeoutException {
         return getBlockAcquire().getBlockByTransactionHash(transactionHash);
     }
 }

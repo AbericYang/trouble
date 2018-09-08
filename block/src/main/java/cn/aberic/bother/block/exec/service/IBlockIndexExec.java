@@ -29,6 +29,8 @@ import cn.aberic.bother.block.runnable.RunnableSearchBlockHeightIndex;
 import cn.aberic.bother.entity.block.Block;
 import cn.aberic.bother.storage.IInit;
 import cn.aberic.bother.tools.ITimeOut;
+import cn.aberic.bother.tools.exception.SearchDataNotFoundException;
+import cn.aberic.bother.tools.exception.SearchDataTimeoutException;
 import cn.aberic.bother.tools.thread.ThreadTroublePool;
 import com.google.common.io.Files;
 import org.apache.commons.lang3.StringUtils;
@@ -51,7 +53,7 @@ public interface IBlockIndexExec extends IInit, IExecInit, IIndexExec, ITimeOut 
      * @param height 区块高度
      * @return 区块对象
      */
-    default Block getByHeight(int height) {
+    default Block getByHeight(int height) throws SearchDataNotFoundException, SearchDataTimeoutException {
         Block[] blocks = new Block[]{null};
         int fileCount = getFileCount();
         AtomicInteger count = new AtomicInteger(0);
@@ -86,7 +88,7 @@ public interface IBlockIndexExec extends IInit, IExecInit, IIndexExec, ITimeOut 
      * @param currentDataHash 区块hash
      * @return 区块对象
      */
-    default Block getByCurrentDataHash(String currentDataHash) {
+    default Block getByCurrentDataHash(String currentDataHash) throws SearchDataNotFoundException, SearchDataTimeoutException {
         Block[] blocks = new Block[]{null};
         int fileCount = getFileCount();
         AtomicInteger count = new AtomicInteger(0);

@@ -27,12 +27,16 @@ package cn.aberic.bother.block.exec.service;
 import cn.aberic.bother.block.runnable.RunnableSearchTransactionHashIndex;
 import cn.aberic.bother.entity.block.Block;
 import cn.aberic.bother.storage.IInit;
+import cn.aberic.bother.tools.ITimeOut;
+import cn.aberic.bother.tools.exception.SearchDataNotFoundException;
+import cn.aberic.bother.tools.exception.SearchDataTimeoutException;
 import cn.aberic.bother.tools.thread.ThreadTroublePool;
 import com.google.common.io.Files;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
 import java.util.Date;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * 区块交易索引文件本地读写接口——数据操作层-data manipulation
@@ -40,7 +44,7 @@ import java.util.Date;
  * 作者：Aberic on 2018/08/27 17:51
  * 邮箱：abericyang@gmail.com
  */
-public interface IBlockTransactionIndexExec extends IInit, IExecInit, IIndexExec {
+public interface IBlockTransactionIndexExec extends IInit, IExecInit, IIndexExec, ITimeOut {
 
     /**
      * 根据交易hash获取区块对象
@@ -48,8 +52,10 @@ public interface IBlockTransactionIndexExec extends IInit, IExecInit, IIndexExec
      * @param transactionHash 交易hash
      * @return 区块对象
      */
-    default Block getByTransactionHash(String transactionHash) {
+    default Block getByTransactionHash(String transactionHash) throws SearchDataNotFoundException, SearchDataTimeoutException {
         Block[] blocks = new Block[]{null};
+        int fileCount = getFileCount();
+        AtomicInteger count = new AtomicInteger(0);
         ThreadTroublePool troublePool = new ThreadTroublePool();
         boolean found = false;
         Iterable<File> files = Files.fileTraverser().breadthFirst(new File(getFileStatus().getDir()));
@@ -68,19 +74,9 @@ public interface IBlockTransactionIndexExec extends IInit, IExecInit, IIndexExec
         }
         long time = new Date().getTime();
         while (!found) {
-            if (null != blocks[0]) {
-                found = true;
-            } else {
-                if (new Date().getTime() - time > 15000) {
-                    found = true;
-                }
-                try {
-                    Thread.sleep(10);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
+            found = checkTimeOut(fileCount, count, blocks[0], time, 300000);
         }
+        troublePool.shutdown();
         return blocks[0];
     }
 }

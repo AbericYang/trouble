@@ -25,15 +25,14 @@
 package cn.aberic.bother.contract.system;
 
 import cn.aberic.bother.contract.exec.PublicContractExec;
-import cn.aberic.bother.contract.exec.service.IPublicContractExec;
 import cn.aberic.bother.encryption.MD5;
 import cn.aberic.bother.encryption.key.bean.Key;
 import cn.aberic.bother.encryption.key.exec.KeyExec;
 import cn.aberic.bother.entity.account.AccountUser;
 import cn.aberic.bother.entity.account.Cheque;
 import cn.aberic.bother.entity.contract.Account;
-import cn.aberic.bother.entity.contract.AccountBusiness;
 import cn.aberic.bother.entity.contract.AccountInfo;
+import cn.aberic.bother.entity.contract.Request;
 import cn.aberic.bother.entity.response.IResponse;
 import cn.aberic.bother.entity.response.Response;
 import cn.aberic.bother.entity.token.Token;
@@ -60,23 +59,27 @@ class AccountHelper implements IHelper {
     /**
      * 账户开支票
      *
-     * @param exec     系统级智能合约操作接口
-     * @param business 账户处理事务
+     * @param exec    系统级智能合约操作接口
+     * @param request 智能合约请求对象
      *
      * @return 支票流转字符串信息
      */
-    Response cheque(IPublicContractExec exec, AccountBusiness business) throws Exception {
+    Response cheque(PublicContractExec exec, Request request) {
         // 开支票的公网账户
-        Account pubAccount = JSON.parseObject(exec.get(business.getAddress()), new TypeReference<Account>() {});
+        Account pubAccount = JSON.parseObject(exec.get(request.getAddress()), new TypeReference<Account>() {});
         // 开支票的公网账户余额
         BigDecimal pubCount = pubAccount.getCount();
         // 获取意图并解析为字符串数组
-        String[] intents = business.getEncryption().split(",");
+        String[] intents = request.getEncryption().split(",");
         Cheque cheque = new Cheque();
         cheque.setCount(new BigDecimal(intents[0]));
         cheque.setType(Integer.valueOf(intents[1]));
-        cheque.setStartTimestamp(new Date().getTime());
-        cheque.setEndTimestamp(DateTool.str2Date(intents[2], "yyyy/MM/dd HH:mm:ss").getTime());
+        try {
+            cheque.setStartTimestamp(DateTool.str2Date(intents[2], "yyyy/MM/dd HH:mm:ss").getTime());
+            cheque.setEndTimestamp(DateTool.str2Date(intents[3], "yyyy/MM/dd HH:mm:ss").getTime());
+        } catch (Exception e) {
+            return exec.response(IResponse.ResponseType.DATE_FORMAT_ERROR);
+        }
 
         // 检查开支票的金额是否小于0
         if (cheque.getCount().compareTo(new BigDecimal(0)) < 0) {
@@ -92,7 +95,7 @@ class AccountHelper implements IHelper {
         }
 
         // 获取账户详情对象
-        AccountInfo info = JSON.parseObject(KeyExec.obtain().decryptPriStrECDSA(business.getPriECCKey(), pubAccount.getJsonAccountInfoString()),
+        AccountInfo info = JSON.parseObject(KeyExec.obtain().decryptPriStrECDSA(exec.getPriECCKey(), pubAccount.getJsonAccountInfoString()),
                 new TypeReference<AccountInfo>() {});
         // 将支票对象json字符串化后由账户 RSA 私钥进行加密返回
         return exec.response(KeyExec.obtain().encryptPriStrRSA(info.getPriRSAKey(), JSON.toJSONString(cheque)));
@@ -101,25 +104,27 @@ class AccountHelper implements IHelper {
     /**
      * 开户
      *
-     * @param exec       系统级智能合约操作接口
-     * @param business   账户处理事务
+     * @param exec    系统级智能合约操作接口
+     * @param request 智能合约请求对象
      *
      * @return 支票流转字符串信息
      */
-    Response openAccount(PublicContractExec exec, AccountBusiness business) {
+    Response openAccount(PublicContractExec exec, Request request) {
         Token token = JSON.parseObject(exec.get(Common.TOKEN_DEFAULT_PUBLIC_HASH), new TypeReference<Token>() {});
         // 创建账户需要支付支票
         // 获取支票账户
-        Account chequeAccount = JSON.parseObject(exec.get(business.getAddress()), new TypeReference<Account>() {});
+        Account chequeAccount = JSON.parseObject(exec.get(request.getAddress()), new TypeReference<Account>() {});
         // 根据意图获取支票对象
-        Cheque cheque = JSON.parseObject(KeyExec.obtain().decryptPubStrRSA(chequeAccount.getPubRSAKey(), business.getEncryption()),
+        Cheque cheque = JSON.parseObject(KeyExec.obtain().decryptPubStrRSA(chequeAccount.getPubRSAKey(), request.getEncryption()),
                 new TypeReference<Cheque>() {});
         // 如果链上已经记录了该支票信息，则表示该支票已被消费过
         if (null != exec.get(MD5.md516(cheque.toString()))) {
             return exec.response(IResponse.ResponseType.CHEQUE_INVALID);
         }
+
+        long timestamp = new Date().getTime();
         // 如果支票已经过期，则此支票无效
-        if (new Date().getTime() > cheque.getEndTimestamp()) {
+        if (timestamp > cheque.getEndTimestamp() || timestamp < cheque.getStartTimestamp()) {
             return exec.response(IResponse.ResponseType.CHEQUE_OVERDUE);
         }
 
@@ -157,13 +162,14 @@ class AccountHelper implements IHelper {
         // 得到即将存储的账户字符串
         String accountStr = JSON.toJSONString(account);
         // 计算本次账户及 Token 创建所需存储大小
-        long size = accountStr.getBytes().length + JSON.toJSONString(chequeAccount).getBytes().length;
+        long size = account.getAddress().getBytes().length +
+                accountStr.getBytes().length +
+                chequeAccount.getAddress().getBytes().length +
+                JSON.toJSONString(chequeAccount).getBytes().length +
+                MD5.md516(cheque.toString()).getBytes().length;
         // 计算本次账户创建所需存储费用
-        BigDecimal cost = new BigDecimal(size * 0.0001).setScale(token.getDecimals(), BigDecimal.ROUND_HALF_UP);
+        BigDecimal cost = coefficient(size, token.getDecimals());
         log.debug("开户 计算本次账户创建所需存储费用 = {}", cost.toPlainString());
-        // 支付费用后支票余额
-        BigDecimal balance = cheque.getCount().subtract(cost).setScale(token.getDecimals(), BigDecimal.ROUND_HALF_UP);
-        log.debug("开户 支付费用后支票余额 = {}", balance.toPlainString());
 
         // 检查该支票是否有足够金额支付
         if (cost.compareTo(cheque.getCount()) > 0) {
@@ -171,35 +177,24 @@ class AccountHelper implements IHelper {
             return exec.response(IResponse.ResponseType.CHEQUE_LACK_OF_BALANCE);
         }
 
-        // 扣减存储费，并将多出来的 Token 根据支票属性判定所有
-        if (cheque.getType() == 1 && balance.compareTo(new BigDecimal(0.0001)) > 0) {
-            // 先让账户创建所需存储费用增加0.0001，进入循环后循环减去0.0001，直到算出正确费用
-            cost = cost.add(new BigDecimal(0.0001)).setScale(token.getDecimals(), BigDecimal.ROUND_HALF_UP);
-            do {
-                cost = cost.subtract(new BigDecimal(0.0001)).setScale(token.getDecimals(), BigDecimal.ROUND_HALF_UP);
-                // 支付费用后支票余额
-                balance = cheque.getCount().subtract(cost).setScale(token.getDecimals(), BigDecimal.ROUND_HALF_UP);
-                log.debug("开户 支票余额 = {}", balance.toPlainString());
-                // 重新设置账户余额
-                account.setCount(balance);
-                // 得到新的即将存储的账户字符串
-                accountStr = JSON.toJSONString(account);
-                // 重新计算本次账户及 Token 创建所需存储大小
-                size = accountStr.getBytes().length + JSON.toJSONString(chequeAccount).getBytes().length;
-                // 重新计算本次账户及 Token 创建所需存储费用
-                cost = new BigDecimal(size * 0.0001).setScale(token.getDecimals(), BigDecimal.ROUND_HALF_UP);
-                log.debug("开户 新存储费用 = {}", cost.toPlainString());
-                // 支票开票账户消费本次支票金额
-                chequeAccount.setCount(chequeAccount.getCount().subtract(cheque.getCount()).setScale(token.getDecimals(), BigDecimal.ROUND_HALF_UP));
+        // 支付费用后支票余额
+        BigDecimal balance = cheque.getCount().subtract(cost).setScale(token.getDecimals(), BigDecimal.ROUND_HALF_UP);
+        log.debug("开户 支付费用后支票余额 = {}", balance.toPlainString());
 
-                // 检查该支票是否有足够金额支付
-            } while (cost.compareTo(cheque.getCount()) > 0);
+
+        // 扣减存储费，并将多出来的 Token 根据支票属性判定所有
+        if (cheque.getType() == 1) {
+            // 重新设置账户余额
+            account.setCount(balance);
+            // 支票开票账户消费本次支票金额
+            chequeAccount.setCount(chequeAccount.getCount().subtract(cheque.getCount()).setScale(token.getDecimals(), BigDecimal.ROUND_HALF_UP));
         } else {
             // 支票开票账户消费本次支票金额
             chequeAccount.setCount(chequeAccount.getCount().subtract(cost).setScale(token.getDecimals(), BigDecimal.ROUND_HALF_UP));
         }
 
         exec.setPriECCKey(eccKey.getPrivateKey());
+        exec.setPubECCKey(eccKey.getPublicKey());
         // 账户上链
         exec.put(account.getAddress(), JSON.toJSONString(account));
         // 更新支票开票账户金额

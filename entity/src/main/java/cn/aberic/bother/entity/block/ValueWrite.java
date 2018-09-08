@@ -24,6 +24,7 @@
 
 package cn.aberic.bother.entity.block;
 
+import cn.aberic.bother.entity.contract.Request;
 import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Getter;
 import lombok.Setter;
@@ -49,6 +50,9 @@ public class ValueWrite {
     /** 本次写入值所用合约版本 */
     @JSONField(name = "v")
     private String contractVersion;
+    /** 本次写入操作账户地址数组，默认第一个是操作者，其余根据意图判定 */
+    @JSONField(name = "r")
+    private Request request;
     /**
      * 本次写入的k-v
      * <p>
@@ -56,4 +60,7 @@ public class ValueWrite {
      */
     @JSONField(name = "s")
     private String[] strings;
+    /** 仅在创建账户时需要赋值验证 */
+    @JSONField(name = "p")
+    private String pubECCKey;
 }

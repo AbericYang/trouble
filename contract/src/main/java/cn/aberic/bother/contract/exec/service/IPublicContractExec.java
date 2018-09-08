@@ -25,10 +25,12 @@
 
 package cn.aberic.bother.contract.exec.service;
 
-import cn.aberic.bother.entity.response.IResponse;
 import cn.aberic.bother.entity.block.Block;
 import cn.aberic.bother.entity.contract.Contract;
 import cn.aberic.bother.entity.contract.Request;
+import cn.aberic.bother.entity.response.IResponse;
+import cn.aberic.bother.tools.exception.SearchDataNotFoundException;
+import cn.aberic.bother.tools.exception.SearchDataTimeoutException;
 
 import java.util.List;
 
@@ -121,7 +123,7 @@ public interface IPublicContractExec extends IResponse {
      *
      * @return 区块对象
      */
-    Block getBlockByHeight(int height);
+    Block getBlockByHeight(int height) throws SearchDataNotFoundException, SearchDataTimeoutException;
 
     /**
      * 根据区块高度获取区块对象
@@ -130,7 +132,7 @@ public interface IPublicContractExec extends IResponse {
      *
      * @return 区块对象
      */
-    Block getBlockByHash(String currentDataHash);
+    Block getBlockByHash(String currentDataHash) throws SearchDataNotFoundException, SearchDataTimeoutException;
 
     /**
      * 根据区块高度获取区块对象
@@ -139,6 +141,6 @@ public interface IPublicContractExec extends IResponse {
      *
      * @return 区块对象
      */
-    Block getBlockByTransactionHash(String transactionHash);
+    Block getBlockByTransactionHash(String transactionHash) throws SearchDataNotFoundException, SearchDataTimeoutException;
 
 }

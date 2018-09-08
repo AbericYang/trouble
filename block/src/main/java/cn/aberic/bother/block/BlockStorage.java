@@ -30,10 +30,13 @@ import cn.aberic.bother.encryption.key.exec.KeyExec;
 import cn.aberic.bother.entity.block.Block;
 import cn.aberic.bother.entity.block.BlockInfo;
 import cn.aberic.bother.entity.block.Transaction;
+import cn.aberic.bother.entity.block.ValueWrite;
 import cn.aberic.bother.entity.consensus.ConsensusStatus;
 import cn.aberic.bother.entity.contract.Account;
 import cn.aberic.bother.storage.Common;
 import cn.aberic.bother.storage.FileComponent;
+import cn.aberic.bother.tools.exception.SearchDataNotFoundException;
+import cn.aberic.bother.tools.exception.SearchDataTimeoutException;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import lombok.extern.slf4j.Slf4j;
@@ -79,44 +82,32 @@ public class BlockStorage extends BlockAS implements IDataExec {
     }
 
     /**
-     * 根据投票后，作为区块打包节点的操作方法
-     * <p>
-     * 打包并存储指定智能合约账本的区块文件
-     *
-     * @param block 待存储区块对象
-     */
-    public BlockInfo save(Block block) {
-        BlockInfo blockInfo = getBlockExec().createOrUpdate(block);
-        String blockIndex = String.format("%s,%s,%s,%s", blockInfo.getNum(), blockInfo.getLine(), blockInfo.getBlockHash(), blockInfo.getHeight());
-        getBlockIndexExec().createOrUpdate(blockIndex);
-        StringBuilder sb = new StringBuilder();
-        sb.append(String.format("%s,%s", blockInfo.getNum(), blockInfo.getLine()));
-        for (String s : blockInfo.getTransactionHashList()) {
-            sb.append(",").append(s);
-        }
-        getBlockTransactionIndexExec().createOrUpdate(sb.toString());
-        return blockInfo;
-    }
-
-    /**
      * 根据投票后，作为非打包区块节点的操作方法
      * <p>
      * 同步指定智能合约账本的区块文件
      *
      * @param block 待同步区块对象
      */
-    public void snyc(Block block) {
-        // 获取当前待存储区块高度
-        int height = block.getHeader().getHeight();
-        // 根据高度查询是否已存在本地区块对象
-        Block blockFromFile = getBlockIndexExec().getByHeight(height);
-        if (null == blockFromFile) { // 如果不存在，则执行存储操作
-            if (checkBlockVerify(block)) {
-                save(block);
-            }
-        } else { // 如果存在，则进入下一步判断两者区块有效性
-            checkVerify(height, block, blockFromFile);
+    public BlockInfo snyc(Block block) {
+        if (checkBlockVerify(block)) {
+            return save(block);
         }
+//        // 获取当前待存储区块高度
+//        int height = block.getHeader().getHeight();
+//        // 根据高度查询是否已存在本地区块对象
+//        Block blockFromFile = null;
+//        try {
+//            blockFromFile = getBlockIndexExec().getByHeight(height);
+//        } catch (SearchDataNotFoundException | SearchDataTimeoutException ignored) {
+//        }
+//        if (null == blockFromFile) { // 如果不存在，则执行存储操作
+//            if (checkBlockVerify(block)) {
+//                return save(block);
+//            }
+//        } else { // 如果存在，则进入下一步判断两者区块有效性
+//            checkVerify(height, block, blockFromFile);
+//        }
+        return null;
     }
 
     /**
@@ -130,12 +121,43 @@ public class BlockStorage extends BlockAS implements IDataExec {
         // 获取交易集合
         List<Transaction> transactions = block.getBody().getTransactions();
         for (Transaction transaction : transactions) {
-            Account account = JSON.parseObject(get(acquire, transaction.getCreator()), new TypeReference<Account>() {});
-            if (!KeyExec.obtain().verifyByStrECDSA(transaction.signString(), transaction.getSign(), account.getPubECCKey(), "UTF-8")) {
-                return false;
+            for (ValueWrite write : transaction.getRwSet().getWrites()) {
+                switch (write.getRequest().getKey()) {
+                    case "openAccount":
+                        if (!KeyExec.obtain().verifyByStrECDSA(transaction.signString(), transaction.getSign(), write.getPubECCKey(), "UTF-8")) {
+                            return false;
+                        }
+                        break;
+                    default:
+                        Account account = JSON.parseObject(get(acquire, transaction.getCreator()), new TypeReference<Account>() {});
+                        if (!KeyExec.obtain().verifyByStrECDSA(transaction.signString(), transaction.getSign(), account.getPubECCKey(), "UTF-8")) {
+                            return false;
+                        }
+                        break;
+                }
             }
         }
         return true;
+    }
+
+    /**
+     * 根据投票后，作为区块打包节点的操作方法
+     * <p>
+     * 打包并存储指定智能合约账本的区块文件
+     *
+     * @param block 待存储区块对象
+     */
+    private BlockInfo save(Block block) {
+        BlockInfo blockInfo = getBlockExec().createOrUpdate(block);
+        String blockIndex = String.format("%s,%s,%s,%s", blockInfo.getNum(), blockInfo.getLine(), blockInfo.getBlockHash(), blockInfo.getHeight());
+        getBlockIndexExec().createOrUpdate(blockIndex);
+        StringBuilder sb = new StringBuilder();
+        sb.append(String.format("%s,%s", blockInfo.getNum(), blockInfo.getLine()));
+        for (String s : blockInfo.getTransactionHashList()) {
+            sb.append(",").append(s);
+        }
+        getBlockTransactionIndexExec().createOrUpdate(sb.toString());
+        return blockInfo;
     }
 
     /**
@@ -168,7 +190,14 @@ public class BlockStorage extends BlockAS implements IDataExec {
                 proactive().verifyBlock(height, ConsensusStatus.BLOCK_CLASH_IN_FIRST);
                 return false;
             }
-            Block blockFromPreFile = getBlockIndexExec().getByHeight(height - 1);
+            Block blockFromPreFile = null;
+            try {
+                blockFromPreFile = getBlockIndexExec().getByHeight(height - 1);
+            } catch (SearchDataNotFoundException e) {
+                e.printStackTrace();
+            } catch (SearchDataTimeoutException e) {
+                e.printStackTrace();
+            }
             // 如果待同步区块上一hash与上一区块的当前hash相同
             if (StringUtils.equalsIgnoreCase(
                     block.getHeader().getPreviousDataHash(),

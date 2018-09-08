@@ -26,6 +26,7 @@
 package cn.aberic.bother.entity.contract;
 
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -40,14 +41,26 @@ import lombok.Setter;
 public class Request {
 
     /** 智能合约key */
+    @JSONField(name = "k")
     private String key;
-    /** 账户事务意图 */
-    private AccountBusiness business;
     /** 智能合约value */
+    @JSONField(name = "v")
     private String value;
     /** 智能合约 json value */
+    @JSONField(name = "j")
     private JSONObject jsonValue;
+    /** RSA 私钥加密事务，请求不加密，处理时加密 */
+    private String encryption;
+
     /** Token hash */
+    @JSONField(name = "t")
     private String tokenHash;
+    /** 处理该事务的账户地址 */
+    @JSONField(name = "a")
+    private String address;
+
+    /** 处理该事务的账户 ECC 私钥 */
+    @JSONField(serialize = false)
+    private String priECCKey;
 
 }

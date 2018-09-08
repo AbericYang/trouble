@@ -63,10 +63,12 @@ public interface IResponse {
         CHEQUE_LACK_OF_BALANCE(9020, "支票金额不足"),
         /** 返回码 9021，返回信息 支票无效 */
         CHEQUE_INVALID(9021, "支票无效"),
-        /** 返回码 9022，返回信息 支票过期 */
-        CHEQUE_OVERDUE(9022, "支票过期"),
+        /** 返回码 9022，返回信息 支票不在使用有效期内 */
+        CHEQUE_OVERDUE(9022, "支票不在使用有效期内"),
         /** 返回码 9030，返回信息 授权余额不足 */
-        APPROVE_LACK_OF_BALANCE(9030, "授权余额不足");
+        APPROVE_LACK_OF_BALANCE(9030, "授权余额不足"),
+        /** 返回码 9040，返回信息 日期格式错误 */
+        DATE_FORMAT_ERROR(9040, "日期格式错误");
 
 
         /** 交易结果信息 */

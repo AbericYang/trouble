@@ -48,7 +48,7 @@ public interface ITimeOut {
      *
      * @return 超时与否
      */
-    default boolean checkTimeOut(int fileCount, AtomicInteger resultCount, Object object, long time, long outTime) {
+    default boolean checkTimeOut(int fileCount, AtomicInteger resultCount, Object object, long time, long outTime) throws SearchDataNotFoundException, SearchDataTimeoutException {
         if (null != object) {
             return true;
         } else {

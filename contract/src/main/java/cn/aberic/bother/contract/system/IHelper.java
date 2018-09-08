@@ -46,4 +46,16 @@ public interface IHelper {
         exec.put(account.getAddress(), JSON.toJSONString(account));
     }
 
+    /**
+     * 根据存储大小计算消费
+     *
+     * @param size     当前存储大小
+     * @param decimals 支持几位小数点后几位。如果设置为3。也就是支持0.001表示
+     *
+     * @return 消费额
+     */
+    default BigDecimal coefficient(long size, int decimals) {
+        return new BigDecimal(size * 0.000001).setScale(decimals, BigDecimal.ROUND_HALF_UP);
+    }
+
 }

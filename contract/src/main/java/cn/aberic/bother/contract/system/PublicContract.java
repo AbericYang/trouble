@@ -27,14 +27,13 @@ package cn.aberic.bother.contract.system;
 import cn.aberic.bother.contract.exec.PublicContractExec;
 import cn.aberic.bother.contract.exec.service.IPublicContract;
 import cn.aberic.bother.contract.exec.service.IPublicContractExec;
-import cn.aberic.bother.entity.contract.AccountBusiness;
 import cn.aberic.bother.entity.contract.Request;
 import cn.aberic.bother.entity.response.IResponse;
 import cn.aberic.bother.entity.response.Response;
-import cn.aberic.bother.tools.exception.ERC20TokenAddressNullException;
 import cn.aberic.bother.tools.exception.RequestTypeNotFoundException;
+import cn.aberic.bother.tools.exception.SearchDataNotFoundException;
+import cn.aberic.bother.tools.exception.SearchDataTimeoutException;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 
 /**
  * 系统应用智能合约-app support
@@ -55,98 +54,68 @@ public class PublicContract implements IPublicContract {
     public Response invoke(IPublicContractExec exec) {
         TokenHelper tokenHelper = new TokenHelper(exec);
         Request request = exec.getRequest();
-        AccountBusiness business = request.getBusiness();
-        if (StringUtils.isEmpty(business.getAddress())) { // invoke 请求账户地址不能为空
-            throw new ERC20TokenAddressNullException();
-        }
-        switch (business.getIntent()) {
-            case PUBLISH:
+        switch (request.getKey()) {
+            case "publish": // 发布新 Token
                 return tokenHelper.publishToken();
-            case OPEN_ACCOUNT:
-                return accountHelper.openAccount((PublicContractExec) exec, business);
-            case TRANSFER:
-                return tokenHelper.transfer();
-            case APPROVE:
-                return tokenHelper.approve();
-            case TRANSFER_FROM:
+            case "openAccount": // 开户
+                return accountHelper.openAccount((PublicContractExec) exec, request);
+            case "transfer": // 将自己的 count 个 Token 转给 addressTo 地址
+                return tokenHelper.transfer(request);
+            case "approve": // 批准 addressSpender 账户从自己的账户转移 count 个 Token。
+                return tokenHelper.approve(request);
+            case "transferFrom": // 与approve搭配使用，approve批准之后，调用本函数来转移token
                 return tokenHelper.transferFrom();
         }
-//         exec.put(request.getKey(), request.getValue());
+//        exec.put(request.getKey(), request.getValue());
         return exec.response(IResponse.ResponseType.REQUEST_TYPE_NOT_FOUND);
     }
 
     @Override
     public Response query(IPublicContractExec exec) {
         Request request = exec.getRequest();
-        AccountBusiness business = request.getBusiness();
-        if (null != business && null != business.getIntent()) {
-            return intentExec(exec, business);
-        }
-        return keyExec(exec, request);
-    }
-
-    /**
-     * 处理意图查询事务
-     *
-     * @param exec     系统级智能合约操作接口
-     * @param business 账户处理事务
-     *
-     * @return 查询结果
-     */
-    private Response intentExec(IPublicContractExec exec, AccountBusiness business) {
-        switch (business.getIntent()) {
-            case CHEQUE:
-                try {
-                    return accountHelper.cheque(exec, business);
-                } catch (Exception e) {
-                    return exec.response(IResponse.ResponseType.FAIL, e.getMessage());
-                }
-            case ALLOWANCE:
-                return new TokenHelper(exec).allowance();
-        }
-        return null;
-    }
-
-    /**
-     * 处理键查询事务
-     *
-     * @param exec    系统级智能合约操作接口
-     * @param request 智能合约请求对象
-     *
-     * @return 查询结果
-     */
-    private Response keyExec(IPublicContractExec exec, Request request) {
         TokenHelper tokenHelper = new TokenHelper(exec);
         switch (request.getKey()) {
-            // 返回string类型的ERC20 Token 的名字，例如：NoTroubleBother
-            case "name":
+            case "cheque": // 账户开支票
+                return accountHelper.cheque((PublicContractExec) exec, request);
+            case "allowance": // 返回 addressSpender 还能提取token的个数
+                return new TokenHelper(exec).allowance();
+            case "name": // 返回string类型的ERC20 Token 的名字，例如：NoTroubleBother
                 return exec.response(tokenHelper.name());
-            // 返回string类型的ERC20 Token 的符号，也就是代币的简称，例如：NTB。
-            case "symbol":
+            case "symbol": // 返回string类型的ERC20 Token 的符号，也就是代币的简称，例如：NTB
                 return exec.response(tokenHelper.symbol());
-            // 支持几位小数点后几位。如果设置为3。也就是支持0.001表示。
-            case "decimals":
+            case "decimals": // 支持几位小数点后几位。如果设置为3。也就是支持0.001表示
                 return exec.response(tokenHelper.decimals());
-            // 发行 Token 的总量
-            case "totalSupply":
+            case "totalSupply": // 发行 Token 的总量
                 return exec.response(tokenHelper.totalSupply());
-            // 根据指定地址返回该 Token 的余额
-            case "balanceOf":
+            case "balanceOf": // 根据指定地址返回该 Token 的余额
                 return exec.response(tokenHelper.balanceOf(request.getValue()));
-            // 查询区块高度
-            case "heightNum":
+            case "heightNum": // 查询区块高度
                 return exec.response(exec.getHeight());
-            // 根据高度查询区块对象
-            case "height":
-                return exec.response(exec.getBlockByHeight(Integer.valueOf(request.getValue())));
-            // 根据区块hash查询区块对象
-            case "hash":
-                return exec.response(exec.getBlockByHash(request.getValue()));
-            // 根据交易hash查询区块对象
-            case "txHash":
-                return exec.response(exec.getBlockByTransactionHash(request.getValue()));
-            // 根据 key 查询 value 历史记录
-            case "history":
+            case "height": // 根据高度查询区块对象
+                try {
+                    return exec.response(exec.getBlockByHeight(Integer.valueOf(request.getValue())));
+                } catch (SearchDataNotFoundException e) {
+                    return exec.response(IResponse.ResponseType.FAIL, "try to search data from file, but not found");
+                } catch (SearchDataTimeoutException e) {
+                    return exec.response(IResponse.ResponseType.FAIL, "try to search data from file, time out");
+                }
+            case "hash": // 根据区块hash查询区块对象
+                try {
+                    return exec.response(exec.getBlockByHash(request.getValue()));
+                } catch (SearchDataNotFoundException e) {
+                    return exec.response(IResponse.ResponseType.FAIL, "try to search data from file, but not found");
+                } catch (SearchDataTimeoutException e) {
+                    return exec.response(IResponse.ResponseType.FAIL, "try to search data from file, time out");
+                }
+            case "txHash": // 根据交易hash查询区块对象
+                try {
+                    return exec.response(exec.getBlockByTransactionHash(request.getValue()));
+                } catch (SearchDataNotFoundException e) {
+                    return exec.response(IResponse.ResponseType.FAIL, "try to search data from file, but not found");
+                } catch (SearchDataTimeoutException e) {
+                    return exec.response(IResponse.ResponseType.FAIL, "try to search data from file, time out");
+                }
+            case "history": // 根据 key 查询 value 历史记录
                 return exec.response(exec.getHistory(request.getValue()));
         }
         throw new RequestTypeNotFoundException();

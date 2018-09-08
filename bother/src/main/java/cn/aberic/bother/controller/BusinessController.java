@@ -25,7 +25,7 @@
 package cn.aberic.bother.controller;
 
 import cn.aberic.bother.entity.account.AccountUser;
-import cn.aberic.bother.entity.contract.AccountBusiness;
+import cn.aberic.bother.entity.contract.Request;
 import cn.aberic.bother.entity.token.Token;
 import cn.aberic.bother.service.BusinessService;
 import org.springframework.web.bind.annotation.*;
@@ -57,12 +57,12 @@ public class BusinessController {
     /**
      * 根据用户持有账户信息获取改账户的 RSA 私钥
      *
-     * @param business 账户处理事务
+     * @param request 智能合约请求对象
      * @return RSA 私钥
      */
     @PostMapping(value = "publish")
-    public String publish(@RequestBody AccountBusiness business) {
-        return businessService.publish(business);
+    public String publish(@RequestBody Request request) {
+        return businessService.publish(request);
     }
 
 }

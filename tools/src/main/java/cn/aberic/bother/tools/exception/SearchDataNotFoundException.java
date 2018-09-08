@@ -29,7 +29,7 @@ package cn.aberic.bother.tools.exception;
  * 作者：Aberic on 2018/9/5 22:34
  * 邮箱：abericyang@gmail.com
  */
-public class SearchDataNotFoundException extends RuntimeException {
+public class SearchDataNotFoundException extends Exception {
 
     public SearchDataNotFoundException() {
         super("try to search data from file, but not found");
