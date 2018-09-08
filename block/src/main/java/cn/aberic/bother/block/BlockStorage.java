@@ -32,7 +32,6 @@ import cn.aberic.bother.encryption.key.exec.KeyExec;
 import cn.aberic.bother.entity.block.Block;
 import cn.aberic.bother.entity.block.BlockInfo;
 import cn.aberic.bother.entity.block.Transaction;
-import cn.aberic.bother.entity.block.ValueWrite;
 import cn.aberic.bother.entity.consensus.ConsensusStatus;
 import cn.aberic.bother.entity.contract.Account;
 import cn.aberic.bother.entity.contract.Request;
@@ -95,9 +94,9 @@ public class BlockStorage extends BlockAS implements IDataExec {
      * @param block 待同步区块对象
      */
     public BlockInfo snyc(Block block) {
-        if (checkBlockVerify(block)) {
+//        if (checkBlockVerify(block)) {
             return save(block);
-        }
+//        }
 //        // 获取当前待存储区块高度
 //        int height = block.getHeader().getHeight();
 //        // 根据高度查询是否已存在本地区块对象
@@ -113,7 +112,7 @@ public class BlockStorage extends BlockAS implements IDataExec {
 //        } else { // 如果存在，则进入下一步判断两者区块有效性
 //            checkVerify(height, block, blockFromFile);
 //        }
-        return null;
+//        return null;
     }
 
     /**
@@ -131,28 +130,20 @@ public class BlockStorage extends BlockAS implements IDataExec {
         Transaction transaction;
         while (transactions.hasNext()) {
             transaction = transactions.next();
-            boolean remove = false;
-            for (ValueWrite write : transaction.getRwSet().getWrites()) {
-                switch (write.getRequest().getKey()) {
-                    case "openAccount":
-                        if (!KeyExec.obtain().verifyByStrECDSA(transaction.signString(), transaction.getSign(), write.getPubECCKey(), "UTF-8") ||
-                                !checkMethod(write.getRequest())) {
-                            transactions.remove();
-                            remove = true;
-                        }
-                        break;
-                    default:
-                        Account account = JSON.parseObject(get(acquire, transaction.getCreator()), new TypeReference<Account>() {});
-                        if (!KeyExec.obtain().verifyByStrECDSA(transaction.signString(), transaction.getSign(), account.getPubECCKey(), "UTF-8") ||
-                                !checkMethod(write.getRequest())) {
-                            transactions.remove();
-                            remove = true;
-                        }
-                        break;
-                }
-                if (remove) {
+            switch (transaction.getRequest().getKey()) {
+                case "openAccount":
+                    if (!KeyExec.obtain().verifyByStrECDSA(transaction.signString(), transaction.getSign(), transaction.getPubECCKey(), "UTF-8") ||
+                            !checkMethod(transaction.getRequest())) {
+                        transactions.remove();
+                    }
                     break;
-                }
+                default:
+                    Account account = JSON.parseObject(get(acquire, transaction.getCreator()), new TypeReference<Account>() {});
+                    if (!KeyExec.obtain().verifyByStrECDSA(transaction.signString(), transaction.getSign(), account.getPubECCKey(), "UTF-8") ||
+                            !checkMethod(transaction.getRequest())) {
+                        transactions.remove();
+                    }
+                    break;
             }
         }
         return true;

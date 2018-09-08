@@ -55,7 +55,7 @@ public interface IHelper {
      * @return 消费额
      */
     default BigDecimal coefficient(long size, int decimals) {
-        return new BigDecimal(size * 0.000001).setScale(decimals, BigDecimal.ROUND_HALF_UP);
+        return new BigDecimal(size * 0.00001).setScale(decimals, BigDecimal.ROUND_HALF_UP);
     }
 
 }

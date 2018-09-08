@@ -26,6 +26,7 @@ package cn.aberic.bother.entity.block;
 
 import cn.aberic.bother.encryption.MD5;
 import cn.aberic.bother.encryption.key.exec.KeyExec;
+import cn.aberic.bother.entity.contract.Request;
 import cn.aberic.bother.entity.enums.TransactionStatus;
 import cn.aberic.bother.tools.DateTool;
 import com.alibaba.fastjson.JSON;
@@ -48,6 +49,15 @@ import java.nio.charset.Charset;
 @ToString
 public class Transaction {
 
+    /** 本次写入值链码hash */
+    @JSONField(name = "h")
+    private String hash;
+    /** 本次写入值所用合约名称 */
+    @JSONField(name = "n")
+    private String contractName;
+    /** 本次写入值所用合约版本 */
+    @JSONField(name = "v")
+    private String contractVersion;
     /** 发起方 */
     @JSONField(name = "c")
     private String creator;
@@ -65,8 +75,8 @@ public class Transaction {
      * <p>
      * 为creator、sign、JSON.toJSONString(readSet)、JSON.toJSONString(writeSet)及timestamp拼接后md5
      */
-    @JSONField(name = "h")
-    private String hash;
+    @JSONField(name = "txh")
+    private String txHash;
     /** 交易状态 */
     @JSONField(name = "ts")
     private int transactionStatusCode = TransactionStatus.SUCCESS.getCode();
@@ -79,12 +89,18 @@ public class Transaction {
     /** 交易时间戳转字符串——yyyy/MM/dd HH:mm:ss */
     @JSONField(serialize = false)
     private String time; // 序列化时不写入
+    /** 本次写入操作账户地址数组，默认第一个是操作者，其余根据意图判定 */
+    @JSONField(name = "r")
+    private Request request;
+    /** 仅在创建账户时需要赋值验证 */
+    @JSONField(name = "p")
+    private String pubECCKey;
 
     public Transaction build(String priECCKey) {
         sign = signStringResult(priECCKey);
-        hash = Hashing.sha256().hashString(String.format("%s%s%s%s",
+        txHash = Hashing.sha256().hashString(String.format("%s%s%s%s",
                 creator, sign, JSON.toJSONString(rwSet), timestamp), Charset.forName("UTF-8")).toString();
-        dataStorageHash = MD5.md516(hash);
+        dataStorageHash = MD5.md516(txHash);
         return this;
     }
 

@@ -125,9 +125,17 @@ public class PublicContractExec implements IPublicContractExec, IContractBaseExe
         rwSet.setReads(reads);
         rwSet.setWrites(writes);
         Transaction transaction = new Transaction();
+        transaction.setContractName(getContract().getHash());
+        transaction.setContractName(getContract().getName());
+        transaction.setContractVersion(getContract().getVersionName());
         transaction.setCreator(request.getAddress());
         transaction.setTimestamp(new Date().getTime());
         transaction.setRwSet(rwSet);
+        getRequest().setPriECCKey(null);
+        if (null != pubECCKey) {
+            transaction.setPubECCKey(pubECCKey);
+        }
+        transaction.setRequest(getRequest());
         return transaction.build(priECCKey);
     }
 
@@ -147,7 +155,7 @@ public class PublicContractExec implements IPublicContractExec, IContractBaseExe
         if (null == transaction) {
             throw new RuntimeException("there was no message been written");
         }
-        return transaction.getHash();
+        return transaction.getTxHash();
     }
 
     @Override
@@ -156,22 +164,13 @@ public class PublicContractExec implements IPublicContractExec, IContractBaseExe
             throw new ContractPutValueException();
         }
         ValueWrite write = new ValueWrite();
-        write.setContractName(getContract().getName());
-        write.setContractVersion(getContract().getVersionName());
         write.setStrings(new String[]{key, value});
-        getRequest().setPriECCKey(null);
-        write.setRequest(getRequest());
-        if (null != pubECCKey) {
-            write.setPubECCKey(pubECCKey);
-        }
         writes.add(write);
     }
 
     @Override
     public String get(String key) {
         ValueRead read = new ValueRead();
-        read.setContractName(getContract().getName());
-        read.setContractVersion(getContract().getVersionName());
         read.setKey(key);
         reads.add(read);
         return getContractDataIndexFileExec().get(getBlockAcquire(), key);

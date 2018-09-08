@@ -40,15 +40,6 @@ import lombok.ToString;
 @ToString
 public class ValueRead {
 
-    /** 本次读取值链码hash */
-    @JSONField(name = "h")
-    private String hash;
-    /** 本次读取值所用合约名称 */
-    @JSONField(name = "c")
-    private String contractName;
-    /** 本次读取值所用合约版本 */
-    @JSONField(name = "v")
-    private String contractVersion;
     /** 本次读取k-v中key */
     @JSONField(name = "k")
     private String key;
