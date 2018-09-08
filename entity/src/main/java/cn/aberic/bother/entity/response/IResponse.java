@@ -59,6 +59,10 @@ public interface IResponse {
         ACCOUNT_INFO_INVALID(9001, "账户信息无效"),
         /** 返回码 9002，返回信息 账户未找到 */
         ACCOUNT_NOT_FOUND(9002, "账户未找到"),
+        /** 返回码 9003，返回信息 待支付金额及存储费之和大于可使用授权账户余额 */
+        ACCOUNT_COST_GT_BALANCE(9003, "待支付金额及存储费之和大于可使用授权账户余额"),
+        /** 返回码 9004，返回信息 待支付金额及存储费之和大于授权账户余额 */
+        ACCOUNT_COST_GT_BALANCE_OWNER(9004, "待支付金额及存储费之和大于授权账户余额"),
         /** 返回码 9010，返回信息 Token 已存在 */
         TOKEN_IS_ALLREADY_EXIST(9010, "Token 已存在"),
         /** 返回码 9020，返回信息 支票金额不足 */
@@ -169,7 +173,7 @@ public interface IResponse {
     default Response response(ResponseType responseType, String msg) {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("code", responseType.code);
-        jsonObject.put("data", msg);
+        jsonObject.put("data", String.format("%s: %s", responseType.msg, msg));
         return new Response(responseType.code == 200, jsonObject.toString());
     }
 

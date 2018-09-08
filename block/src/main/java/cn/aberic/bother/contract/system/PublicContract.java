@@ -52,7 +52,7 @@ public class PublicContract implements IPublicContract {
 
     @Override
     public Response invoke(IPublicContractExec exec) {
-        TokenHelper tokenHelper = new TokenHelper(exec);
+        TokenHelper tokenHelper = new TokenHelper((PublicContractExec) exec);
         Request request = exec.getRequest();
         switch (request.getKey()) {
             case "publish": // 发布新 Token
@@ -64,7 +64,7 @@ public class PublicContract implements IPublicContract {
             case "approve": // 批准 addressSpender 账户从自己的账户转移 count 个 Token。
                 return tokenHelper.approve(request);
             case "transferFrom": // 与approve搭配使用，approve批准之后，调用本函数来转移token
-                return tokenHelper.transferFrom();
+                return tokenHelper.transferFrom(request);
         }
 //        exec.put(request.getKey(), request.getValue());
         return exec.response(IResponse.ResponseType.REQUEST_TYPE_NOT_FOUND);
@@ -73,12 +73,12 @@ public class PublicContract implements IPublicContract {
     @Override
     public Response query(IPublicContractExec exec) {
         Request request = exec.getRequest();
-        TokenHelper tokenHelper = new TokenHelper(exec);
+        TokenHelper tokenHelper = new TokenHelper((PublicContractExec) exec);
         switch (request.getKey()) {
             case "cheque": // 账户开支票
                 return accountHelper.cheque((PublicContractExec) exec, request);
             case "allowance": // 返回 addressSpender 还能提取token的个数
-                return new TokenHelper(exec).allowance(request);
+                return new TokenHelper((PublicContractExec) exec).allowance(request);
             case "name": // 返回string类型的ERC20 Token 的名字，例如：NoTroubleBother
                 return exec.response(tokenHelper.name());
             case "symbol": // 返回string类型的ERC20 Token 的符号，也就是代币的简称，例如：NTB

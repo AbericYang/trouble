@@ -24,10 +24,11 @@
 
 package cn.aberic.bother.contract.system;
 
-import cn.aberic.bother.contract.exec.service.IPublicContractExec;
+import cn.aberic.bother.contract.exec.PublicContractExec;
 import cn.aberic.bother.encryption.MD5;
 import cn.aberic.bother.encryption.key.exec.KeyExec;
 import cn.aberic.bother.entity.contract.Account;
+import cn.aberic.bother.entity.contract.AccountInfo;
 import cn.aberic.bother.entity.contract.Request;
 import cn.aberic.bother.entity.response.IResponse;
 import cn.aberic.bother.entity.response.Response;
@@ -50,10 +51,10 @@ import java.math.BigDecimal;
 @Slf4j
 class TokenHelper implements IHelper {
 
-    private IPublicContractExec exec;
+    private PublicContractExec exec;
     private Token token;
 
-    TokenHelper(IPublicContractExec exec) {
+    TokenHelper(PublicContractExec exec) {
         this.exec = exec;
         token = JSON.parseObject(exec.get(Common.TOKEN_DEFAULT_PUBLIC_HASH), new TypeReference<Token>() {});
     }
@@ -202,8 +203,24 @@ class TokenHelper implements IHelper {
      * @return 成功与否
      */
     Response approve(Request request) {
-        JSONObject json = exec.getRequest().getJsonValue();
-        Account account = JSON.parseObject(exec.get(request.getAddress()), new TypeReference<Account>() {});
+        JSONObject json = request.getJsonValue();
+        // 待授权金额
+        BigDecimal count = json.getBigDecimal("count").setScale(token.getDecimals(), BigDecimal.ROUND_HALF_UP);
+        Account accountFrom = JSON.parseObject(exec.get(request.getAddress()), new TypeReference<Account>() {});
+        Account accountSpender = JSON.parseObject(exec.get(json.getString("addressSpender")), new TypeReference<Account>() {});
+        if (null == accountFrom) {
+            throw new AccountNotFoundException(request.getAddress());
+        }
+        if (null == accountSpender) {
+            throw new AccountNotFoundException(json.getString("addressSpender"));
+        }
+        // 余额不足，禁止授权操作
+        if (count.compareTo(accountFrom.getCount()) > 0) {
+            return exec.response(IResponse.ResponseType.ACCOUNT_LACK_OF_BALANCE);
+        }
+
+        String value = KeyExec.obtain().encryptPubStrRSA(accountSpender.getPubRSAKey(), count.toPlainString());
+        request.getJsonValue().remove("count");
 
         String keyFormat = request.getAddress() + json.getString("addressSpender");
         if (keyFormat.length() != 128) {
@@ -211,29 +228,26 @@ class TokenHelper implements IHelper {
         }
         String key = MD5.md516(keyFormat);
 
-        // 余额不足，禁止授权操作
-        BigDecimal count = new BigDecimal(KeyExec.obtain().decryptPubStrRSA(account.getPubRSAKey(), request.getValue()));
-        if (count.compareTo(account.getCount()) > 0) {
-            return exec.response(IResponse.ResponseType.ACCOUNT_LACK_OF_BALANCE);
-        }
-
         // 计算本次账户及 Token 创建所需存储大小
         long size = key.getBytes().length +
-                request.getValue().getBytes().length +
-                account.getAddress().getBytes().length +
-                JSON.toJSONString(account).getBytes().length;
+                value.getBytes().length +
+                accountFrom.getAddress().getBytes().length +
+                JSON.toJSONString(accountFrom).getBytes().length;
         // 计算本次账户创建所需存储费用
         BigDecimal cost = coefficient(size, token.getDecimals());
         log.debug("计算本次账户创建所需存储费用 cost = {}", cost);
 
+        count = count.add(cost);
+
         // 余额不足消费本次记录
-        if (cost.compareTo(account.getCount()) > 0) {
-            return exec.response(IResponse.ResponseType.ACCOUNT_LACK_OF_BALANCE);
+        if (count.compareTo(accountFrom.getCount()) > 0) {
+            return exec.response(IResponse.ResponseType.ACCOUNT_COST_GT_BALANCE_OWNER);
         }
 
-        account.setCount(account.getCount().subtract(cost).setScale(token.getDecimals(), BigDecimal.ROUND_HALF_UP));
+        accountFrom.setCount(accountFrom.getCount().subtract(cost).setScale(token.getDecimals(), BigDecimal.ROUND_HALF_UP));
+        exec.put(accountFrom.getAddress(), JSON.toJSONString(accountFrom));
+        exec.put(key, value);
         cost(exec, cost, token);
-        exec.put(key, request.getValue());
         return exec.response();
     }
 
@@ -242,12 +256,73 @@ class TokenHelper implements IHelper {
      *
      * @return 成功与否
      */
-    Response transferFrom() {
+    Response transferFrom(Request request) {
         JSONObject json = exec.getRequest().getJsonValue();
-//        if (erc20Token.transferFrom(json.getString("addressFrom"), json.getString("addressTo"), json.getBigDecimal("count"))) {
-//            return exec.response();
-//        }
-        return exec.response(IResponse.ResponseType.FAIL);
+        Account account = JSON.parseObject(exec.get(request.getAddress()), new TypeReference<Account>() {});
+        Account accountOwner = JSON.parseObject(exec.get(json.getString("addressOwner")), new TypeReference<Account>() {});
+        Account accountTo = JSON.parseObject(exec.get(json.getString("addressTo")), new TypeReference<Account>() {});
+        if (null == account) {
+            return exec.response(IResponse.ResponseType.ACCOUNT_NOT_FOUND, request.getAddress());
+        }
+        if (null == accountOwner) {
+            return exec.response(IResponse.ResponseType.ACCOUNT_NOT_FOUND, json.getString("addressOwner"));
+        }
+        if (null == accountTo) {
+            return exec.response(IResponse.ResponseType.ACCOUNT_NOT_FOUND, json.getString("addressTo"));
+        }
+
+        String keyFormat = json.getString("addressOwner") + request.getAddress();
+        if (keyFormat.length() != 128) {
+            return exec.response(IResponse.ResponseType.FAIL);
+        }
+        String key = MD5.md516(keyFormat);
+
+        // 获取账户详情对象
+        AccountInfo info = JSON.parseObject(KeyExec.obtain().decryptPriStrECDSA(exec.getPriECCKey(), account.getJsonAccountInfoString()),
+                new TypeReference<AccountInfo>() {});
+        // 可使用授权账户余额
+        BigDecimal balance = new BigDecimal(KeyExec.obtain().decryptPriStrRSA(info.getPriRSAKey(), exec.get(key)));
+        log.debug("可使用授权账户余额 balance = {}", balance);
+        // 待支付金额
+        BigDecimal count = json.getBigDecimal("count").setScale(token.getDecimals(), BigDecimal.ROUND_HALF_UP);
+        log.debug("待支付金额 count = {}", count);
+        // 加密使用后的可使用授权账户余额
+        String value = KeyExec.obtain().encryptPubStrRSA(account.getPubRSAKey(), balance.subtract(count).toPlainString());
+        // 授权账户余额
+        BigDecimal balanceOwner = accountOwner.getCount();
+        log.debug("授权账户余额 balanceOwner = {}", balanceOwner);
+
+        // 本次交易大小
+        long size = accountOwner.getAddress().getBytes().length +
+                JSON.toJSONString(accountOwner).getBytes().length +
+                accountTo.getAddress().getBytes().length +
+                JSON.toJSONString(accountTo).getBytes().length +
+                key.getBytes().length +
+                value.getBytes().length;
+        // 本次交易存储费
+        BigDecimal cost = coefficient(size, token.getDecimals());
+        log.debug("计算本次账户创建所需存储费用 cost = {}", cost);
+        // 本次交易扣除授权账户费用
+        count = count.add(cost);
+        log.debug("本次交易扣除授权账户费用 count = {}", count);
+
+        // 如果待支付金额大于可使用授权账户余额，则交易失败
+        if (count.compareTo(balance) > 0) {
+            return exec.response(IResponse.ResponseType.ACCOUNT_COST_GT_BALANCE);
+        }
+        // 如果待支付金额大于授权账户余额，则交易失败
+        if (count.compareTo(balanceOwner) > 0) {
+            return exec.response(IResponse.ResponseType.ACCOUNT_COST_GT_BALANCE_OWNER);
+        }
+
+        accountOwner.setCount(accountOwner.getCount().subtract(count));
+        accountTo.setCount(accountTo.getCount().add(count.subtract(cost)));
+        exec.put(accountOwner.getAddress(), JSON.toJSONString(accountOwner));
+        exec.put(accountTo.getAddress(), JSON.toJSONString(accountTo));
+        exec.put(key, value);
+        cost(exec, cost, token);
+
+        return exec.response(IResponse.ResponseType.SUCCESS);
     }
 
     /**
@@ -270,7 +345,10 @@ class TokenHelper implements IHelper {
         if (null == accountOwner) {
             return exec.response(IResponse.ResponseType.ACCOUNT_NOT_FOUND, json.getString("addressOwner"));
         }
-        return exec.response(new BigDecimal(KeyExec.obtain().decryptPubStrRSA(accountOwner.getPubRSAKey(),
+        // 获取账户详情对象
+        AccountInfo info = JSON.parseObject(KeyExec.obtain().decryptPriStrECDSA(exec.getPriECCKey(), accountSpender.getJsonAccountInfoString()),
+                new TypeReference<AccountInfo>() {});
+        return exec.response(new BigDecimal(KeyExec.obtain().decryptPriStrRSA(info.getPriRSAKey(),
                 exec.get(MD5.md516(json.getString("addressOwner") + request.getAddress())))));
     }
 
