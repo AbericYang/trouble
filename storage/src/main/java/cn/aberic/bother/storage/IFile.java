@@ -43,7 +43,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Date;
 
 /**
  * 存储文件公共接口——公共方法包
@@ -61,13 +60,11 @@ public interface IFile<T> {
      *
      * @param num  文件编号
      * @param line 区块文件中的行号
+     *
      * @return {@link T}对象
      */
     default T getByNumAndLine(int num, int line) {
-        long time = new Date().getTime();
-        T t = getFromFileByLine(getFileByNum(num), line);
-        System.out.println("getByNumAndLine time = " + (new Date().getTime() - time));
-        return t;
+        return getFromFileByLine(getFileByNum(num), line);
     }
 
     /**
@@ -75,6 +72,7 @@ public interface IFile<T> {
      *
      * @param file 文件
      * @param line 在区块文件中的行号
+     *
      * @return {@link T}对象
      */
     @SuppressWarnings("unchecked")
@@ -125,6 +123,7 @@ public interface IFile<T> {
      * 根据当前区块文件获取下一区块文件，如果下一区块不存在，则直接返回新创建的下一区块文件
      *
      * @param file 当前区块文件
+     *
      * @return 下一区块文件
      */
     default File getNextFileByCurrentFile(File file) {
@@ -164,6 +163,7 @@ public interface IFile<T> {
      * 根据{@link T}文件名获取当前文件编号
      *
      * @param fileName {@link T}文件名
+     *
      * @return 文件编号
      */
     default int getNumByFileName(String fileName) {
@@ -174,6 +174,7 @@ public interface IFile<T> {
      * 根据{@link T}文件编号获取当前文件名，编号从0开始计算
      *
      * @param num {@link T}文件编号
+     *
      * @return 文件名
      */
     default String getFileNameByNum(int num) {
@@ -184,6 +185,7 @@ public interface IFile<T> {
      * 根据{@link T}文件编号读取文件，如果文件不存在，则直接返回新创建的{@link T}文件
      *
      * @param num 当前待读取{@link T}文件编号
+     *
      * @return {@link T}文件
      */
     default File getFileByNum(int num) {
@@ -218,6 +220,7 @@ public interface IFile<T> {
      * 获取指定文件编号文件中的总行数，适合单行内容较多较长的情况
      *
      * @param num 文件编号
+     *
      * @return 文件总行数
      */
     default int getFileLineCount(int num) {

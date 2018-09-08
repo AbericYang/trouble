@@ -56,7 +56,7 @@ public class PublicContract implements IPublicContract {
         Request request = exec.getRequest();
         switch (request.getKey()) {
             case "publish": // 发布新 Token
-                return tokenHelper.publishToken();
+                return tokenHelper.publishToken(request);
             case "openAccount": // 开户
                 return accountHelper.openAccount((PublicContractExec) exec, request);
             case "transfer": // 将自己的 count 个 Token 转给 addressTo 地址
