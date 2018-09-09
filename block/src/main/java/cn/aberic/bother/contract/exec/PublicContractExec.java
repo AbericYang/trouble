@@ -92,7 +92,7 @@ public class PublicContractExec implements IPublicContractExec, IContractBaseExe
 
     /** 发送交易到 Leader 节点 */
     public void sendTransaction() {
-        // TODO: 2018/9/2 临时生成区块，实际应发送至 Leader 节点统一打包
+        // TODO: 2018/9/2 临时生成区块，实际应发送至 Leader 节点统一打包，此方法应当返回 Block 对象，并交由 Controller 进行转发
         BlockStorage storage = new BlockStorage(Common.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH);
         BlockHeader header = BlockHeader.newInstance().create(true, 120, new Date().getTime());
         BlockBody body = new BlockBody();

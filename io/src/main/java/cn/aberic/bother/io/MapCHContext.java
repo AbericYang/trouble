@@ -27,7 +27,9 @@ package cn.aberic.bother.io;
 
 import cn.aberic.bother.io.client.EchoClient;
 import cn.aberic.bother.io.server.EchoServer;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.util.CharsetUtil;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
@@ -102,6 +104,26 @@ public class MapCHContext {
 
     public ChannelHandlerContext clientGet(String ip) {
         return ctxClientMap.get(ip);
+    }
+
+    public void writeAndFlushServer() {
+        ctxServerMap.forEach((ip, ctx) -> {
+            ctx.writeAndFlush(Unpooled.copiedBuffer("Netty rocks!", CharsetUtil.UTF_8));
+        });
+    }
+
+    public void writeAndFlushServer(String ip) {
+        ctxServerMap.get(ip).writeAndFlush(Unpooled.copiedBuffer("Netty rocks!", CharsetUtil.UTF_8));
+    }
+
+    public void writeAndFlushClient() {
+        ctxClientMap.forEach((ip, ctx) -> {
+            ctx.writeAndFlush(Unpooled.copiedBuffer("Netty rocks!", CharsetUtil.UTF_8));
+        });
+    }
+
+    public void writeAndFlushClient(String ip) {
+        ctxClientMap.get(ip).writeAndFlush(Unpooled.copiedBuffer("Netty rocks!", CharsetUtil.UTF_8));
     }
 
 }

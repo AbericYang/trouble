@@ -36,6 +36,7 @@ public class ClientTest {
     public static void main(String[] args) throws Exception {
 
         MapCHContext.obtain().startClient("localhost", 63715);
+        MapCHContext.obtain().writeAndFlushClient();
 
     }
 

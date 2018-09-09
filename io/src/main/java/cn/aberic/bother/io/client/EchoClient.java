@@ -50,7 +50,7 @@ public class EchoClient {
         } else {
             group = new NioEventLoopGroup();
         }
-        try {
+//        try {
             // 创建Bootstrap
             Bootstrap b = new Bootstrap();
             b.group(group) // 指定EventLoopGroup 以处理客户端事件；需要适用于NIO 的实现
@@ -67,10 +67,10 @@ public class EchoClient {
             ChannelFuture f = b.connect().sync();
             // 阻塞，直到Channel 关闭
             f.channel().closeFuture().sync();
-        } finally {
-            // 关闭线程池并且释放所有的资源
-            group.shutdownGracefully().sync();
-        }
+//        } finally {
+//            // 关闭线程池并且释放所有的资源
+//            group.shutdownGracefully().sync();
+//        }
     }
 
 }
