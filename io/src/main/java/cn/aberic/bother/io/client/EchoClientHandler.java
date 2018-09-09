@@ -25,6 +25,7 @@
 
 package cn.aberic.bother.io.client;
 
+import cn.aberic.bother.io.MapCHContext;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandler;
@@ -48,10 +49,11 @@ import io.netty.util.CharsetUtil;
 public class EchoClientHandler extends SimpleChannelInboundHandler<ByteBuf> {
 
     // 重写了channelActive()方法，其将在一个连接建立时被调用。
-    // 这确保了数据将会被尽可能快地写入服务器.
-    // 在这个场景下是一个编码了字符串”Netty rocks!”的字节缓冲区。
     @Override
-    public void channelActive(ChannelHandlerContext ctx) throws Exception {
+    public void channelActive(ChannelHandlerContext ctx) {
+        // 当被通知Channel是活跃的时候，加入客户端所接收到的链接集合
+        MapCHContext.obtain().clientPut(ctx.channel().remoteAddress().toString().split(":")[0].split("/")[1], ctx);
+
         // 当被通知Channel是活跃的时候，发送一条消息
         ctx.writeAndFlush(Unpooled.copiedBuffer("Netty rocks!", CharsetUtil.UTF_8));
     }
@@ -64,13 +66,13 @@ public class EchoClientHandler extends SimpleChannelInboundHandler<ByteBuf> {
     // 第一次使用一个持有3 字节的ByteBuf（Netty 的字节容器），第二次使用一个持有2 字节的ByteBuf。
     // 作为一个面向流的协议，TCP 保证了字节数组将会按照服务器发送它们的顺序被接收。
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, ByteBuf in) throws Exception {
+    protected void channelRead0(ChannelHandlerContext ctx, ByteBuf in) {
         // 记录已接收消息的转储
         System.out.println("Client received: " + in.toString(CharsetUtil.UTF_8));
     }
 
     @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
         // 在发生异常时，记录错误并关闭Channel
         cause.printStackTrace();
         ctx.close();

@@ -42,15 +42,8 @@ import java.net.InetSocketAddress;
  * 邮箱：abericyang@gmail.com
  */
 public class EchoClient {
-    private final String host;
-    private final int port;
 
-    public EchoClient(String host, int port) {
-        this.host = host;
-        this.port = port;
-    }
-
-    public void start() throws Exception {
+    public void start(String host, int port) throws Exception {
         EventLoopGroup group;
         if (SystemTool.isLinux()) {
             group = new EpollEventLoopGroup();
@@ -61,11 +54,11 @@ public class EchoClient {
             // 创建Bootstrap
             Bootstrap b = new Bootstrap();
             b.group(group) // 指定EventLoopGroup 以处理客户端事件；需要适用于NIO 的实现
-                    .channel(NioSocketChannel.class) // 适用于NIO 传输的Channel 类型/可以在客户端和服务器上分别使用不同的传输。例如，在服务器端使用NIO 传输，而在客户端使用OIO 传输。
+                    .channel(NioSocketChannel.class) // 适用于NIO 传输的Channel 类型
                     .remoteAddress(new InetSocketAddress(host, port)) // 设置服务器的InetSocketAddress
                     .handler(new ChannelInitializer<SocketChannel>() { // 在创建Channel 时向ChannelPipeline中添加一个EchoClientHandler 实例
                         @Override
-                        protected void initChannel(SocketChannel ch) throws Exception {
+                        protected void initChannel(SocketChannel ch) {
                             ch.pipeline().addLast(new EchoClientHandler());
                         }
                     });
@@ -78,22 +71,6 @@ public class EchoClient {
             // 关闭线程池并且释放所有的资源
             group.shutdownGracefully().sync();
         }
-    }
-
-    public static void main(String[] args) throws Exception {
-
-        if (args == null || args.length == 0) {
-            args = new String[]{"localhost", "8888"};
-        }
-
-        if (args.length != 2) {
-            System.err.println("Usage: " + EchoClient.class.getSimpleName() + " <host> <port>");
-            return;
-        }
-
-        final String host = args[0];
-        final int port = Integer.parseInt(args[1]);
-        new EchoClient(host, port).start();
     }
 
 }

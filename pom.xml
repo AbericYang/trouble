@@ -14,7 +14,6 @@
         <module>storage</module>
         <module>block</module>
         <module>consensus</module>
-        <module>app</module>
         <module>token</module>
         <module>value</module>
         <module>io</module>

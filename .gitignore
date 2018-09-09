@@ -19,6 +19,8 @@ gen
 /contract/target/
 /encryption/target/
 /entity/target/
+/io/target/
 /storage/target/
 /token/target/
 /tools/target/
+/value/target/

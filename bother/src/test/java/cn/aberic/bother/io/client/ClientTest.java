@@ -20,17 +20,23 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
+ *
  */
 
-package cn.aberic.bother.app;
+package cn.aberic.bother.io.client;
+
+import cn.aberic.bother.io.MapCHContext;
 
 /**
- * 作者：Aberic on 2018/8/29 19:57
+ * 作者：Aberic on 2018/9/9 19:42
  * 邮箱：abericyang@gmail.com
  */
-public class AppTest {
+public class ClientTest {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
+
+        MapCHContext.obtain().startClient("localhost", 63715);
+
     }
 
 }

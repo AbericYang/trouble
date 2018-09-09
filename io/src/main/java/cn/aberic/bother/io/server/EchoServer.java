@@ -35,6 +35,7 @@ import io.netty.channel.epoll.EpollServerSocketChannel;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetSocketAddress;
 
@@ -42,31 +43,25 @@ import java.net.InetSocketAddress;
  * 作者：Aberic on 2018/9/9 18:02
  * 邮箱：abericyang@gmail.com
  */
+@Slf4j
 public class EchoServer {
 
-    private final int port;
+    private static EchoServer instance;
 
-    public EchoServer(int port) {
-        this.port = port;
+    public static EchoServer obtain() {
+        if (null == instance) {
+            synchronized (EchoServer.class) {
+                if (null == instance) {
+                    instance = new EchoServer();
+                }
+            }
+        }
+        return instance;
     }
 
-    public static void main(String[] args) throws Exception {
+    private EchoServer() {}
 
-        if (args == null || args.length == 0) {
-            args = new String[]{"8888"};
-        }
-
-        if (args.length != 1) {
-            System.err.println("Usage: " + EchoServer.class.getSimpleName() + " <port>");
-            return;
-        }
-        // 设置端口值（如果端口参数的格式不正确，则抛出一个NumberFormatException）
-        int port = Integer.parseInt(args[0]);
-        // 调用服务器的start()方法
-        new EchoServer(port).start();
-    }
-
-    private void start() throws Exception {
+    public void start(int port) throws Exception {
         final EchoServerHandler serverHandler = new EchoServerHandler();
         // 创建Event-LoopGroup。
         // 因为正在使用的是NIO传输，所以指定NioEventLoopGroup来接受和处理新的连接
@@ -85,8 +80,8 @@ public class EchoServer {
                     .localAddress(new InetSocketAddress(port)) // 使用指定的端口设置套接字地址/将本地地址设置为一个具有选定端口的InetSocket-Address
                     .childHandler(new ChannelInitializer<SocketChannel>() { // 添加一个EchoServer-Handler 到子Channel的ChannelPipeline
                         @Override
-                        protected void initChannel(SocketChannel ch) throws Exception {
-                            // EchoServerHandler 被标注为@Shareable，所以可以总是使用同样的实例
+                        protected void initChannel(SocketChannel ch) {
+                            // EchoServerHandlerTest 被标注为@Shareable，所以可以总是使用同样的实例
                             // 这里对于所有的客户端连接来说，都会使用同一个EchoServerHandler，
                             // 因为其被标注为@Sharable
                             ch.pipeline().addLast(serverHandler);
@@ -94,9 +89,7 @@ public class EchoServer {
                     });
             // 异步地绑定服务器；调用sync()方法阻塞等待直到绑定完成
             ChannelFuture f = b.bind().sync();
-            System.out.println(EchoServer.class.getName()
-                    + " started and listening for connections on "
-                    + f.channel().localAddress());
+            log.info("started and listening for connections on {}", f.channel().localAddress());
             // 获取Channel 的CloseFuture，并且阻塞当前线程直到它完成
             f.channel().closeFuture().sync();
         } finally {
@@ -104,6 +97,5 @@ public class EchoServer {
             group.shutdownGracefully().sync();
         }
     }
-
 
 }
