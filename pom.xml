@@ -16,6 +16,8 @@
         <module>consensus</module>
         <module>app</module>
         <module>token</module>
+        <module>value</module>
+        <module>io</module>
     </modules>
     <name>trouble Maven App</name>
     <!-- FIXME change it to the project's website -->

@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2018. Aberic Yang
+ * Copyright (c) 2018 Aberic Yang
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,15 +20,16 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
+ *
  */
 
-package cn.aberic.bother.core.vs;
+package cn.aberic.bother.value;
 
 /**
  * 价值体系层-value system
  * <p>
- * 作者：Aberic on 2018/8/20 20:15
+ * 作者：Aberic on 2018/9/9 16:41
  * 邮箱：abericyang@gmail.com
  */
-public class Value {
+public class Test {
 }
