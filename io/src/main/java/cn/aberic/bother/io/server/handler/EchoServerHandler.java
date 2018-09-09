@@ -23,7 +23,7 @@
  *
  */
 
-package cn.aberic.bother.io.server;
+package cn.aberic.bother.io.server.handler;
 
 import cn.aberic.bother.io.MapCHContext;
 import io.netty.buffer.ByteBuf;

@@ -25,7 +25,10 @@
 
 package cn.aberic.bother.io;
 
-import cn.aberic.bother.io.client.EchoClient;
+import cn.aberic.bother.entity.io.Remote;
+import cn.aberic.bother.io.client.factory.IOClient;
+import cn.aberic.bother.io.client.factory.IOClientFactory;
+import cn.aberic.bother.io.client.factory.IONettyClientFactory;
 import cn.aberic.bother.io.server.EchoServer;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
@@ -47,9 +50,10 @@ public class MapCHContext {
     /** 作为服务端所接收到的链接集合 */
     private Map<String, ChannelHandlerContext> ctxServerMap;
     /** 作为客户端所接收到的链接集合 */
-    private Map<String, ChannelHandlerContext> ctxClientMap;
+    private Map<String, IOClient> ioClientMap;
     /** 作为应答端所接收到的链接集合 */
     private List<String> ips;
+    private IOClientFactory ioClientFactory;
 
     private static MapCHContext instance;
 
@@ -66,8 +70,9 @@ public class MapCHContext {
 
     private MapCHContext() {
         ctxServerMap = new HashMap<>();
-        ctxClientMap = new HashMap<>();
+        ioClientMap = new HashMap<>();
         ips = new ArrayList<>();
+        ioClientFactory = new IONettyClientFactory();
     }
 
     /**
@@ -83,9 +88,9 @@ public class MapCHContext {
         }
     }
 
-    public void startClient(String ip, int port) throws Exception {
-        log.info("向服务端发起链接 ip = {}，port = {}", ip, port);
-        new EchoClient().start(ip, port);
+    public void startClient(Remote address) throws Exception {
+        log.info("向服务端发起链接 address = {}，port = {}", address.getAddress(), address.getPort());
+        ioClientPut(address.getAddress(), ioClientFactory.getOrCreate(address));
     }
 
     public void serverPut(String ip, ChannelHandlerContext ctx) {
@@ -97,13 +102,13 @@ public class MapCHContext {
         return ctxServerMap.get(ip);
     }
 
-    public void clientPut(String ip, ChannelHandlerContext ctx) {
-        log.info("存储服务端端链接上下文 {}", ip);
-        ctxClientMap.put(ip, ctx);
+    public IOClient ioClientGet(String ip) {
+        return ioClientMap.get(ip);
     }
 
-    public ChannelHandlerContext clientGet(String ip) {
-        return ctxClientMap.get(ip);
+    public void ioClientPut(String ip, IOClient ioClient) {
+        log.info("存储服务端端链接上下文 {}", ip);
+        ioClientMap.put(ip, ioClient);
     }
 
     public void writeAndFlushServer() {
@@ -117,13 +122,13 @@ public class MapCHContext {
     }
 
     public void writeAndFlushClient() {
-        ctxClientMap.forEach((ip, ctx) -> {
-            ctx.writeAndFlush(Unpooled.copiedBuffer("Netty rocks!", CharsetUtil.UTF_8));
-        });
+//        ctxClientMap.forEach((ip, ctx) -> {
+//            ctx.writeAndFlush(Unpooled.copiedBuffer("Netty rocks!", CharsetUtil.UTF_8));
+//        });
     }
 
     public void writeAndFlushClient(String ip) {
-        ctxClientMap.get(ip).writeAndFlush(Unpooled.copiedBuffer("Netty rocks!", CharsetUtil.UTF_8));
+//        ctxClientMap.get(ip).writeAndFlush(Unpooled.copiedBuffer("Netty rocks!", CharsetUtil.UTF_8));
     }
 
 }

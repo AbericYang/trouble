@@ -23,23 +23,25 @@
  *
  */
 
-package cn.aberic.bother.io.client;
+package cn.aberic.bother.io.client.factory;
 
 import cn.aberic.bother.entity.io.Remote;
-import cn.aberic.bother.io.MapCHContext;
 
 /**
- * 作者：Aberic on 2018/9/9 19:42
+ * Netty 客户端工厂
+ * <p>
+ * 作者：Aberic on 2018/9/10 00:51
  * 邮箱：abericyang@gmail.com
  */
-public class ClientTest {
+public interface IOClientFactory {
 
-    public static void main(String[] args) throws Exception {
-
-        Remote address = new Remote();
-        address.setAddress("localhost");
-        address.setPort(63715);
-        MapCHContext.obtain().startClient(address);
-    }
+    /**
+     * 根据 IP 获取一个客户端链接，如果没有则新增
+     *
+     * @param address address
+     *
+     * @return 客户端
+     */
+    IOClient getOrCreate(Remote address) throws Exception;
 
 }

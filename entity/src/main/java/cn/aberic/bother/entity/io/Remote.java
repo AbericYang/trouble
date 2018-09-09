@@ -23,23 +23,26 @@
  *
  */
 
-package cn.aberic.bother.io.client;
+package cn.aberic.bother.entity.io;
 
-import cn.aberic.bother.entity.io.Remote;
-import cn.aberic.bother.io.MapCHContext;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
- * 作者：Aberic on 2018/9/9 19:42
+ * 远程连接主机地址对象
+ * <p>
+ * 作者：Aberic on 2018/9/10 01:15
  * 邮箱：abericyang@gmail.com
  */
-public class ClientTest {
+@Setter
+@Getter
+public class Remote {
 
-    public static void main(String[] args) throws Exception {
-
-        Remote address = new Remote();
-        address.setAddress("localhost");
-        address.setPort(63715);
-        MapCHContext.obtain().startClient(address);
-    }
+    /** 远程连接主机 address */
+    private String address;
+    /** 远程连接主机端口号 */
+    private int port;
+    /** 远程连接主机连接超时时间 */
+    private int timeOut;
 
 }

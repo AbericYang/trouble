@@ -23,23 +23,20 @@
  *
  */
 
-package cn.aberic.bother.io.client;
+package cn.aberic.bother.io.client.factory;
 
 import cn.aberic.bother.entity.io.Remote;
-import cn.aberic.bother.io.MapCHContext;
+import cn.aberic.bother.io.client.EchoClient;
 
 /**
- * 作者：Aberic on 2018/9/9 19:42
+ * 作者：Aberic on 2018/9/10 01:01
  * 邮箱：abericyang@gmail.com
  */
-public class ClientTest {
+public class IONettyClientFactory extends IOAbstractClientFactory {
 
-    public static void main(String[] args) throws Exception {
-
-        Remote address = new Remote();
-        address.setAddress("localhost");
-        address.setPort(63715);
-        MapCHContext.obtain().startClient(address);
+    @Override
+    protected IOClient createClient(Remote address) throws Exception {
+        return new EchoClient().createClient(address);
     }
 
 }

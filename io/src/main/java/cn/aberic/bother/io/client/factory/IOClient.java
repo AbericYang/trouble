@@ -23,23 +23,23 @@
  *
  */
 
-package cn.aberic.bother.io.client;
+package cn.aberic.bother.io.client.factory;
 
 import cn.aberic.bother.entity.io.Remote;
-import cn.aberic.bother.io.MapCHContext;
 
 /**
- * 作者：Aberic on 2018/9/9 19:42
+ * 作者：Aberic on 2018/9/10 00:53
  * 邮箱：abericyang@gmail.com
  */
-public class ClientTest {
+public interface IOClient {
 
-    public static void main(String[] args) throws Exception {
+    /** 启动心跳 */
+    void startHeartBeat() throws Exception;
 
-        Remote address = new Remote();
-        address.setAddress("localhost");
-        address.setPort(63715);
-        MapCHContext.obtain().startClient(address);
-    }
+    /** 发送请求 */
+    void send(Object msg) throws Exception;
 
+    Remote getRemoteAddress();
+
+    boolean isConnected();
 }

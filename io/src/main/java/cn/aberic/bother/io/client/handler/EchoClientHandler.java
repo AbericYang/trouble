@@ -23,7 +23,7 @@
  *
  */
 
-package cn.aberic.bother.io.client;
+package cn.aberic.bother.io.client.handler;
 
 import cn.aberic.bother.io.MapCHContext;
 import io.netty.buffer.ByteBuf;
@@ -51,11 +51,8 @@ public class EchoClientHandler extends SimpleChannelInboundHandler<ByteBuf> {
     // 重写了channelActive()方法，其将在一个连接建立时被调用。
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
-        // 当被通知Channel是活跃的时候，加入客户端所接收到的链接集合
-        MapCHContext.obtain().clientPut(ctx.channel().remoteAddress().toString().split(":")[0].split("/")[1], ctx);
-
         // 当被通知Channel是活跃的时候，发送一条消息
-        ctx.writeAndFlush(Unpooled.copiedBuffer("Netty rocks!", CharsetUtil.UTF_8));
+        // ctx.writeAndFlush(Unpooled.copiedBuffer("Netty rocks!", CharsetUtil.UTF_8));
     }
 
     // 重写了channelRead0()方法。
