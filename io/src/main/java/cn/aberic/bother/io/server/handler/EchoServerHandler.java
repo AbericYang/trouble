@@ -25,7 +25,7 @@
 
 package cn.aberic.bother.io.server.handler;
 
-import cn.aberic.bother.io.ChannelContextCache;
+import cn.aberic.bother.io.IOContext;
 import cn.aberic.bother.tools.DateTool;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -55,7 +55,7 @@ public class EchoServerHandler extends ChannelInboundHandlerAdapter {
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         super.channelActive(ctx);
         // 加入服务端所接收到的链接集合
-        ChannelContextCache.obtain().serverPut(ctx.channel().remoteAddress().toString().split(":")[0].split("/")[1], ctx);
+        IOContext.obtain().serverPut(ctx.channel().remoteAddress().toString().split(":")[0].split("/")[1], ctx);
     }
 
     // 需要处理所有接收到的数据，所以重写channelRead()方法
@@ -87,7 +87,7 @@ public class EchoServerHandler extends ChannelInboundHandlerAdapter {
             IdleStateEvent event = (IdleStateEvent) obj;
             // 如果读通道处于空闲状态，说明没有接收到心跳命令
             if (IdleState.READER_IDLE.equals(event.state())) {
-                log.info("已经{}秒没有接收到客户端的信息了", 5);
+                log.info("已经{}秒没有接收到客户端的信息了", IOContext.IO_SERVER_READ_TIME_OUT);
                 if (idleCount > 2) {
                     log.info("关闭这个不活跃的channel");
                     ctx.channel().close();
@@ -101,7 +101,7 @@ public class EchoServerHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-        ChannelContextCache.obtain().serverRemove(ctx.channel().remoteAddress().toString().split(":")[0].split("/")[1]);
+        IOContext.obtain().serverRemove(ctx.channel().remoteAddress().toString().split(":")[0].split("/")[1]);
         log.info("关闭连接 time = {}", DateTool.getCurrent("yyyy/MM/dd HH:mm:ss"));
         super.channelInactive(ctx);
     }

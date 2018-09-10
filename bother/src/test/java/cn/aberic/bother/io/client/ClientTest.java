@@ -26,7 +26,7 @@
 package cn.aberic.bother.io.client;
 
 import cn.aberic.bother.entity.io.Remote;
-import cn.aberic.bother.io.ChannelContextCache;
+import cn.aberic.bother.io.IOContext;
 
 /**
  * 作者：Aberic on 2018/9/9 19:42
@@ -39,8 +39,8 @@ public class ClientTest {
         Remote remote = new Remote();
         remote.setAddress("127.0.0.1");
         remote.setPort(63715);
-        ChannelContextCache.obtain().startClient(remote);
-        ChannelContextCache.obtain().sendByIOClient("127.0.0.1", "Netty rocks!");
+        IOContext.obtain().startClient(remote);
+        IOContext.obtain().sendByIOClient("127.0.0.1", "Netty rocks!");
     }
 
 }

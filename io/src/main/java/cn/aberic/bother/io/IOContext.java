@@ -46,8 +46,12 @@ import java.util.concurrent.TimeUnit;
  * 邮箱：abericyang@gmail.com
  */
 @Slf4j
-public class ChannelContextCache {
+public class IOContext {
 
+    /** 长连接服务端读超时时间 */
+    public static final long IO_SERVER_READ_TIME_OUT = 180;
+    /** 长连接客户端写超时时间，需要比服务端读超时时间短，以维持心跳 */
+    public static final long IO_SERVER_WRITE_TIME_OUT = 120;
     /** 作为服务端所接收到的链接集合 */
     private Cache<String, ChannelHandlerContext> ctxServerCache;
     /** 作为客户端所接收到的链接集合 */
@@ -56,20 +60,20 @@ public class ChannelContextCache {
     private List<String> ips;
     private IOClientFactory ioClientFactory;
 
-    private static ChannelContextCache instance;
+    private static IOContext instance;
 
-    public static ChannelContextCache obtain() {
+    public static IOContext obtain() {
         if (null == instance) {
-            synchronized (ChannelContextCache.class) {
+            synchronized (IOContext.class) {
                 if (null == instance) {
-                    instance = new ChannelContextCache();
+                    instance = new IOContext();
                 }
             }
         }
         return instance;
     }
 
-    private ChannelContextCache() {
+    private IOContext() {
         ctxServerCache = CacheBuilder.newBuilder().maximumSize(10).expireAfterAccess(15, TimeUnit.MINUTES).build();
         ioClientCache = CacheBuilder.newBuilder().maximumSize(10).expireAfterAccess(15, TimeUnit.MINUTES).build();
         ips = new ArrayList<>();

@@ -26,7 +26,7 @@
 package cn.aberic.bother.io.client.factory;
 
 import cn.aberic.bother.entity.io.Remote;
-import cn.aberic.bother.io.ChannelContextCache;
+import cn.aberic.bother.io.IOContext;
 
 /**
  * 作者：Aberic on 2018/9/10 00:55
@@ -38,7 +38,7 @@ public abstract class IOAbstractClientFactory implements IOClientFactory {
 
     @Override
     public IOClient getOrCreate(Remote remote) throws Exception {
-        IOClient ioClient = ChannelContextCache.obtain().ioClientGet(remote.getAddress());
+        IOClient ioClient = IOContext.obtain().ioClientGet(remote.getAddress());
         if (null == ioClient) {
             ioClient = createClient(remote);
         }

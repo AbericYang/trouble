@@ -25,7 +25,7 @@
 
 package cn.aberic.bother.io.client.handler;
 
-import cn.aberic.bother.io.ChannelContextCache;
+import cn.aberic.bother.io.IOContext;
 import cn.aberic.bother.io.client.factory.IOClient;
 import cn.aberic.bother.tools.DateTool;
 import io.netty.buffer.ByteBuf;
@@ -90,6 +90,7 @@ public class EchoClientHandler extends SimpleChannelInboundHandler<ByteBuf> {
             IdleStateEvent event = (IdleStateEvent) obj;
             if (ioClient.isShutdown()) {
                 ctx.fireChannelInactive();
+                ctx.channel().close();
             } else if (IdleState.WRITER_IDLE.equals(event.state())) {  // 如果写通道处于空闲状态,就发送心跳命令
                 ctx.channel().writeAndFlush(Unpooled.copiedBuffer("0", CharsetUtil.UTF_8));
                 loopCount++;
@@ -99,7 +100,7 @@ public class EchoClientHandler extends SimpleChannelInboundHandler<ByteBuf> {
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-        ChannelContextCache.obtain().ioClientRemove(ctx.channel().remoteAddress().toString().split(":")[0].split("/")[1]);
+        IOContext.obtain().ioClientRemove(ctx.channel().remoteAddress().toString().split(":")[0].split("/")[1]);
         log.info("关闭连接 time = {}", DateTool.getCurrent("yyyy/MM/dd HH:mm:ss"));
         super.channelInactive(ctx);
         ioClient.doConnect();

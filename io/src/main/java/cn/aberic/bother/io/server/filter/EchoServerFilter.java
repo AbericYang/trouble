@@ -24,6 +24,7 @@
 
 package cn.aberic.bother.io.server.filter;
 
+import cn.aberic.bother.io.IOContext;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
@@ -53,7 +54,7 @@ public class EchoServerFilter extends ChannelInitializer<SocketChannel> {
         ChannelPipeline ph = ch.pipeline();
         // 解码和编码，应和客户端一致
         // 入参说明: 读超时时间、写超时时间、所有类型的超时时间、时间格式
-        ph.addLast(new IdleStateHandler(5, 0, 0, TimeUnit.SECONDS));
+        ph.addLast(new IdleStateHandler(IOContext.IO_SERVER_READ_TIME_OUT, 0, 0, TimeUnit.SECONDS));
         // ph.addLast("decoder", new StringDecoder());
         // ph.addLast("encoder", new StringEncoder());
         ph.addLast("handler", channelHandler);// 服务端业务逻辑

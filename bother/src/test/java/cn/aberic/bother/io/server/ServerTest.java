@@ -25,7 +25,7 @@
 
 package cn.aberic.bother.io.server;
 
-import cn.aberic.bother.io.ChannelContextCache;
+import cn.aberic.bother.io.IOContext;
 
 /**
  * 作者：Aberic on 2018/9/9 18:02
@@ -35,7 +35,7 @@ public class ServerTest {
 
     public static void main(String[] args) {
 
-        ChannelContextCache.obtain().start(63715);
+        IOContext.obtain().start(63715);
 
     }
 
