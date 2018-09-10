@@ -25,7 +25,6 @@
 
 package cn.aberic.bother.io.client.handler;
 
-import cn.aberic.bother.io.MapCHContext;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandler;

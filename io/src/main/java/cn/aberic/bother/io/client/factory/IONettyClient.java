@@ -42,9 +42,7 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class IONettyClient implements IOClient {
 
-    /**
-     * 共享定时器
-     **/
+    /** 共享定时器 */
     private static final Timer timer = new HashedWheelTimer();
     private static final int DEFAULT_HEARTBEAT_PERIOD = 10;
     private Channel channel;

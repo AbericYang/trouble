@@ -26,7 +26,7 @@
 package cn.aberic.bother.io.client.factory;
 
 import cn.aberic.bother.entity.io.Remote;
-import cn.aberic.bother.io.MapCHContext;
+import cn.aberic.bother.io.ChannelContextCache;
 
 /**
  * 作者：Aberic on 2018/9/10 00:55
@@ -38,7 +38,7 @@ public abstract class IOAbstractClientFactory implements IOClientFactory {
 
     @Override
     public IOClient getOrCreate(Remote address) throws Exception {
-        IOClient ioClient = MapCHContext.obtain().ioClientGet(address.getAddress());
+        IOClient ioClient = ChannelContextCache.obtain().ioClientGet(address.getAddress());
         if (null == ioClient) {
             ioClient = createClient(address);
         }

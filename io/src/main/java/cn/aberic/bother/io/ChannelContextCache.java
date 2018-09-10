@@ -30,47 +30,48 @@ import cn.aberic.bother.io.client.factory.IOClient;
 import cn.aberic.bother.io.client.factory.IOClientFactory;
 import cn.aberic.bother.io.client.factory.IONettyClientFactory;
 import cn.aberic.bother.io.server.EchoServer;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.CharsetUtil;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 作者：Aberic on 2018/9/9 21:34
  * 邮箱：abericyang@gmail.com
  */
 @Slf4j
-public class MapCHContext {
+public class ChannelContextCache {
 
     /** 作为服务端所接收到的链接集合 */
-    private Map<String, ChannelHandlerContext> ctxServerMap;
+    private Cache<String, ChannelHandlerContext> ctxServerCache;
     /** 作为客户端所接收到的链接集合 */
-    private Map<String, IOClient> ioClientMap;
+    private Cache<String, IOClient> ioClientCache;
     /** 作为应答端所接收到的链接集合 */
     private List<String> ips;
     private IOClientFactory ioClientFactory;
 
-    private static MapCHContext instance;
+    private static ChannelContextCache instance;
 
-    public static MapCHContext obtain() {
+    public static ChannelContextCache obtain() {
         if (null == instance) {
-            synchronized (MapCHContext.class) {
+            synchronized (ChannelContextCache.class) {
                 if (null == instance) {
-                    instance = new MapCHContext();
+                    instance = new ChannelContextCache();
                 }
             }
         }
         return instance;
     }
 
-    private MapCHContext() {
-        ctxServerMap = new HashMap<>();
-        ioClientMap = new HashMap<>();
+    private ChannelContextCache() {
+        ctxServerCache = CacheBuilder.newBuilder().maximumSize(10).expireAfterAccess(15, TimeUnit.MINUTES).build();
+        ioClientCache = CacheBuilder.newBuilder().maximumSize(10).expireAfterAccess(15, TimeUnit.MINUTES).build();
         ips = new ArrayList<>();
         ioClientFactory = new IONettyClientFactory();
     }
@@ -88,6 +89,11 @@ public class MapCHContext {
         }
     }
 
+    /**
+     * 根据远程地址对象启动客户端
+     *
+     * @param address 远程地址对象
+     */
     public void startClient(Remote address) throws Exception {
         log.info("向服务端发起链接 address = {}，port = {}", address.getAddress(), address.getPort());
         ioClientPut(address.getAddress(), ioClientFactory.getOrCreate(address));
@@ -95,62 +101,78 @@ public class MapCHContext {
 
     public void serverPut(String ip, ChannelHandlerContext ctx) {
         log.info("存储客户端链接上下文 {}", ip);
-        ctxServerMap.put(ip, ctx);
+        ctxServerCache.put(ip, ctx);
     }
 
     public ChannelHandlerContext serverGet(String ip) {
-        return ctxServerMap.get(ip);
+        try {
+            return ctxServerCache.getIfPresent(ip);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public void serverRemove(String ip) {
+        ctxServerCache.invalidate(ip);
     }
 
     public IOClient ioClientGet(String ip) {
-        return ioClientMap.get(ip);
+        try {
+            return ioClientCache.getIfPresent(ip);
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     public void ioClientPut(String ip, IOClient ioClient) {
         log.info("存储服务端端链接上下文 {}", ip);
-        ioClientMap.put(ip, ioClient);
+        ioClientCache.put(ip, ioClient);
     }
 
-    public void writeAndFlushServer() {
-        ctxServerMap.forEach((ip, ctx) -> {
+    public void ioClientRemove(String ip) {
+        ioClientCache.invalidate(ip);
+    }
+
+    public void add(String ip) {
+        ips.add(ip);
+    }
+
+    public List<String> getIps() {
+        return ips;
+    }
+
+    public void sendByServer() {
+        ctxServerCache.asMap().forEach((ip, ctx) -> {
             ctx.writeAndFlush(Unpooled.copiedBuffer("Netty rocks!", CharsetUtil.UTF_8));
         });
     }
 
-    public void writeAndFlushServer(String ip) {
-        ctxServerMap.get(ip).writeAndFlush(Unpooled.copiedBuffer("Netty rocks!", CharsetUtil.UTF_8));
+    public void sendByServer(String ip) {
+        ctxServerCache.getIfPresent(ip).writeAndFlush(Unpooled.copiedBuffer("Netty rocks!", CharsetUtil.UTF_8));
     }
 
     public void sendByIOClient() {
-//        ctxClientMap.forEach((ip, ctx) -> {
-//            ctx.writeAndFlush(Unpooled.copiedBuffer("Netty rocks!", CharsetUtil.UTF_8));
-//        });
-//        ioClientMap.forEach((ip, ioClient) -> {
-//            ioClient.send(Unpooled.copiedBuffer(new byte[0x00]));
-//        });
-        for (IOClient ioClient: ioClientMap.values()) {
+        ioClientCache.asMap().forEach((ip, ioClient) -> {
             if (ioClient.isConnected()) {
                 ioClient.send(Unpooled.copiedBuffer(new byte[0x00]));
             }
-        }
+        });
     }
 
     public void sendByIOClient(String ip, String msg) {
-//        ctxClientMap.get(ip).writeAndFlush(Unpooled.copiedBuffer("Netty rocks!", CharsetUtil.UTF_8));
-        ioClientMap.get(ip).send(Unpooled.copiedBuffer(msg, CharsetUtil.UTF_8));
+        ioClientCache.getIfPresent(ip).send(Unpooled.copiedBuffer(msg, CharsetUtil.UTF_8));
     }
 
     public void sendByIOClient(String ip, byte[] bytes) {
-//        ctxClientMap.get(ip).writeAndFlush(Unpooled.copiedBuffer("Netty rocks!", CharsetUtil.UTF_8));
-        ioClientMap.get(ip).send(Unpooled.copiedBuffer(bytes));
+        ioClientCache.getIfPresent(ip).send(Unpooled.copiedBuffer(bytes));
     }
 
     public void startHeartBeat() {
-        for (IOClient ioClient: ioClientMap.values()) {
+        ioClientCache.asMap().forEach((ip, ioClient) -> {
             if (ioClient.isConnected()) {
                 ioClient.startHeartBeat();
             }
-        }
+        });
     }
 
 }

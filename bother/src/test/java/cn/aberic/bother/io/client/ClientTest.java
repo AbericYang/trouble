@@ -26,7 +26,7 @@
 package cn.aberic.bother.io.client;
 
 import cn.aberic.bother.entity.io.Remote;
-import cn.aberic.bother.io.MapCHContext;
+import cn.aberic.bother.io.ChannelContextCache;
 
 /**
  * 作者：Aberic on 2018/9/9 19:42
@@ -39,8 +39,8 @@ public class ClientTest {
         Remote remote = new Remote();
         remote.setAddress("localhost");
         remote.setPort(63715);
-        MapCHContext.obtain().startClient(remote);
-        MapCHContext.obtain().startHeartBeat();
+        ChannelContextCache.obtain().startClient(remote);
+        ChannelContextCache.obtain().startHeartBeat();
     }
 
 }

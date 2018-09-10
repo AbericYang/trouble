@@ -25,10 +25,9 @@
 
 package cn.aberic.bother.io.server.handler;
 
-import cn.aberic.bother.io.MapCHContext;
+import cn.aberic.bother.io.ChannelContextCache;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -48,7 +47,7 @@ public class EchoServerHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
         // 加入服务端所接收到的链接集合
-        MapCHContext.obtain().serverPut(ctx.channel().remoteAddress().toString().split(":")[0].split("/")[1], ctx);
+        ChannelContextCache.obtain().serverPut(ctx.channel().remoteAddress().toString().split(":")[0].split("/")[1], ctx);
 
         // 将消息记录到控制台
         ByteBuf in = (ByteBuf) msg;
