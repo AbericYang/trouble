@@ -20,40 +20,24 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
+ *
  */
 
-package cn.aberic.bother.entity.account;
+package cn.aberic.bother.io.code;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import io.netty.buffer.ByteBuf;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.handler.codec.MessageToByteEncoder;
 
 /**
- * 用户持有的账户信息，必须妥善保管，丢失后将无法找回
- * <p>
- * 作者：Aberic on 2018/9/4 22:51
+ * 作者：Aberic on 2018/9/10 22:52
  * 邮箱：abericyang@gmail.com
  */
-@Setter
-@Getter
-@ToString
-public class AccountUser {
+public class TroubleDecode extends MessageToByteEncoder implements TroubleCode {
 
-    /** 账户唯一地址码 */
-    private String address;
-    /** 账户 ECC 私钥 */
-    private String priECCKey;
-    /** 账户所属 Token hash */
-    private String hash;
+    @Override
+    protected void encode(ChannelHandlerContext ctx, Object msg, ByteBuf out) throws Exception {
 
-    // JSON 用
-    public AccountUser() {
-    }
-
-    public AccountUser(String address, String priECCKey, String hash) {
-        this.address = address;
-        this.priECCKey = priECCKey;
-        this.hash = hash;
     }
 
 }

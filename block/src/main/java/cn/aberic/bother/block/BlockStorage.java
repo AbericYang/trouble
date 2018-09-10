@@ -94,9 +94,9 @@ public class BlockStorage extends BlockAS implements IDataExec {
      * @param block 待同步区块对象
      */
     public BlockInfo snyc(Block block) {
-//        if (checkBlockVerify(block)) {
+        if (checkBlockVerify(block)) {
             return save(block);
-//        }
+        }
 //        // 获取当前待存储区块高度
 //        int height = block.getHeader().getHeight();
 //        // 根据高度查询是否已存在本地区块对象
@@ -112,7 +112,7 @@ public class BlockStorage extends BlockAS implements IDataExec {
 //        } else { // 如果存在，则进入下一步判断两者区块有效性
 //            checkVerify(height, block, blockFromFile);
 //        }
-//        return null;
+        return null;
     }
 
     /**

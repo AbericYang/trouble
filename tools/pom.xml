@@ -75,6 +75,11 @@
             <version>1.2.49</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.msgpack</groupId>
+            <artifactId>jackson-dataformat-msgpack</artifactId>
+            <version>0.8.16</version>
+        </dependency>
 
         <!-- slf4j核心包-->
         <dependency>
