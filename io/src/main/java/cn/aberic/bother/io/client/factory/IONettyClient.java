@@ -26,13 +26,12 @@
 package cn.aberic.bother.io.client.factory;
 
 import cn.aberic.bother.entity.io.Remote;
-import cn.aberic.bother.tools.DateTool;
-import io.netty.buffer.Unpooled;
+import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
-import io.netty.util.*;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelFutureListener;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -42,32 +41,33 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class IONettyClient implements IOClient {
 
-    /** 共享定时器 */
-    private static final Timer timer = new HashedWheelTimer();
-    private static final int DEFAULT_HEARTBEAT_PERIOD = 10;
+    private static final int DEFAULT_HEARTBEAT_TRY_AGAIN_PERIOD = 5;
+    private Bootstrap bootstrap;
     private Channel channel;
     private Remote remote;
+    private boolean shutdown = false;
 
-    public IONettyClient(Remote remote, Channel channel) {
+    public IONettyClient(Bootstrap bootstrap, Remote remote, Channel channel) {
+        this.bootstrap = bootstrap;
         this.channel = channel;
         this.remote = remote;
     }
 
     @Override
-    public void startHeartBeat() {
-        timer.newTimeout(new TimerTask() {
-            @Override
-            public void run(Timeout timeout) {
-                try {
-                    // 发送心跳请求
-                    log.debug("发送心跳请求, {}", DateTool.getCurrent("yyyy/MM/dd HH:mm:ss"));
-                    channel.writeAndFlush(Unpooled.copiedBuffer("Netty rocks!", CharsetUtil.UTF_8));
-                } catch (Throwable ignored) {
-                } finally {
-                    timer.newTimeout(this, DEFAULT_HEARTBEAT_PERIOD, TimeUnit.SECONDS);
-                }
+    public void doConnect() {
+        if (channel != null && channel.isActive()) {
+            return;
+        }
+        ChannelFuture future = bootstrap.connect();
+        future.addListener((ChannelFutureListener) futureListener -> {
+            if (futureListener.isSuccess()) {
+                log.info("与服务器建立连接成功");
+                channel = futureListener.channel();
+            } else {
+                log.info("与服务器建立连接失败，{}秒后再次尝试", DEFAULT_HEARTBEAT_TRY_AGAIN_PERIOD);
+                futureListener.channel().eventLoop().schedule(this::doConnect, DEFAULT_HEARTBEAT_TRY_AGAIN_PERIOD, TimeUnit.SECONDS);
             }
-        }, DEFAULT_HEARTBEAT_PERIOD, TimeUnit.SECONDS);
+        });
     }
 
     @Override
@@ -78,6 +78,16 @@ public class IONettyClient implements IOClient {
     @Override
     public Remote getRemote() {
         return remote;
+    }
+
+    @Override
+    public void shutdown() {
+        shutdown = true;
+    }
+
+    @Override
+    public boolean isShutdown() {
+        return shutdown;
     }
 
     @Override

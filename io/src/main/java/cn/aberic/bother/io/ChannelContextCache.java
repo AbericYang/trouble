@@ -167,12 +167,4 @@ public class ChannelContextCache {
         ioClientCache.getIfPresent(ip).send(Unpooled.copiedBuffer(bytes));
     }
 
-    public void startHeartBeat() {
-        ioClientCache.asMap().forEach((ip, ioClient) -> {
-            if (ioClient.isConnected()) {
-                ioClient.startHeartBeat();
-            }
-        });
-    }
-
 }

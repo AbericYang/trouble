@@ -33,13 +33,17 @@ import cn.aberic.bother.entity.io.Remote;
  */
 public interface IOClient {
 
-    /** 启动心跳 */
-    void startHeartBeat();
+    void doConnect();
 
     /** 发送请求 */
     void send(Object msg);
 
     Remote getRemote();
 
+    void shutdown();
+
+    boolean isShutdown();
+
     boolean isConnected();
+
 }

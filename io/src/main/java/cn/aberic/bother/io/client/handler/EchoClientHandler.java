@@ -25,12 +25,18 @@
 
 package cn.aberic.bother.io.client.handler;
 
+import cn.aberic.bother.io.ChannelContextCache;
+import cn.aberic.bother.io.client.factory.IOClient;
+import cn.aberic.bother.tools.DateTool;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
+import io.netty.handler.timeout.IdleState;
+import io.netty.handler.timeout.IdleStateEvent;
 import io.netty.util.CharsetUtil;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * 作者：Aberic on 2018/9/9 19:37
@@ -45,13 +51,21 @@ import io.netty.util.CharsetUtil;
 // 为此，EchoServerHandler扩展了ChannelInboundHandlerAdapter，其在这个时间点上不会释放消息。
 // 消息在EchoServerHandler 的channelReadComplete()方法中，当writeAndFlush()方法被调用时被释放
 @ChannelHandler.Sharable
+@Slf4j
 public class EchoClientHandler extends SimpleChannelInboundHandler<ByteBuf> {
+
+    /** 循环次数 */
+    private int loopCount = 1;
+    private IOClient ioClient;
+
+    public void setIoClient(IOClient ioClient) {
+        this.ioClient = ioClient;
+    }
 
     // 重写了channelActive()方法，其将在一个连接建立时被调用。
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
-        // 当被通知Channel是活跃的时候，发送一条消息
-         ctx.writeAndFlush(Unpooled.copiedBuffer("Netty rocks!", CharsetUtil.UTF_8));
+        log.info("建立连接 time = {}", DateTool.getCurrent("yyyy/MM/dd HH:mm:ss"));
         ctx.fireChannelActive();
     }
 
@@ -66,6 +80,29 @@ public class EchoClientHandler extends SimpleChannelInboundHandler<ByteBuf> {
     protected void channelRead0(ChannelHandlerContext ctx, ByteBuf in) {
         // 记录已接收消息的转储
         System.out.println("Client received: " + in.toString(CharsetUtil.UTF_8));
+
+    }
+
+    @Override
+    public void userEventTriggered(ChannelHandlerContext ctx, Object obj) throws Exception {
+        log.debug("发送心跳请求 {}, 第{}次", DateTool.getCurrent("yyyy/MM/dd HH:mm:ss"), loopCount);
+        if (obj instanceof IdleStateEvent) {
+            IdleStateEvent event = (IdleStateEvent) obj;
+            if (ioClient.isShutdown()) {
+                ctx.fireChannelInactive();
+            } else if (IdleState.WRITER_IDLE.equals(event.state())) {  // 如果写通道处于空闲状态,就发送心跳命令
+                ctx.channel().writeAndFlush(Unpooled.copiedBuffer("0", CharsetUtil.UTF_8));
+                loopCount++;
+            }
+        }
+    }
+
+    @Override
+    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+        ChannelContextCache.obtain().ioClientRemove(ctx.channel().remoteAddress().toString().split(":")[0].split("/")[1]);
+        log.info("关闭连接 time = {}", DateTool.getCurrent("yyyy/MM/dd HH:mm:ss"));
+        super.channelInactive(ctx);
+        ioClient.doConnect();
     }
 
     @Override

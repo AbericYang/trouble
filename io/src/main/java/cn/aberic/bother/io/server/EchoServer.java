@@ -25,6 +25,7 @@
 
 package cn.aberic.bother.io.server;
 
+import cn.aberic.bother.io.server.filter.EchoServerFilter;
 import cn.aberic.bother.io.server.handler.EchoServerHandler;
 import cn.aberic.bother.tools.SystemTool;
 import io.netty.bootstrap.ServerBootstrap;
@@ -32,13 +33,11 @@ import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.buffer.UnpooledByteBufAllocator;
 import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.epoll.EpollEventLoopGroup;
 import io.netty.channel.epoll.EpollServerSocketChannel;
 import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.util.internal.SystemPropertyUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -95,15 +94,7 @@ public class EchoServer {
                     .channel(SystemTool.isLinux() ? EpollServerSocketChannel.class : NioServerSocketChannel.class)
                     // 使用指定的端口设置套接字地址/将本地地址设置为一个具有选定端口的InetSocket-Address
                     .localAddress(new InetSocketAddress(port))
-                    .childHandler(new ChannelInitializer<SocketChannel>() { // 添加一个EchoServer-Handler 到子Channel的ChannelPipeline
-                        @Override
-                        protected void initChannel(SocketChannel ch) {
-                            // EchoServerHandlerTest 被标注为@Shareable，所以可以总是使用同样的实例
-                            // 这里对于所有的客户端连接来说，都会使用同一个EchoServerHandler，
-                            // 因为其被标注为@Sharable
-                            ch.pipeline().addLast(serverHandler);
-                        }
-                    });
+                    .childHandler(new EchoServerFilter(serverHandler));
             // 异步地绑定服务器；调用sync()方法阻塞等待直到绑定完成
             ChannelFuture future = bootstrap.bind().sync();
             if (future.isSuccess()) {

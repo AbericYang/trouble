@@ -28,16 +28,18 @@ package cn.aberic.bother.io.client;
 import cn.aberic.bother.entity.io.Remote;
 import cn.aberic.bother.io.client.factory.IOClient;
 import cn.aberic.bother.io.client.factory.IONettyClient;
+import cn.aberic.bother.io.client.filter.EchoClientFilter;
 import cn.aberic.bother.io.client.handler.EchoClientHandler;
 import cn.aberic.bother.tools.SystemTool;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.buffer.UnpooledByteBufAllocator;
-import io.netty.channel.*;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelOption;
+import io.netty.channel.EventLoopGroup;
 import io.netty.channel.epoll.EpollEventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.util.internal.SystemPropertyUtil;
 
@@ -50,6 +52,7 @@ import java.net.InetSocketAddress;
 public class EchoClient {
 
     public IOClient createClient(Remote remote) throws Exception {
+        final EchoClientHandler clientHandler = new EchoClientHandler();
         // 是否使用Linux优化版
         EventLoopGroup group = SystemTool.isLinux() ? new EpollEventLoopGroup() : new NioEventLoopGroup();
         // 是否可以使用sun.misc.Unsafe
@@ -72,21 +75,19 @@ public class EchoClient {
                 // 设置服务器的InetSocketAddress
                 .remoteAddress(new InetSocketAddress(remote.getAddress(), remote.getPort()))
                 // 在创建Channel 时向ChannelPipeline中添加一个EchoClientHandler 实例
-                .handler(new ChannelInitializer<SocketChannel>() {
-                    @Override
-                    protected void initChannel(SocketChannel ch) {
-                        ch.pipeline().addLast(new EchoClientHandler());
-                    }
-                });
+                .handler(new EchoClientFilter(clientHandler));
 
         if (remote.getTimeOut() < 1000) {
             bootstrap.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 3000);
         } else {
             bootstrap.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, remote.getTimeOut());
         }
+        // 异步地绑定服务；调用sync()方法阻塞等待直到绑定完成
         ChannelFuture future = bootstrap.connect().sync();
         if (future.awaitUninterruptibly(remote.getTimeOut()) && future.isSuccess() && future.channel().isActive()) {
-            return new IONettyClient(remote, future.channel());
+            IOClient ioClient = new IONettyClient(bootstrap, remote, future.channel());
+            clientHandler.setIoClient(ioClient);
+            return ioClient;
         } else {
             future.cancel(true);
             future.channel().close();

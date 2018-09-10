@@ -37,10 +37,10 @@ public class ClientTest {
     public static void main(String[] args) throws Exception {
 
         Remote remote = new Remote();
-        remote.setAddress("localhost");
+        remote.setAddress("127.0.0.1");
         remote.setPort(63715);
         ChannelContextCache.obtain().startClient(remote);
-        ChannelContextCache.obtain().startHeartBeat();
+        ChannelContextCache.obtain().sendByIOClient("127.0.0.1", "Netty rocks!");
     }
 
 }

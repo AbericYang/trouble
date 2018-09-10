@@ -20,28 +20,43 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- *
  */
 
-package cn.aberic.bother.io.client.factory;
+package cn.aberic.bother.io.server.filter;
 
-import cn.aberic.bother.entity.io.Remote;
-import cn.aberic.bother.io.ChannelContextCache;
+import io.netty.channel.ChannelHandler;
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.ChannelPipeline;
+import io.netty.channel.socket.SocketChannel;
+import io.netty.handler.timeout.IdleStateHandler;
+
+import java.util.concurrent.TimeUnit;
 
 /**
- * 作者：Aberic on 2018/9/10 00:55
+ * 服务端过滤器
+ * <p>
+ * 增加了心跳的相关设置
+ * <p>
+ * 作者：Aberic on 2018/09/10 12:50
  * 邮箱：abericyang@gmail.com
  */
-public abstract class IOAbstractClientFactory implements IOClientFactory {
+public class EchoServerFilter extends ChannelInitializer<SocketChannel> {
 
-    protected abstract IOClient createClient(Remote address) throws Exception;
+    private ChannelHandler channelHandler;
+
+    public EchoServerFilter(ChannelHandler channelHandler) {
+        this.channelHandler = channelHandler;
+    }
 
     @Override
-    public IOClient getOrCreate(Remote remote) throws Exception {
-        IOClient ioClient = ChannelContextCache.obtain().ioClientGet(remote.getAddress());
-        if (null == ioClient) {
-            ioClient = createClient(remote);
-        }
-        return ioClient;
+    protected void initChannel(SocketChannel ch) throws Exception {
+        ChannelPipeline ph = ch.pipeline();
+        // 解码和编码，应和客户端一致
+        // 入参说明: 读超时时间、写超时时间、所有类型的超时时间、时间格式
+        ph.addLast(new IdleStateHandler(5, 0, 0, TimeUnit.SECONDS));
+        // ph.addLast("decoder", new StringDecoder());
+        // ph.addLast("encoder", new StringEncoder());
+        ph.addLast("handler", channelHandler);// 服务端业务逻辑
     }
+
 }
