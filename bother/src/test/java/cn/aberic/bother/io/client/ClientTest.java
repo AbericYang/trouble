@@ -36,10 +36,11 @@ public class ClientTest {
 
     public static void main(String[] args) throws Exception {
 
-        Remote address = new Remote();
-        address.setAddress("localhost");
-        address.setPort(63715);
-        MapCHContext.obtain().startClient(address);
+        Remote remote = new Remote();
+        remote.setAddress("localhost");
+        remote.setPort(63715);
+        MapCHContext.obtain().startClient(remote);
+        MapCHContext.obtain().startHeartBeat();
     }
 
 }

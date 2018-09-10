@@ -121,14 +121,36 @@ public class MapCHContext {
         ctxServerMap.get(ip).writeAndFlush(Unpooled.copiedBuffer("Netty rocks!", CharsetUtil.UTF_8));
     }
 
-    public void writeAndFlushClient() {
+    public void sendByIOClient() {
 //        ctxClientMap.forEach((ip, ctx) -> {
 //            ctx.writeAndFlush(Unpooled.copiedBuffer("Netty rocks!", CharsetUtil.UTF_8));
 //        });
+//        ioClientMap.forEach((ip, ioClient) -> {
+//            ioClient.send(Unpooled.copiedBuffer(new byte[0x00]));
+//        });
+        for (IOClient ioClient: ioClientMap.values()) {
+            if (ioClient.isConnected()) {
+                ioClient.send(Unpooled.copiedBuffer(new byte[0x00]));
+            }
+        }
     }
 
-    public void writeAndFlushClient(String ip) {
+    public void sendByIOClient(String ip, String msg) {
 //        ctxClientMap.get(ip).writeAndFlush(Unpooled.copiedBuffer("Netty rocks!", CharsetUtil.UTF_8));
+        ioClientMap.get(ip).send(Unpooled.copiedBuffer(msg, CharsetUtil.UTF_8));
+    }
+
+    public void sendByIOClient(String ip, byte[] bytes) {
+//        ctxClientMap.get(ip).writeAndFlush(Unpooled.copiedBuffer("Netty rocks!", CharsetUtil.UTF_8));
+        ioClientMap.get(ip).send(Unpooled.copiedBuffer(bytes));
+    }
+
+    public void startHeartBeat() {
+        for (IOClient ioClient: ioClientMap.values()) {
+            if (ioClient.isConnected()) {
+                ioClient.startHeartBeat();
+            }
+        }
     }
 
 }

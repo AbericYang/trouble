@@ -35,8 +35,8 @@ import cn.aberic.bother.io.client.EchoClient;
 public class IONettyClientFactory extends IOAbstractClientFactory {
 
     @Override
-    protected IOClient createClient(Remote address) throws Exception {
-        return new EchoClient().createClient(address);
+    protected IOClient createClient(Remote remote) throws Exception {
+        return new EchoClient().createClient(remote);
     }
 
 }

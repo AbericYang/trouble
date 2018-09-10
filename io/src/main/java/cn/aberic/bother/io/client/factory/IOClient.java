@@ -34,12 +34,12 @@ import cn.aberic.bother.entity.io.Remote;
 public interface IOClient {
 
     /** 启动心跳 */
-    void startHeartBeat() throws Exception;
+    void startHeartBeat();
 
     /** 发送请求 */
-    void send(Object msg) throws Exception;
+    void send(Object msg);
 
-    Remote getRemoteAddress();
+    Remote getRemote();
 
     boolean isConnected();
 }

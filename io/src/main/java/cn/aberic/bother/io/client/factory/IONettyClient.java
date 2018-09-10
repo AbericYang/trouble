@@ -26,29 +26,33 @@
 package cn.aberic.bother.io.client.factory;
 
 import cn.aberic.bother.entity.io.Remote;
+import cn.aberic.bother.tools.DateTool;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
 import io.netty.util.*;
+import lombok.extern.slf4j.Slf4j;
 
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 /**
  * 作者：Aberic on 2018/9/10 01:29
  * 邮箱：abericyang@gmail.com
  */
+@Slf4j
 public class IONettyClient implements IOClient {
 
     /**
      * 共享定时器
      **/
     private static final Timer timer = new HashedWheelTimer();
-    private static final int DEFAULT_HEARTBEAT_PERIOD = 3000;
-    private Channel ch;
-    private Remote address;
+    private static final int DEFAULT_HEARTBEAT_PERIOD = 10;
+    private Channel channel;
+    private Remote remote;
 
-    public IONettyClient(Remote address, Channel ch) {
-        this.ch = ch;
-        this.address = address;
+    public IONettyClient(Remote remote, Channel channel) {
+        this.channel = channel;
+        this.remote = remote;
     }
 
     @Override
@@ -58,7 +62,8 @@ public class IONettyClient implements IOClient {
             public void run(Timeout timeout) {
                 try {
                     // 发送心跳请求
-                    ch.writeAndFlush(Unpooled.copiedBuffer("Netty rocks!", CharsetUtil.UTF_8));
+                    log.debug("发送心跳请求, {}", DateTool.getCurrent("yyyy/MM/dd HH:mm:ss"));
+                    channel.writeAndFlush(Unpooled.copiedBuffer("Netty rocks!", CharsetUtil.UTF_8));
                 } catch (Throwable ignored) {
                 } finally {
                     timer.newTimeout(this, DEFAULT_HEARTBEAT_PERIOD, TimeUnit.SECONDS);
@@ -69,17 +74,17 @@ public class IONettyClient implements IOClient {
 
     @Override
     public void send(Object msg) {
-        ch.writeAndFlush(msg);
+        channel.writeAndFlush(msg);
     }
 
     @Override
-    public Remote getRemoteAddress() {
-        return address;
+    public Remote getRemote() {
+        return remote;
     }
 
     @Override
     public boolean isConnected() {
-        return ch.isActive();
+        return channel.isActive();
     }
 
 }

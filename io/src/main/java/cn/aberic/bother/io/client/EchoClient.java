@@ -49,22 +49,12 @@ import java.net.InetSocketAddress;
  */
 public class EchoClient {
 
-    public IOClient createClient(Remote address) throws Exception {
-        EventLoopGroup group;
-        ByteBufAllocator byteBufAllocator;
-
-        if (SystemTool.isLinux()) {
-            group = new EpollEventLoopGroup();
-        } else {
-            group = new NioEventLoopGroup();
-        }
-
+    public IOClient createClient(Remote remote) throws Exception {
+        // 是否使用Linux优化版
+        EventLoopGroup group = SystemTool.isLinux() ? new EpollEventLoopGroup() : new NioEventLoopGroup();
         // 是否可以使用sun.misc.Unsafe
-        if (SystemPropertyUtil.getBoolean("bytebuf.pool", false)) {
-            byteBufAllocator = PooledByteBufAllocator.DEFAULT;
-        } else {
-            byteBufAllocator = UnpooledByteBufAllocator.DEFAULT;
-        }
+        ByteBufAllocator byteBufAllocator = SystemPropertyUtil.getBoolean("bytebuf.pool", false) ? PooledByteBufAllocator.DEFAULT : UnpooledByteBufAllocator.DEFAULT;
+
         // 创建Bootstrap
         Bootstrap bootstrap = new Bootstrap();
         bootstrap.group(group) // 指定EventLoopGroup 以处理客户端事件；需要适用于NIO 的实现
@@ -76,11 +66,11 @@ public class EchoClient {
                 // 这个选项用于可能长时间没有数据交流的连接。当设置该选项以后，
                 // 如果在两小时内没有数据的通信时，TCP会自动发送一个活动探测数据报文
                 .option(ChannelOption.SO_KEEPALIVE, true)
-                .option(ChannelOption.ALLOCATOR, byteBufAllocator)//
+                .option(ChannelOption.ALLOCATOR, byteBufAllocator)
                 // 适用于NIO 传输的Channel 类型
                 .channel(NioSocketChannel.class)
                 // 设置服务器的InetSocketAddress
-                // .remoteAddress(new InetSocketAddress(null != address.getUrl() ? address.getUrl() : address.getIp(), address.getPort()))
+                .remoteAddress(new InetSocketAddress(remote.getAddress(), remote.getPort()))
                 // 在创建Channel 时向ChannelPipeline中添加一个EchoClientHandler 实例
                 .handler(new ChannelInitializer<SocketChannel>() {
                     @Override
@@ -89,18 +79,18 @@ public class EchoClient {
                     }
                 });
 
-        if (address.getTimeOut() < 1000) {
+        if (remote.getTimeOut() < 1000) {
             bootstrap.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 3000);
         } else {
-            bootstrap.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, address.getTimeOut());
+            bootstrap.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, remote.getTimeOut());
         }
-        ChannelFuture future = bootstrap.connect(new InetSocketAddress(address.getAddress(), address.getPort()));
-        if (future.awaitUninterruptibly(address.getTimeOut()) && future.isSuccess() && future.channel().isActive()) {
-            return new IONettyClient(address, future.channel());
+        ChannelFuture future = bootstrap.connect().sync();
+        if (future.awaitUninterruptibly(remote.getTimeOut()) && future.isSuccess() && future.channel().isActive()) {
+            return new IONettyClient(remote, future.channel());
         } else {
             future.cancel(true);
             future.channel().close();
-            throw new Exception(address.getAddress());
+            throw new Exception(remote.getAddress());
         }
     }
 

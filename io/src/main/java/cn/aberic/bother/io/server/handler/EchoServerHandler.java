@@ -60,8 +60,8 @@ public class EchoServerHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelReadComplete(ChannelHandlerContext ctx) {
-        // 将未决消息冲刷到远程节点，并且关闭该Channel
-        ctx.writeAndFlush(Unpooled.EMPTY_BUFFER).addListener(ChannelFutureListener.CLOSE);
+        // 将未决消息冲刷到远程节点
+        ctx.writeAndFlush(Unpooled.EMPTY_BUFFER);
     }
 
     // 重写exceptionCaught()方法允许对Throwable的任何子类型做出反应，在这里记录了异常并关闭了连接

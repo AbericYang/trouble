@@ -36,12 +36,12 @@ import cn.aberic.bother.entity.io.Remote;
 public interface IOClientFactory {
 
     /**
-     * 根据 IP 获取一个客户端链接，如果没有则新增
+     * 根据远程对象获取一个客户端链接，如果没有则新增
      *
-     * @param address address
+     * @param remote remote
      *
      * @return 客户端
      */
-    IOClient getOrCreate(Remote address) throws Exception;
+    IOClient getOrCreate(Remote remote) throws Exception;
 
 }

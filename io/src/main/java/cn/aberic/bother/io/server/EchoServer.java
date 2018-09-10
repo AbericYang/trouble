@@ -28,14 +28,19 @@ package cn.aberic.bother.io.server;
 import cn.aberic.bother.io.server.handler.EchoServerHandler;
 import cn.aberic.bother.tools.SystemTool;
 import io.netty.bootstrap.ServerBootstrap;
+import io.netty.buffer.ByteBufAllocator;
+import io.netty.buffer.PooledByteBufAllocator;
+import io.netty.buffer.UnpooledByteBufAllocator;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
+import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.epoll.EpollEventLoopGroup;
 import io.netty.channel.epoll.EpollServerSocketChannel;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.util.internal.SystemPropertyUtil;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetSocketAddress;
@@ -67,18 +72,29 @@ public class EchoServer {
         // 创建Event-LoopGroup。
         // 因为正在使用的是NIO传输，所以指定NioEventLoopGroup来接受和处理新的连接
         // 并且将Channel 的类型指定为NioServer-SocketChannel
-        EventLoopGroup group;
-        if (SystemTool.isLinux()) {
-            group = new EpollEventLoopGroup();
-        } else {
-            group = new NioEventLoopGroup();
-        }
+        // 是否使用Linux优化版
+        EventLoopGroup boss = SystemTool.isLinux() ? new EpollEventLoopGroup() : new NioEventLoopGroup();
+        EventLoopGroup worker = SystemTool.isLinux() ? new EpollEventLoopGroup() : new NioEventLoopGroup();
+        // 是否可以使用sun.misc.Unsafe
+        ByteBufAllocator byteBufAllocator = SystemPropertyUtil.getBoolean("bytebuf.pool", false) ? PooledByteBufAllocator.DEFAULT : UnpooledByteBufAllocator.DEFAULT;
+
         try {
             // 创建一个ServerBootstrap 实例
-            ServerBootstrap b = new ServerBootstrap();
-            b.group(group)
-                    .channel(SystemTool.isLinux() ? EpollServerSocketChannel.class : NioServerSocketChannel.class) // 指定所使用的NIO传输Channel
-                    .localAddress(new InetSocketAddress(port)) // 使用指定的端口设置套接字地址/将本地地址设置为一个具有选定端口的InetSocket-Address
+            ServerBootstrap bootstrap = new ServerBootstrap();
+            bootstrap.group(boss, worker)
+                    // 网络通信的场景下，要求低延迟，禁用Nagle,使消息立即发出去，不用等待到一定的数据量才发出去
+                    .option(ChannelOption.TCP_NODELAY, true)
+                    // 允许重复使用本地地址和端口
+                    .option(ChannelOption.SO_REUSEADDR, true)
+                    // 设置TCP连接，当设置该选项以后，连接会测试链接的状态，
+                    // 这个选项用于可能长时间没有数据交流的连接。当设置该选项以后，
+                    // 如果在两小时内没有数据的通信时，TCP会自动发送一个活动探测数据报文
+                    .option(ChannelOption.SO_KEEPALIVE, true)
+                    .option(ChannelOption.ALLOCATOR, byteBufAllocator)
+                    // 指定所使用的NIO传输Channel
+                    .channel(SystemTool.isLinux() ? EpollServerSocketChannel.class : NioServerSocketChannel.class)
+                    // 使用指定的端口设置套接字地址/将本地地址设置为一个具有选定端口的InetSocket-Address
+                    .localAddress(new InetSocketAddress(port))
                     .childHandler(new ChannelInitializer<SocketChannel>() { // 添加一个EchoServer-Handler 到子Channel的ChannelPipeline
                         @Override
                         protected void initChannel(SocketChannel ch) {
@@ -89,13 +105,16 @@ public class EchoServer {
                         }
                     });
             // 异步地绑定服务器；调用sync()方法阻塞等待直到绑定完成
-            ChannelFuture f = b.bind().sync();
-            log.info("started and listening for connections on {}", f.channel().localAddress());
+            ChannelFuture future = bootstrap.bind().sync();
+            if (future.isSuccess()) {
+                log.info("启动并监听连接 {}", future.channel().localAddress());
+            }
+
             // 获取Channel 的CloseFuture，并且阻塞当前线程直到它完成
-            f.channel().closeFuture().sync();
+            future.channel().closeFuture().sync();
         } finally {
             // 关闭EventLoopGroup，并释放所有的资源，包括所有被创建的线程
-            group.shutdownGracefully().sync();
+            boss.shutdownGracefully().sync();
         }
     }
 
