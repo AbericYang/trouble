@@ -1,0 +1,30 @@
+syntax = "proto3";
+//生成文件所在包名
+option java_package = "cn.aberic.bother.entity.proto";
+//生成的java文件名
+option java_outer_classname = "ProtoDemo";
+
+message Student {
+    int32 id = 1;
+    string name = 2;
+    string email = 3;
+    //枚举类
+    enum Sex {
+        MAN = 0;
+        WOMAN = 1;
+    }
+    Sex sex = 4 ;
+
+    enum PhoneType{
+        MOBILE = 0;
+        HOME = 1;
+        WORK = 2;
+    }
+    //内部类
+    message PhoneNumber {
+        string number = 1;
+        PhoneType type = 2 ;
+    }
+    //集合
+    repeated PhoneNumber phone = 5;
+}

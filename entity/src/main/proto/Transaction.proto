@@ -1,0 +1,30 @@
+syntax = "proto3";
+//生成文件所在包名
+option java_package = "cn.aberic.bother.entity.proto";
+//生成的java文件名
+option java_outer_classname = "TransactionProto";
+
+import "RWSet.proto";
+import "Request.proto";
+
+message Transaction {
+    string hash = 1; // 本次写入值链码hash
+    string contractName = 2; // 本次写入值所用合约名称
+    string contractVersion = 3; // 本次写入值所用合约版本
+    string creator = 4; // 发起方
+    string sign = 5; // 发起方签名
+    RWSet rwSet = 6; // 交易读写集
+    uint64 timestamp = 7; // 交易时间戳
+    string txHash = 8; // 交易hash
+    TransactionStatus transactionStatusCode = 9; // 交易状态
+    string errorMessage = 10; // 交易错误信息
+    string dataStorageHash = 11; // 交易索引hash
+    string time = 12; // 交易时间戳转字符串——yyyy/MM/dd HH:mm:ss
+    Request request = 13; // 智能合约请求对象
+    string pubECCKey = 14; // 账户 ECC 公钥
+
+    enum TransactionStatus{
+        SUCCESS = 0;
+        FAIL = 1;
+    }
+}

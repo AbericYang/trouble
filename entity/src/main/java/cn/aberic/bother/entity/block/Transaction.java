@@ -89,7 +89,7 @@ public class Transaction {
     /** 交易时间戳转字符串——yyyy/MM/dd HH:mm:ss */
     @JSONField(serialize = false)
     private String time; // 序列化时不写入
-    /** 本次写入操作账户地址数组，默认第一个是操作者，其余根据意图判定 */
+    /** 智能合约请求对象 */
     @JSONField(name = "r")
     private Request request;
     /** 仅在创建账户时需要赋值验证 */

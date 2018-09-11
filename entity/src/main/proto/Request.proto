@@ -1,0 +1,14 @@
+syntax = "proto3";
+//生成文件所在包名
+option java_package = "cn.aberic.bother.entity.proto";
+//生成的java文件名
+option java_outer_classname = "RequestProto";
+
+message Request {
+    string key = 1; // 智能合约key
+    string value = 2; // 智能合约value
+    string jsonValue = 3; // 智能合约 json string value
+    string encryption = 4; // RSA 私钥加密事务，请求不加密，处理时加密
+    string tokenHash = 5; // Token hash
+    string address = 6; // 处理该事务的账户地址
+}
