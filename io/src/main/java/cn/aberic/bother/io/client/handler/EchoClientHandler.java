@@ -25,11 +25,11 @@
 
 package cn.aberic.bother.io.client.handler;
 
+import cn.aberic.bother.entity.io.MessageData;
 import cn.aberic.bother.io.IOContext;
 import cn.aberic.bother.io.client.factory.IOClient;
 import cn.aberic.bother.tools.DateTool;
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -92,7 +92,9 @@ public class EchoClientHandler extends SimpleChannelInboundHandler<ByteBuf> {
                 ctx.fireChannelInactive();
                 ctx.channel().close();
             } else if (IdleState.WRITER_IDLE.equals(event.state())) {  // 如果写通道处于空闲状态,就发送心跳命令
-                ctx.channel().writeAndFlush(Unpooled.copiedBuffer("0", CharsetUtil.UTF_8));
+                MessageData messageData = new MessageData();
+                messageData.setProtocolId((byte) 0x00);
+                ctx.channel().writeAndFlush(messageData);
                 loopCount++;
             }
         }

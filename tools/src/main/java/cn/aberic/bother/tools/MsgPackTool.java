@@ -51,14 +51,8 @@ public class MsgPackTool {
         return null;
     }
 
-    public static <T> T toObject(byte[] bytes, Class<T> clazz) {
-        T value = null;
-        try {
-            value = mapper.readValue(bytes, clazz);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return value;
+    public static <T> T toObject(byte[] bytes, Class<T> clazz) throws IOException {
+        return mapper.readValue(bytes, clazz);
     }
 
     private static <T> JavaType list(Class<?> clazz) {

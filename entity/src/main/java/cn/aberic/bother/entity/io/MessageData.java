@@ -20,31 +20,53 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- *
  */
 
 package cn.aberic.bother.entity.io;
 
+import cn.aberic.bother.tools.MsgPackTool;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.io.IOException;
+
 /**
- * 远程连接主机地址对象
- * <p>
- * 作者：Aberic on 2018/9/10 01:15
+ * 数据传输对象
+ * 作者：Aberic on 2018/09/11 11:28
  * 邮箱：abericyang@gmail.com
  */
 @Setter
 @Getter
 @ToString
-public class Remote {
+public class MessageData {
 
-    /** 远程连接主机 address */
-    private String address;
-    /** 远程连接主机端口号 */
-    private int port;
-    /** 远程连接主机连接超时时间 */
-    private int timeOut;
+    /** 与服务器约定协议号，以解析数据，如0x00、0x01等 */
+    private byte protocolId;
+    /** 数据长度 */
+    private int length;
+    /** 数据请求 ID */
+    private int dataId;
+    /** 数据对象字节数组 */
+    private byte[] bytes;
 
+    public MessageData() {
+    }
+
+    public MessageData(byte protocolId, Object object) {
+        this.protocolId = protocolId;
+        this.bytes = MsgPackTool.toBytes(object);
+    }
+
+    public void setObject(Object object) {
+        this.bytes = MsgPackTool.toBytes(object);
+    }
+
+    public <T> T getObject(Class<T> clazz) {
+        try {
+            return MsgPackTool.toObject(this.bytes, clazz);
+        } catch (IOException e) {
+            return null;
+        }
+    }
 }

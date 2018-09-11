@@ -25,6 +25,7 @@
 
 package cn.aberic.bother.io.server;
 
+import cn.aberic.bother.io.IOContext;
 import cn.aberic.bother.io.server.filter.EchoServerFilter;
 import cn.aberic.bother.io.server.handler.EchoServerHandler;
 import cn.aberic.bother.tools.SystemTool;
@@ -32,6 +33,7 @@ import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.buffer.UnpooledByteBufAllocator;
+import io.netty.channel.AdaptiveRecvByteBufAllocator;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
@@ -90,11 +92,13 @@ public class EchoServer {
                     // 如果在两小时内没有数据的通信时，TCP会自动发送一个活动探测数据报文
                     .option(ChannelOption.SO_KEEPALIVE, true)
                     .option(ChannelOption.ALLOCATOR, byteBufAllocator)
+                    .option(ChannelOption.RCVBUF_ALLOCATOR, new AdaptiveRecvByteBufAllocator(64, 1024, 1024 * 1024))
                     // 指定所使用的NIO传输Channel
                     .channel(SystemTool.isLinux() ? EpollServerSocketChannel.class : NioServerSocketChannel.class)
                     // 使用指定的端口设置套接字地址/将本地地址设置为一个具有选定端口的InetSocket-Address
                     .localAddress(new InetSocketAddress(port))
-                    .childHandler(new EchoServerFilter(serverHandler));
+                    .childHandler(new EchoServerFilter(Integer.MAX_VALUE, IOContext.LENGTH_FIELD_LENGTH, IOContext.LENGTH_FIELD_OFFSET,
+                            IOContext.LENGTH_ADJUSTMENT, IOContext.INITIAL_BYTES_TO_STRIP, false, serverHandler));
             // 异步地绑定服务器；调用sync()方法阻塞等待直到绑定完成
             ChannelFuture future = bootstrap.bind().sync();
             if (future.isSuccess()) {

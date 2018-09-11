@@ -25,19 +25,45 @@
 
 package cn.aberic.bother.io.code;
 
+import cn.aberic.bother.entity.io.MessageData;
+import cn.aberic.bother.tools.ByteTool;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
 
 /**
  * 作者：Aberic on 2018/9/10 22:49
  * 邮箱：abericyang@gmail.com
  */
-public class TroubleEncode extends MessageToByteEncoder implements TroubleCode {
+@Slf4j
+public class TroubleEncode extends MessageToByteEncoder<MessageData> implements TroubleCode {
 
     @Override
-    protected void encode(ChannelHandlerContext ctx, Object msg, ByteBuf out) throws Exception {
+    public Logger log() {
+        return log;
+    }
 
+    @Override
+    protected void encode(ChannelHandlerContext ctx, MessageData msgData, ByteBuf out) throws Exception {
+        int dataId = createDataId();
+        msgData.setDataId(dataId);
+        out.writeByte(msgData.getProtocolId());
+        out.writeBytes(ByteTool.intToBytes(msgData.getDataId()));
+        byte protocolId = msgData.getProtocolId();
+        switch (protocolId) {
+            case 0x00: // 创建并发送心跳包
+                byte[] bytes = createHeart();
+                out.writeBytes(ByteTool.intToBytes(bytes.length));
+                out.writeBytes(bytes);
+                break;
+            default:
+                bytes = createData(msgData.getBytes());
+                out.writeBytes(ByteTool.intToBytes(bytes.length));
+                out.writeBytes(bytes);
+                break;
+        }
     }
 
 }

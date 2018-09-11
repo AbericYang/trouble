@@ -27,6 +27,7 @@ package cn.aberic.bother.tools;
 
 import cn.aberic.bother.entity.account.AccountUser;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -38,7 +39,7 @@ import java.util.List;
 public class MsgPackTest {
 
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         System.out.println("=====对象转换bytes=====");
         AccountUser person = new AccountUser("Jecced", "18", "true");
         byte[] bytes = MsgPackTool.toBytes(person);

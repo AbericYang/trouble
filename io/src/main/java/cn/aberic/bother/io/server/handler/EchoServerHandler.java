@@ -25,16 +25,16 @@
 
 package cn.aberic.bother.io.server.handler;
 
+import cn.aberic.bother.entity.contract.Account;
+import cn.aberic.bother.entity.io.MessageData;
 import cn.aberic.bother.io.IOContext;
 import cn.aberic.bother.tools.DateTool;
-import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
-import io.netty.util.CharsetUtil;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -61,13 +61,16 @@ public class EchoServerHandler extends ChannelInboundHandlerAdapter {
     // 需要处理所有接收到的数据，所以重写channelRead()方法
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
-
-        // 将消息记录到控制台
-        ByteBuf in = (ByteBuf) msg;
-        System.out.println("Server received: " + in.toString(CharsetUtil.UTF_8));
-        System.out.println("Client IP is " + ctx.channel().remoteAddress().toString());
+        MessageData msgData = (MessageData) msg;
+        log.debug("请求协议：{}，数据ID：{}", msgData.getProtocolId(), msgData.getDataId());
+        switch (msgData.getProtocolId()) {
+            case 0x79:
+                Account account = msgData.getObject(Account.class);
+                log.debug("account = {}", account.toString());
+                break;
+        }
         // 将接收到的消息写给发送者，而不冲刷出站消息
-        ctx.write(in);
+        ctx.write(msgData);
     }
 
     @Override

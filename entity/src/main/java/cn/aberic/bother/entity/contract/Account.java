@@ -29,6 +29,7 @@ import cn.aberic.bother.entity.BeanJsonField;
 import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.math.BigDecimal;
 
@@ -39,6 +40,7 @@ import java.math.BigDecimal;
  */
 @Setter
 @Getter
+@ToString
 public class Account implements BeanJsonField {
 
     /** 账户唯一地址码 */

@@ -25,7 +25,9 @@
 
 package cn.aberic.bother.io.client;
 
+import cn.aberic.bother.entity.io.MessageData;
 import cn.aberic.bother.entity.io.Remote;
+import cn.aberic.bother.io.IOContext;
 import cn.aberic.bother.io.client.factory.IOClient;
 import cn.aberic.bother.io.client.factory.IONettyClient;
 import cn.aberic.bother.io.client.filter.EchoClientFilter;
@@ -35,6 +37,7 @@ import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.buffer.UnpooledByteBufAllocator;
+import io.netty.channel.AdaptiveRecvByteBufAllocator;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
@@ -70,12 +73,14 @@ public class EchoClient {
                 // 如果在两小时内没有数据的通信时，TCP会自动发送一个活动探测数据报文
                 .option(ChannelOption.SO_KEEPALIVE, true)
                 .option(ChannelOption.ALLOCATOR, byteBufAllocator)
+                .option(ChannelOption.RCVBUF_ALLOCATOR, new AdaptiveRecvByteBufAllocator(64, 1024, 1024 * 1024))
                 // 适用于NIO 传输的Channel 类型
                 .channel(NioSocketChannel.class)
                 // 设置服务器的InetSocketAddress
                 .remoteAddress(new InetSocketAddress(remote.getAddress(), remote.getPort()))
                 // 在创建Channel 时向ChannelPipeline中添加一个EchoClientHandler 实例
-                .handler(new EchoClientFilter(clientHandler));
+                .handler(new EchoClientFilter(Integer.MAX_VALUE, IOContext.LENGTH_FIELD_LENGTH, IOContext.LENGTH_FIELD_OFFSET,
+                        IOContext.LENGTH_ADJUSTMENT, IOContext.INITIAL_BYTES_TO_STRIP, false, clientHandler));
 
         if (remote.getTimeOut() < 1000) {
             bootstrap.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 3000);

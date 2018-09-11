@@ -25,8 +25,11 @@
 
 package cn.aberic.bother.io.code;
 
-import cn.aberic.bother.tools.MsgPackTool;
+import cn.aberic.bother.entity.io.MessageData;
+import cn.aberic.bother.tools.ByteTool;
+import org.slf4j.Logger;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -38,6 +41,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 interface TroubleCode {
 
     AtomicInteger dataId = new AtomicInteger(0);
+
+    Logger log();
 
     /**
      * 生成数据包ID
@@ -58,23 +63,13 @@ interface TroubleCode {
     /**
      * 生成数据包头（标准数据包格式，详见各字段注释）
      *
-     * @param protocolId 与服务器约定协议号，以解析数据，如0x00、0x01等
-     *
      * @return 数据包头
      */
-    default byte[] createHeader(byte protocolId) {
-        byte[] tempBytes; // 临时 byte 数据数组
-        byte[] resultBytes = new byte[5]; // 数据包头 byte[] 数组结果集
+    default byte[] createHeader() {
+        byte[] resultBytes = new byte[2]; // 数据包头 byte[] 数组结果集
 
         resultBytes[0] = 0x56; // 0x56（固定值）
         resultBytes[1] = 0x33; // 0x33（固定值）
-
-        resultBytes[2] = protocolId;
-
-        // 数据包 id 转 byte[]
-        tempBytes = intToBytes(createDataId());
-        resultBytes[3] = tempBytes[3];
-        resultBytes[4] = tempBytes[2];
 
         return resultBytes;
     }
@@ -89,54 +84,34 @@ interface TroubleCode {
     }
 
     /**
-     * 发送消息数据包
+     * 生成心跳数据包
      *
-     * @param protocolId 与服务器约定协议号，以解析数据 0x01、0x02 等
-     *                   采用累加的方式，应答数据的数据包ID与发送的数据包ID相同
-     *                   数值范围：0至65535（超出范围清0）
-     * @param msg        消息内容
-     *
-     * @return 消息数据包
+     * @return 心跳数据包
      */
-    default byte[] createData(byte protocolId, String msg) {
+    default byte[] createHeart() {
         try {
-            byte[] tempBytes;  // 数据包临时 byte 数据数组
-            List<Byte> resultList = new LinkedList<>(); // 消息数据包 List<Byte> 集合结果集
+            byte[] tempBytes; // 临时 byte 数据数组
+            List<Byte> resultList = new LinkedList<>(); // 心跳数据包 List<Byte> 集合结果集
 
-            tempBytes = createHeader(protocolId); // 创建包头
+            tempBytes = createHeader(); // 创建包头
             for (byte b : tempBytes) { // 结果集加入包头
                 resultList.add(b);
             }
-
-            List<Byte> resultDataList = new LinkedList<>(); // 消息数据包所属数据体 List<Byte> 集合结果集
-            byte[] tempDataBytes;  // 数据体临时 byte 数据数组
-
-            tempBytes = msg.getBytes("UTF-16LE");
-            // 将数据体长度【（UInt16 无符号整型16位）是指数据体内容的字节长度】加入数据包且在具体数据体之前
-            tempDataBytes = shortToBytes((short) tempBytes.length);
-            resultDataList.add(tempDataBytes[1]);
-            resultDataList.add(tempDataBytes[0]);
-            for (byte b : tempBytes) { // 将数据体加入数据包
-                resultDataList.add(b);
-            }
-
-            // 数据体内容 转 byte[]
-            byte[] dataBodyBytes = listToBytes(resultDataList);
-
+            // （心跳包为空包）数据体长度（UInt16 无符号整型16位）是指数据体内容的字节长度
             // 计算数据体内容长度
-            tempBytes = intToBytes(dataBodyBytes.length);
-            resultList.add(tempBytes[3]); // 数据体长度
-            resultList.add(tempBytes[2]); // 数据体长度
+            tempBytes = ByteTool.intToBytes(0);
+            resultList.add(tempBytes[3]);
+            resultList.add(tempBytes[2]);
+            resultList.add(tempBytes[1]);
+            resultList.add(tempBytes[0]);
 
-            for (byte b : dataBodyBytes) {
-                resultList.add(b);// 将数据体内容分段加入数据包
-            }
-
-            resultList.add(verifyCode(dataBodyBytes)); // 生成校验码
+            /* 校验码，数据体内容所有字节的异或和
+               例如：数据体内容为0x41 0x42 0x43，则校验码为0x41 ^ 0x42 ^ 0x43 = 0x40 */
+            resultList.add((byte) 0x00);
 
             resultList.add(createEnd()); // 包尾
 
-            return listToBytes(resultList);
+            return ByteTool.listToBytes(resultList);
         } catch (Exception e) {
             return new byte[0];
         }
@@ -145,100 +120,86 @@ interface TroubleCode {
     /**
      * 发送消息数据包
      *
-     * @param protocolId 与服务器约定协议号，以解析数据 0x01、0x02 等
-     *                   采用累加的方式，应答数据的数据包ID与发送的数据包ID相同
-     *                   数值范围：0至65535（超出范围清0）
-     * @param msg        消息内容
-     *
+     * @param bytes 数据对象字节数组，来自{@link MessageData}
      * @return 消息数据包
      */
-    default <T> byte[] createData(byte protocolId, T obj) {
+    default byte[] createData(byte[] bytes) {
         try {
             byte[] tempBytes;  // 数据包临时 byte 数据数组
             List<Byte> resultList = new LinkedList<>(); // 消息数据包 List<Byte> 集合结果集
 
-            tempBytes = createHeader(protocolId); // 创建包头
+            tempBytes = createHeader(); // 创建包头
             for (byte b : tempBytes) { // 结果集加入包头
                 resultList.add(b);
             }
 
-            List<Byte> resultDataList = new LinkedList<>(); // 消息数据包所属数据体 List<Byte> 集合结果集
-            byte[] tempDataBytes;  // 数据体临时 byte 数据数组
-
-            tempBytes = MsgPackTool.toBytes(obj);
-            // 将数据体长度【（UInt16 无符号整型16位）是指数据体内容的字节长度】加入数据包且在具体数据体之前
-            tempDataBytes = shortToBytes((short) tempBytes.length);
-            resultDataList.add(tempDataBytes[1]);
-            resultDataList.add(tempDataBytes[0]);
-            for (byte b : tempBytes) { // 将数据体加入数据包
-                resultDataList.add(b);
-            }
-
-            // 数据体内容 转 byte[]
-            byte[] dataBodyBytes = listToBytes(resultDataList);
-
             // 计算数据体内容长度
-            tempBytes = intToBytes(dataBodyBytes.length);
-            resultList.add(tempBytes[3]); // 数据体长度
-            resultList.add(tempBytes[2]); // 数据体长度
+            tempBytes = ByteTool.intToBytes(bytes.length);
+            resultList.add(tempBytes[3]);
+            resultList.add(tempBytes[2]);
+            resultList.add(tempBytes[1]);
+            resultList.add(tempBytes[0]);
 
-            for (byte b : dataBodyBytes) {
+            for (byte b : bytes) {
                 resultList.add(b);// 将数据体内容分段加入数据包
             }
 
-            resultList.add(verifyCode(dataBodyBytes)); // 生成校验码
+            resultList.add(ByteTool.verifyCode(bytes)); // 生成校验码
 
             resultList.add(createEnd()); // 包尾
 
-            return listToBytes(resultList);
+            return ByteTool.listToBytes(resultList);
         } catch (Exception e) {
             return new byte[0];
         }
     }
 
-    default byte[] intToBytes(int num) {
-        byte[] b = new byte[4];
-        b[0] = (byte) (num >> 24);
-        b[1] = (byte) (num >> 16);
-        b[2] = (byte) (num >> 8);
-        b[3] = (byte) num;
-        return b;
-    }
-
-    default byte[] shortToBytes(short num) {
-        byte[] b = new byte[2];
-        b[0] = (byte) (num >> 8);
-        b[1] = (byte) num;
-        return b;
-    }
-
-    default byte[] listToBytes(List<Byte> byteList) {
-        byte[] bytes = new byte[byteList.size()];
-        int length = byteList.size();
-        for (int i = 0; i < length; i++) {
-            bytes[i] = byteList.get(i);
+    default MessageData analysis(MessageData messageData, List<Byte> receiveBytesList) {
+        // 数据包头2、数据体长度4、校验码1、包尾1，总长度不得少于8
+        if (receiveBytesList.size() < 8) {
+            log().warn("数据长度不正确");
+            return null;
         }
-        return bytes;
-    }
-
-    /**
-     * 根据数据体内容生成对应校验码
-     * 数据体内容所有字节的异或和<p>
-     * 例如：数据体内容为0x41 0x42 0x43，则校验码为0x41 ^ 0x42 ^ 0x43 = 0x40
-     *
-     * @param bytes 数据体内容
-     *
-     * @return 校验码
-     */
-    default byte verifyCode(byte[] bytes) {
-        if (bytes == null || bytes.length == 0) {
-            return (byte) 0x00;
+        log().debug("接收包：{}", Arrays.toString(receiveBytesList.toArray()));
+        // 确保数据包第1个字节为0x56，第2个字节为0x33
+        if (receiveBytesList.get(0) != 0x56 || receiveBytesList.get(1) != 0x33) {
+            receiveBytesList.remove(0);
+            receiveBytesList.remove(0);
+            log().warn("数据包第1、2字节不正确");
+            return analysis(messageData, receiveBytesList);
         }
-        int rs = 0;
-        for (byte b : bytes) {
-            rs = rs ^ b;
+        // 数据体长度（UInt16 无符号整型16位）是指数据体内容的字节长度
+        int dataBodyContentLength = ByteTool.bytesToInt(new byte[]{receiveBytesList.get(5), receiveBytesList.get(4), receiveBytesList.get(3), receiveBytesList.get(2)});
+        // 数据体长度（UInt16 无符号整型16位）是指数据体内容的字节长度
+        log().debug("数据体长度：{}", dataBodyContentLength);
+        // 如果数据体内容加固定长度11的数量大于当前已接收到的字节流集合长度，则表明当前数据体内容不符合数据包格式
+        if (8 + dataBodyContentLength > receiveBytesList.size()) {
+            log().warn("数据体内容不符合数据包格式");
+            return null;
         }
-        return (byte) rs;
+        // 确保数据包最后1个字节为0x13
+        if (receiveBytesList.get(7 + dataBodyContentLength) != 0x13) {
+            log().warn("数据包最后1个字节不正确");
+            for (int i = 0; i < 7 + dataBodyContentLength; i++) {
+                receiveBytesList.remove(0);
+            }
+            return analysis(messageData, receiveBytesList);
+        }
+        // 数据体字节数组
+        byte[] dataBodyContent = new byte[0];
+        if (dataBodyContentLength > 0) {
+            dataBodyContent = ByteTool.listToBytes(receiveBytesList.subList(6, 6 + dataBodyContentLength));
+        }
+        // 确保数据体校验码正确
+        if (receiveBytesList.get(6 + dataBodyContentLength) != ByteTool.verifyCode(dataBodyContent)) {
+            log().warn("数据体校验码不正确");
+            for (int i = 0; i < 6 + dataBodyContentLength; i++) {
+                receiveBytesList.remove(0);
+            }
+            return analysis(messageData, receiveBytesList);
+        }
+        messageData.setBytes(dataBodyContent);
+        return messageData;
     }
 
 }

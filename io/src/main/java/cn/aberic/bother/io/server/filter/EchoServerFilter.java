@@ -25,6 +25,8 @@
 package cn.aberic.bother.io.server.filter;
 
 import cn.aberic.bother.io.IOContext;
+import cn.aberic.bother.io.code.TroubleDecode;
+import cn.aberic.bother.io.code.TroubleEncode;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
@@ -43,9 +45,22 @@ import java.util.concurrent.TimeUnit;
  */
 public class EchoServerFilter extends ChannelInitializer<SocketChannel> {
 
+    private int maxFrameLength;
+    private int lengthFieldOffset;
+    private int lengthFieldLength;
+    private int lengthAdjustment;
+    private int initialBytesToStrip;
+    private boolean failFast;
     private ChannelHandler channelHandler;
 
-    public EchoServerFilter(ChannelHandler channelHandler) {
+    public EchoServerFilter(int maxFrameLength, int lengthFieldOffset, int lengthFieldLength, int lengthAdjustment,
+                            int initialBytesToStrip, boolean failFast, ChannelHandler channelHandler) {
+        this.maxFrameLength = maxFrameLength;
+        this.lengthFieldOffset = lengthFieldOffset;
+        this.lengthFieldLength = lengthFieldLength;
+        this.lengthAdjustment = lengthAdjustment;
+        this.initialBytesToStrip = initialBytesToStrip;
+        this.failFast = failFast;
         this.channelHandler = channelHandler;
     }
 
@@ -55,8 +70,9 @@ public class EchoServerFilter extends ChannelInitializer<SocketChannel> {
         // 解码和编码，应和客户端一致
         // 入参说明: 读超时时间、写超时时间、所有类型的超时时间、时间格式
         ph.addLast(new IdleStateHandler(IOContext.IO_SERVER_READ_TIME_OUT, 0, 0, TimeUnit.SECONDS));
-        // ph.addLast("decoder", new StringDecoder());
-        // ph.addLast("encoder", new StringEncoder());
+        ph.addLast("encoder", new TroubleEncode());
+        ph.addLast("decoder", new TroubleDecode(maxFrameLength, lengthFieldOffset, lengthFieldLength,
+                lengthAdjustment, initialBytesToStrip, failFast));
         ph.addLast("handler", channelHandler);// 服务端业务逻辑
     }
 
