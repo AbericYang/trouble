@@ -25,9 +25,7 @@
 
 package cn.aberic.bother.io.client;
 
-import cn.aberic.bother.entity.io.MessageData;
 import cn.aberic.bother.entity.io.Remote;
-import cn.aberic.bother.io.IOContext;
 import cn.aberic.bother.io.client.factory.IOClient;
 import cn.aberic.bother.io.client.factory.IONettyClient;
 import cn.aberic.bother.io.client.filter.EchoClientFilter;
@@ -79,8 +77,7 @@ public class EchoClient {
                 // 设置服务器的InetSocketAddress
                 .remoteAddress(new InetSocketAddress(remote.getAddress(), remote.getPort()))
                 // 在创建Channel 时向ChannelPipeline中添加一个EchoClientHandler 实例
-                .handler(new EchoClientFilter(Integer.MAX_VALUE, IOContext.LENGTH_FIELD_LENGTH, IOContext.LENGTH_FIELD_OFFSET,
-                        IOContext.LENGTH_ADJUSTMENT, IOContext.INITIAL_BYTES_TO_STRIP, false, clientHandler));
+                .handler(new EchoClientFilter(clientHandler));
 
         if (remote.getTimeOut() < 1000) {
             bootstrap.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 3000);

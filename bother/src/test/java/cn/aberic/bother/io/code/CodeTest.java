@@ -73,10 +73,8 @@ public class CodeTest {
         }
 
         public byte[] get(Block block) {
-            MessageData messageData = new MessageData();
-            messageData.setProtocolId((byte) 0x02);
+            MessageData messageData = new MessageData((byte) 0x02, block);
             messageData.setDataId(createDataId());
-            messageData.setObject(block);
             return createData(messageData.getBytes());
         }
 

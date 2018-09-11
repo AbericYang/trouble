@@ -25,7 +25,6 @@
 
 package cn.aberic.bother.io.server;
 
-import cn.aberic.bother.io.IOContext;
 import cn.aberic.bother.io.server.filter.EchoServerFilter;
 import cn.aberic.bother.io.server.handler.EchoServerHandler;
 import cn.aberic.bother.tools.SystemTool;
@@ -97,8 +96,7 @@ public class EchoServer {
                     .channel(SystemTool.isLinux() ? EpollServerSocketChannel.class : NioServerSocketChannel.class)
                     // 使用指定的端口设置套接字地址/将本地地址设置为一个具有选定端口的InetSocket-Address
                     .localAddress(new InetSocketAddress(port))
-                    .childHandler(new EchoServerFilter(Integer.MAX_VALUE, IOContext.LENGTH_FIELD_LENGTH, IOContext.LENGTH_FIELD_OFFSET,
-                            IOContext.LENGTH_ADJUSTMENT, IOContext.INITIAL_BYTES_TO_STRIP, false, serverHandler));
+                    .childHandler(new EchoServerFilter(serverHandler));
             // 异步地绑定服务器；调用sync()方法阻塞等待直到绑定完成
             ChannelFuture future = bootstrap.bind().sync();
             if (future.isSuccess()) {

@@ -49,7 +49,7 @@ public class ClientTest {
         remote.setAddress("127.0.0.1");
         remote.setPort(63715);
         IOContext.obtain().startClient(remote);
-        MessageData msgData = new MessageData((byte) 0x79, createBlock(10));
+        MessageData msgData = new MessageData((byte) 0x79, get());
         IOContext.obtain().sendByIOClient("127.0.0.1", msgData);
     }
 

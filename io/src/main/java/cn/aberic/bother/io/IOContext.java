@@ -51,15 +51,6 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class IOContext {
 
-    /** 记录该帧数据长度的字段本身的长度，{@link MessageData}中的length的长度，int占4位 */
-    public static final int LENGTH_FIELD_LENGTH = 8;
-    /** 长度域的偏移量，表示跳过指定长度个字节之后的才是长度域，{@link MessageData}中消息头只有type一个参数，byte类型占1位，所以是1 */
-    public static final int LENGTH_FIELD_OFFSET = 1;
-    /** 该字段加长度字段等于数据帧的长度，包体长度调整的大小，长度域的数值表示的长度加上这个修正值表示的就是带header的包 */
-    public static final int LENGTH_ADJUSTMENT = 0;
-    /** 从数据帧中跳过的字节数，表示获取完一个完整的数据包之后，忽略前面的指定的位数个字节，应用解码器拿到的就是不带长度域的数据包 */
-    public static final int INITIAL_BYTES_TO_STRIP = 0;
-
     /** 长连接服务端读超时时间 */
     public static final long IO_SERVER_READ_TIME_OUT = 180;
     /** 长连接客户端写超时时间，需要比服务端读超时时间短，以维持心跳 */

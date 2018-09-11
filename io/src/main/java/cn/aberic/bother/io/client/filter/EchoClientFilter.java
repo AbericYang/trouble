@@ -44,22 +44,9 @@ import java.util.concurrent.TimeUnit;
  */
 public class EchoClientFilter extends ChannelInitializer<SocketChannel> {
 
-    private int maxFrameLength;
-    private int lengthFieldOffset;
-    private int lengthFieldLength;
-    private int lengthAdjustment;
-    private int initialBytesToStrip;
-    private boolean failFast;
     private ChannelHandler channelHandler;
 
-    public EchoClientFilter(int maxFrameLength, int lengthFieldOffset, int lengthFieldLength, int lengthAdjustment,
-                            int initialBytesToStrip, boolean failFast, ChannelHandler channelHandler) {
-        this.maxFrameLength = maxFrameLength;
-        this.lengthFieldOffset = lengthFieldOffset;
-        this.lengthFieldLength = lengthFieldLength;
-        this.lengthAdjustment = lengthAdjustment;
-        this.initialBytesToStrip = initialBytesToStrip;
-        this.failFast = failFast;
+    public EchoClientFilter(ChannelHandler channelHandler) {
         this.channelHandler = channelHandler;
     }
 
@@ -71,8 +58,7 @@ public class EchoClientFilter extends ChannelInitializer<SocketChannel> {
         // 设置需比服务端超时时间短
         ph.addLast(new IdleStateHandler(0, IOContext.IO_SERVER_WRITE_TIME_OUT, 0, TimeUnit.SECONDS));
         ph.addLast("encoder", new TroubleEncode());
-        ph.addLast("decoder", new TroubleDecode(maxFrameLength, lengthFieldOffset, lengthFieldLength,
-                lengthAdjustment, initialBytesToStrip, failFast));
+        ph.addLast("decoder", new TroubleDecode());
         ph.addLast("handler", channelHandler);// 服务端业务逻辑
     }
 

@@ -58,10 +58,6 @@ public class MessageData {
         this.bytes = MsgPackTool.toBytes(object);
     }
 
-    public void setObject(Object object) {
-        this.bytes = MsgPackTool.toBytes(object);
-    }
-
     public <T> T getObject(Class<T> clazz) {
         try {
             return MsgPackTool.toObject(this.bytes, clazz);
