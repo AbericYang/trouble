@@ -7,6 +7,6 @@ option java_outer_classname = "BlockBodyProto";
 import "Transaction.proto";
 
 message BlockBody {
-    int32 txCount = 1;
-    repeated Transaction transactions = 2;
+    int32 txCount = 1; // 交易数量
+    repeated Transaction transactions = 2; // 交易集合
 }
