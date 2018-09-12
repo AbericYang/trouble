@@ -76,7 +76,7 @@ public class SCTest {
             contractExec.setRequest(request);
             String result = contract.invoke(contractExec).getResultResponse();
             log.debug("result = {}", result);
-            contractExec.sendTransaction();
+//            contractExec.sendTransaction();
         }
     }
 

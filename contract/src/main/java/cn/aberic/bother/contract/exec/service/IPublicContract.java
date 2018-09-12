@@ -20,35 +20,34 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- *
  */
 
 package cn.aberic.bother.contract.exec.service;
 
-import cn.aberic.bother.entity.contract.Contract;
-import cn.aberic.bother.storage.Common;
-import cn.aberic.bother.storage.IFile;
-import cn.aberic.bother.storage.IInit;
+import cn.aberic.bother.entity.response.Response;
 
 /**
- * 系统级智能合约文件对象操作接口-smart contract
+ * 系统级智能合约常规操作接口-smart contract
  * <p>
- * 作者：Aberic on 2018/8/30 23:33
+ * 作者：Aberic on 2018/8/30 21:36
  * 邮箱：abericyang@gmail.com
  */
-public interface IPublicContractFileExec extends IInit, IFile<Contract> {
+public interface IPublicContract {
 
     /**
-     * 获取当前智能合约对象
+     * 执行智能合约
      *
-     * @return 智能合约对象
+     * @param exec       智能合约区块操作接口
+     * @return 执行结果
      */
-    default Contract getContract() {
-        Contract contract = new Contract("pub", "1.0", 1, "让连接更有价值！no trouble, no bother!");
-        contract.setTimestamp(515260800000L);
-        contract.setHash(Common.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH);
-        contract.setDir("6c5ea876d5220135ee0c05d0f0840efe");
-        return contract;
-    }
+    Response invoke(IPublicContractExec exec);
+
+    /**
+     * 查询智能合约
+     *
+     * @param exec       智能合约区块操作接口
+     * @return 查询结果
+     */
+    Response query(IPublicContractExec exec);
 
 }

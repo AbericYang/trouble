@@ -20,7 +20,6 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- *
  */
 
 package cn.aberic.bother.contract.exec;
@@ -91,18 +90,21 @@ public class PublicContractExec implements IPublicContractExec, IContractBaseExe
     }
 
     /** 发送交易到 Leader 节点 */
-    public void sendTransaction() {
+    public void sendTransaction(Block block) {
         // TODO: 2018/9/2 临时生成区块，实际应发送至 Leader 节点统一打包，此方法应当返回 Block 对象，并交由 Controller 进行转发
         BlockStorage storage = new BlockStorage(Common.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH);
+        BlockInfo blockInfo = storage.snyc(block);
+        getContractDataIndexFileExec().put(blockInfo, writes);
+    }
+
+    public Block getBlock() {
         BlockHeader header = BlockHeader.newInstance().create();
         BlockBody body = new BlockBody();
         List<Transaction> transactions = new ArrayList<>();
         transactions.add(getTransaction());
         body.setTxCount(transactions.size());
         body.setTransactions(transactions);
-        Block block = new Block(header, body);
-        BlockInfo blockInfo = storage.snyc(block);
-        getContractDataIndexFileExec().put(blockInfo, writes);
+        return new Block(header, body);
     }
 
     @Override

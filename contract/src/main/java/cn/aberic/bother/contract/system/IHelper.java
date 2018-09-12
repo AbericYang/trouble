@@ -22,32 +22,39 @@
  * SOFTWARE.
  */
 
-package cn.aberic.bother.service;
+package cn.aberic.bother.contract.system;
 
-import cn.aberic.bother.entity.account.AccountUser;
-import cn.aberic.bother.entity.contract.Request;
+import cn.aberic.bother.contract.exec.service.IPublicContractExec;
+import cn.aberic.bother.entity.contract.Account;
 import cn.aberic.bother.entity.token.Token;
+import cn.aberic.bother.storage.Common;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
+
+import java.math.BigDecimal;
 
 /**
- * 账户、Token 操作业务
- * 作者：Aberic on 2018/09/05 11:08
+ * 作者：Aberic on 2018/9/7 20:32
  * 邮箱：abericyang@gmail.com
  */
-public interface BusinessService {
+public interface IHelper {
+
+    default void cost(IPublicContractExec exec, BigDecimal cost, Token token) {
+        Account account = JSON.parseObject(exec.get(Common.TOKEN_DEFAULT_SECOND_HASH), new TypeReference<Account>() {});
+        account.setCount(account.getCount().add(cost).setScale(token.getDecimals(), BigDecimal.ROUND_HALF_UP));
+        exec.put(account.getAddress(), JSON.toJSONString(account));
+    }
 
     /**
-     * 临时存储待发布 Token
+     * 根据存储大小计算消费
      *
-     * @param token 待发布 Token
-     */
-    AccountUser create(Token token);
-
-    /**
-     * 发布 Token
+     * @param size     当前存储大小
+     * @param decimals 支持几位小数点后几位。如果设置为3。也就是支持0.001表示
      *
-     * @param request 智能合约请求对象
-     * @return 发布结果
+     * @return 消费额
      */
-    String publish(Request request, BlockService blockService);
+    default BigDecimal coefficient(long size, int decimals) {
+        return new BigDecimal(size * 0.00001).setScale(decimals, BigDecimal.ROUND_HALF_UP);
+    }
 
 }

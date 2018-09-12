@@ -26,29 +26,16 @@ package cn.aberic.bother.block;
 
 import cn.aberic.bother.block.exec.service.IDataExec;
 import cn.aberic.bother.consensus.exec.Proactive;
-import cn.aberic.bother.contract.exec.PublicContractExec;
-import cn.aberic.bother.contract.system.PublicContract;
-import cn.aberic.bother.encryption.key.exec.KeyExec;
 import cn.aberic.bother.entity.block.Block;
 import cn.aberic.bother.entity.block.BlockInfo;
-import cn.aberic.bother.entity.block.Transaction;
 import cn.aberic.bother.entity.consensus.ConsensusStatus;
-import cn.aberic.bother.entity.contract.Account;
-import cn.aberic.bother.entity.contract.Request;
-import cn.aberic.bother.entity.response.IResponse;
-import cn.aberic.bother.entity.response.Response;
 import cn.aberic.bother.storage.Common;
 import cn.aberic.bother.storage.FileComponent;
 import cn.aberic.bother.tools.exception.SearchDataNotFoundException;
 import cn.aberic.bother.tools.exception.SearchDataTimeoutException;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.TypeReference;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
-
-import java.util.Iterator;
 
 /**
  * 存储区块——数据操作层-data manipulation
@@ -94,9 +81,6 @@ public class BlockStorage extends BlockAS implements IDataExec {
      * @param block 待同步区块对象
      */
     public BlockInfo snyc(Block block) {
-        if (checkBlockVerify(block)) {
-            return save(block);
-        }
 //        // 获取当前待存储区块高度
 //        int height = block.getHeader().getHeight();
 //        // 根据高度查询是否已存在本地区块对象
@@ -112,50 +96,7 @@ public class BlockStorage extends BlockAS implements IDataExec {
 //        } else { // 如果存在，则进入下一步判断两者区块有效性
 //            checkVerify(height, block, blockFromFile);
 //        }
-        return null;
-    }
-
-    /**
-     * 验证区块中每一笔提交进来的交易签名
-     * <p>
-     * 验证区块中每一次写入的返回结果
-     *
-     * @param block 区块对象
-     *
-     * @return 验证结果
-     */
-    private boolean checkBlockVerify(Block block) {
-        // 获取交易集合
-        Iterator<Transaction> transactions = block.getBody().getTransactions().iterator();
-        Transaction transaction;
-        while (transactions.hasNext()) {
-            transaction = transactions.next();
-            switch (transaction.getRequest().getKey()) {
-                case "openAccount":
-                    if (!KeyExec.obtain().verifyByStrECDSA(transaction.signString(), transaction.getSign(), transaction.getPubECCKey(), "UTF-8") ||
-                            !checkMethod(transaction.getRequest())) {
-                        transactions.remove();
-                    }
-                    break;
-                default:
-                    Account account = JSON.parseObject(get(acquire, transaction.getCreator()), new TypeReference<Account>() {});
-                    if (!KeyExec.obtain().verifyByStrECDSA(transaction.signString(), transaction.getSign(), account.getPubECCKey(), "UTF-8") ||
-                            !checkMethod(transaction.getRequest())) {
-                        transactions.remove();
-                    }
-                    break;
-            }
-        }
-        return true;
-    }
-
-    private boolean checkMethod(Request request) {
-        PublicContract contract = new PublicContract();
-        PublicContractExec exec = new PublicContractExec();
-        exec.setRequest(request);
-        Response response = contract.invoke(exec);
-        JSONObject jsonObject = JSON.parseObject(response.getResultResponse());
-        return jsonObject.getInteger("code") == IResponse.ResponseType.SUCCESS.getCode();
+        return save(block);
     }
 
     /**
@@ -184,7 +125,6 @@ public class BlockStorage extends BlockAS implements IDataExec {
      * @param height        待存储区块对象高度
      * @param block         待存储区块对象
      * @param blockFromFile 本地已存在区块文件中获取的区块对象
-     *
      * @return 区块存储结果
      */
     private boolean checkVerify(int height, Block block, Block blockFromFile) {

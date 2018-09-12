@@ -25,12 +25,12 @@
 
 package cn.aberic.bother.controller;
 
-import cn.aberic.bother.contract.exec.PublicContractExec;
-import cn.aberic.bother.contract.system.PublicContract;
 import cn.aberic.bother.entity.contract.Request;
-import cn.aberic.bother.entity.response.Response;
-import cn.aberic.bother.tools.thread.ThreadTroublePool;
+import cn.aberic.bother.service.BlockService;
+import cn.aberic.bother.service.ContractService;
 import org.springframework.web.bind.annotation.*;
+
+import javax.annotation.Resource;
 
 /**
  * 作者：Aberic on 2018/9/1 22:40
@@ -41,24 +41,19 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("contract")
 public class ContractController {
 
+    @Resource
+    private ContractService contractService;
+    @Resource
+    private BlockService blockService;
+
     @PostMapping(value = "invoke")
     public String invoke(@RequestBody Request request) {
-        PublicContract contract = new PublicContract();
-        PublicContractExec exec = new PublicContractExec();
-        exec.setRequest(request);
-        Response response = contract.invoke(exec);
-        if (response.isSend()) {
-            new ThreadTroublePool().submit(exec::sendTransaction);
-        }
-        return response.getResultResponse();
+        return contractService.invoke(request, blockService);
     }
 
     @PostMapping(value = "query")
     public String query(@RequestBody Request request) {
-        PublicContract contract = new PublicContract();
-        PublicContractExec contractExec = new PublicContractExec();
-        contractExec.setRequest(request);
-        return contract.query(contractExec).getResultResponse();
+        return contractService.query(request);
     }
 
 }

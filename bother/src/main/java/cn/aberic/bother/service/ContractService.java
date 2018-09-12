@@ -24,30 +24,16 @@
 
 package cn.aberic.bother.service;
 
-import cn.aberic.bother.entity.account.AccountUser;
 import cn.aberic.bother.entity.contract.Request;
-import cn.aberic.bother.entity.token.Token;
 
 /**
- * 账户、Token 操作业务
- * 作者：Aberic on 2018/09/05 11:08
+ * 作者：Aberic on 2018/09/12 12:11
  * 邮箱：abericyang@gmail.com
  */
-public interface BusinessService {
+public interface ContractService {
 
-    /**
-     * 临时存储待发布 Token
-     *
-     * @param token 待发布 Token
-     */
-    AccountUser create(Token token);
+    String invoke(Request request, BlockService blockService);
 
-    /**
-     * 发布 Token
-     *
-     * @param request 智能合约请求对象
-     * @return 发布结果
-     */
-    String publish(Request request, BlockService blockService);
+    String query(Request request);
 
 }

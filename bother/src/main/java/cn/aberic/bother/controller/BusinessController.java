@@ -27,6 +27,7 @@ package cn.aberic.bother.controller;
 import cn.aberic.bother.entity.account.AccountUser;
 import cn.aberic.bother.entity.contract.Request;
 import cn.aberic.bother.entity.token.Token;
+import cn.aberic.bother.service.BlockService;
 import cn.aberic.bother.service.BusinessService;
 import org.springframework.web.bind.annotation.*;
 
@@ -43,6 +44,8 @@ public class BusinessController {
 
     @Resource
     private BusinessService businessService;
+    @Resource
+    private BlockService blockService;
 
     /**
      * 临时存储待发布 Token
@@ -62,7 +65,7 @@ public class BusinessController {
      */
     @PostMapping(value = "publish")
     public String publish(@RequestBody Request request) {
-        return businessService.publish(request);
+        return businessService.publish(request, blockService);
     }
 
 }
