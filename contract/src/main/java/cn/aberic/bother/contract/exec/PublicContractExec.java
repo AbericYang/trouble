@@ -33,7 +33,7 @@ import cn.aberic.bother.contract.exec.service.IPublicContractFileExec;
 import cn.aberic.bother.entity.block.*;
 import cn.aberic.bother.entity.contract.Contract;
 import cn.aberic.bother.entity.contract.Request;
-import cn.aberic.bother.tools.Common;
+import cn.aberic.bother.tools.Constant;
 import cn.aberic.bother.tools.exception.ContractPutValueException;
 import cn.aberic.bother.tools.exception.SearchDataNotFoundException;
 import cn.aberic.bother.tools.exception.SearchDataTimeoutException;
@@ -92,7 +92,7 @@ public class PublicContractExec implements IPublicContractExec, IContractBaseExe
     /** 发送交易到 Leader 节点 */
     public void sendTransaction(Block block) {
         // TODO: 2018/9/2 临时生成区块，实际应发送至 Leader 节点统一打包，此方法应当返回 Block 对象，并交由 Controller 进行转发
-        BlockStorage storage = new BlockStorage(Common.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH);
+        BlockStorage storage = new BlockStorage(Constant.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH);
         BlockInfo blockInfo = storage.snyc(block);
         getContractDataIndexFileExec().put(blockInfo, writes);
     }
@@ -109,7 +109,7 @@ public class PublicContractExec implements IPublicContractExec, IContractBaseExe
 
     @Override
     public BlockAcquire getBlockAcquire() {
-        return new BlockAcquire(Common.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH);
+        return new BlockAcquire(Constant.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH);
     }
 
     @Override

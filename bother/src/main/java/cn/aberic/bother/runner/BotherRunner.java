@@ -24,7 +24,7 @@
 
 package cn.aberic.bother.runner;
 
-import cn.aberic.bother.tools.Common;
+import cn.aberic.bother.tools.Constant;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
@@ -57,7 +57,7 @@ public class BotherRunner implements ApplicationRunner {
 
     /** 创建 db 目录 */
     private void initDir() {
-        File file = new File(Common.CONTRACT_DATA_ROCKS_DB_FILE_DIR);
+        File file = new File(Constant.CONTRACT_DATA_ROCKS_DB_FILE_DIR);
         if (file.exists()) {
             return;
         }

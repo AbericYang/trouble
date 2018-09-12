@@ -27,7 +27,7 @@ package cn.aberic.bother.contract.exec;
 import cn.aberic.bother.contract.exec.service.IContractFileExec;
 import cn.aberic.bother.encryption.MD5;
 import cn.aberic.bother.entity.contract.Contract;
-import cn.aberic.bother.tools.Common;
+import cn.aberic.bother.tools.Constant;
 import cn.aberic.bother.storage.FileComponent;
 import cn.aberic.bother.tools.FileTool;
 import cn.aberic.bother.tools.exception.ContractFileNotFoundException;
@@ -81,7 +81,7 @@ public class ContractFileExec implements IContractFileExec {
      */
     ContractFileExec(String contractHash) {
         // 设定的智能合约hash必须由系统生成，且不能与系统自由合约hash相同
-        if (StringUtils.equalsIgnoreCase(contractHash, Common.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH)) {
+        if (StringUtils.equalsIgnoreCase(contractHash, Constant.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH)) {
             throw new ContractHashException();
         }
         this.contractHash = contractHash;

@@ -25,7 +25,7 @@
 package cn.aberic.bother.block.exec;
 
 import cn.aberic.bother.block.exec.service.IBlockExec;
-import cn.aberic.bother.tools.Common;
+import cn.aberic.bother.tools.Constant;
 import cn.aberic.bother.storage.FileComponent;
 import cn.aberic.bother.storage.Init;
 import org.apache.commons.lang3.StringUtils;
@@ -51,7 +51,7 @@ public class BlockExec extends Init implements IBlockExec {
 
     @Override
     public FileComponent getFileStatus() {
-        if (StringUtils.equals(getStorageHash(), Common.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH)) {
+        if (StringUtils.equals(getStorageHash(), Constant.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH)) {
             return FileComponent.getBlockFileComponentDefault();
         }
         return FileComponent.getBlockFileComponent(getStorageHash());

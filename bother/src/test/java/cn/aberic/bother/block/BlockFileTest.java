@@ -26,7 +26,7 @@ package cn.aberic.bother.block;
 
 import cn.aberic.bother.entity.EntityTest;
 import cn.aberic.bother.entity.block.Block;
-import cn.aberic.bother.tools.Common;
+import cn.aberic.bother.tools.Constant;
 import cn.aberic.bother.tools.DeflaterTool;
 import cn.aberic.bother.tools.FileTool;
 import cn.aberic.bother.tools.exception.SearchDataNotFoundException;
@@ -54,7 +54,7 @@ public class BlockFileTest {
 
     private static void blockTest() throws SearchDataNotFoundException, SearchDataTimeoutException {
         log.debug("================= entity file test start =================");
-        BlockAcquire acquire = new BlockAcquire(Common.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH);
+        BlockAcquire acquire = new BlockAcquire(Constant.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH);
 
         long time = new Date().getTime();
         int count = acquire.getFileCount();
@@ -80,7 +80,7 @@ public class BlockFileTest {
     }
 
     private static void writeBlock() {
-        BlockStorage blockStorage = new BlockStorage(Common.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH);
+        BlockStorage blockStorage = new BlockStorage(Constant.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH);
         for (int blockCount = 45849; blockCount < 5000000; blockCount++) {
             log.debug("================= blockCount = {} =================", blockCount);
             blockStorage.snyc(EntityTest.createBlock(blockCount));

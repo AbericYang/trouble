@@ -29,7 +29,7 @@ import cn.aberic.bother.consensus.exec.Proactive;
 import cn.aberic.bother.entity.block.Block;
 import cn.aberic.bother.entity.block.BlockInfo;
 import cn.aberic.bother.entity.consensus.ConsensusStatus;
-import cn.aberic.bother.tools.Common;
+import cn.aberic.bother.tools.Constant;
 import cn.aberic.bother.storage.FileComponent;
 import cn.aberic.bother.tools.exception.SearchDataNotFoundException;
 import cn.aberic.bother.tools.exception.SearchDataTimeoutException;
@@ -62,7 +62,7 @@ public class BlockStorage extends BlockAS implements IDataExec {
 
     @Override
     public FileComponent getFileStatus() {
-        if (StringUtils.equals(getStorageHash(), Common.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH)) {
+        if (StringUtils.equals(getStorageHash(), Constant.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH)) {
             return FileComponent.getContractDataIndexFileComponentDefault();
         }
         return FileComponent.getContractDataIndexFileComponent(getStorageHash());

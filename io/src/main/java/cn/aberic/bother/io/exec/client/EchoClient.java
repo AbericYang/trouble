@@ -31,7 +31,7 @@ import cn.aberic.bother.io.exec.factory.IOClient;
 import cn.aberic.bother.io.exec.factory.IONettyClient;
 import cn.aberic.bother.io.filter.EchoClientFilter;
 import cn.aberic.bother.io.handler.EchoClientHandler;
-import cn.aberic.bother.tools.Common;
+import cn.aberic.bother.tools.Constant;
 import cn.aberic.bother.tools.SystemTool;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.ByteBufAllocator;
@@ -77,7 +77,7 @@ public class EchoClient {
                 // 适用于NIO 传输的Channel 类型
                 .channel(NioSocketChannel.class)
                 // 设置服务器的InetSocketAddress
-                .remoteAddress(new InetSocketAddress(remote.getAddress(), Common.NETTY_CLIENT_PORT))
+                .remoteAddress(new InetSocketAddress(remote.getAddress(), Constant.NETTY_SERVER_PORT))
                 // 在创建Channel 时向ChannelPipeline中添加一个EchoClientHandler 实例
                 .handler(new EchoClientFilter(clientHandler));
 

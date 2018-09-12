@@ -33,7 +33,7 @@ import cn.aberic.bother.entity.contract.Request;
 import cn.aberic.bother.entity.response.IResponse;
 import cn.aberic.bother.entity.response.Response;
 import cn.aberic.bother.entity.token.Token;
-import cn.aberic.bother.tools.Common;
+import cn.aberic.bother.tools.Constant;
 import cn.aberic.bother.tools.exception.AccountNotFoundException;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -56,7 +56,7 @@ class TokenHelper implements IHelper {
 
     TokenHelper(PublicContractExec exec) {
         this.exec = exec;
-        token = JSON.parseObject(exec.get(Common.TOKEN_DEFAULT_PUBLIC_HASH), new TypeReference<Token>() {});
+        token = JSON.parseObject(exec.get(Constant.TOKEN_DEFAULT_PUBLIC_HASH), new TypeReference<Token>() {});
     }
 
     /**

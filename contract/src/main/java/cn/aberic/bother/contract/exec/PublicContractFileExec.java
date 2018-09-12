@@ -25,7 +25,7 @@
 package cn.aberic.bother.contract.exec;
 
 import cn.aberic.bother.contract.exec.service.IPublicContractFileExec;
-import cn.aberic.bother.tools.Common;
+import cn.aberic.bother.tools.Constant;
 import cn.aberic.bother.storage.FileComponent;
 
 /**
@@ -36,7 +36,7 @@ public class PublicContractFileExec implements IPublicContractFileExec {
 
     @Override
     public String getStorageHash() {
-        return Common.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH;
+        return Constant.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH;
     }
 
     @Override

@@ -25,7 +25,7 @@
 package cn.aberic.bother.encryption;
 
 import cn.aberic.bother.encryption.key.exec.KeyExec;
-import cn.aberic.bother.tools.Common;
+import cn.aberic.bother.tools.Constant;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -40,7 +40,7 @@ public class KeyTest {
     }
 
     private static void testCrypt() {
-        String filePath = Common.KEY_FILE_DIR;
+        String filePath = Constant.KEY_FILE_DIR;
         KeyExec.obtain().createRSAKeyPair(filePath, "Test");
         String pubFilePath = String.format("%s/%s_publicRSA.key", filePath, "Test");
         String priFilePath = String.format("%s/%s_privateRSA.key", filePath, "Test");

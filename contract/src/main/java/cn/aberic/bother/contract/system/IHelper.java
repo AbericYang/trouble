@@ -27,7 +27,7 @@ package cn.aberic.bother.contract.system;
 import cn.aberic.bother.contract.exec.service.IPublicContractExec;
 import cn.aberic.bother.entity.contract.Account;
 import cn.aberic.bother.entity.token.Token;
-import cn.aberic.bother.tools.Common;
+import cn.aberic.bother.tools.Constant;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 
@@ -40,7 +40,7 @@ import java.math.BigDecimal;
 public interface IHelper {
 
     default void cost(IPublicContractExec exec, BigDecimal cost, Token token) {
-        Account account = JSON.parseObject(exec.get(Common.TOKEN_DEFAULT_SECOND_HASH), new TypeReference<Account>() {});
+        Account account = JSON.parseObject(exec.get(Constant.TOKEN_DEFAULT_SECOND_HASH), new TypeReference<Account>() {});
         account.setCount(account.getCount().add(cost).setScale(token.getDecimals(), BigDecimal.ROUND_HALF_UP));
         exec.put(account.getAddress(), JSON.toJSONString(account));
     }

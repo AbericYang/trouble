@@ -24,7 +24,7 @@
 
 package cn.aberic.bother.storage.db;
 
-import cn.aberic.bother.tools.Common;
+import cn.aberic.bother.tools.Constant;
 import cn.aberic.bother.storage.db.service.IDBExec;
 import org.rocksdb.*;
 import org.rocksdb.util.SizeUnit;
@@ -112,11 +112,11 @@ class RocksDBExec implements IDBExec {
     }
 
     private RocksDB getSystemContractHash() throws RocksDBException {
-        return RocksDB.open(getOptions(), Common.CONTRACT_DATA_ROCKS_DB_FILE_DIR);
+        return RocksDB.open(getOptions(), Constant.CONTRACT_DATA_ROCKS_DB_FILE_DIR);
     }
 
     private RocksDB getCustomContractHash(String contractHash) throws RocksDBException {
-        return RocksDB.open(getOptions(), String.format("%s/%s", Common.CONTRACT_DATA_LEVEL_DB_FILE_CUSTOM_DIR, contractHash));
+        return RocksDB.open(getOptions(), String.format("%s/%s", Constant.CONTRACT_DATA_LEVEL_DB_FILE_CUSTOM_DIR, contractHash));
     }
 
     private Options getOptions() {

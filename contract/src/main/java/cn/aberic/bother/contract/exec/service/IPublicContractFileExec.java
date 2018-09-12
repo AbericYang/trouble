@@ -25,7 +25,7 @@
 package cn.aberic.bother.contract.exec.service;
 
 import cn.aberic.bother.entity.contract.Contract;
-import cn.aberic.bother.tools.Common;
+import cn.aberic.bother.tools.Constant;
 import cn.aberic.bother.storage.IFile;
 import cn.aberic.bother.storage.IInit;
 
@@ -45,7 +45,7 @@ public interface IPublicContractFileExec extends IInit, IFile<Contract> {
     default Contract getContract() {
         Contract contract = new Contract("pub", "1.0", 1, "让连接更有价值！no trouble, no bother!");
         contract.setTimestamp(515260800000L);
-        contract.setHash(Common.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH);
+        contract.setHash(Constant.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH);
         contract.setDir("6c5ea876d5220135ee0c05d0f0840efe");
         return contract;
     }

@@ -30,10 +30,17 @@ package cn.aberic.bother.tools;
  * 作者：Aberic on 2018/8/20 20:24
  * 邮箱：abericyang@gmail.com
  */
-public class Common {
+public class Constant {
 
-    public final static int NETTY_CLIENT_PORT = 63715;
+    /** netty 服务端默认端口号 */
+    public final static int NETTY_SERVER_PORT = 63715;
+    /** netty 客户端连接超时时间 */
     public final static int NETTY_CONNECT_TIMEOUT_MILLIS = 300000;
+
+    /** 长连接服务端读超时时间 */
+    public static final long IO_SERVER_READ_TIME_OUT = 10;
+    /** 长连接客户端写超时时间，需要比服务端读超时时间短，以维持心跳 */
+    public static final long IO_SERVER_WRITE_TIME_OUT = 8;
 
     public final static String BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH = "d11d842aca8ee9b82ea1634791f98e83";
     public final static String TOKEN_DEFAULT_PUBLIC_HASH = "cd213e49350e5de24e95c3154dca940e5a742259cf922aac6279251324409eff";

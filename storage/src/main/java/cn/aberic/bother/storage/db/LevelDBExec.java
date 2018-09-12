@@ -25,7 +25,7 @@
 
 package cn.aberic.bother.storage.db;
 
-import cn.aberic.bother.tools.Common;
+import cn.aberic.bother.tools.Constant;
 import cn.aberic.bother.storage.db.service.IDBExec;
 import org.iq80.leveldb.*;
 import org.iq80.leveldb.impl.Iq80DBFactory;
@@ -118,11 +118,11 @@ class LevelDBExec implements IDBExec {
         DBFactory factory = new Iq80DBFactory();
         Options options = new Options();
         options.createIfMissing(true);
-        return factory.open(new File(Common.CONTRACT_DATA_LEVEL_DB_FILE_DIR), options);
+        return factory.open(new File(Constant.CONTRACT_DATA_LEVEL_DB_FILE_DIR), options);
     }
 
     private DB getCustomContractHash(String contractHash) throws IOException {
-        String path = String.format("%s/%s", Common.CONTRACT_DATA_LEVEL_DB_FILE_CUSTOM_DIR, contractHash);
+        String path = String.format("%s/%s", Constant.CONTRACT_DATA_LEVEL_DB_FILE_CUSTOM_DIR, contractHash);
         DBFactory factory = new Iq80DBFactory();
         Options options = new Options();
         options.createIfMissing(true);

@@ -24,9 +24,9 @@
 
 package cn.aberic.bother.io.filter;
 
-import cn.aberic.bother.io.IOContext;
 import cn.aberic.bother.io.code.TroubleDecode;
 import cn.aberic.bother.io.code.TroubleEncode;
+import cn.aberic.bother.tools.Constant;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
@@ -51,12 +51,12 @@ public class EchoClientFilter extends ChannelInitializer<SocketChannel> {
     }
 
     @Override
-    protected void initChannel(SocketChannel ch) throws Exception {
+    protected void initChannel(SocketChannel ch) {
         ChannelPipeline ph = ch.pipeline();
         // 解码和编码，应和客户端一致
         // 入参说明: 读超时时间、写超时时间、所有类型的超时时间、时间格式
         // 设置需比服务端超时时间短
-        ph.addLast(new IdleStateHandler(0, IOContext.IO_SERVER_WRITE_TIME_OUT, 0, TimeUnit.SECONDS));
+        ph.addLast(new IdleStateHandler(0, Constant.IO_SERVER_WRITE_TIME_OUT, 0, TimeUnit.SECONDS));
         ph.addLast("encoder", new TroubleEncode());
         ph.addLast("decoder", new TroubleDecode());
         ph.addLast("handler", channelHandler);// 服务端业务逻辑

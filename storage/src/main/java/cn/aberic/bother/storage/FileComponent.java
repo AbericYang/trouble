@@ -30,7 +30,7 @@ import cn.aberic.bother.entity.contract.Account;
 import cn.aberic.bother.entity.contract.Contract;
 import cn.aberic.bother.entity.contract.ContractInfo;
 import cn.aberic.bother.entity.token.Token;
-import cn.aberic.bother.tools.Common;
+import cn.aberic.bother.tools.Constant;
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 
@@ -98,63 +98,63 @@ public class FileComponent {
     /** 获取默认区块文件可操作状态 */
     public static FileComponent getBlockFileComponentDefault() {
         return new FileComponent(
-                Common.BLOCK_FILE_START,
-                Common.BLOCK_FILE_END,
-                Common.BLOCK_FILE_DIR,
+                Constant.BLOCK_FILE_START,
+                Constant.BLOCK_FILE_END,
+                Constant.BLOCK_FILE_DIR,
                 TType.T_TYPE_BLOCK);
     }
 
     /** 获取默认区块索引文件可操作状态 */
     public static FileComponent getBlockIndexFileComponentDefault() {
         return new FileComponent(
-                Common.BLOCK_INDEX_START,
-                Common.BLOCK_INDEX_END,
-                Common.BLOCK_INDEX_DIR,
+                Constant.BLOCK_INDEX_START,
+                Constant.BLOCK_INDEX_END,
+                Constant.BLOCK_INDEX_DIR,
                 TType.T_TYPE_BLOCK_INDEX);
     }
 
     /** 获取默认区块索引文件可操作状态 */
     public static FileComponent getBlockTransactionIndexFileComponentDefault() {
         return new FileComponent(
-                Common.BLOCK_TRANSACTION_INDEX_START,
-                Common.BLOCK_TRANSACTION_INDEX_END,
-                Common.BLOCK_TRANSACTION_INDEX_DIR,
+                Constant.BLOCK_TRANSACTION_INDEX_START,
+                Constant.BLOCK_TRANSACTION_INDEX_END,
+                Constant.BLOCK_TRANSACTION_INDEX_DIR,
                 TType.T_TYPE_BLOCK_INDEX);
     }
 
     /** 获取默认智能合约文件可操作状态 */
     public static FileComponent getContractFileComponentDefault() {
         return new FileComponent(
-                Common.CONTRACT_FILE_START,
-                Common.CONTRACT_FILE_END,
-                Common.CONTRACT_FILE_DIR,
+                Constant.CONTRACT_FILE_START,
+                Constant.CONTRACT_FILE_END,
+                Constant.CONTRACT_FILE_DIR,
                 TType.T_TYPE_CONTRACT);
     }
 
     /** 获取默认智能合约数据索引文件可操作状态 */
     public static FileComponent getContractDataIndexFileComponentDefault() {
         return new FileComponent(
-                Common.CONTRACT_DATA_INDEX_FILE_START,
-                Common.CONTRACT_DATA_INDEX_FILE_END,
-                Common.CONTRACT_DATA_INDEX_FILE_DIR,
+                Constant.CONTRACT_DATA_INDEX_FILE_START,
+                Constant.CONTRACT_DATA_INDEX_FILE_END,
+                Constant.CONTRACT_DATA_INDEX_FILE_DIR,
                 TType.T_TYPE_CONTRACT_INDEX_DATA);
     }
 
     /** 获取默认账户数据索引文件可操作状态 */
     public static FileComponent getAccountFileComponentDefault() {
         return new FileComponent(
-                Common.ACCOUNT_FILE_START,
-                Common.ACCOUNT_FILE_END,
-                Common.ACCOUNT_FILE_DIR,
+                Constant.ACCOUNT_FILE_START,
+                Constant.ACCOUNT_FILE_END,
+                Constant.ACCOUNT_FILE_DIR,
                 TType.T_TYPE_ACCOUNT);
     }
 
     /** 获取默认 Token 数据索引文件可操作状态 */
     public static FileComponent getTokenFileComponentDefault() {
         return new FileComponent(
-                Common.TOKEN_FILE_START,
-                Common.TOKEN_FILE_END,
-                Common.TOKEN_FILE_DIR,
+                Constant.TOKEN_FILE_START,
+                Constant.TOKEN_FILE_END,
+                Constant.TOKEN_FILE_DIR,
                 TType.T_TYPE_TOKEN);
     }
 
@@ -168,9 +168,9 @@ public class FileComponent {
             throw new NullPointerException("smart contract hash can't be empty");
         }
         return new FileComponent(
-                Common.BLOCK_FILE_START,
-                Common.BLOCK_FILE_END,
-                getCustomDirByHash(Common.BLOCK_FILE_CUSTOM_DIR, contractHash),
+                Constant.BLOCK_FILE_START,
+                Constant.BLOCK_FILE_END,
+                getCustomDirByHash(Constant.BLOCK_FILE_CUSTOM_DIR, contractHash),
                 TType.T_TYPE_BLOCK);
     }
 
@@ -184,9 +184,9 @@ public class FileComponent {
             throw new NullPointerException("smart contract hash can't be empty");
         }
         return new FileComponent(
-                Common.BLOCK_INDEX_START,
-                Common.BLOCK_INDEX_END,
-                getCustomDirByHash(Common.BLOCK_INDEX_CUSTOM_DIR, contractHash),
+                Constant.BLOCK_INDEX_START,
+                Constant.BLOCK_INDEX_END,
+                getCustomDirByHash(Constant.BLOCK_INDEX_CUSTOM_DIR, contractHash),
                 TType.T_TYPE_BLOCK_INDEX);
     }
 
@@ -200,45 +200,45 @@ public class FileComponent {
             throw new NullPointerException("smart contract hash can't be empty");
         }
         return new FileComponent(
-                Common.BLOCK_TRANSACTION_INDEX_START,
-                Common.BLOCK_TRANSACTION_INDEX_END,
-                getCustomDirByHash(Common.BLOCK_TRANSACTION_INDEX_CUSTOM_DIR, contractHash),
+                Constant.BLOCK_TRANSACTION_INDEX_START,
+                Constant.BLOCK_TRANSACTION_INDEX_END,
+                getCustomDirByHash(Constant.BLOCK_TRANSACTION_INDEX_CUSTOM_DIR, contractHash),
                 TType.T_TYPE_BLOCK_INDEX);
     }
 
     /** 获取指定智能合约hash的智能合约文件可操作状态 */
     public static FileComponent getContractFileComponent() {
         return new FileComponent(
-                Common.CONTRACT_FILE_START,
-                Common.CONTRACT_FILE_END,
-                Common.CONTRACT_FILE_CUSTOM_DIR,
+                Constant.CONTRACT_FILE_START,
+                Constant.CONTRACT_FILE_END,
+                Constant.CONTRACT_FILE_CUSTOM_DIR,
                 TType.T_TYPE_CONTRACT);
     }
 
     /** 获取默认智能合约数据索引文件可操作状态 */
     public static FileComponent getContractDataIndexFileComponent(String contractHash) {
         return new FileComponent(
-                Common.CONTRACT_DATA_INDEX_FILE_START,
-                Common.CONTRACT_DATA_INDEX_FILE_END,
-                getCustomDirByHash(Common.CONTRACT_DATA_INDEX_FILE_CUSTOM_DIR, contractHash),
+                Constant.CONTRACT_DATA_INDEX_FILE_START,
+                Constant.CONTRACT_DATA_INDEX_FILE_END,
+                getCustomDirByHash(Constant.CONTRACT_DATA_INDEX_FILE_CUSTOM_DIR, contractHash),
                 TType.T_TYPE_CONTRACT_INDEX_DATA);
     }
 
     /** 获取默认智能合约数据索引文件可操作状态 */
     public static FileComponent getAccountFileComponent(String tokenHash) {
         return new FileComponent(
-                Common.ACCOUNT_FILE_START,
-                Common.ACCOUNT_FILE_END,
-                getCustomDirByHash(Common.ACCOUNT_FILE_CUSTOM_DIR, tokenHash),
+                Constant.ACCOUNT_FILE_START,
+                Constant.ACCOUNT_FILE_END,
+                getCustomDirByHash(Constant.ACCOUNT_FILE_CUSTOM_DIR, tokenHash),
                 TType.T_TYPE_ACCOUNT);
     }
 
     /** 获取默认 Token 数据索引文件可操作状态 */
     public static FileComponent getTokenTmpFileComponent() {
         return new FileComponent(
-                Common.TOKEN_FILE_START,
-                Common.TOKEN_FILE_END,
-                Common.TOKEN_TMP_FILE_DIR,
+                Constant.TOKEN_FILE_START,
+                Constant.TOKEN_FILE_END,
+                Constant.TOKEN_TMP_FILE_DIR,
                 TType.T_TYPE_TOKEN);
     }
 

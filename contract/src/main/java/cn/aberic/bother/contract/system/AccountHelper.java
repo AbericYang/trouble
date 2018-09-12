@@ -36,7 +36,7 @@ import cn.aberic.bother.entity.contract.Request;
 import cn.aberic.bother.entity.response.IResponse;
 import cn.aberic.bother.entity.response.Response;
 import cn.aberic.bother.entity.token.Token;
-import cn.aberic.bother.tools.Common;
+import cn.aberic.bother.tools.Constant;
 import cn.aberic.bother.tools.DateTool;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
@@ -110,7 +110,7 @@ class AccountHelper implements IHelper {
      * @return 支票流转字符串信息
      */
     Response openAccount(PublicContractExec exec, Request request) {
-        Token token = JSON.parseObject(exec.get(Common.TOKEN_DEFAULT_PUBLIC_HASH), new TypeReference<Token>() {});
+        Token token = JSON.parseObject(exec.get(Constant.TOKEN_DEFAULT_PUBLIC_HASH), new TypeReference<Token>() {});
         // 创建账户需要支付支票
         // 获取支票账户
         Account chequeAccount = JSON.parseObject(exec.get(request.getAddress()), new TypeReference<Account>() {});
@@ -203,7 +203,7 @@ class AccountHelper implements IHelper {
         // 支票消费记录上链
         exec.put(MD5.md516(cheque.toString()), "1");
 
-        return exec.response(new AccountUser(address, eccKey.getPrivateKey(), Common.TOKEN_DEFAULT_PUBLIC_HASH));
+        return exec.response(new AccountUser(address, eccKey.getPrivateKey(), Constant.TOKEN_DEFAULT_PUBLIC_HASH));
     }
 
 }

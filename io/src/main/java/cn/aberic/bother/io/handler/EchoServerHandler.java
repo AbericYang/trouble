@@ -30,6 +30,7 @@ import cn.aberic.bother.io.IOContext;
 import cn.aberic.bother.io.exec.factory.IONettyServer;
 import cn.aberic.bother.io.exec.factory.IOServer;
 import cn.aberic.bother.io.message.IMsgService;
+import cn.aberic.bother.tools.Constant;
 import cn.aberic.bother.tools.DateTool;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandler;
@@ -92,7 +93,7 @@ public class EchoServerHandler extends ChannelInboundHandlerAdapter implements I
             IdleStateEvent event = (IdleStateEvent) obj;
             // 如果读通道处于空闲状态，说明没有接收到心跳命令
             if (IdleState.READER_IDLE.equals(event.state())) {
-                log.info("已经{}秒没有接收到客户端的信息了", IOContext.IO_SERVER_READ_TIME_OUT);
+                log.info("已经{}秒没有接收到客户端的信息了", Constant.IO_SERVER_READ_TIME_OUT);
                 if (idleCount > 2) {
                     log.info("关闭这个不活跃的channel");
                     ctx.channel().close();

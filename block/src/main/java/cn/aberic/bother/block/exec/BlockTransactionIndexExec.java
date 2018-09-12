@@ -25,7 +25,7 @@
 package cn.aberic.bother.block.exec;
 
 import cn.aberic.bother.block.exec.service.IBlockTransactionIndexExec;
-import cn.aberic.bother.tools.Common;
+import cn.aberic.bother.tools.Constant;
 import cn.aberic.bother.storage.FileComponent;
 import org.apache.commons.lang3.StringUtils;
 
@@ -50,7 +50,7 @@ public class BlockTransactionIndexExec extends ExecInit implements IBlockTransac
 
     @Override
     public FileComponent getFileStatus() {
-        if (StringUtils.equals(getStorageHash(), Common.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH)) {
+        if (StringUtils.equals(getStorageHash(), Constant.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH)) {
             return FileComponent.getBlockTransactionIndexFileComponentDefault();
         }
         return FileComponent.getBlockTransactionIndexFileComponent(getStorageHash());
