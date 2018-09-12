@@ -28,12 +28,8 @@ package cn.aberic.bother.io.client;
 import cn.aberic.bother.entity.EntityTest;
 import cn.aberic.bother.entity.io.MessageData;
 import cn.aberic.bother.entity.io.Remote;
-import cn.aberic.bother.entity.proto.BlockProto;
 import cn.aberic.bother.io.IOContext;
-import com.google.protobuf.InvalidProtocolBufferException;
-import com.google.protobuf.util.JsonFormat;
 import lombok.extern.slf4j.Slf4j;
-import org.json.JSONObject;
 
 /**
  * 作者：Aberic on 2018/9/9 19:42
