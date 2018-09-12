@@ -28,7 +28,7 @@ import cn.aberic.bother.block.exec.service.IDataExec;
 import cn.aberic.bother.consensus.exec.Proactive;
 import cn.aberic.bother.entity.block.Block;
 import cn.aberic.bother.entity.block.BlockInfo;
-import cn.aberic.bother.entity.consensus.ConsensusStatus;
+import cn.aberic.bother.entity.enums.ConsensusStatus;
 import cn.aberic.bother.tools.Constant;
 import cn.aberic.bother.storage.FileComponent;
 import cn.aberic.bother.tools.exception.SearchDataNotFoundException;

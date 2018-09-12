@@ -47,6 +47,7 @@ public class ClientTest {
 
         MessageData msgData = new MessageData(ProtocolStatus.BLOCK, EntityTest.getBlockBytes());
         IOContext.obtain().broadcast(msgData);
+        IOContext.obtain().send("127.0.0.1", new MessageData(ProtocolStatus.JOIN, null));
     }
 
 }

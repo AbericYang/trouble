@@ -53,6 +53,7 @@ public class TroubleEncode extends MessageToByteEncoder<MessageData> implements 
         out.writeBytes(ByteTool.intToBytes(msgData.getDataId()));
         switch (msgData.getProtocol()) {
             case HEART: // 创建并发送心跳包
+            case JOIN: // 创建并发送加入包
                 byte[] bytes = createHeart();
                 out.writeBytes(ByteTool.intToBytes(bytes.length));
                 out.writeBytes(bytes);

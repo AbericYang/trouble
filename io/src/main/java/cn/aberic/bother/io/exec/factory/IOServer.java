@@ -24,10 +24,21 @@
 
 package cn.aberic.bother.io.exec.factory;
 
+import cn.aberic.bother.entity.io.MessageData;
+
 /**
+ * IO 服务端操作接口
+ * <p>
  * 作者：Aberic on 2018/09/12 15:30
  * 邮箱：abericyang@gmail.com
  */
 public interface IOServer extends IOExec {
+
+    /**
+     * 推送数据传输消息体对象
+     *
+     * @param msgData 数据传输消息体对象
+     */
+    void push(MessageData msgData);
 
 }

@@ -24,6 +24,8 @@
 
 package cn.aberic.bother.runner;
 
+import cn.aberic.bother.entity.enums.ConnectStatus;
+import cn.aberic.bother.entity.io.GroupInfo;
 import cn.aberic.bother.tools.Constant;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
@@ -43,6 +45,7 @@ public class BotherRunner implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) {
         initDir();
+        initConnect();
         System.out.println();
         System.out.println(" _____   _   _   ____    ");
         System.out.println("| ____| | \\ | | |  _ \\   ");
@@ -62,6 +65,11 @@ public class BotherRunner implements ApplicationRunner {
             return;
         }
         file.mkdirs();
+    }
+
+    /** 初始化连接信息 */
+    private void initConnect() {
+        GroupInfo.obtain().setStatus(ConnectStatus.NONE);
     }
 
 }

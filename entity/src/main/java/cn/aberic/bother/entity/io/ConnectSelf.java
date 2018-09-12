@@ -20,47 +20,47 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
+ *
  */
 
-package cn.aberic.bother.io.exec.factory;
+package cn.aberic.bother.entity.io;
 
-import cn.aberic.bother.entity.io.MessageData;
-import cn.aberic.bother.entity.io.Remote;
-import io.netty.channel.Channel;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.util.LinkedList;
+import java.util.List;
 
 /**
- * IO 服务端操作实现
+ * 连接信息对象，有且仅有一个实例
  * <p>
- * 作者：Aberic on 2018/09/12 15:42
+ * 作者：Aberic on 2018/9/12 22:23
  * 邮箱：abericyang@gmail.com
  */
-public class IONettyServer implements IOServer {
+@Setter
+@Getter
+public class ConnectSelf {
 
-    private Channel channel;
-    private Remote remote;
+    /** 自身节点等级，等级0表示未成为任何小组Leader，1表示一个，2表示21个，以此类推 */
+    private int level = 0;
+    /** 当前连接小组集合 */
+    private List<GroupInfo> groups;
 
-    public IONettyServer(Remote remote, Channel channel) {
-        this.channel = channel;
-        this.remote = remote;
+    private static ConnectSelf instance;
+
+    public static ConnectSelf obtain() {
+        if (null == instance) {
+            synchronized (GroupInfo.class) {
+                if (null == instance) {
+                    instance = new ConnectSelf();
+                }
+            }
+        }
+        return instance;
     }
 
-    @Override
-    public void push(MessageData msgData) {
-        channel.writeAndFlush(msgData);
+    public ConnectSelf() {
+        groups = new LinkedList<>();
     }
 
-    @Override
-    public Remote getRemote() {
-        return remote;
-    }
-
-    @Override
-    public void shutdown() {
-        channel.close();
-    }
-
-    @Override
-    public boolean isConnected() {
-        return channel.isActive();
-    }
 }

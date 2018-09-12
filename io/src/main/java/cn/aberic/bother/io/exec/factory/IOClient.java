@@ -25,12 +25,29 @@
 
 package cn.aberic.bother.io.exec.factory;
 
+import cn.aberic.bother.entity.io.MessageData;
+
 /**
+ * IO 客户端操作接口
+ * <p>
  * 作者：Aberic on 2018/9/10 00:53
  * 邮箱：abericyang@gmail.com
  */
 public interface IOClient extends IOExec {
 
+    /***/
     void doConnect();
+
+    /** 发送请求 */
+    void send(MessageData msgData);
+
+    /**
+     * 是否关闭远程连接
+     * <p>
+     * 当{@link cn.aberic.bother.io.handler.EchoClientHandler}远程连接关闭或终止后，以此判断是否重新修复连接
+     *
+     * @return 与否
+     */
+    boolean isShutdown();
 
 }

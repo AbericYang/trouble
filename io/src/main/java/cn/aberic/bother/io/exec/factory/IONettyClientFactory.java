@@ -29,6 +29,8 @@ import cn.aberic.bother.entity.io.Remote;
 import cn.aberic.bother.io.exec.client.EchoClient;
 
 /**
+ * IO 客户端获取工厂
+ * <p>
  * 作者：Aberic on 2018/9/10 01:01
  * 邮箱：abericyang@gmail.com
  */

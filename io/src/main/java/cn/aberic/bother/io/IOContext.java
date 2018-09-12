@@ -37,6 +37,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -141,6 +142,20 @@ public class IOContext {
     }
 
     /**
+     * 作为客户端发起请求协议
+     *
+     * @param address 请求地址
+     * @param msgData 请求消息对象
+     */
+    public void send(String address, MessageData msgData) {
+        Objects.requireNonNull(ioClientCache.getIfPresent(address)).send(msgData);
+    }
+
+    public void push(String address, MessageData msgData) {
+        Objects.requireNonNull(ioServerCache.getIfPresent(address)).push(msgData);
+    }
+
+    /**
      * 广播消息
      * 先执行服务端广播消息操作，
      * 如果与服务端连接的客户端ip已找到，但缓存没有，
@@ -151,7 +166,7 @@ public class IOContext {
     public void broadcast(MessageData msgData) {
         ioServerCache.asMap().forEach((ip, ioServer) -> {
             if (ioServer.isConnected()) {
-                ioServer.send(msgData);
+                ioServer.push(msgData);
             }
         });
         ioClientCache.asMap().forEach((ip, ioClient) -> {

@@ -22,42 +22,28 @@
  * SOFTWARE.
  */
 
-package cn.aberic.bother.entity.consensus;
+package cn.aberic.bother.io.message;
 
-import lombok.Getter;
+import cn.aberic.bother.entity.enums.ProtocolStatus;
+import cn.aberic.bother.entity.io.MessageData;
+import io.netty.channel.Channel;
 
 /**
- * 共识状态/等级——共识实现层-cta to achieve
+ * 请求消息业务处理接口
  * <p>
- * 作者：Aberic on 2018/8/24 21:22
+ * 作者：Aberic on 2018/09/12 14:12
  * 邮箱：abericyang@gmail.com
  */
-@Getter
-public enum ConsensusStatus {
-
-    /** 相同账本下第一区块出现恶意节点 */
-    BLOCK_CLASH_IN_FIRST("相同账本下第一区块出现恶意节点", 100),
-    /** 相同账本下中间区块出现恶意节点 */
-    BLOCK_CLASH_IN_MIDDLE("相同账本下中间区块出现恶意节点", 98),
-    /** 相同账本下中间区块被篡改 */
-    BLOCK_TAMPERING_IN_MIDDLE("相同账本下中间区块被篡改", 99),
-    /** 相同账本下正常区块校验 */
-    BLOCK_CLASH_VERIFY("相同账本下正常区块校验", 1);
-
-    /** 共识状态原因 */
-    private String reason;
-    /** 共识状态级别 */
-    private int level;
+interface IMsgRequestService {
 
     /**
-     * 当前共识状态
+     * 在当前channel下发送心跳包
      *
-     * @param reason 共识状态原因
-     * @param level  共识状态级别
+     * @param channel 当前通道
      */
-    ConsensusStatus(String reason, int level) {
-        this.reason = reason;
-        this.level = level;
+    default void sendHeartBeat(Channel channel) {
+        MessageData msgData = new MessageData(ProtocolStatus.HEART, null);
+        channel.writeAndFlush(msgData);
     }
 
 }

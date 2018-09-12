@@ -82,8 +82,7 @@ public class EchoClientHandler extends SimpleChannelInboundHandler<MessageData> 
     // 作为一个面向流的协议，TCP 保证了字节数组将会按照服务器发送它们的顺序被接收。
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, MessageData msgData) {
-        exec(ctx.channel(), msgData);
-
+        receive(ctx.channel(), msgData);
     }
 
     @Override
@@ -103,7 +102,9 @@ public class EchoClientHandler extends SimpleChannelInboundHandler<MessageData> 
         IOContext.obtain().ioClientRemove(ctx.channel().remoteAddress().toString().split(":")[0].split("/")[1]);
         log.info("关闭连接 time = {}", DateTool.getCurrent("yyyy/MM/dd HH:mm:ss"));
         super.channelInactive(ctx);
-        ioClient.doConnect();
+        if (!ioClient.isShutdown()) {
+            ioClient.doConnect();
+        }
     }
 
     @Override

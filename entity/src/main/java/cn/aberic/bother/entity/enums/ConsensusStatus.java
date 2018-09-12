@@ -20,42 +20,45 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
+ *
  */
 
-package cn.aberic.bother.io.message;
+package cn.aberic.bother.entity.enums;
 
-import cn.aberic.bother.entity.block.Block;
-import cn.aberic.bother.entity.enums.ProtocolStatus;
-import cn.aberic.bother.entity.io.MessageData;
-import io.netty.channel.Channel;
+import lombok.Getter;
 
 /**
- * 请求消息业务处理接口
+ * 共识状态/等级——共识实现层-cta to achieve
  * <p>
- * 作者：Aberic on 2018/09/12 14:12
+ * 作者：Aberic on 2018/8/24 21:22
  * 邮箱：abericyang@gmail.com
  */
-interface IMsgAskService {
+@Getter
+public enum ConsensusStatus {
+
+    /** 相同账本下第一区块出现恶意节点 */
+    BLOCK_CLASH_IN_FIRST("相同账本下第一区块出现恶意节点", 100),
+    /** 相同账本下中间区块出现恶意节点 */
+    BLOCK_CLASH_IN_MIDDLE("相同账本下中间区块出现恶意节点", 98),
+    /** 相同账本下中间区块被篡改 */
+    BLOCK_TAMPERING_IN_MIDDLE("相同账本下中间区块被篡改", 99),
+    /** 相同账本下正常区块校验 */
+    BLOCK_CLASH_VERIFY("相同账本下正常区块校验", 1);
+
+    /** 共识状态原因 */
+    private String reason;
+    /** 共识状态级别 */
+    private int level;
 
     /**
-     * 在当前channel下发送心跳包
+     * 当前共识状态
      *
-     * @param channel 当前通道
+     * @param reason 共识状态原因
+     * @param level  共识状态级别
      */
-    default void sendHeartBeat(Channel channel) {
-        MessageData msgData = new MessageData(ProtocolStatus.HEART, null);
-        channel.writeAndFlush(msgData);
-    }
-
-    /**
-     * 在当前channel下发送区块proto字节流
-     *
-     * @param channel 当前通道
-     * @param block   区块对象
-     */
-    default void sendBlock(Channel channel, Block block) {
-        MessageData msgData = new MessageData(ProtocolStatus.BLOCK, block.block2ProtoByteArray());
-        channel.writeAndFlush(msgData);
+    ConsensusStatus(String reason, int level) {
+        this.reason = reason;
+        this.level = level;
     }
 
 }

@@ -24,7 +24,7 @@
 
 package cn.aberic.bother.consensus.exec;
 
-import cn.aberic.bother.entity.consensus.ConsensusStatus;
+import cn.aberic.bother.entity.enums.ConsensusStatus;
 
 /**
  * 主动发起共识操作对象——共识实现层-cta to achieve

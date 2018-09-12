@@ -20,47 +20,29 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
+ *
  */
 
-package cn.aberic.bother.io.exec.factory;
+package cn.aberic.bother.entity.io;
 
-import cn.aberic.bother.entity.io.MessageData;
-import cn.aberic.bother.entity.io.Remote;
-import io.netty.channel.Channel;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
- * IO 服务端操作实现
+ * 持有外部连接信息对象
  * <p>
- * 作者：Aberic on 2018/09/12 15:42
+ * 作者：Aberic on 2018/9/12 21:11
  * 邮箱：abericyang@gmail.com
  */
-public class IONettyServer implements IOServer {
+@Setter
+@Getter
+public class ConnectInfo {
 
-    private Channel channel;
-    private Remote remote;
+    /** 远程地址 */
+    private String address;
+    /** 超3秒出块次数 */
+    private int outBlockSlowCount;
+    /** 当前节点出错次数 */
+    private int errorCount;
 
-    public IONettyServer(Remote remote, Channel channel) {
-        this.channel = channel;
-        this.remote = remote;
-    }
-
-    @Override
-    public void push(MessageData msgData) {
-        channel.writeAndFlush(msgData);
-    }
-
-    @Override
-    public Remote getRemote() {
-        return remote;
-    }
-
-    @Override
-    public void shutdown() {
-        channel.close();
-    }
-
-    @Override
-    public boolean isConnected() {
-        return channel.isActive();
-    }
 }

@@ -35,10 +35,14 @@ import lombok.Getter;
 @Getter
 public enum ProtocolStatus {
 
-    /** 心跳包-0x00 */
-    HEART("心跳包", (byte) 0x00),
-    /** 区块包-0x51 */
-    BLOCK("区块包", (byte) 0x51);
+    /** 心跳协议-0x00 */
+    HEART("心跳协议", (byte) 0x00),
+    /** 加入协议-0x01 */
+    JOIN("加入协议", (byte) 0x01),
+    /** 加入新节点协议，follow节点收到新节点加入通知后，发送此协议告知leader节点有新节点加入请求-0x02 */
+    JOIN_NEW("加入新节点协议", (byte) 0x02),
+    /** 区块协议-0x51 */
+    BLOCK("区块协议", (byte) 0x51);
 
     /** 协议描述 */
     private String brief;

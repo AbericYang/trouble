@@ -27,18 +27,28 @@ package cn.aberic.bother.io.exec.factory;
 import cn.aberic.bother.entity.io.Remote;
 
 /**
+ * IO 操作接口
+ * <p>
  * 作者：Aberic on 2018/09/12 15:34
  * 邮箱：abericyang@gmail.com
  */
 public interface IOExec {
 
-    /** 发送请求 */
-    void send(Object msg);
-
+    /**
+     * 获取当前远程连接主机地址对象
+     *
+     * @return 远程连接主机地址对象
+     */
     Remote getRemote();
 
+    /** 停止当前远程连接 */
     void shutdown();
 
+    /**
+     * 判断当前远程是否连接
+     *
+     * @return 与否
+     */
     boolean isConnected();
 
 }

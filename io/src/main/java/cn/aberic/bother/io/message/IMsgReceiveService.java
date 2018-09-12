@@ -39,21 +39,36 @@ import org.slf4j.Logger;
  * 作者：Aberic on 2018/09/12 14:13
  * 邮箱：abericyang@gmail.com
  */
-interface IMsgAnswerService {
+interface IMsgReceiveService {
 
     Logger log();
 
-    default void exec(Channel channel, MessageData msgData) {
+    default void receive(Channel channel, MessageData msgData) {
         log().debug("请求协议：{}，数据ID：{}", msgData.getProtocol().getB(), msgData.getDataId());
         switch (msgData.getProtocol()) {
-            case HEART: // 接收到心跳包
+            case HEART: // 心跳协议-0x00
                 log().debug("接收心跳，什么也不做");
                 break;
-            case BLOCK: // 接收到区块包
+            case JOIN: // 加入协议-0x01
+                // 先判断自己是否Leader节点
+                if (true) {
+                    // TODO: 2018/9/12 自行处理本次业务
+                }
+                // 先判断自身小组状态是否饱和
+                if (false) {
+                    // TODO: 2018/9/12 满员则通知Leader节点辅助新加入节点寻找小组
+                } else {
+                    // TODO: 2018/9/12 未满员则直接通知Leader节点有新节点加入
+                }
+                log().debug("接收加入，执行加入方案");
+                break;
+            case JOIN_NEW: // 加入新节点协议，follow节点收到新节点加入通知后，发送此协议告知leader节点有新节点加入请求-0x02
+                break;
+            case BLOCK: // 区块协议-0x51
                 try {
                     BlockProto.Block blockProto = BlockProto.Block.parseFrom(msgData.getBytes());
                     String jsonObject = JsonFormat.printer().print(blockProto);
-                    log().debug("jsonObject = {}", jsonObject);
+                    // log().debug("jsonObject = {}", jsonObject);
                     Block block = new Gson().fromJson(jsonObject, Block.class);
                     log().debug("block = {}", block.toString());
                     // TODO: 2018/9/12 验证并存储
@@ -61,7 +76,7 @@ interface IMsgAnswerService {
                     e.printStackTrace();
                 }
                 break;
-            default:
+            default: // 非法协议请求直接关闭异常节点连入
                 log().info("关闭协议异常channel");
                 channel.close();
                 break;

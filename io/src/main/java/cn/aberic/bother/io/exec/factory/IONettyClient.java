@@ -25,6 +25,7 @@
 
 package cn.aberic.bother.io.exec.factory;
 
+import cn.aberic.bother.entity.io.MessageData;
 import cn.aberic.bother.entity.io.Remote;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
@@ -35,6 +36,8 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.concurrent.TimeUnit;
 
 /**
+ * IO 客户端操作实现
+ * <p>
  * 作者：Aberic on 2018/9/10 01:29
  * 邮箱：abericyang@gmail.com
  */
@@ -45,6 +48,9 @@ public class IONettyClient implements IOClient {
     private Bootstrap bootstrap;
     private Channel channel;
     private Remote remote;
+
+    /** 是否关闭远程连接 */
+    private boolean shutdown = false;
 
     public IONettyClient(Bootstrap bootstrap, Remote remote, Channel channel) {
         this.bootstrap = bootstrap;
@@ -70,8 +76,13 @@ public class IONettyClient implements IOClient {
     }
 
     @Override
-    public void send(Object msg) {
-        channel.writeAndFlush(msg);
+    public void send(MessageData msgData) {
+        channel.writeAndFlush(msgData);
+    }
+
+    @Override
+    public boolean isShutdown() {
+        return shutdown;
     }
 
     @Override
@@ -81,6 +92,7 @@ public class IONettyClient implements IOClient {
 
     @Override
     public void shutdown() {
+        shutdown = true;
         channel.close();
     }
 
