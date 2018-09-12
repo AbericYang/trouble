@@ -26,6 +26,7 @@ package cn.aberic.bother.io.code;
 
 import cn.aberic.bother.entity.EntityTest;
 import cn.aberic.bother.entity.block.Block;
+import cn.aberic.bother.entity.enums.ProtocolStatus;
 import cn.aberic.bother.entity.io.MessageData;
 import cn.aberic.bother.entity.io.Remote;
 import lombok.extern.slf4j.Slf4j;
@@ -55,7 +56,7 @@ public class CodeTest {
             receiveBytesList.add(b);
         }
         MessageData messageData = new MessageData();
-        messageData.setProtocolId((byte) 0x02);
+        // messageData.setProtocolId((byte) 0x02);
         messageData = codeTest.parse(messageData, receiveBytesList);
         log.debug(codeTest.parse(messageData, receiveBytesList).toString());
         // Block block = messageData.getObject(Block.class);
@@ -70,7 +71,7 @@ public class CodeTest {
         }
 
         public byte[] get(Block block) {
-            MessageData messageData = new MessageData((byte) 0x02, EntityTest.getBlockBytes());
+            MessageData messageData = new MessageData(ProtocolStatus.BLOCK, EntityTest.getBlockBytes());
             messageData.setDataId(createDataId());
             return createData(messageData.getBytes());
         }

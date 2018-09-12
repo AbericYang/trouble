@@ -25,6 +25,7 @@
 
 package cn.aberic.bother.io.code;
 
+import cn.aberic.bother.entity.enums.ProtocolStatus;
 import cn.aberic.bother.entity.io.MessageData;
 import cn.aberic.bother.tools.ByteTool;
 import io.netty.buffer.ByteBuf;
@@ -61,7 +62,7 @@ public class TroubleDecode extends ByteToMessageDecoder implements TroubleCode {
             throw new Exception("错误的消息");
         }
 
-        byte[] bytes = new byte[]{in.getByte(5),in.getByte(6),in.getByte(7),in.getByte(8)};
+        byte[] bytes = new byte[]{in.getByte(5), in.getByte(6), in.getByte(7), in.getByte(8)};
         int length = ByteTool.bytesToInt(bytes);
         log().debug("数据包大小：{}，数据体长度：{}", size, length);
         if (size < length) {
@@ -85,7 +86,11 @@ public class TroubleDecode extends ByteToMessageDecoder implements TroubleCode {
         }
         // 在读的过程中，每读一次读过的字节即被抛弃，即指针会往前跳
         MessageData msgData = new MessageData();
-        msgData.setProtocolId(protocolId);
+        ProtocolStatus protocolStatus = ProtocolStatus.get(protocolId);
+        if (null == protocolStatus) {
+            throw new RuntimeException("无此传输协议");
+        }
+        msgData.setProtocol(protocolStatus);
         msgData.setLength(length);
         msgData.setDataId(dataId);
 

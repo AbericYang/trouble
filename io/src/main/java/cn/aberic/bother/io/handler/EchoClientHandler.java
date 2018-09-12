@@ -24,17 +24,16 @@
 
 package cn.aberic.bother.io.handler;
 
+import cn.aberic.bother.entity.io.MessageData;
 import cn.aberic.bother.io.IOContext;
 import cn.aberic.bother.io.exec.factory.IOClient;
 import cn.aberic.bother.io.message.IMsgService;
 import cn.aberic.bother.tools.DateTool;
-import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
-import io.netty.util.CharsetUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 
@@ -52,7 +51,7 @@ import org.slf4j.Logger;
 // 消息在EchoServerHandler 的channelReadComplete()方法中，当writeAndFlush()方法被调用时被释放
 @ChannelHandler.Sharable
 @Slf4j
-public class EchoClientHandler extends SimpleChannelInboundHandler<ByteBuf> implements IMsgService {
+public class EchoClientHandler extends SimpleChannelInboundHandler<MessageData> implements IMsgService {
 
     /** 循环次数 */
     private int loopCount = 1;
@@ -82,9 +81,8 @@ public class EchoClientHandler extends SimpleChannelInboundHandler<ByteBuf> impl
     // 第一次使用一个持有3 字节的ByteBuf（Netty 的字节容器），第二次使用一个持有2 字节的ByteBuf。
     // 作为一个面向流的协议，TCP 保证了字节数组将会按照服务器发送它们的顺序被接收。
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, ByteBuf in) {
-        // 记录已接收消息的转储
-        System.out.println("Client received: " + in.toString(CharsetUtil.UTF_8));
+    protected void channelRead0(ChannelHandlerContext ctx, MessageData msgData) {
+        exec(ctx.channel(), msgData);
 
     }
 

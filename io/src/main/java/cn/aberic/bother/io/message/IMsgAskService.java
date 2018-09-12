@@ -25,6 +25,7 @@
 package cn.aberic.bother.io.message;
 
 import cn.aberic.bother.entity.block.Block;
+import cn.aberic.bother.entity.enums.ProtocolStatus;
 import cn.aberic.bother.entity.io.MessageData;
 import io.netty.channel.Channel;
 
@@ -42,8 +43,7 @@ interface IMsgAskService {
      * @param channel 当前通道
      */
     default void sendHeartBeat(Channel channel) {
-        MessageData msgData = new MessageData();
-        msgData.setProtocolId((byte) 0x00);
+        MessageData msgData = new MessageData(ProtocolStatus.HEART, null);
         channel.writeAndFlush(msgData);
     }
 
@@ -54,7 +54,7 @@ interface IMsgAskService {
      * @param block   区块对象
      */
     default void sendBlock(Channel channel, Block block) {
-        MessageData msgData = new MessageData((byte) 0x01, block.block2ProtoByteArray());
+        MessageData msgData = new MessageData(ProtocolStatus.BLOCK, block.block2ProtoByteArray());
         channel.writeAndFlush(msgData);
     }
 

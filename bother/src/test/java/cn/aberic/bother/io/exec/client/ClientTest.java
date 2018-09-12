@@ -26,6 +26,7 @@
 package cn.aberic.bother.io.exec.client;
 
 import cn.aberic.bother.entity.EntityTest;
+import cn.aberic.bother.entity.enums.ProtocolStatus;
 import cn.aberic.bother.entity.io.MessageData;
 import cn.aberic.bother.entity.io.Remote;
 import cn.aberic.bother.io.IOContext;
@@ -44,7 +45,7 @@ public class ClientTest {
         remote.setAddress("127.0.0.1");
         IOContext.obtain().startClient(remote);
 
-        MessageData msgData = new MessageData((byte) 0x01, EntityTest.getBlockBytes());
+        MessageData msgData = new MessageData(ProtocolStatus.BLOCK, EntityTest.getBlockBytes());
         IOContext.obtain().broadcast(msgData);
     }
 

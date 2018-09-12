@@ -44,18 +44,19 @@ interface IMsgAnswerService {
     Logger log();
 
     default void exec(Channel channel, MessageData msgData) {
-        log().debug("请求协议：{}，数据ID：{}", msgData.getProtocolId(), msgData.getDataId());
-        switch (msgData.getProtocolId()) {
-            case 0x00: // 接收到心跳包
+        log().debug("请求协议：{}，数据ID：{}", msgData.getProtocol().getB(), msgData.getDataId());
+        switch (msgData.getProtocol()) {
+            case HEART: // 接收到心跳包
                 log().debug("接收心跳，什么也不做");
                 break;
-            case 0x01: // 接收到区块包
+            case BLOCK: // 接收到区块包
                 try {
                     BlockProto.Block blockProto = BlockProto.Block.parseFrom(msgData.getBytes());
                     String jsonObject = JsonFormat.printer().print(blockProto);
                     log().debug("jsonObject = {}", jsonObject);
                     Block block = new Gson().fromJson(jsonObject, Block.class);
                     log().debug("block = {}", block.toString());
+                    // TODO: 2018/9/12 验证并存储
                 } catch (InvalidProtocolBufferException e) {
                     e.printStackTrace();
                 }
@@ -66,7 +67,7 @@ interface IMsgAnswerService {
                 break;
         }
         // 将接收到的消息写给发送者，而不冲刷出站消息
-//        channel.write(msgData);
+        // channel.write(msgData);
     }
 
 }

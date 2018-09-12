@@ -49,11 +49,10 @@ public class TroubleEncode extends MessageToByteEncoder<MessageData> implements 
     protected void encode(ChannelHandlerContext ctx, MessageData msgData, ByteBuf out) {
         int dataId = createDataId();
         msgData.setDataId(dataId);
-        out.writeByte(msgData.getProtocolId());
+        out.writeByte(msgData.getProtocol().getB());
         out.writeBytes(ByteTool.intToBytes(msgData.getDataId()));
-        byte protocolId = msgData.getProtocolId();
-        switch (protocolId) {
-            case 0x00: // 创建并发送心跳包
+        switch (msgData.getProtocol()) {
+            case HEART: // 创建并发送心跳包
                 byte[] bytes = createHeart();
                 out.writeBytes(ByteTool.intToBytes(bytes.length));
                 out.writeBytes(bytes);

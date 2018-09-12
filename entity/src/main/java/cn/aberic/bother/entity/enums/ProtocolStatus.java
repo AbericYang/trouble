@@ -22,39 +22,48 @@
  * SOFTWARE.
  */
 
-package cn.aberic.bother.entity.io;
+package cn.aberic.bother.entity.enums;
 
-import cn.aberic.bother.entity.enums.ProtocolStatus;
 import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
 
 /**
- * 数据传输消息体对象
+ * 传输协议
  * <p>
- * 作者：Aberic on 2018/09/11 11:28
+ * 作者：Aberic on 2018/09/12 16:57
  * 邮箱：abericyang@gmail.com
  */
-@Setter
 @Getter
-@ToString
-public class MessageData {
+public enum ProtocolStatus {
 
-    /** 与服务器约定协议号，以解析数据，如0x00、0x01等 */
-    private ProtocolStatus protocol;
-    /** 数据长度 */
-    private int length;
-    /** 数据请求 ID */
-    private int dataId;
-    /** 数据对象字节数组 */
-    private byte[] bytes;
+    /** 心跳包-0x00 */
+    HEART("心跳包", (byte) 0x00),
+    /** 区块包-0x51 */
+    BLOCK("区块包", (byte) 0x51);
 
-    public MessageData() {
+    /** 协议描述 */
+    private String brief;
+    /** 协议码 */
+    private byte b;
+
+    /**
+     * 当前交易状态
+     *
+     * @param brief 协议描述
+     * @param b     协议码
+     */
+    ProtocolStatus(String brief, byte b) {
+        this.brief = brief;
+        this.b = b;
     }
 
-    public MessageData(ProtocolStatus protocol, byte[] bytes) {
-        this.protocol = protocol;
-        this.bytes = bytes;
+    public static ProtocolStatus get(byte b) {
+        ProtocolStatus[] protocolStatuses = values();
+        for (ProtocolStatus protocolStatus : protocolStatuses) {
+            if (protocolStatus.b == b) {
+                return protocolStatus;
+            }
+        }
+        return null;
     }
 
 }
