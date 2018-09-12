@@ -30,8 +30,7 @@ import cn.aberic.bother.entity.io.MessageData;
 import cn.aberic.bother.entity.proto.BlockProto;
 import cn.aberic.bother.io.IOContext;
 import cn.aberic.bother.tools.DateTool;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.TypeReference;
+import com.google.gson.Gson;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.util.JsonFormat;
 import io.netty.buffer.Unpooled;
@@ -75,7 +74,7 @@ public class EchoServerHandler extends ChannelInboundHandlerAdapter {
                     BlockProto.Block blockProto = BlockProto.Block.parseFrom(msgData.getBytes());
                     String jsonObject = JsonFormat.printer().print(blockProto);
                     log.debug("jsonObject = {}", jsonObject);
-                    Block block = JSON.parseObject(jsonObject, new TypeReference<Block>() {});
+                    Block block = new Gson().fromJson(jsonObject, Block.class);
                     log.debug("block = {}", block.toString());
                 } catch (InvalidProtocolBufferException e) {
                     e.printStackTrace();

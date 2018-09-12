@@ -75,7 +75,7 @@ public class EntityTest {
 
     public static byte[] getBlockBytes() {
         BlockProto.Block.Builder builder = BlockProto.Block.newBuilder();
-        String blockJsonFormat = new JSONObject(EntityTest.createBlock(0)).toString();
+        String blockJsonFormat = EntityTest.createBlock(0).toJsonString();
         log.debug("blockJsonFormat = {}", blockJsonFormat);
         try {
             JsonFormat.parser().merge(blockJsonFormat, builder);
