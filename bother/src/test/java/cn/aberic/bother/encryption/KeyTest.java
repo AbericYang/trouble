@@ -25,7 +25,7 @@
 package cn.aberic.bother.encryption;
 
 import cn.aberic.bother.encryption.key.exec.KeyExec;
-import cn.aberic.bother.storage.Common;
+import cn.aberic.bother.tools.Common;
 import lombok.extern.slf4j.Slf4j;
 
 /**

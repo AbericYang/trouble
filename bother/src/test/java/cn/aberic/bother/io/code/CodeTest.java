@@ -45,7 +45,6 @@ public class CodeTest {
 
         Remote remote = new Remote();
         remote.setAddress("1");
-        remote.setPort(1);
         remote.setTimeOut(2);
 
         TroubleCodeTest codeTest = new TroubleCodeTest();

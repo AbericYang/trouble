@@ -74,15 +74,7 @@ public class EntityTest {
     }
 
     public static byte[] getBlockBytes() {
-        BlockProto.Block.Builder builder = BlockProto.Block.newBuilder();
-        String blockJsonFormat = EntityTest.createBlock(0).toJsonString();
-        log.debug("blockJsonFormat = {}", blockJsonFormat);
-        try {
-            JsonFormat.parser().merge(blockJsonFormat, builder);
-        } catch (InvalidProtocolBufferException e) {
-            e.printStackTrace();
-        }
-        return builder.build().toByteArray();
+        return createBlock(0).block2ProtoByteArray();
     }
 
     private static void protoDemo() {

@@ -23,25 +23,29 @@
  *
  */
 
-package cn.aberic.bother.io.client.factory;
+package cn.aberic.bother.io.exec.client;
 
+import cn.aberic.bother.entity.EntityTest;
+import cn.aberic.bother.entity.io.MessageData;
 import cn.aberic.bother.entity.io.Remote;
+import cn.aberic.bother.io.IOContext;
+import lombok.extern.slf4j.Slf4j;
 
 /**
- * Netty 客户端工厂
- * <p>
- * 作者：Aberic on 2018/9/10 00:51
+ * 作者：Aberic on 2018/9/9 19:42
  * 邮箱：abericyang@gmail.com
  */
-public interface IOClientFactory {
+@Slf4j
+public class ClientTest {
 
-    /**
-     * 根据远程对象获取一个客户端链接，如果没有则新增
-     *
-     * @param remote remote
-     *
-     * @return 客户端
-     */
-    IOClient getOrCreate(Remote remote) throws Exception;
+    public static void main(String[] args) throws Exception {
+
+        Remote remote = new Remote();
+        remote.setAddress("127.0.0.1");
+        IOContext.obtain().startClient(remote);
+
+        MessageData msgData = new MessageData((byte) 0x01, EntityTest.getBlockBytes());
+        IOContext.obtain().broadcast(msgData);
+    }
 
 }

@@ -23,7 +23,7 @@
  *
  */
 
-package cn.aberic.bother.io.client.factory;
+package cn.aberic.bother.io.exec.factory;
 
 import cn.aberic.bother.entity.io.Remote;
 import io.netty.bootstrap.Bootstrap;
@@ -45,7 +45,6 @@ public class IONettyClient implements IOClient {
     private Bootstrap bootstrap;
     private Channel channel;
     private Remote remote;
-    private boolean shutdown = false;
 
     public IONettyClient(Bootstrap bootstrap, Remote remote, Channel channel) {
         this.bootstrap = bootstrap;
@@ -82,12 +81,7 @@ public class IONettyClient implements IOClient {
 
     @Override
     public void shutdown() {
-        shutdown = true;
-    }
-
-    @Override
-    public boolean isShutdown() {
-        return shutdown;
+        channel.close();
     }
 
     @Override

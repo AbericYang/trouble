@@ -27,15 +27,12 @@ package cn.aberic.bother.io;
 
 import cn.aberic.bother.entity.io.MessageData;
 import cn.aberic.bother.entity.io.Remote;
-import cn.aberic.bother.io.client.factory.IOClient;
-import cn.aberic.bother.io.client.factory.IOClientFactory;
-import cn.aberic.bother.io.client.factory.IONettyClientFactory;
-import cn.aberic.bother.io.server.EchoServer;
+import cn.aberic.bother.io.exec.client.EchoClient;
+import cn.aberic.bother.io.exec.factory.*;
+import cn.aberic.bother.io.exec.server.EchoServer;
+import cn.aberic.bother.tools.Common;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import io.netty.buffer.Unpooled;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.util.CharsetUtil;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
@@ -52,16 +49,17 @@ import java.util.concurrent.TimeUnit;
 public class IOContext {
 
     /** 长连接服务端读超时时间 */
-    public static final long IO_SERVER_READ_TIME_OUT = 180;
+    public static final long IO_SERVER_READ_TIME_OUT = 10;
     /** 长连接客户端写超时时间，需要比服务端读超时时间短，以维持心跳 */
-    public static final long IO_SERVER_WRITE_TIME_OUT = 5;
+    public static final long IO_SERVER_WRITE_TIME_OUT = 8;
     /** 作为服务端所接收到的链接集合 */
-    private Cache<String, ChannelHandlerContext> ctxServerCache;
+    private Cache<String, IOServer> ioServerCache;
     /** 作为客户端所接收到的链接集合 */
     private Cache<String, IOClient> ioClientCache;
     /** 作为应答端所接收到的链接集合 */
     private List<String> ips;
-    private IOClientFactory ioClientFactory;
+    private IOFactory ioServerFactory;
+    private IOFactory ioClientFactory;
 
     private static IOContext instance;
 
@@ -77,20 +75,17 @@ public class IOContext {
     }
 
     private IOContext() {
-        ctxServerCache = CacheBuilder.newBuilder().maximumSize(10).expireAfterAccess(15, TimeUnit.MINUTES).build();
+        ioServerCache = CacheBuilder.newBuilder().maximumSize(10).expireAfterAccess(15, TimeUnit.MINUTES).build();
         ioClientCache = CacheBuilder.newBuilder().maximumSize(10).expireAfterAccess(15, TimeUnit.MINUTES).build();
         ips = new ArrayList<>();
+        ioServerFactory = new IONettyServerFactory();
         ioClientFactory = new IONettyClientFactory();
     }
 
-    /**
-     * 根据端口号启动监听服务
-     *
-     * @param port 端口号
-     */
-    public void start(int port) {
+    /** 根据端口号启动监听服务 */
+    public void start() {
         try {
-            EchoServer.obtain().start(port);
+            EchoServer.obtain().start();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -99,40 +94,41 @@ public class IOContext {
     /**
      * 根据远程地址对象启动客户端
      *
-     * @param address 远程地址对象
+     * @param remote 远程地址对象
      */
-    public void startClient(Remote address) throws Exception {
-        log.info("向服务端发起链接 address = {}，port = {}", address.getAddress(), address.getPort());
-        ioClientPut(address.getAddress(), ioClientFactory.getOrCreate(address));
+    public void startClient(Remote remote) throws Exception {
+        log.info("向服务端发起链接 address = {}", remote.getAddress());
+        new EchoClient().createClient(remote);
     }
 
-    public void serverPut(String ip, ChannelHandlerContext ctx) {
-        log.info("存储客户端链接上下文 {}", ip);
-        ctxServerCache.put(ip, ctx);
-    }
-
-    public ChannelHandlerContext serverGet(String ip) {
+    public IOServer ioServerGet(String ip) {
         try {
-            return ctxServerCache.getIfPresent(ip);
+            return (IOServer) ioServerFactory.getOrCreate(new Remote(ip, Common.NETTY_CONNECT_TIMEOUT_MILLIS));
         } catch (Exception e) {
             return null;
         }
     }
 
-    public void serverRemove(String ip) {
-        ctxServerCache.invalidate(ip);
+    public void ioServerPut(String ip, IOServer ioServer) {
+        log.info("存储客户端链接上下文 {}", ip);
+        ioServerCache.put(ip, ioServer);
     }
+
+    public void ioServerRemove(String ip) {
+        ioServerCache.invalidate(ip);
+    }
+
 
     public IOClient ioClientGet(String ip) {
         try {
-            return ioClientCache.getIfPresent(ip);
+            return (IOClient) ioClientFactory.getOrCreate(new Remote(ip, Common.NETTY_CONNECT_TIMEOUT_MILLIS));
         } catch (Exception e) {
             return null;
         }
     }
 
     public void ioClientPut(String ip, IOClient ioClient) {
-        log.info("存储服务端端链接上下文 {}", ip);
+        log.info("存储服务端链接上下文 {}", ip);
         ioClientCache.put(ip, ioClient);
     }
 
@@ -148,30 +144,17 @@ public class IOContext {
         return ips;
     }
 
-    public void sendByServer() {
-        ctxServerCache.asMap().forEach((ip, ctx) -> {
-            ctx.writeAndFlush(Unpooled.copiedBuffer("Netty rocks!", CharsetUtil.UTF_8));
-        });
-    }
-
-    public void sendByServer(String ip) {
-        ctxServerCache.getIfPresent(ip).writeAndFlush(Unpooled.copiedBuffer("Netty rocks!", CharsetUtil.UTF_8));
-    }
-
-    public void sendByIOClient() {
-        ioClientCache.asMap().forEach((ip, ioClient) -> {
-            if (ioClient.isConnected()) {
-                ioClient.send(Unpooled.copiedBuffer(new byte[0x00]));
+    public void broadcast(MessageData msgData) {
+        ioServerCache.asMap().forEach((ip, ioServer) -> {
+            if (ioServer.isConnected()) {
+                ioServer.send(msgData);
             }
         });
-    }
-
-    public void sendByIOClient(String ip, MessageData msgData) {
-        ioClientCache.getIfPresent(ip).send(msgData);
-    }
-
-    public void sendByIOClient(String ip, byte[] bytes) {
-        ioClientCache.getIfPresent(ip).send(Unpooled.copiedBuffer(bytes));
+        ioClientCache.asMap().forEach((ip, ioClient) -> {
+            if (ioClient.isConnected()) {
+                ioClient.send(msgData);
+            }
+        });
     }
 
 }

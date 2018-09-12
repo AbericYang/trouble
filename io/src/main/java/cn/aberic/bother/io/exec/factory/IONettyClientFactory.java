@@ -23,16 +23,21 @@
  *
  */
 
-package cn.aberic.bother.io.client.factory;
+package cn.aberic.bother.io.exec.factory;
 
 import cn.aberic.bother.entity.io.Remote;
-import cn.aberic.bother.io.client.EchoClient;
+import cn.aberic.bother.io.exec.client.EchoClient;
 
 /**
  * 作者：Aberic on 2018/9/10 01:01
  * 邮箱：abericyang@gmail.com
  */
-public class IONettyClientFactory extends IOAbstractClientFactory {
+public class IONettyClientFactory extends IOAbstractFactory {
+
+    @Override
+    public boolean isClient() {
+        return true;
+    }
 
     @Override
     protected IOClient createClient(Remote remote) throws Exception {

@@ -20,14 +20,13 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- *
  */
 
-package cn.aberic.bother.io.client.handler;
+package cn.aberic.bother.io.handler;
 
-import cn.aberic.bother.entity.io.MessageData;
 import cn.aberic.bother.io.IOContext;
-import cn.aberic.bother.io.client.factory.IOClient;
+import cn.aberic.bother.io.exec.factory.IOClient;
+import cn.aberic.bother.io.message.IMsgService;
 import cn.aberic.bother.tools.DateTool;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandler;
@@ -37,6 +36,7 @@ import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
 import io.netty.util.CharsetUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
 
 /**
  * 作者：Aberic on 2018/9/9 19:37
@@ -52,11 +52,16 @@ import lombok.extern.slf4j.Slf4j;
 // 消息在EchoServerHandler 的channelReadComplete()方法中，当writeAndFlush()方法被调用时被释放
 @ChannelHandler.Sharable
 @Slf4j
-public class EchoClientHandler extends SimpleChannelInboundHandler<ByteBuf> {
+public class EchoClientHandler extends SimpleChannelInboundHandler<ByteBuf> implements IMsgService {
 
     /** 循环次数 */
     private int loopCount = 1;
     private IOClient ioClient;
+
+    @Override
+    public Logger log() {
+        return log;
+    }
 
     public void setIoClient(IOClient ioClient) {
         this.ioClient = ioClient;
@@ -84,17 +89,12 @@ public class EchoClientHandler extends SimpleChannelInboundHandler<ByteBuf> {
     }
 
     @Override
-    public void userEventTriggered(ChannelHandlerContext ctx, Object obj) throws Exception {
+    public void userEventTriggered(ChannelHandlerContext ctx, Object obj) {
         log.debug("发送心跳请求 {}, 第{}次", DateTool.getCurrent("yyyy/MM/dd HH:mm:ss"), loopCount);
         if (obj instanceof IdleStateEvent) {
             IdleStateEvent event = (IdleStateEvent) obj;
-            if (ioClient.isShutdown()) {
-                ctx.fireChannelInactive();
-                ctx.channel().close();
-            } else if (IdleState.WRITER_IDLE.equals(event.state())) {  // 如果写通道处于空闲状态,就发送心跳命令
-                MessageData messageData = new MessageData();
-                messageData.setProtocolId((byte) 0x00);
-                ctx.channel().writeAndFlush(messageData);
+            if (IdleState.WRITER_IDLE.equals(event.state())) {  // 如果写通道处于空闲状态,就发送心跳命令
+                sendHeartBeat(ctx.channel());
                 loopCount++;
             }
         }

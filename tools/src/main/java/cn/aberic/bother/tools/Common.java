@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package cn.aberic.bother.storage;
+package cn.aberic.bother.tools;
 
 /**
  * 常量——公共方法包
@@ -31,6 +31,9 @@ package cn.aberic.bother.storage;
  * 邮箱：abericyang@gmail.com
  */
 public class Common {
+
+    public final static int NETTY_CLIENT_PORT = 63715;
+    public final static int NETTY_CONNECT_TIMEOUT_MILLIS = 300000;
 
     public final static String BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH = "d11d842aca8ee9b82ea1634791f98e83";
     public final static String TOKEN_DEFAULT_PUBLIC_HASH = "cd213e49350e5de24e95c3154dca940e5a742259cf922aac6279251324409eff";

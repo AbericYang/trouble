@@ -25,7 +25,7 @@
 package cn.aberic.bother.contract.exec;
 
 import cn.aberic.bother.contract.exec.service.IContractDataIndexFileExec;
-import cn.aberic.bother.storage.Common;
+import cn.aberic.bother.tools.Common;
 import cn.aberic.bother.storage.FileComponent;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;

@@ -25,7 +25,7 @@
 package cn.aberic.bother.contract.exec.service;
 
 import cn.aberic.bother.entity.contract.Contract;
-import cn.aberic.bother.storage.Common;
+import cn.aberic.bother.tools.Common;
 import cn.aberic.bother.storage.IFile;
 import cn.aberic.bother.storage.IInit;
 

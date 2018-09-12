@@ -27,7 +27,7 @@ package cn.aberic.bother.contract.exec;
 import cn.aberic.bother.contract.exec.service.IContractFileExec;
 import cn.aberic.bother.encryption.MD5;
 import cn.aberic.bother.entity.contract.Contract;
-import cn.aberic.bother.storage.Common;
+import cn.aberic.bother.tools.Common;
 import cn.aberic.bother.storage.FileComponent;
 import cn.aberic.bother.tools.FileTool;
 import cn.aberic.bother.tools.exception.ContractFileNotFoundException;

@@ -25,11 +25,15 @@
 package cn.aberic.bother.entity.block;
 
 import cn.aberic.bother.entity.BeanJsonField;
+import cn.aberic.bother.entity.proto.BlockProto;
 import com.alibaba.fastjson.annotation.JSONField;
 import com.google.common.hash.Hashing;
+import com.google.protobuf.InvalidProtocolBufferException;
+import com.google.protobuf.util.JsonFormat;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
 
 import java.nio.charset.Charset;
 
@@ -39,16 +43,17 @@ import java.nio.charset.Charset;
  * 作者：Aberic on 2018/8/20 21:21
  * 邮箱：abericyang@gmail.com
  */
+@Slf4j
 @Setter
 @Getter
 @ToString
 public class Block implements BeanJsonField {
 
     /** 区块头部信息 */
-    @JSONField(name="h")
+    @JSONField(name = "h")
     private BlockHeader header;
     /** 区块数据体 */
-    @JSONField(name="b")
+    @JSONField(name = "b")
     private BlockBody body;
 
     public Block(BlockHeader header, BlockBody body) {
@@ -62,6 +67,23 @@ public class Block implements BeanJsonField {
                 header.getPreviousDataHash(),
                 Long.toString(header.getTimestamp()),
                 body.bodyString()), Charset.forName("UTF-8")).toString();
+    }
+
+    /**
+     * Block 对象转成 {@link cn.aberic.bother.entity.proto.BlockProto.Block} 字节流
+     *
+     * @return proto 字节流
+     */
+    public byte[] block2ProtoByteArray() {
+        BlockProto.Block.Builder builder = BlockProto.Block.newBuilder();
+        String blockJsonFormat = this.toJsonString();
+        log.debug("blockJsonFormat = {}", blockJsonFormat);
+        try {
+            JsonFormat.parser().merge(blockJsonFormat, builder);
+        } catch (InvalidProtocolBufferException e) {
+            e.printStackTrace();
+        }
+        return builder.build().toByteArray();
     }
 
 }

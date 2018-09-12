@@ -23,13 +23,15 @@
  *
  */
 
-package cn.aberic.bother.io.client;
+package cn.aberic.bother.io.exec.client;
 
 import cn.aberic.bother.entity.io.Remote;
-import cn.aberic.bother.io.client.factory.IOClient;
-import cn.aberic.bother.io.client.factory.IONettyClient;
-import cn.aberic.bother.io.client.filter.EchoClientFilter;
-import cn.aberic.bother.io.client.handler.EchoClientHandler;
+import cn.aberic.bother.io.IOContext;
+import cn.aberic.bother.io.exec.factory.IOClient;
+import cn.aberic.bother.io.exec.factory.IONettyClient;
+import cn.aberic.bother.io.filter.EchoClientFilter;
+import cn.aberic.bother.io.handler.EchoClientHandler;
+import cn.aberic.bother.tools.Common;
 import cn.aberic.bother.tools.SystemTool;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.ByteBufAllocator;
@@ -75,7 +77,7 @@ public class EchoClient {
                 // 适用于NIO 传输的Channel 类型
                 .channel(NioSocketChannel.class)
                 // 设置服务器的InetSocketAddress
-                .remoteAddress(new InetSocketAddress(remote.getAddress(), remote.getPort()))
+                .remoteAddress(new InetSocketAddress(remote.getAddress(), Common.NETTY_CLIENT_PORT))
                 // 在创建Channel 时向ChannelPipeline中添加一个EchoClientHandler 实例
                 .handler(new EchoClientFilter(clientHandler));
 
@@ -89,6 +91,8 @@ public class EchoClient {
         if (future.awaitUninterruptibly(remote.getTimeOut()) && future.isSuccess() && future.channel().isActive()) {
             IOClient ioClient = new IONettyClient(bootstrap, remote, future.channel());
             clientHandler.setIoClient(ioClient);
+            // 将 ioClient 置入缓存
+            IOContext.obtain().ioClientPut(remote.getAddress(), ioClient);
             return ioClient;
         } else {
             future.cancel(true);

@@ -42,9 +42,14 @@ public class Remote {
 
     /** 远程连接主机 address */
     private String address;
-    /** 远程连接主机端口号 */
-    private int port;
     /** 远程连接主机连接超时时间 */
     private int timeOut;
 
+    public Remote() {
+    }
+
+    public Remote(String address, int timeOut) {
+        this.address = address;
+        this.timeOut = timeOut;
+    }
 }

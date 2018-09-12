@@ -20,23 +20,15 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- *
  */
 
-package cn.aberic.bother.io.server;
-
-import cn.aberic.bother.io.IOContext;
+package cn.aberic.bother.io.message;
 
 /**
- * 作者：Aberic on 2018/9/9 18:02
+ * 消息业务处理接口
+ * <p>
+ * 作者：Aberic on 2018/09/12 14:11
  * 邮箱：abericyang@gmail.com
  */
-public class ServerTest {
-
-    public static void main(String[] args) {
-
-        IOContext.obtain().start(63715);
-
-    }
-
+public interface IMsgService extends IMsgAskService, IMsgAnswerService {
 }

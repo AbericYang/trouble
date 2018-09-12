@@ -22,39 +22,40 @@
  * SOFTWARE.
  */
 
-package cn.aberic.bother.contract.system;
+package cn.aberic.bother.io.message;
 
-import cn.aberic.bother.contract.exec.service.IPublicContractExec;
-import cn.aberic.bother.entity.contract.Account;
-import cn.aberic.bother.entity.token.Token;
-import cn.aberic.bother.tools.Common;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.TypeReference;
-
-import java.math.BigDecimal;
+import cn.aberic.bother.entity.block.Block;
+import cn.aberic.bother.entity.io.MessageData;
+import io.netty.channel.Channel;
 
 /**
- * 作者：Aberic on 2018/9/7 20:32
+ * 请求消息业务处理接口
+ * <p>
+ * 作者：Aberic on 2018/09/12 14:12
  * 邮箱：abericyang@gmail.com
  */
-public interface IHelper {
+interface IMsgAskService {
 
-    default void cost(IPublicContractExec exec, BigDecimal cost, Token token) {
-        Account account = JSON.parseObject(exec.get(Common.TOKEN_DEFAULT_SECOND_HASH), new TypeReference<Account>() {});
-        account.setCount(account.getCount().add(cost).setScale(token.getDecimals(), BigDecimal.ROUND_HALF_UP));
-        exec.put(account.getAddress(), JSON.toJSONString(account));
+    /**
+     * 在当前channel下发送心跳包
+     *
+     * @param channel 当前通道
+     */
+    default void sendHeartBeat(Channel channel) {
+        MessageData msgData = new MessageData();
+        msgData.setProtocolId((byte) 0x00);
+        channel.writeAndFlush(msgData);
     }
 
     /**
-     * 根据存储大小计算消费
+     * 在当前channel下发送区块proto字节流
      *
-     * @param size     当前存储大小
-     * @param decimals 支持几位小数点后几位。如果设置为3。也就是支持0.001表示
-     *
-     * @return 消费额
+     * @param channel 当前通道
+     * @param block   区块对象
      */
-    default BigDecimal coefficient(long size, int decimals) {
-        return new BigDecimal(size * 0.00001).setScale(decimals, BigDecimal.ROUND_HALF_UP);
+    default void sendBlock(Channel channel, Block block) {
+        MessageData msgData = new MessageData((byte) 0x01, block.block2ProtoByteArray());
+        channel.writeAndFlush(msgData);
     }
 
 }

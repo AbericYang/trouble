@@ -33,7 +33,7 @@ import cn.aberic.bother.entity.contract.Request;
 import cn.aberic.bother.entity.response.IResponse;
 import cn.aberic.bother.entity.response.Response;
 import cn.aberic.bother.entity.token.Token;
-import cn.aberic.bother.storage.Common;
+import cn.aberic.bother.tools.Common;
 import cn.aberic.bother.tools.exception.AccountNotFoundException;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;

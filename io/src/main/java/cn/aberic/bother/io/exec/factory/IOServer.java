@@ -20,28 +20,14 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- *
  */
 
-package cn.aberic.bother.io.client.factory;
-
-import cn.aberic.bother.entity.io.Remote;
-import cn.aberic.bother.io.IOContext;
+package cn.aberic.bother.io.exec.factory;
 
 /**
- * 作者：Aberic on 2018/9/10 00:55
+ * 作者：Aberic on 2018/09/12 15:30
  * 邮箱：abericyang@gmail.com
  */
-public abstract class IOAbstractClientFactory implements IOClientFactory {
+public interface IOServer extends IOExec {
 
-    protected abstract IOClient createClient(Remote address) throws Exception;
-
-    @Override
-    public IOClient getOrCreate(Remote remote) throws Exception {
-        IOClient ioClient = IOContext.obtain().ioClientGet(remote.getAddress());
-        if (null == ioClient) {
-            ioClient = createClient(remote);
-        }
-        return ioClient;
-    }
 }

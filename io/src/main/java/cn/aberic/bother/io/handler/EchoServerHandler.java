@@ -20,19 +20,17 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- *
  */
 
-package cn.aberic.bother.io.server.handler;
+package cn.aberic.bother.io.handler;
 
-import cn.aberic.bother.entity.block.Block;
 import cn.aberic.bother.entity.io.MessageData;
-import cn.aberic.bother.entity.proto.BlockProto;
+import cn.aberic.bother.entity.io.Remote;
 import cn.aberic.bother.io.IOContext;
+import cn.aberic.bother.io.exec.factory.IONettyServer;
+import cn.aberic.bother.io.exec.factory.IOServer;
+import cn.aberic.bother.io.message.IMsgService;
 import cn.aberic.bother.tools.DateTool;
-import com.google.gson.Gson;
-import com.google.protobuf.InvalidProtocolBufferException;
-import com.google.protobuf.util.JsonFormat;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
@@ -40,6 +38,7 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
 
 /**
  * 实现了业务逻辑，该实例可初始化每一个新的Channel
@@ -50,39 +49,30 @@ import lombok.extern.slf4j.Slf4j;
 // 标示一个ChannelHandler可以被多个Channel安全地共享
 @ChannelHandler.Sharable
 @Slf4j
-public class EchoServerHandler extends ChannelInboundHandlerAdapter {
+public class EchoServerHandler extends ChannelInboundHandlerAdapter implements IMsgService {
 
     /** 空闲次数 */
     private int idleCount = 1;
 
     @Override
+    public Logger log() {
+        return log;
+    }
+
+    @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         super.channelActive(ctx);
         // 加入服务端所接收到的链接集合
-        IOContext.obtain().serverPut(ctx.channel().remoteAddress().toString().split(":")[0].split("/")[1], ctx);
+        Remote remote = new Remote();
+        remote.setAddress(ctx.channel().remoteAddress().toString().split(":")[0].split("/")[1]);
+        IOServer ioServer = new IONettyServer(remote, ctx.channel());
+        IOContext.obtain().ioServerPut(ctx.channel().remoteAddress().toString().split(":")[0].split("/")[1], ioServer);
     }
 
     // 需要处理所有接收到的数据，所以重写channelRead()方法
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
-        MessageData msgData = (MessageData) msg;
-        log.debug("请求协议：{}，数据ID：{}", msgData.getProtocolId(), msgData.getDataId());
-        switch (msgData.getProtocolId()) {
-            case 0x79:
-                // Account account = msgData.getObject(Account.class);
-                try {
-                    BlockProto.Block blockProto = BlockProto.Block.parseFrom(msgData.getBytes());
-                    String jsonObject = JsonFormat.printer().print(blockProto);
-                    log.debug("jsonObject = {}", jsonObject);
-                    Block block = new Gson().fromJson(jsonObject, Block.class);
-                    log.debug("block = {}", block.toString());
-                } catch (InvalidProtocolBufferException e) {
-                    e.printStackTrace();
-                }
-                break;
-        }
-        // 将接收到的消息写给发送者，而不冲刷出站消息
-        ctx.write(msgData);
+        exec(ctx.channel(), (MessageData) msg);
     }
 
     @Override
@@ -116,7 +106,7 @@ public class EchoServerHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-        IOContext.obtain().serverRemove(ctx.channel().remoteAddress().toString().split(":")[0].split("/")[1]);
+        IOContext.obtain().ioServerRemove(ctx.channel().remoteAddress().toString().split(":")[0].split("/")[1]);
         log.info("关闭连接 time = {}", DateTool.getCurrent("yyyy/MM/dd HH:mm:ss"));
         super.channelInactive(ctx);
     }

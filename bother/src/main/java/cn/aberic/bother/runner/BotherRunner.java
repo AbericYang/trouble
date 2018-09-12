@@ -24,7 +24,7 @@
 
 package cn.aberic.bother.runner;
 
-import cn.aberic.bother.storage.Common;
+import cn.aberic.bother.tools.Common;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;

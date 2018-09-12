@@ -23,27 +23,31 @@
  *
  */
 
-package cn.aberic.bother.io.client.factory;
+package cn.aberic.bother.io.exec.factory;
 
 import cn.aberic.bother.entity.io.Remote;
 
 /**
- * 作者：Aberic on 2018/9/10 00:53
+ * Netty IO 工厂
+ * <p>
+ * 作者：Aberic on 2018/9/10 00:51
  * 邮箱：abericyang@gmail.com
  */
-public interface IOClient {
+public interface IOFactory {
 
-    void doConnect();
+    /**
+     * 是否是客户端执行 IO 操作
+     *
+     * @return 与否
+     */
+    boolean isClient();
 
-    /** 发送请求 */
-    void send(Object msg);
-
-    Remote getRemote();
-
-    void shutdown();
-
-    boolean isShutdown();
-
-    boolean isConnected();
+    /**
+     * 根据远程对象获取一个客户端链接，如果没有则新增
+     *
+     * @param remote remote
+     * @return 客户端
+     */
+    IOExec getOrCreate(Remote remote) throws Exception;
 
 }

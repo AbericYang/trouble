@@ -22,39 +22,23 @@
  * SOFTWARE.
  */
 
-package cn.aberic.bother.block.exec;
+package cn.aberic.bother.io.exec.factory;
 
-import cn.aberic.bother.block.exec.service.IBlockExec;
-import cn.aberic.bother.tools.Common;
-import cn.aberic.bother.storage.FileComponent;
-import cn.aberic.bother.storage.Init;
-import org.apache.commons.lang3.StringUtils;
+import cn.aberic.bother.entity.io.Remote;
 
 /**
- * 区块文件本地读写——数据操作层-data manipulation
- * <p>
- * 作者：Aberic on 2018/08/24 11:44
+ * 作者：Aberic on 2018/09/12 15:34
  * 邮箱：abericyang@gmail.com
  */
-public class BlockExec extends Init implements IBlockExec {
+public interface IOExec {
 
-    /**
-     * 根据智能合约hash值操作区块文件；
-     * 在智能合约被安装的时候就根据合约内容计算该合约hash；
-     * 并以此hash匹配所有安装该合约的节点且同步数据
-     *
-     * @param contractHash 智能合约hash值
-     */
-    BlockExec(String contractHash) {
-        super(contractHash);
-    }
+    /** 发送请求 */
+    void send(Object msg);
 
-    @Override
-    public FileComponent getFileStatus() {
-        if (StringUtils.equals(getStorageHash(), Common.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH)) {
-            return FileComponent.getBlockFileComponentDefault();
-        }
-        return FileComponent.getBlockFileComponent(getStorageHash());
-    }
+    Remote getRemote();
+
+    void shutdown();
+
+    boolean isConnected();
 
 }

@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package cn.aberic.bother.io.server.filter;
+package cn.aberic.bother.io.filter;
 
 import cn.aberic.bother.io.IOContext;
 import cn.aberic.bother.io.code.TroubleDecode;
@@ -36,18 +36,17 @@ import io.netty.handler.timeout.IdleStateHandler;
 import java.util.concurrent.TimeUnit;
 
 /**
- * 服务端过滤器
+ * 客户端过滤器
  * <p>
  * 增加了心跳的相关设置
- * <p>
- * 作者：Aberic on 2018/09/10 12:50
+ * 作者：Aberic on 2018/09/10 13:59
  * 邮箱：abericyang@gmail.com
  */
-public class EchoServerFilter extends ChannelInitializer<SocketChannel> {
+public class EchoClientFilter extends ChannelInitializer<SocketChannel> {
 
     private ChannelHandler channelHandler;
 
-    public EchoServerFilter(ChannelHandler channelHandler) {
+    public EchoClientFilter(ChannelHandler channelHandler) {
         this.channelHandler = channelHandler;
     }
 
@@ -56,7 +55,8 @@ public class EchoServerFilter extends ChannelInitializer<SocketChannel> {
         ChannelPipeline ph = ch.pipeline();
         // 解码和编码，应和客户端一致
         // 入参说明: 读超时时间、写超时时间、所有类型的超时时间、时间格式
-        ph.addLast(new IdleStateHandler(IOContext.IO_SERVER_READ_TIME_OUT, 0, 0, TimeUnit.SECONDS));
+        // 设置需比服务端超时时间短
+        ph.addLast(new IdleStateHandler(0, IOContext.IO_SERVER_WRITE_TIME_OUT, 0, TimeUnit.SECONDS));
         ph.addLast("encoder", new TroubleEncode());
         ph.addLast("decoder", new TroubleDecode());
         ph.addLast("handler", channelHandler);// 服务端业务逻辑

@@ -20,41 +20,23 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
+ *
  */
 
-package cn.aberic.bother.contract.system;
+package cn.aberic.bother.io.exec.server;
 
-import cn.aberic.bother.contract.exec.service.IPublicContractExec;
-import cn.aberic.bother.entity.contract.Account;
-import cn.aberic.bother.entity.token.Token;
-import cn.aberic.bother.tools.Common;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.TypeReference;
-
-import java.math.BigDecimal;
+import cn.aberic.bother.io.IOContext;
 
 /**
- * 作者：Aberic on 2018/9/7 20:32
+ * 作者：Aberic on 2018/9/9 18:02
  * 邮箱：abericyang@gmail.com
  */
-public interface IHelper {
+public class ServerTest {
 
-    default void cost(IPublicContractExec exec, BigDecimal cost, Token token) {
-        Account account = JSON.parseObject(exec.get(Common.TOKEN_DEFAULT_SECOND_HASH), new TypeReference<Account>() {});
-        account.setCount(account.getCount().add(cost).setScale(token.getDecimals(), BigDecimal.ROUND_HALF_UP));
-        exec.put(account.getAddress(), JSON.toJSONString(account));
-    }
+    public static void main(String[] args) {
 
-    /**
-     * 根据存储大小计算消费
-     *
-     * @param size     当前存储大小
-     * @param decimals 支持几位小数点后几位。如果设置为3。也就是支持0.001表示
-     *
-     * @return 消费额
-     */
-    default BigDecimal coefficient(long size, int decimals) {
-        return new BigDecimal(size * 0.00001).setScale(decimals, BigDecimal.ROUND_HALF_UP);
+        IOContext.obtain().start();
+
     }
 
 }

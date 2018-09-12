@@ -24,7 +24,7 @@
 
 package cn.aberic.bother.storage.db;
 
-import cn.aberic.bother.storage.Common;
+import cn.aberic.bother.tools.Common;
 import cn.aberic.bother.storage.db.service.IDBExec;
 import org.rocksdb.*;
 import org.rocksdb.util.SizeUnit;

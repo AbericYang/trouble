@@ -30,6 +30,7 @@ import cn.aberic.bother.entity.contract.Account;
 import cn.aberic.bother.entity.contract.Contract;
 import cn.aberic.bother.entity.contract.ContractInfo;
 import cn.aberic.bother.entity.token.Token;
+import cn.aberic.bother.tools.Common;
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 

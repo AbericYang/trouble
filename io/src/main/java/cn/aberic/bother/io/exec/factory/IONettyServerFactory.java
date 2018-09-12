@@ -20,33 +20,27 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- *
  */
 
-package cn.aberic.bother.io.client;
+package cn.aberic.bother.io.exec.factory;
 
-import cn.aberic.bother.entity.EntityTest;
-import cn.aberic.bother.entity.io.MessageData;
 import cn.aberic.bother.entity.io.Remote;
-import cn.aberic.bother.io.IOContext;
-import lombok.extern.slf4j.Slf4j;
+import cn.aberic.bother.io.exec.client.EchoClient;
 
 /**
- * 作者：Aberic on 2018/9/9 19:42
+ * 作者：Aberic on 2018/09/12 15:40
  * 邮箱：abericyang@gmail.com
  */
-@Slf4j
-public class ClientTest {
+public class IONettyServerFactory extends IOAbstractFactory {
 
-    public static void main(String[] args) throws Exception {
+    @Override
+    public boolean isClient() {
+        return false;
+    }
 
-        Remote remote = new Remote();
-        remote.setAddress("127.0.0.1");
-        remote.setPort(63715);
-        IOContext.obtain().startClient(remote);
-
-        MessageData msgData = new MessageData((byte) 0x79, EntityTest.getBlockBytes());
-        IOContext.obtain().sendByIOClient("127.0.0.1", msgData);
+    @Override
+    protected IOClient createClient(Remote remote) throws Exception {
+        return new EchoClient().createClient(remote);
     }
 
 }

@@ -23,10 +23,11 @@
  *
  */
 
-package cn.aberic.bother.io.server;
+package cn.aberic.bother.io.exec.server;
 
-import cn.aberic.bother.io.server.filter.EchoServerFilter;
-import cn.aberic.bother.io.server.handler.EchoServerHandler;
+import cn.aberic.bother.io.filter.EchoServerFilter;
+import cn.aberic.bother.io.handler.EchoServerHandler;
+import cn.aberic.bother.tools.Common;
 import cn.aberic.bother.tools.SystemTool;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.ByteBufAllocator;
@@ -67,7 +68,7 @@ public class EchoServer {
 
     private EchoServer() {}
 
-    public void start(int port) throws Exception {
+    public void start() throws Exception {
         final EchoServerHandler serverHandler = new EchoServerHandler();
         // 创建Event-LoopGroup。
         // 因为正在使用的是NIO传输，所以指定NioEventLoopGroup来接受和处理新的连接
@@ -95,7 +96,7 @@ public class EchoServer {
                     // 指定所使用的NIO传输Channel
                     .channel(SystemTool.isLinux() ? EpollServerSocketChannel.class : NioServerSocketChannel.class)
                     // 使用指定的端口设置套接字地址/将本地地址设置为一个具有选定端口的InetSocket-Address
-                    .localAddress(new InetSocketAddress(port))
+                    .localAddress(new InetSocketAddress(Common.NETTY_CLIENT_PORT))
                     .childHandler(new EchoServerFilter(serverHandler));
             // 异步地绑定服务器；调用sync()方法阻塞等待直到绑定完成
             ChannelFuture future = bootstrap.bind().sync();

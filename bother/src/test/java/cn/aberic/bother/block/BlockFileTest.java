@@ -26,7 +26,7 @@ package cn.aberic.bother.block;
 
 import cn.aberic.bother.entity.EntityTest;
 import cn.aberic.bother.entity.block.Block;
-import cn.aberic.bother.storage.Common;
+import cn.aberic.bother.tools.Common;
 import cn.aberic.bother.tools.DeflaterTool;
 import cn.aberic.bother.tools.FileTool;
 import cn.aberic.bother.tools.exception.SearchDataNotFoundException;
