@@ -27,10 +27,16 @@ package cn.aberic.bother.block;
 import cn.aberic.bother.entity.EntityTest;
 import cn.aberic.bother.entity.block.Block;
 import cn.aberic.bother.storage.Common;
+import cn.aberic.bother.tools.DeflaterTool;
+import cn.aberic.bother.tools.FileTool;
 import cn.aberic.bother.tools.exception.SearchDataNotFoundException;
 import cn.aberic.bother.tools.exception.SearchDataTimeoutException;
+import com.alibaba.fastjson.JSON;
+import com.google.common.io.Files;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Date;
 
 /**
@@ -40,9 +46,10 @@ import java.util.Date;
 @Slf4j
 public class BlockFileTest {
 
-    public static void main(String[] args) {
-        writeBlock();
+    public static void main(String[] args) throws IOException {
+//        writeBlock();
 //        blockTest();
+        fileSize();
     }
 
     private static void blockTest() throws SearchDataNotFoundException, SearchDataTimeoutException {
@@ -78,6 +85,16 @@ public class BlockFileTest {
             log.debug("================= blockCount = {} =================", blockCount);
             blockStorage.snyc(EntityTest.createBlock(blockCount));
         }
+    }
+
+    private static void fileSize() throws IOException {
+        String fileJsonPath = "/Users/Aberic/Documents/tmp/file/json.data";
+        String fileProtoPath = "/Users/Aberic/Documents/tmp/file/proto.data";
+        Block block = EntityTest.createBlock(10000);
+        FileTool.createFirstFile(fileJsonPath);
+        FileTool.createFirstFile(fileProtoPath);
+        FileTool.writeFirstLine(new File(fileJsonPath), DeflaterTool.compress(JSON.toJSONString(block)));
+        Files.write(EntityTest.getBlockBytes(), new File(fileProtoPath));
     }
 
 }

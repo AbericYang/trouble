@@ -46,7 +46,7 @@ public class TroubleEncode extends MessageToByteEncoder<MessageData> implements 
     }
 
     @Override
-    protected void encode(ChannelHandlerContext ctx, MessageData msgData, ByteBuf out) throws Exception {
+    protected void encode(ChannelHandlerContext ctx, MessageData msgData, ByteBuf out) {
         int dataId = createDataId();
         msgData.setDataId(dataId);
         out.writeByte(msgData.getProtocolId());
