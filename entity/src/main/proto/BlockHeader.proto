@@ -1,0 +1,14 @@
+syntax = "proto3";
+//生成文件所在包名
+option java_package = "cn.aberic.bother.entity.proto";
+//生成的java文件名
+option java_outer_classname = "BlockHeaderProto";
+
+message BlockHeader {
+    int32 height = 1; // 区块高度
+    string currentDataHash = 2; // 当前区块hash
+    string previousDataHash = 3; // 上一区块hash
+    int64 timestamp = 4; // 当前区块生成时间戳
+    string dataStorageHash = 5; // 隐藏属性，压缩查询
+    string time = 6; // 交易时间戳转字符串——yyyy/MM/dd HH:mm:ss
+}

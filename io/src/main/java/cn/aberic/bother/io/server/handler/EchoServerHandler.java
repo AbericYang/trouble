@@ -25,10 +25,17 @@
 
 package cn.aberic.bother.io.server.handler;
 
+import cn.aberic.bother.entity.block.Block;
 import cn.aberic.bother.entity.contract.Account;
 import cn.aberic.bother.entity.io.MessageData;
+import cn.aberic.bother.entity.proto.BlockProto;
+import cn.aberic.bother.entity.proto.ProtoDemo;
 import cn.aberic.bother.io.IOContext;
 import cn.aberic.bother.tools.DateTool;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
+import com.google.protobuf.InvalidProtocolBufferException;
+import com.google.protobuf.util.JsonFormat;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
@@ -65,8 +72,16 @@ public class EchoServerHandler extends ChannelInboundHandlerAdapter {
         log.debug("请求协议：{}，数据ID：{}", msgData.getProtocolId(), msgData.getDataId());
         switch (msgData.getProtocolId()) {
             case 0x79:
-                Account account = msgData.getObject(Account.class);
-                log.debug("account = {}", account.toString());
+                // Account account = msgData.getObject(Account.class);
+                try {
+                    BlockProto.Block blockProto = BlockProto.Block.parseFrom(msgData.getBytes());
+                    String jsonObject = JsonFormat.printer().print(blockProto);
+                    log.debug("jsonObject = {}", jsonObject);
+                    Block block = JSON.parseObject(jsonObject, new TypeReference<Block>() {});
+                    log.debug("block = {}", block.toString());
+                } catch (InvalidProtocolBufferException e) {
+                    e.printStackTrace();
+                }
                 break;
         }
         // 将接收到的消息写给发送者，而不冲刷出站消息

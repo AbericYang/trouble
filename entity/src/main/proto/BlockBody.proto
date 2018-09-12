@@ -1,0 +1,12 @@
+syntax = "proto3";
+//生成文件所在包名
+option java_package = "cn.aberic.bother.entity.proto";
+//生成的java文件名
+option java_outer_classname = "BlockBodyProto";
+
+import "Transaction.proto";
+
+message BlockBody {
+    int32 txCount = 1;
+    repeated Transaction transactions = 2;
+}

@@ -25,22 +25,21 @@
 
 package cn.aberic.bother.io.client;
 
-import cn.aberic.bother.entity.block.*;
-import cn.aberic.bother.entity.contract.Account;
-import cn.aberic.bother.entity.enums.TransactionStatus;
+import cn.aberic.bother.entity.EntityTest;
 import cn.aberic.bother.entity.io.MessageData;
 import cn.aberic.bother.entity.io.Remote;
+import cn.aberic.bother.entity.proto.BlockProto;
 import cn.aberic.bother.io.IOContext;
-
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import com.google.protobuf.InvalidProtocolBufferException;
+import com.google.protobuf.util.JsonFormat;
+import lombok.extern.slf4j.Slf4j;
+import org.json.JSONObject;
 
 /**
  * 作者：Aberic on 2018/9/9 19:42
  * 邮箱：abericyang@gmail.com
  */
+@Slf4j
 public class ClientTest {
 
     public static void main(String[] args) throws Exception {
@@ -49,63 +48,9 @@ public class ClientTest {
         remote.setAddress("127.0.0.1");
         remote.setPort(63715);
         IOContext.obtain().startClient(remote);
-        MessageData msgData = new MessageData((byte) 0x79, get());
+
+        MessageData msgData = new MessageData((byte) 0x79, EntityTest.getBlockBytes());
         IOContext.obtain().sendByIOClient("127.0.0.1", msgData);
-    }
-
-    private static Block createBlock(int count) {
-        BlockHeader header = BlockHeader.newInstance().create(true, 120, new Date().getTime());
-
-        BlockBody body = new BlockBody();
-        List<Transaction> transactions = new ArrayList<>();
-        for (int transactionCount = 0; transactionCount < 10; transactionCount++) {
-            Transaction transaction = new Transaction();
-            transaction.setCreator(String.format("haha%s", transactionCount));
-            transaction.setErrorMessage(String.format("error message %s", transactionCount));
-            transaction.setSign(String.format("sign %s", transactionCount));
-            transaction.setTransactionStatusCode(TransactionStatus.SUCCESS.getCode());
-            transaction.setTimestamp(new Date().getTime());
-
-            RWSet rwSet = new RWSet();
-            List<ValueRead> reads = new ArrayList<>();
-            List<ValueWrite> writes = new ArrayList<>();
-            for (int rwCount = 0; rwCount < 3; rwCount++) {
-
-                ValueRead valueRead = new ValueRead();
-                valueRead.setKey(String.valueOf(count));
-
-                ValueWrite valueWrite = new ValueWrite();
-                valueWrite.setStrings(new String[]{String.valueOf(count), String.valueOf(transactionCount), String.valueOf(rwCount)});
-
-
-                reads.add(valueRead);
-                writes.add(valueWrite);
-
-            }
-            rwSet.setReads(reads);
-            rwSet.setWrites(writes);
-
-            transaction.setRwSet(rwSet);
-            transaction.setContractName(String.format("contract_%s%s%s", count, transactionCount, reads.size()));
-            transaction.setContractVersion(String.format("v_%s%s%s", count, transactionCount, writes.size()));
-
-            transactions.add(transaction);
-        }
-        body.setTxCount(transactions.size());
-        body.setTransactions(transactions);
-
-        return new Block(header, body);
-    }
-
-    private static Account get() {
-        Account account = new Account();
-        account.setCount(new BigDecimal(1));
-        account.setTimestamp(438756873L);
-        account.setJsonAccountInfoString("jshdfkjhsdkhfksdhkjfksdhk");
-        account.setPubRSAKey("ksdjflkjsdlkfjsldjflksjlkjlk");
-        account.setAddress("knmlkmldkkflkfskd;s");
-        account.setPubECCKey("cnowjodjwoefjoejfokejofjw");
-        return account;
     }
 
 }

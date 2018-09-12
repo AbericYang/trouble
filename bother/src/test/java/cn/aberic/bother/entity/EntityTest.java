@@ -25,20 +25,67 @@
 
 package cn.aberic.bother.entity;
 
+import cn.aberic.bother.entity.block.*;
+import cn.aberic.bother.entity.contract.Account;
+import cn.aberic.bother.entity.enums.TransactionStatus;
+import cn.aberic.bother.entity.proto.BlockHeaderProto;
+import cn.aberic.bother.entity.proto.BlockProto;
 import cn.aberic.bother.entity.proto.ProtoDemo;
 import com.alibaba.fastjson.JSON;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.util.JsonFormat;
+import lombok.extern.slf4j.Slf4j;
+import org.json.JSONObject;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 /**
  * 作者：Aberic on 2018/9/11 22:26
  * 邮箱：abericyang@gmail.com
  */
+@Slf4j
 public class EntityTest {
+
     public static void main(String[] args) {
+        // protoDemo();
+        createBlockProtobuf();
+    }
+
+    private static void createBlockProtobuf() {
+        BlockProto.Block.Builder builder = BlockProto.Block.newBuilder();
+        String blockJsonFormat = new JSONObject(createBlock(0)).toString();
+        log.debug("blockJsonFormat = {}", blockJsonFormat);
+        try {
+            JsonFormat.parser().merge(blockJsonFormat, builder);
+        } catch (InvalidProtocolBufferException e) {
+            e.printStackTrace();
+        }
+        BlockHeaderProto.BlockHeader header = builder.getHeader();
+        log.debug("height = {}", header.getHeight());
+        log.debug("currentDataHash = {}", header.getCurrentDataHash());
+        log.debug("previousDataHash = {}", header.getPreviousDataHash());
+        log.debug("timestamp = {}", header.getTimestamp());
+        log.debug("dataStorageHash = {}", header.getDataStorageHash());
+        log.debug("time = {}", header.getTime());
+    }
+
+    public static byte[] getBlockBytes() {
+        BlockProto.Block.Builder builder = BlockProto.Block.newBuilder();
+        String blockJsonFormat = new JSONObject(EntityTest.createBlock(0)).toString();
+        log.debug("blockJsonFormat = {}", blockJsonFormat);
+        try {
+            JsonFormat.parser().merge(blockJsonFormat, builder);
+        } catch (InvalidProtocolBufferException e) {
+            e.printStackTrace();
+        }
+        return builder.build().toByteArray();
+    }
+
+    private static void protoDemo() {
         //获取Student对象
         //这里的Student对象构造器被私有化,我们通过Student的内部类Builder来构建builder
         ProtoDemo.Student.Builder builder = ProtoDemo.Student.newBuilder();
@@ -91,9 +138,64 @@ public class EntityTest {
         } catch (InvalidProtocolBufferException e) {
             e.getMessage();
         }
-        System.out.println(jsonObject.toString());
+        System.out.println(jsonObject);
         System.out.println("json数据大小: " + jsonObject.getBytes().length);
-        System.out.println("fastjson数据大小: " + JSON.toJSONString(jsonObject.toString()).getBytes().length);
+        System.out.println("fastjson数据大小: " + JSON.toJSONString(jsonObject).getBytes().length);
+    }
+
+    public static Block createBlock(int count) {
+        BlockHeader header = BlockHeader.newInstance().create();
+
+        BlockBody body = new BlockBody();
+        List<Transaction> transactions = new ArrayList<>();
+        for (int transactionCount = 0; transactionCount < 10; transactionCount++) {
+            Transaction transaction = new Transaction();
+            transaction.setCreator(String.format("haha%s", transactionCount));
+            transaction.setErrorMessage(String.format("error message %s", transactionCount));
+            transaction.setSign(String.format("sign %s", transactionCount));
+            transaction.setTransactionStatusCode(TransactionStatus.SUCCESS.getCode());
+            transaction.setTimestamp(new Date().getTime());
+
+            RWSet rwSet = new RWSet();
+            List<ValueRead> reads = new ArrayList<>();
+            List<ValueWrite> writes = new ArrayList<>();
+            for (int rwCount = 0; rwCount < 3; rwCount++) {
+
+                ValueRead valueRead = new ValueRead();
+                valueRead.setKey(String.valueOf(count));
+
+                ValueWrite valueWrite = new ValueWrite();
+                valueWrite.setStrings(new String[]{String.valueOf(count), String.valueOf(transactionCount), String.valueOf(rwCount)});
+
+
+                reads.add(valueRead);
+                writes.add(valueWrite);
+
+            }
+            rwSet.setReads(reads);
+            rwSet.setWrites(writes);
+
+            transaction.setRwSet(rwSet);
+            transaction.setContractName(String.format("contract_%s%s%s", count, transactionCount, reads.size()));
+            transaction.setContractVersion(String.format("v_%s%s%s", count, transactionCount, writes.size()));
+
+            transactions.add(transaction);
+        }
+        body.setTxCount(transactions.size());
+        body.setTransactions(transactions);
+
+        return new Block(header, body);
+    }
+
+    public static Account createAccount() {
+        Account account = new Account();
+        account.setCount(new BigDecimal(1));
+        account.setTimestamp(438756873L);
+        account.setJsonAccountInfoString("jshdfkjhsdkhfksdhkjfksdhkjshdfkjhsdkhfksdhkjfksdhkjshdfkjhsdkhfksdhkjfksdhkjshdfkjhsdkhfksdhkjfksdhkjshdfkjhsdkhfksdhkjfksdhkjshdfkjhsdkhfksdhkjfksdhkjshdfkjhsdkhfksdhkjfksdhkjshdfkjhsdkhfksdhkjfksdhkjshdfkjhsdkhfksdhkjfksdhkjshdfkjhsdkhfksdhkjfksdhkjshdfkjhsdkhfksdhkjfksdhkjshdfkjhsdkhfksdhkjfksdhkjshdfkjhsdkhfksdhkjfksdhkjshdfkjhsdkhfksdhkjfksdhk");
+        account.setPubRSAKey("ksdjflkjsdlkfjsldjflksjlksdjflkjsdlkfjsldjflksjlkjlkksdjflkjsdlkfjsldjflksjlkjlkksdjflkjsdlkfjsldjflksjlkjlkksdjflkjsdlkfjsldjflksjlkjlkksdjflkjsdlkfjsldjflksjlkjlkksdjflkjsdlkfjsldjflksjlkjlkksdjflkjsdlkfjsldjflksjlkjlkksdjflkjsdlkfjsldjflksjlkjlkksdjflkjsdlkfjsldjflksjlkjlkksdjflkjsdlkfjsldjflksjlkjlkksdjflkjsdlkfjsldjflksjlkjlkksdjflkjsdlkfjsldjflksjlkjlkksdjflkjsdlkfjsldjflksjlkjlkksdjflkjsdlkfjsldjflksjlkjlkksdjflkjsdlkfjsldjflksjlkjlkksdjflkjsdlkfjsldjflksjlkjlkksdjflkjsdlkfjsldjflksjlkjlkkjlk");
+        account.setAddress("knmlkmldkkflkfskdsknmlkmldkkflkfskdsknmlkmldkkflkfskdsknmlkmldkkflkfskdsknmlkmldkkflkfskdsknmlkmldkkflkfskdsknmlkmldkkflkfskdsknmlkmldkkflkfskdsknmlkmldkkflkfskdsknmlkmldkkflkfskdsknmlkmldkkflkfskdsknmlkmldkkflkfskdsknmlkmldkkflkfskdsknmlkmldkkflkfskdsknmlkmldkkflkfskdsknmlkmldkkflkfskdsknmlkmldkkflkfskdsknmlkmldkkflkfskdsknmlkmldkkflkfskdsknmlkmldkkflkfskdsknmlkmldkkflkfskdsknmlkmldkkflkfskdsknmlkmldkkflkfskdsknmlkmldkkflkfskdsknmlkmldkkflkfskds");
+        account.setPubECCKey("cnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjw");
+        return account;
     }
 
 }

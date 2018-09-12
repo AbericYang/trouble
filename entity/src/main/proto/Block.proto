@@ -1,0 +1,13 @@
+syntax = "proto3";
+//生成文件所在包名
+option java_package = "cn.aberic.bother.entity.proto";
+//生成的java文件名
+option java_outer_classname = "BlockProto";
+
+import "BlockHeader.proto";
+import "BlockBody.proto";
+
+message Block {
+    BlockHeader header = 1; // 区块头部信息
+    BlockBody body = 2; // 区块数据体
+}

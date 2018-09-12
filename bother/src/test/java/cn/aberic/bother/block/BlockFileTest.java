@@ -24,16 +24,14 @@
 
 package cn.aberic.bother.block;
 
-import cn.aberic.bother.entity.block.*;
-import cn.aberic.bother.entity.enums.TransactionStatus;
+import cn.aberic.bother.entity.EntityTest;
+import cn.aberic.bother.entity.block.Block;
 import cn.aberic.bother.storage.Common;
 import cn.aberic.bother.tools.exception.SearchDataNotFoundException;
 import cn.aberic.bother.tools.exception.SearchDataTimeoutException;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 /**
  * 作者：Aberic on 2018/08/24 12:24
@@ -78,48 +76,7 @@ public class BlockFileTest {
         BlockStorage blockStorage = new BlockStorage(Common.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH);
         for (int blockCount = 45849; blockCount < 5000000; blockCount++) {
             log.debug("================= blockCount = {} =================", blockCount);
-            BlockHeader header = BlockHeader.newInstance().create(true, 120, new Date().getTime());
-
-            BlockBody body = new BlockBody();
-            List<Transaction> transactions = new ArrayList<>();
-            for (int transactionCount = 0; transactionCount < 10; transactionCount++) {
-                Transaction transaction = new Transaction();
-                transaction.setCreator(String.format("haha%s", transactionCount));
-                transaction.setErrorMessage(String.format("error message %s", transactionCount));
-                transaction.setSign(String.format("sign %s", transactionCount));
-                transaction.setTransactionStatusCode(TransactionStatus.SUCCESS.getCode());
-                transaction.setTimestamp(new Date().getTime());
-
-                RWSet rwSet = new RWSet();
-                List<ValueRead> reads = new ArrayList<>();
-                List<ValueWrite> writes = new ArrayList<>();
-                for (int rwCount = 0; rwCount < 3; rwCount++) {
-
-                    ValueRead valueRead = new ValueRead();
-                    valueRead.setKey(String.valueOf(blockCount));
-
-                    ValueWrite valueWrite = new ValueWrite();
-                    valueWrite.setStrings(new String[]{String.valueOf(blockCount), String.valueOf(transactionCount), String.valueOf(rwCount)});
-
-
-                    reads.add(valueRead);
-                    writes.add(valueWrite);
-
-                }
-                rwSet.setReads(reads);
-                rwSet.setWrites(writes);
-
-                transaction.setRwSet(rwSet);
-                transaction.setContractName(String.format("contract_%s%s%s", blockCount, transactionCount, reads.size()));
-                transaction.setContractVersion(String.format("v_%s%s%s", blockCount, transactionCount, writes.size()));
-
-                transactions.add(transaction.build(null));
-            }
-            body.setTxCount(transactions.size());
-            body.setTransactions(transactions);
-
-            Block block = new Block(header, body);
-            blockStorage.snyc(block);
+            blockStorage.snyc(EntityTest.createBlock(blockCount));
         }
     }
 

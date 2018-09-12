@@ -30,7 +30,6 @@ import com.google.common.hash.Hashing;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.json.JSONObject;
 
 import java.nio.charset.Charset;
 
@@ -59,9 +58,8 @@ public class Block implements BeanJsonField {
 
     /** 得到当前区块hash */
     public String calculateHash() {
-        return Hashing.sha256().hashString(String.format("%s%s%s%s",
+        return Hashing.sha256().hashString(String.format("%s%s%s",
                 header.getPreviousDataHash(),
-                header.getConsentNodeCount(),
                 Long.toString(header.getTimestamp()),
                 body.bodyString()), Charset.forName("UTF-8")).toString();
     }

@@ -24,12 +24,9 @@
 
 package cn.aberic.bother.entity.io;
 
-import cn.aberic.bother.tools.MsgPackTool;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-
-import java.io.IOException;
 
 /**
  * 数据传输对象
@@ -53,16 +50,9 @@ public class MessageData {
     public MessageData() {
     }
 
-    public MessageData(byte protocolId, Object object) {
+    public MessageData(byte protocolId, byte[] bytes) {
         this.protocolId = protocolId;
-        this.bytes = MsgPackTool.toBytes(object);
+        this.bytes = bytes;
     }
 
-    public <T> T getObject(Class<T> clazz) {
-        try {
-            return MsgPackTool.toObject(this.bytes, clazz);
-        } catch (IOException e) {
-            return null;
-        }
-    }
 }

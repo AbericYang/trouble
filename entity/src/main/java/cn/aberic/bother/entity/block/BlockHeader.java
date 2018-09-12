@@ -31,6 +31,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.util.Date;
+
 /**
  * 区块头部信息——数据操作层-data manipulation
  * <p>
@@ -43,31 +45,25 @@ import lombok.ToString;
 public class BlockHeader {
 
     /** 区块高度 */
-    @JSONField(name="h")
+    @JSONField(name = "h")
     private int height;
     /** 当前区块hash */
-    @JSONField(name="c")
+    @JSONField(name = "c")
     private String currentDataHash;
     /** 上一区块hash */
-    @JSONField(name="p")
+    @JSONField(name = "p")
     private String previousDataHash;
-    /** 是否由第一顺位节点出块 */
-    @JSONField(name="s")
-    private boolean smoothlyOut;
-    /** 参与本次区块打包的投票节点个数 */
-    @JSONField(name="nc")
-    private int consentNodeCount;
     /** 当前区块生成时间戳 */
-    @JSONField(name="t")
+    @JSONField(name = "t")
     private long timestamp;
     /** 隐藏属性，压缩查询 */
-    @JSONField(serialize=false)
+    @JSONField(serialize = false)
     private String dataStorageHash; // 序列化时不写入
-    /**交易时间戳转字符串——yyyy/MM/dd HH:mm:ss*/
-    @JSONField(serialize=false)
+    /** 交易时间戳转字符串——yyyy/MM/dd HH:mm:ss */
+    @JSONField(serialize = false)
     private String time; // 序列化时不写入
 
-    private BlockHeader(){}
+    private BlockHeader() {}
 
     public static BlockHeader newInstance() {
         return new BlockHeader();
@@ -80,14 +76,10 @@ public class BlockHeader {
     /**
      * 创建新区快头部构造
      *
-     * @param smoothlyOut      是否由第一顺位节点出块
-     * @param consentNodeCount 参与本次区块打包的投票节点个数
-     * @param timestamp        当前区块生成时间戳
+     * @return 区快头部构造
      */
-    public BlockHeader create(boolean smoothlyOut, int consentNodeCount, long timestamp) {
-        this.smoothlyOut = smoothlyOut;
-        this.consentNodeCount = consentNodeCount;
-        this.timestamp = timestamp;
+    public BlockHeader create() {
+        this.timestamp = new Date().getTime();
         return this;
     }
 
@@ -97,16 +89,12 @@ public class BlockHeader {
      * @param height           区块高度
      * @param currentDataHash  当前区块hash
      * @param previousDataHash 上一区块hash
-     * @param smoothlyOut      是否由第一顺位节点出块
-     * @param consentNodeCount 参与本次区块打包的投票节点个数
      * @param timestamp        当前区块生成时间戳
      */
-    public BlockHeader sync(int height, String currentDataHash, String previousDataHash, boolean smoothlyOut, int consentNodeCount, long timestamp) {
+    public BlockHeader sync(int height, String currentDataHash, String previousDataHash, long timestamp) {
         this.height = height;
         this.currentDataHash = currentDataHash;
         this.previousDataHash = previousDataHash;
-        this.smoothlyOut = smoothlyOut;
-        this.consentNodeCount = consentNodeCount;
         this.timestamp = timestamp;
         return this;
     }
