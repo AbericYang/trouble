@@ -151,6 +151,12 @@ public class IOContext {
         Objects.requireNonNull(ioClientCache.getIfPresent(address)).send(msgData);
     }
 
+    /**
+     * 作为服务端推送消息协议
+     *
+     * @param address 推送地址
+     * @param msgData 推送消息对象
+     */
     public void push(String address, MessageData msgData) {
         Objects.requireNonNull(ioServerCache.getIfPresent(address)).push(msgData);
     }

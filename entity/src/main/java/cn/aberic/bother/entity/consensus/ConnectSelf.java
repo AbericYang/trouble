@@ -20,29 +20,46 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- *
  */
 
-package cn.aberic.bother.entity.io;
+package cn.aberic.bother.entity.consensus;
 
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.LinkedList;
+import java.util.List;
+
 /**
- * 持有外部连接信息对象
+ * 连接信息对象，有且仅有一个实例
  * <p>
- * 作者：Aberic on 2018/9/12 21:11
+ * 作者：Aberic on 2018/9/12 22:23
  * 邮箱：abericyang@gmail.com
  */
 @Setter
 @Getter
-public class ConnectInfo {
+public class ConnectSelf {
 
-    /** 远程地址 */
-    private String address;
-    /** 超3秒出块次数 */
-    private int outBlockSlowCount;
-    /** 当前节点出错次数 */
-    private int errorCount;
+    /** 自身节点等级，等级0表示未成为任何小组Leader，1表示是一个小组Leader，2表示21个小组Leader，以此类推 */
+    private int level = 0;
+    /** 当前连接小组集合 */
+    private List<GroupInfo> groups;
+
+    private static ConnectSelf instance;
+
+    public static ConnectSelf obtain() {
+        if (null == instance) {
+            synchronized (GroupInfo.class) {
+                if (null == instance) {
+                    instance = new ConnectSelf();
+                }
+            }
+        }
+        return instance;
+    }
+
+    public ConnectSelf() {
+        groups = new LinkedList<>();
+    }
 
 }

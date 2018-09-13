@@ -27,6 +27,8 @@ package cn.aberic.bother.tools;
 
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.IOException;
+
 /**
  * 作者：Aberic on 2018/9/2 00:07
  * 邮箱：abericyang@gmail.com
@@ -34,12 +36,41 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class SystemTest {
 
-    public static void main(String[] args) {
-        log.debug("mac address = {}", getMac());
+    public static void main(String[] args) throws IOException {
+        log.debug("is linux = {}", SystemTool.isLinux());
+        info();
     }
 
-    private static String getMac() {
-        return SystemTool.getLocalMac();
+    private static void info() throws IOException {
+        SystemInfo.initSigar();
+        try {
+            // System信息，从jvm获取
+            SystemInfo.property();
+            System.out.println("----------------------------------");
+            // cpu信息
+            SystemInfo.cpu();
+            System.out.println("----------------------------------");
+            // 内存信息
+            SystemInfo.memory();
+            System.out.println("----------------------------------");
+            // 操作系统信息
+            SystemInfo.os();
+            System.out.println("----------------------------------");
+            // 用户信息
+            SystemInfo.who();
+            System.out.println("----------------------------------");
+            // 文件系统信息
+            SystemInfo.file();
+            System.out.println("----------------------------------");
+            // 网络信息
+            SystemInfo.net();
+            System.out.println("----------------------------------");
+            // 以太网信息
+            SystemInfo.ethernet();
+            System.out.println("----------------------------------");
+        } catch (Exception e1) {
+            e1.printStackTrace();
+        }
     }
 
 }

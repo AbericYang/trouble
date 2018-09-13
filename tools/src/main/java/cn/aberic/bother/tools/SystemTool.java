@@ -27,12 +27,6 @@ package cn.aberic.bother.tools;
 
 import lombok.extern.slf4j.Slf4j;
 
-import java.net.InetAddress;
-import java.net.SocketException;
-import java.net.UnknownHostException;
-
-import static java.net.NetworkInterface.getByInetAddress;
-
 /**
  * 作者：Aberic on 2018/9/1 23:56
  * 邮箱：abericyang@gmail.com
@@ -40,34 +34,18 @@ import static java.net.NetworkInterface.getByInetAddress;
 @Slf4j
 public class SystemTool {
 
-    /** 获取本机mac地址 */
-    public static String getLocalMac() {
-        String macAddress = null;
-        try {
-            //得到IP，输出PC-201309011313/122.206.73.83
-            InetAddress ia = InetAddress.getLocalHost();
-            //获取网卡，获取地址
-            byte[] mac = getByInetAddress(ia).getHardwareAddress();
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < mac.length; i++) {
-                if (i != 0) {
-                    sb.append("-");
-                }
-                //字节转换为整数
-                int temp = mac[i] & 0xff;
-                String str = Integer.toHexString(temp);
-                if (str.length() == 1) {
-                    sb.append("0").append(str);
-                } else {
-                    sb.append(str);
-                }
-            }
-            macAddress = sb.toString().toUpperCase();
-        } catch (UnknownHostException | SocketException e) {
-            // e.printStackTrace();
-        }
-        log.debug("本机mac地址 = {}", macAddress);
-        return macAddress;
+    /**
+     * 是否达到出块标准配置需求
+     * <p>
+     * 暂时需求为JVM可用内存大于256MB，服务器配置4C
+     *
+     * @return 与否
+     */
+    private boolean isOutBlockNorm() {
+        Runtime r = Runtime.getRuntime();
+        log.debug("JVM可以使用的剩余内存: {}", r.freeMemory());
+        log.debug("JVM可以使用的处理器数: {}", r.availableProcessors());
+        return r.freeMemory() > 256 * 1024 * 1024 && r.availableProcessors() > 4;
     }
 
     /** 判断是linux系统还是其他系统，如果是Linux系统，返回true，否则返回false */
