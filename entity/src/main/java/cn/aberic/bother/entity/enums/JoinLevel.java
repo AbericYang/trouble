@@ -25,24 +25,29 @@
 
 package cn.aberic.bother.entity.enums;
 
+import lombok.Getter;
+
 /**
  * 请求加入节点当前请求级别
  * <p>
  * 作者：Aberic on 2018/9/13 20:22
  * 邮箱：abericyang@gmail.com
  */
+@Getter
 public enum JoinLevel {
 
+    /** 孤岛 */
+    LONEY("孤岛", 0),
     /** 楼 */
-    TOWER("楼", 0),
+    TOWER("楼", 1),
     /** 社区 */
-    COMMUNITY("社区", 1),
+    COMMUNITY("社区", 2),
     /** 县城 */
-    COUNTY("县城", 2),
+    COUNTY("县城", 3),
     /** 市 */
-    CITY("市", 3),
+    CITY("市", 4),
     /** 省 */
-    PROVINCE("省", 4);
+    PROVINCE("省", 5);
 
     /** 别名描述 */
     private String alias;
