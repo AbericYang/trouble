@@ -1,0 +1,12 @@
+syntax = "proto3";
+//生成文件所在包名
+option java_package = "cn.aberic.bother.entity.proto.consensus";
+//生成的java文件名
+option java_outer_classname = "ConnectSelfProto";
+
+import "consensus/GroupInfo.proto";
+
+message ConnectSelf {
+    int32 level = 1; // 自身节点等级，等级0表示未成为任何小组Leader，1表示是一个小组Leader，2表示51个小组Leader，以此类推
+    GroupInfo groups = 2; // 当前连接小组集合
+}

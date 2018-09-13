@@ -1,6 +1,6 @@
 syntax = "proto3";
 //生成文件所在包名
-option java_package = "cn.aberic.bother.entity.proto";
+option java_package = "cn.aberic.bother.entity.proto.block";
 //生成的java文件名
 option java_outer_classname = "RequestProto";
 

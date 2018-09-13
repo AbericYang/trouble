@@ -34,22 +34,14 @@ import java.nio.charset.Charset;
  * 作者：Aberic on 2018/08/29 10:44
  * 邮箱：abericyang@gmail.com
  */
-public class MD5 {
+public class Hash {
 
-    public static String md516(String str) {
-        return md516(str, Charset.forName("UTF-8"));
+    public static String sha256(String str) {
+        return sha256(str, Charset.forName("UTF-8"));
     }
 
-    public static String md516(String str, Charset charset) {
-        return md532(str, charset).substring(8, 24);
-    }
-
-    public static String md532(String str) {
-        return md532(str, Charset.forName("UTF-8"));
-    }
-
-    public static String md532(String str, Charset charset) {
-        return Hashing.md5().hashString(str, charset).toString();
+    private static String sha256(String str, Charset charset) {
+        return Hashing.sha256().hashString(str, charset).toString();
     }
 
 }

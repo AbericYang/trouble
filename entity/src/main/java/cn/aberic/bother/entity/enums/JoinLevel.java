@@ -20,38 +20,44 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
+ *
  */
 
-package cn.aberic.bother.encryption;
-
-import com.google.common.hash.Hashing;
-import lombok.extern.slf4j.Slf4j;
-
-import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
-import java.io.UnsupportedEncodingException;
-import java.nio.charset.Charset;
+package cn.aberic.bother.entity.enums;
 
 /**
- * 作者：Aberic on 2018/08/29 10:29
+ * 请求加入节点当前请求级别
+ * <p>
+ * 作者：Aberic on 2018/9/13 20:22
  * 邮箱：abericyang@gmail.com
  */
-@Slf4j
-public class EACTest {
+public enum JoinLevel {
 
-    public static void main(String[] args) {
-        md5();
-    }
+    /** 楼 */
+    TOWER("楼", 0),
+    /** 社区 */
+    COMMUNITY("社区", 1),
+    /** 县城 */
+    COUNTY("县城", 2),
+    /** 市 */
+    CITY("市", 3),
+    /** 省 */
+    PROVINCE("省", 4);
 
-    private static void md5() {
-        String str = "287c4d9f7279bfe03b84c8f95d755c41711823a3f2c25c8b639da3f044982013";
-        try {
-            SecretKey MD5_KEY = new SecretKeySpec("secret key".getBytes("UTF-8"), "HmacMD5");
-            log.debug("hmacMd5 -----> {} = {}", str, Hashing.hmacMd5(MD5_KEY).hashString(str, Charset.forName("UTF-8")));
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-        log.debug("sha256 -----> {} = {}", str, Hash.sha256(str));
+    /** 别名描述 */
+    private String alias;
+    /** 级别码 */
+    private int level;
+
+    /**
+     * 当前交易状态
+     *
+     * @param alias 别名描述
+     * @param level 级别码
+     */
+    JoinLevel(String alias, int level) {
+        this.alias = alias;
+        this.level = level;
     }
 
 }

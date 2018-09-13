@@ -58,23 +58,23 @@ public class GroupInfo {
     }
 
     /**
-     * 返回当前小组是否满员状态，设定每个小组允许最大节点数为21个
+     * 返回当前小组是否满员状态，设定每个小组允许最大节点数为51个
      *
      * @return 当前小组是否满员
      */
     public boolean max() {
-        return addresses.size() >= 21;
+        return addresses.size() >= 51;
     }
 
     /**
      * 是否到了开始选举下一节点的时间
      * <p>
-     * 默认一小时进行一次选举
+     * 默认10分钟进行一次选举
      *
      * @return 与否
      */
     public boolean isElectionTime() {
-        return new Date().getTime() - timestamp > 3600000;
+        return new Date().getTime() - timestamp > 600000;
     }
 
     /**

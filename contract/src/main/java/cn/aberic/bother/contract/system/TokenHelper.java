@@ -25,7 +25,7 @@
 package cn.aberic.bother.contract.system;
 
 import cn.aberic.bother.contract.exec.PublicContractExec;
-import cn.aberic.bother.encryption.MD5;
+import cn.aberic.bother.encryption.Hash;
 import cn.aberic.bother.encryption.key.exec.KeyExec;
 import cn.aberic.bother.entity.contract.Account;
 import cn.aberic.bother.entity.contract.AccountInfo;
@@ -226,7 +226,7 @@ class TokenHelper implements IHelper {
         if (keyFormat.length() != 128) {
             return exec.response(IResponse.ResponseType.FAIL);
         }
-        String key = MD5.md516(keyFormat);
+        String key = Hash.sha256(keyFormat);
 
         // 计算本次账户及 Token 创建所需存储大小
         long size = key.getBytes().length +
@@ -275,7 +275,7 @@ class TokenHelper implements IHelper {
         if (keyFormat.length() != 128) {
             return exec.response(IResponse.ResponseType.FAIL);
         }
-        String key = MD5.md516(keyFormat);
+        String key = Hash.sha256(keyFormat);
 
         // 获取账户详情对象
         AccountInfo info = JSON.parseObject(KeyExec.obtain().decryptPriStrECDSA(exec.getPriECCKey(), account.getJsonAccountInfoString()),
@@ -349,7 +349,7 @@ class TokenHelper implements IHelper {
         AccountInfo info = JSON.parseObject(KeyExec.obtain().decryptPriStrECDSA(exec.getPriECCKey(), accountSpender.getJsonAccountInfoString()),
                 new TypeReference<AccountInfo>() {});
         return exec.response(new BigDecimal(KeyExec.obtain().decryptPriStrRSA(info.getPriRSAKey(),
-                exec.get(MD5.md516(json.getString("addressOwner") + request.getAddress())))));
+                exec.get(Hash.sha256(json.getString("addressOwner") + request.getAddress())))));
     }
 
 }

@@ -25,7 +25,7 @@
 package cn.aberic.bother.contract.system;
 
 import cn.aberic.bother.contract.exec.PublicContractExec;
-import cn.aberic.bother.encryption.MD5;
+import cn.aberic.bother.encryption.Hash;
 import cn.aberic.bother.encryption.key.bean.Key;
 import cn.aberic.bother.encryption.key.exec.KeyExec;
 import cn.aberic.bother.entity.account.AccountUser;
@@ -118,7 +118,7 @@ class AccountHelper implements IHelper {
         Cheque cheque = JSON.parseObject(KeyExec.obtain().decryptPubStrRSA(chequeAccount.getPubRSAKey(), request.getEncryption()),
                 new TypeReference<Cheque>() {});
         // 如果链上已经记录了该支票信息，则表示该支票已被消费过
-        if (null != exec.get(MD5.md516(cheque.toString()))) {
+        if (null != exec.get(Hash.sha256(cheque.toString()))) {
             return exec.response(IResponse.ResponseType.CHEQUE_INVALID);
         }
 
@@ -166,7 +166,7 @@ class AccountHelper implements IHelper {
                 accountStr.getBytes().length +
                 chequeAccount.getAddress().getBytes().length +
                 JSON.toJSONString(chequeAccount).getBytes().length +
-                MD5.md516(cheque.toString()).getBytes().length;
+                Hash.sha256(cheque.toString()).getBytes().length;
         // 计算本次账户创建所需存储费用
         BigDecimal cost = coefficient(size, token.getDecimals());
         log.debug("开户 计算本次账户创建所需存储费用 = {}", cost.toPlainString());
@@ -201,7 +201,7 @@ class AccountHelper implements IHelper {
         exec.put(chequeAccount.getAddress(), JSON.toJSONString(chequeAccount));
         cost(exec, cost, token);
         // 支票消费记录上链
-        exec.put(MD5.md516(cheque.toString()), "1");
+        exec.put(Hash.sha256(cheque.toString()), "1");
 
         return exec.response(new AccountUser(address, eccKey.getPrivateKey(), Constant.TOKEN_DEFAULT_PUBLIC_HASH));
     }

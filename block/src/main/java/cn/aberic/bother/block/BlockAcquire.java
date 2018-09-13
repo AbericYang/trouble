@@ -24,7 +24,7 @@
 
 package cn.aberic.bother.block;
 
-import cn.aberic.bother.encryption.MD5;
+import cn.aberic.bother.encryption.Hash;
 import cn.aberic.bother.entity.block.Block;
 import cn.aberic.bother.tools.exception.SearchDataNotFoundException;
 import cn.aberic.bother.tools.exception.SearchDataTimeoutException;
@@ -70,13 +70,13 @@ public class BlockAcquire extends BlockAS {
     }
 
     /**
-     * 根据区块高度获取区块对象
+     * 根据区块hash获取区块对象
      *
      * @param currentDataHash 当前区块hash
      * @return 区块对象
      */
     public Block getBlockByHash(String currentDataHash) throws SearchDataNotFoundException, SearchDataTimeoutException {
-        return getBlockIndexExec().getByCurrentDataHash(MD5.md516(currentDataHash));
+        return getBlockIndexExec().getByCurrentDataHash(currentDataHash);
     }
 
     /**
@@ -86,7 +86,7 @@ public class BlockAcquire extends BlockAS {
      * @return 区块对象
      */
     public Block getBlockByTransactionHash(String transactionHash) throws SearchDataNotFoundException, SearchDataTimeoutException {
-        return getBlockTransactionIndexExec().getByTransactionHash(MD5.md516(transactionHash));
+        return getBlockTransactionIndexExec().getByTransactionHash(transactionHash);
     }
 
     /**

@@ -40,14 +40,8 @@ import java.util.List;
 @Getter
 public class ConnectSelf {
 
-    /** 自身节点等级，等级0表示未成为任何小组Leader，1表示是一个小组Leader，2表示21个小组Leader，以此类推 */
+    /** 自身节点等级，等级0表示未成为任何小组Leader，1表示是一个小组Leader，2表示51个小组Leader，以此类推 */
     private int level;
-    /** 自身是否为下一个顶端Leader节点 */
-    private boolean isNextTopLeader;
-    /** 当前顶端Leader节点 */
-    private String topLeaderAddress;
-    /** 下一个顶端Leader节点 */
-    private String nextTopLeaderAddress;
     /** 当前连接小组集合 */
     private List<GroupInfo> groups;
 

@@ -26,11 +26,8 @@ package cn.aberic.bother.io.message;
 
 import cn.aberic.bother.entity.block.Block;
 import cn.aberic.bother.entity.consensus.ConnectSelf;
-import cn.aberic.bother.entity.enums.ProtocolStatus;
 import cn.aberic.bother.entity.io.MessageData;
-import cn.aberic.bother.entity.proto.BlockProto;
-import cn.aberic.bother.io.IOContext;
-import cn.aberic.bother.tools.MsgPackTool;
+import cn.aberic.bother.entity.proto.block.BlockProto;
 import com.google.gson.Gson;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.util.JsonFormat;
@@ -53,15 +50,13 @@ interface IMsgReceiveService extends IMsgRequestService {
             case JOIN: // 加入新节点协议，follow节点收到新节点加入通知后，发送此协议告知leader节点有新节点加入请求，leader节点直接处理该协议-0x01
                 String address = channel.remoteAddress().toString().split(":")[0].split("/")[1];
                 log().debug("接收加入新节点[{}]协议，执行加入方案", address);
-                // 判断自身是否下一个顶端节点
-                if (ConnectSelf.obtain().isNextTopLeader()) { // 如果是下一个顶端节点
+                // 如果当前节点是本楼Leader节点且当前楼住户未满
+                if (ConnectSelf.obtain().getLevel() == 1 && !ConnectSelf.obtain().getGroups().get(0).max()) {
 
-                } else { // 如果不是下一个顶端节点
-                    // 将该请求加入节点发送至下一个顶端节点处理
-                    sendJoinRequest(ConnectSelf.obtain().getNextTopLeaderAddress(), address);
+                    pushAddNode(address); // 通知所有住户有新节点加入
                 }
                 break;
-            case JOIN_REQUEST: // 告知下一个顶端节点当前请求加入节点一个新的接入地址协议-0x05
+            case JOIN_ACCEPT: // 告知新的接入地址可加入协议-0x05
 
                 break;
             case ADD_NODE: // 由leader节点发出新增小组节点协议-0x02

@@ -25,7 +25,7 @@
 package cn.aberic.bother.contract.exec;
 
 import cn.aberic.bother.contract.exec.service.IContractFileExec;
-import cn.aberic.bother.encryption.MD5;
+import cn.aberic.bother.encryption.Hash;
 import cn.aberic.bother.entity.contract.Contract;
 import cn.aberic.bother.tools.Constant;
 import cn.aberic.bother.storage.FileComponent;
@@ -110,7 +110,7 @@ public class ContractFileExec implements IContractFileExec {
             throw new ContractFileNotFoundException(contract.getName(), contract.getVersionName(), contract.getVersionCode());
         }
         // 首次安装该合约，安装并返回最终成功的hash
-        contractHash = MD5.md532(String.format("%s%s%s%s%s",
+        contractHash = Hash.sha256(String.format("%s%s%s%s%s",
                 contract.getName(),
                 contract.getVersionName(),
                 contract.getVersionCode(),

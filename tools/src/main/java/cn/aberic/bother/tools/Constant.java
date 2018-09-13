@@ -43,8 +43,8 @@ public class Constant {
     public static final long IO_SERVER_WRITE_TIME_OUT = 8;
 
     public final static String BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH = "d11d842aca8ee9b82ea1634791f98e83";
-    public final static String TOKEN_DEFAULT_PUBLIC_HASH = "cd213e49350e5de24e95c3154dca940e5a742259cf922aac6279251324409eff";
-    public final static String TOKEN_DEFAULT_SECOND_HASH = "4ab5d489562908f977cc1b040b6201b15cf78f608203f225070a8faa0bd9987c";
+    public final static String TOKEN_DEFAULT_PUBLIC_HASH = "ce8abde5e540cb13eefe28759e48317a15129265adc4db7ad4e1f84825c006b4";
+    public final static String TOKEN_DEFAULT_SECOND_HASH = "673fe7084b22632c7b20d40ba4aa77a22b2f9361d61d7debde289cab81fe5ad5";
 
     /** 默认区块文件前缀 */
     public final static String BLOCK_FILE_START = "block_file_";

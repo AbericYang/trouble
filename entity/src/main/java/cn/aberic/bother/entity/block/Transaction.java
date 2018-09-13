@@ -24,7 +24,7 @@
 
 package cn.aberic.bother.entity.block;
 
-import cn.aberic.bother.encryption.MD5;
+import cn.aberic.bother.encryption.Hash;
 import cn.aberic.bother.encryption.key.exec.KeyExec;
 import cn.aberic.bother.entity.contract.Request;
 import cn.aberic.bother.entity.enums.TransactionStatus;
@@ -83,9 +83,6 @@ public class Transaction {
     /** 交易错误信息 */
     @JSONField(name = "e")
     private String errorMessage;
-    /** 交易索引hash */
-    @JSONField(serialize = false)
-    private String dataStorageHash; // 序列化时不写入
     /** 交易时间戳转字符串——yyyy/MM/dd HH:mm:ss */
     @JSONField(serialize = false)
     private String time; // 序列化时不写入
@@ -100,7 +97,6 @@ public class Transaction {
         sign = signStringResult(priECCKey);
         txHash = Hashing.sha256().hashString(String.format("%s%s%s%s",
                 creator, sign, JSON.toJSONString(rwSet), timestamp), Charset.forName("UTF-8")).toString();
-        dataStorageHash = MD5.md516(txHash);
         return this;
     }
 

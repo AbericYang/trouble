@@ -24,7 +24,6 @@
 
 package cn.aberic.bother.entity.block;
 
-import cn.aberic.bother.encryption.MD5;
 import cn.aberic.bother.tools.DateTool;
 import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Getter;
@@ -56,9 +55,6 @@ public class BlockHeader {
     /** 当前区块生成时间戳 */
     @JSONField(name = "t")
     private long timestamp;
-    /** 隐藏属性，压缩查询 */
-    @JSONField(serialize = false)
-    private String dataStorageHash; // 序列化时不写入
     /** 交易时间戳转字符串——yyyy/MM/dd HH:mm:ss */
     @JSONField(serialize = false)
     private String time; // 序列化时不写入
@@ -99,8 +95,4 @@ public class BlockHeader {
         return this;
     }
 
-    public void setCurrentDataHash(String currentDataHash) {
-        this.currentDataHash = currentDataHash;
-        dataStorageHash = MD5.md516(currentDataHash);
-    }
 }

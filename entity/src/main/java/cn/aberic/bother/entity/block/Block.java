@@ -25,7 +25,7 @@
 package cn.aberic.bother.entity.block;
 
 import cn.aberic.bother.entity.BeanJsonField;
-import cn.aberic.bother.entity.proto.BlockProto;
+import cn.aberic.bother.entity.proto.block.BlockProto;
 import com.alibaba.fastjson.annotation.JSONField;
 import com.google.common.hash.Hashing;
 import com.google.protobuf.InvalidProtocolBufferException;
@@ -70,7 +70,7 @@ public class Block implements BeanJsonField {
     }
 
     /**
-     * Block 对象转成 {@link cn.aberic.bother.entity.proto.BlockProto.Block} 字节流
+     * Block 对象转成 {@link cn.aberic.bother.entity.proto.block.BlockProto.Block} 字节流
      *
      * @return proto 字节流
      */

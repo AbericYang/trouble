@@ -28,8 +28,8 @@ package cn.aberic.bother.entity;
 import cn.aberic.bother.entity.block.*;
 import cn.aberic.bother.entity.contract.Account;
 import cn.aberic.bother.entity.enums.TransactionStatus;
-import cn.aberic.bother.entity.proto.BlockHeaderProto;
-import cn.aberic.bother.entity.proto.BlockProto;
+import cn.aberic.bother.entity.proto.block.BlockHeaderProto;
+import cn.aberic.bother.entity.proto.block.BlockProto;
 import cn.aberic.bother.entity.proto.ProtoDemo;
 import com.alibaba.fastjson.JSON;
 import com.google.protobuf.InvalidProtocolBufferException;
@@ -69,7 +69,6 @@ public class EntityTest {
         log.debug("currentDataHash = {}", header.getCurrentDataHash());
         log.debug("previousDataHash = {}", header.getPreviousDataHash());
         log.debug("timestamp = {}", header.getTimestamp());
-        log.debug("dataStorageHash = {}", header.getDataStorageHash());
         log.debug("time = {}", header.getTime());
     }
 
