@@ -85,6 +85,9 @@ public class EchoClientHandler extends SimpleChannelInboundHandler<MessageData> 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, MessageData msgData) {
         switch (msgData.getProtocol()) {
+            case HEART: // 心跳协议-0x00
+                log().debug("接收心跳协议，什么也不做");
+                break;
             case KEEP: // 保持心跳协议-0x01
                 log().debug("保持心跳协议");
                 keepHeartBeat = true;

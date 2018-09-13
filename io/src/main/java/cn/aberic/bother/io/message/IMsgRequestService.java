@@ -53,8 +53,39 @@ interface IMsgRequestService {
      *
      * @param channel 当前通道
      */
-    default void keepHeartBeat(Channel channel) {
+    default void pushKeepHeartBeat(Channel channel) {
         MessageData msgData = new MessageData(ProtocolStatus.KEEP, null);
+        channel.writeAndFlush(msgData);
+    }
+
+    /**
+     * 在当前channel下发送应答协议包
+     *
+     * @param channel 当前通道
+     */
+    default void pushAnswerOK(Channel channel) {
+        MessageData msgData = new MessageData(ProtocolStatus.OK, null);
+        channel.writeAndFlush(msgData);
+    }
+
+    /**
+     * 告知下一个顶端节点当前请求加入节点一个新的接入地址
+     *
+     * @param nextTopLeaderAddress 下一个顶端节点地址
+     * @param address              新节点地址
+     */
+    default void sendJoinRequest(String nextTopLeaderAddress, String address) {
+        MessageData msgData = new MessageData(ProtocolStatus.JOIN_REQUEST, MsgPackTool.string2Bytes(address));
+        IOContext.obtain().send(nextTopLeaderAddress, msgData);
+    }
+
+    /**
+     * 在当前channel下发送当前没有可加入小组，自建小组并参与小组间选举协议
+     *
+     * @param channel 当前通道
+     */
+    default void pushCreateGroup(Channel channel) {
+        MessageData msgData = new MessageData(ProtocolStatus.CREATE_GROUP, null);
         channel.writeAndFlush(msgData);
     }
 

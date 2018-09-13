@@ -26,8 +26,11 @@ package cn.aberic.bother.io.message;
 
 import cn.aberic.bother.entity.block.Block;
 import cn.aberic.bother.entity.consensus.ConnectSelf;
+import cn.aberic.bother.entity.enums.ProtocolStatus;
 import cn.aberic.bother.entity.io.MessageData;
 import cn.aberic.bother.entity.proto.BlockProto;
+import cn.aberic.bother.io.IOContext;
+import cn.aberic.bother.tools.MsgPackTool;
 import com.google.gson.Gson;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.util.JsonFormat;
@@ -47,31 +50,22 @@ interface IMsgReceiveService extends IMsgRequestService {
     default void receive(Channel channel, MessageData msgData) {
         log().debug("请求协议：{}，数据ID：{}", msgData.getProtocol().getB(), msgData.getDataId());
         switch (msgData.getProtocol()) {
-            case HEART: // 心跳协议-0x00
-                log().debug("接收心跳协议，什么也不做");
-                break;
             case JOIN: // 加入新节点协议，follow节点收到新节点加入通知后，发送此协议告知leader节点有新节点加入请求，leader节点直接处理该协议-0x01
-                log().debug("接收加入新节点协议，执行加入方案");
-                // 判断自己是否为最小小组的Leader节点
-                if (ConnectSelf.obtain().getLevel() >= 1) {
-                    // 返回保持心跳协议，继续执行加入新节点方案
-                    keepHeartBeat(channel);
-                    // 判断自身小组是否满员
-                    if (ConnectSelf.obtain().getGroups().get(0).max()) {
-                        // 满员则交由下一节点处理
-                        // TODO: 2018/9/13 满员则交由下一节点处理
-                    } else {
-                        // 未满员，则让新节点加入
-                        String address = channel.remoteAddress().toString().split(":")[0].split("/")[1];
-                        ConnectSelf.obtain().getGroups().get(0).add(address);
-                        // 新节点加入，执行广播更新所有子节点信息
-                        pushAddNode(address);
-                    }
-                } else { // 交由当前小组Leader节点处理
-                    // TODO: 2018/9/13 交由当前小组Leader节点处理
+                String address = channel.remoteAddress().toString().split(":")[0].split("/")[1];
+                log().debug("接收加入新节点[{}]协议，执行加入方案", address);
+                // 判断自身是否下一个顶端节点
+                if (ConnectSelf.obtain().isNextTopLeader()) { // 如果是下一个顶端节点
+
+                } else { // 如果不是下一个顶端节点
+                    // 将该请求加入节点发送至下一个顶端节点处理
+                    sendJoinRequest(ConnectSelf.obtain().getNextTopLeaderAddress(), address);
                 }
                 break;
+            case JOIN_REQUEST: // 告知下一个顶端节点当前请求加入节点一个新的接入地址协议-0x05
+
+                break;
             case ADD_NODE: // 由leader节点发出新增小组节点协议-0x02
+
                 break;
             case UPGRADE_NODE: // 由leader节点发出更新小组节点集合协议-0x03
                 break;
