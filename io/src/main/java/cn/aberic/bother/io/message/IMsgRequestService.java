@@ -26,6 +26,8 @@ package cn.aberic.bother.io.message;
 
 import cn.aberic.bother.entity.enums.ProtocolStatus;
 import cn.aberic.bother.entity.io.MessageData;
+import cn.aberic.bother.io.IOContext;
+import cn.aberic.bother.tools.MsgPackTool;
 import io.netty.channel.Channel;
 
 /**
@@ -44,6 +46,26 @@ interface IMsgRequestService {
     default void sendHeartBeat(Channel channel) {
         MessageData msgData = new MessageData(ProtocolStatus.HEART, null);
         channel.writeAndFlush(msgData);
+    }
+
+    /**
+     * 在当前channel下发送保持心跳包
+     *
+     * @param channel 当前通道
+     */
+    default void keepHeartBeat(Channel channel) {
+        MessageData msgData = new MessageData(ProtocolStatus.KEEP, null);
+        channel.writeAndFlush(msgData);
+    }
+
+    /**
+     * 广播新增小组节点协议
+     *
+     * @param address 新增小组节点地址
+     */
+    default void pushAddNode(String address) {
+        MessageData msgData = new MessageData(ProtocolStatus.ADD_NODE, MsgPackTool.string2Bytes(address));
+        IOContext.obtain().broadcast(msgData);
     }
 
 }

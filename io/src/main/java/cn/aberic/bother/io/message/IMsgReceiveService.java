@@ -25,6 +25,7 @@
 package cn.aberic.bother.io.message;
 
 import cn.aberic.bother.entity.block.Block;
+import cn.aberic.bother.entity.consensus.ConnectSelf;
 import cn.aberic.bother.entity.io.MessageData;
 import cn.aberic.bother.entity.proto.BlockProto;
 import com.google.gson.Gson;
@@ -39,7 +40,7 @@ import org.slf4j.Logger;
  * 作者：Aberic on 2018/09/12 14:13
  * 邮箱：abericyang@gmail.com
  */
-interface IMsgReceiveService {
+interface IMsgReceiveService extends IMsgRequestService {
 
     Logger log();
 
@@ -47,24 +48,35 @@ interface IMsgReceiveService {
         log().debug("请求协议：{}，数据ID：{}", msgData.getProtocol().getB(), msgData.getDataId());
         switch (msgData.getProtocol()) {
             case HEART: // 心跳协议-0x00
-                log().debug("接收心跳，什么也不做");
+                log().debug("接收心跳协议，什么也不做");
                 break;
-            case JOIN: // 加入协议-0x01
-                // 先判断自己是否Leader节点
-                if (true) {
-                    // TODO: 2018/9/12 自行处理本次业务
+            case JOIN: // 加入新节点协议，follow节点收到新节点加入通知后，发送此协议告知leader节点有新节点加入请求，leader节点直接处理该协议-0x01
+                log().debug("接收加入新节点协议，执行加入方案");
+                // 判断自己是否为最小小组的Leader节点
+                if (ConnectSelf.obtain().getLevel() >= 1) {
+                    // 返回保持心跳协议，继续执行加入新节点方案
+                    keepHeartBeat(channel);
+                    // 判断自身小组是否满员
+                    if (ConnectSelf.obtain().getGroups().get(0).max()) {
+                        // 满员则交由下一节点处理
+                        // TODO: 2018/9/13 满员则交由下一节点处理
+                    } else {
+                        // 未满员，则让新节点加入
+                        String address = channel.remoteAddress().toString().split(":")[0].split("/")[1];
+                        ConnectSelf.obtain().getGroups().get(0).add(address);
+                        // 新节点加入，执行广播更新所有子节点信息
+                        pushAddNode(address);
+                    }
+                } else { // 交由当前小组Leader节点处理
+                    // TODO: 2018/9/13 交由当前小组Leader节点处理
                 }
-                // 先判断自身小组状态是否饱和
-                if (false) {
-                    // TODO: 2018/9/12 满员则通知Leader节点辅助新加入节点寻找小组
-                } else {
-                    // TODO: 2018/9/12 未满员则直接通知Leader节点有新节点加入
-                }
-                log().debug("接收加入，执行加入方案");
                 break;
-            case JOIN_NEW: // 加入新节点协议，follow节点收到新节点加入通知后，发送此协议告知leader节点有新节点加入请求-0x02
+            case ADD_NODE: // 由leader节点发出新增小组节点协议-0x02
+                break;
+            case UPGRADE_NODE: // 由leader节点发出更新小组节点集合协议-0x03
                 break;
             case BLOCK: // 区块协议-0x51
+                log().debug("接收区块协议，执行区块同步操作");
                 try {
                     BlockProto.Block blockProto = BlockProto.Block.parseFrom(msgData.getBytes());
                     String jsonObject = JsonFormat.printer().print(blockProto);
@@ -81,8 +93,6 @@ interface IMsgReceiveService {
                 channel.close();
                 break;
         }
-        // 将接收到的消息写给发送者，而不冲刷出站消息
-        // channel.write(msgData);
     }
 
 }

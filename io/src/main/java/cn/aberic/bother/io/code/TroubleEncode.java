@@ -52,9 +52,11 @@ public class TroubleEncode extends MessageToByteEncoder<MessageData> implements 
         out.writeByte(msgData.getProtocol().getB());
         out.writeBytes(ByteTool.intToBytes(msgData.getDataId()));
         switch (msgData.getProtocol()) {
-            case HEART: // 创建并发送心跳包
-            case JOIN: // 创建并发送加入包
-                byte[] bytes = createHeart();
+            case HEART: // 心跳协议-0x00
+            case KEEP: // 保持心跳协议-0x01
+            case BYE: // 关闭心跳协议-0x02
+            case JOIN: // 加入新节点协议 follow节点收到新节点加入通知后，发送此协议告知leader节点有新节点加入请求 leader节点直接处理该协议-0x03
+                byte[] bytes = createEmpty();
                 out.writeBytes(ByteTool.intToBytes(bytes.length));
                 out.writeBytes(bytes);
                 break;

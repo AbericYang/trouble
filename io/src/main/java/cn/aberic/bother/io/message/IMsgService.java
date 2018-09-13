@@ -30,5 +30,5 @@ package cn.aberic.bother.io.message;
  * 作者：Aberic on 2018/09/12 14:11
  * 邮箱：abericyang@gmail.com
  */
-public interface IMsgService extends IMsgRequestService, IMsgReceiveService {
+public interface IMsgService extends IMsgReceiveService {
 }

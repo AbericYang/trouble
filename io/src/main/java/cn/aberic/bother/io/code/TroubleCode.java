@@ -84,11 +84,11 @@ interface TroubleCode {
     }
 
     /**
-     * 生成心跳数据包
+     * 生成空数据包
      *
-     * @return 心跳数据包
+     * @return 空数据包
      */
-    default byte[] createHeart() {
+    default byte[] createEmpty() {
         try {
             byte[] tempBytes; // 临时 byte 数据数组
             List<Byte> resultList = new LinkedList<>(); // 心跳数据包 List<Byte> 集合结果集

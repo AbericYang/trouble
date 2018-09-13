@@ -25,6 +25,7 @@
 
 package cn.aberic.bother.io;
 
+import cn.aberic.bother.entity.enums.ProtocolStatus;
 import cn.aberic.bother.entity.io.MessageData;
 import cn.aberic.bother.entity.io.Remote;
 import cn.aberic.bother.io.exec.client.EchoClient;
@@ -162,6 +163,16 @@ public class IOContext {
     }
 
     /**
+     * 作为客户端发送请求加入协议
+     *
+     * @param address 申请的服务端地址
+     */
+    public void join(String address) {
+        MessageData msgData = new MessageData(ProtocolStatus.JOIN, null);
+        Objects.requireNonNull(ioClientCache.getIfPresent(address)).send(msgData);
+    }
+
+    /**
      * 广播消息
      * 先执行服务端广播消息操作，
      * 如果与服务端连接的客户端ip已找到，但缓存没有，
@@ -173,11 +184,6 @@ public class IOContext {
         ioServerCache.asMap().forEach((ip, ioServer) -> {
             if (ioServer.isConnected()) {
                 ioServer.push(msgData);
-            }
-        });
-        ioClientCache.asMap().forEach((ip, ioClient) -> {
-            if (ioClient.isConnected()) {
-                ioClient.send(msgData);
             }
         });
     }

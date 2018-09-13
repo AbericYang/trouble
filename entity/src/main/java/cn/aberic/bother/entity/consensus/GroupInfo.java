@@ -51,7 +51,11 @@ public class GroupInfo {
     /** 当前Leader选举时间戳 */
     private long timestamp;
     /** 当前连接小组集合 */
-    private List<ConnectInfo> infoList;
+    private List<String> addresses;
+
+    public void add(String address) {
+        addresses.add(address);
+    }
 
     /**
      * 返回当前小组是否满员状态，设定每个小组允许最大节点数为21个
@@ -59,7 +63,7 @@ public class GroupInfo {
      * @return 当前小组是否满员
      */
     public boolean max() {
-        return infoList.size() >= 21;
+        return addresses.size() >= 21;
     }
 
     /**
@@ -81,11 +85,11 @@ public class GroupInfo {
      * @return 选举结果数组
      */
     public String[] election() {
-        int size = infoList.size() - 1;
+        int size = addresses.size() - 1;
         return new String[]{
-                infoList.get(new Random().nextInt(size)).getAddress(),
-                infoList.get(new Random().nextInt(size)).getAddress(),
-                infoList.get(new Random().nextInt(size)).getAddress()};
+                addresses.get(new Random().nextInt(size)),
+                addresses.get(new Random().nextInt(size)),
+                addresses.get(new Random().nextInt(size))};
     }
 
 }
