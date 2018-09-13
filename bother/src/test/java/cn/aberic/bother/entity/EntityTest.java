@@ -26,12 +26,16 @@
 package cn.aberic.bother.entity;
 
 import cn.aberic.bother.entity.block.*;
+import cn.aberic.bother.entity.consensus.ConnectSelf;
+import cn.aberic.bother.entity.consensus.GroupInfo;
 import cn.aberic.bother.entity.contract.Account;
 import cn.aberic.bother.entity.enums.TransactionStatus;
 import cn.aberic.bother.entity.proto.block.BlockHeaderProto;
 import cn.aberic.bother.entity.proto.block.BlockProto;
 import cn.aberic.bother.entity.proto.ProtoDemo;
+import cn.aberic.bother.entity.proto.consensus.ConnectSelfProto;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.util.JsonFormat;
 import lombok.extern.slf4j.Slf4j;
@@ -50,9 +54,10 @@ import java.util.List;
 @Slf4j
 public class EntityTest {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InvalidProtocolBufferException {
         // protoDemo();
-        createBlockProtobuf();
+        // createBlockProtobuf();
+        createConnectSelfProtobuf();
     }
 
     private static void createBlockProtobuf() {
@@ -70,6 +75,31 @@ public class EntityTest {
         log.debug("previousDataHash = {}", header.getPreviousDataHash());
         log.debug("timestamp = {}", header.getTimestamp());
         log.debug("time = {}", header.getTime());
+    }
+
+    private static void createConnectSelfProtobuf() throws InvalidProtocolBufferException {
+        ConnectSelfProto.ConnectSelf.Builder builder = ConnectSelfProto.ConnectSelf.newBuilder();
+        String selfJsonFormat = new JSONObject(createConnectSelf()).toString();
+        log.debug("selfJsonFormat = {}", selfJsonFormat);
+        try {
+            JsonFormat.parser().merge(selfJsonFormat, builder);
+        } catch (InvalidProtocolBufferException e) {
+            e.printStackTrace();
+        }
+        log.debug("getLevel = {}", builder.getLevel());
+        log.debug("getLeaderAddress = {}", builder.getGroups(0).getLeaderAddress());
+        log.debug("getNextLeaderAddress = {}", builder.getGroups(0).getNextLeaderAddress());
+        log.debug("getTimestamp = {}", builder.getGroups(0).getTimestamp());
+        log.debug("getLeaderAddress = {}", builder.getGroups(0).getAddresses(1));
+        log.debug("==============================================");
+        byte[] bytes = builder.build().toByteArray();
+        log.debug("toByteArray = {}", bytes);
+
+
+        ConnectSelfProto.ConnectSelf selfProto = ConnectSelfProto.ConnectSelf.parseFrom(bytes);
+        String jsonObject = JsonFormat.printer().print(selfProto);
+        log.debug("jsonObject = {}", jsonObject);
+        log.debug("jsonObject = {}", JSON.parseObject(jsonObject, new TypeReference<ConnectSelf>() {}).toJsonString());
     }
 
     public static byte[] getBlockBytes() {
@@ -176,6 +206,26 @@ public class EntityTest {
         body.setTransactions(transactions);
 
         return new Block(header, body);
+    }
+
+    private static ConnectSelf createConnectSelf() {
+        List<String> addresses = new ArrayList<>();
+        addresses.add("a");
+        addresses.add("b");
+        addresses.add("c");
+
+        List<GroupInfo> infoList = new ArrayList<>();
+        GroupInfo info = new GroupInfo();
+        info.setLeaderAddress("setLeaderAddress");
+        info.setNextLeaderAddress("setNextLeaderAddress");
+        info.setTimestamp(1111111111111111L);
+        info.setAddresses(addresses);
+        infoList.add(info);
+
+        ConnectSelf connectSelf = new ConnectSelf();
+        connectSelf.setLevel(0);
+        connectSelf.setGroups(infoList);
+        return connectSelf;
     }
 
     public static Account createAccount() {

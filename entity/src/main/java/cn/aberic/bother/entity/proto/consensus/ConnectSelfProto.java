@@ -57,25 +57,44 @@ public final class ConnectSelfProto {
      * 当前连接小组集合
      * </pre>
      *
-     * <code>.GroupInfo groups = 2;</code>
+     * <code>repeated .GroupInfo groups = 2;</code>
      */
-    boolean hasGroups();
+    java.util.List<GroupInfoProto.GroupInfo>
+        getGroupsList();
     /**
      * <pre>
      * 当前连接小组集合
      * </pre>
      *
-     * <code>.GroupInfo groups = 2;</code>
+     * <code>repeated .GroupInfo groups = 2;</code>
      */
-    GroupInfoProto.GroupInfo getGroups();
+    GroupInfoProto.GroupInfo getGroups(int index);
     /**
      * <pre>
      * 当前连接小组集合
      * </pre>
      *
-     * <code>.GroupInfo groups = 2;</code>
+     * <code>repeated .GroupInfo groups = 2;</code>
      */
-    GroupInfoProto.GroupInfoOrBuilder getGroupsOrBuilder();
+    int getGroupsCount();
+    /**
+     * <pre>
+     * 当前连接小组集合
+     * </pre>
+     *
+     * <code>repeated .GroupInfo groups = 2;</code>
+     */
+    java.util.List<? extends GroupInfoProto.GroupInfoOrBuilder>
+        getGroupsOrBuilderList();
+    /**
+     * <pre>
+     * 当前连接小组集合
+     * </pre>
+     *
+     * <code>repeated .GroupInfo groups = 2;</code>
+     */
+    GroupInfoProto.GroupInfoOrBuilder getGroupsOrBuilder(
+            int index);
   }
   /**
    * Protobuf type {@code ConnectSelf}
@@ -91,6 +110,7 @@ public final class ConnectSelfProto {
     }
     private ConnectSelf() {
       level_ = 0;
+      groups_ = java.util.Collections.emptyList();
     }
 
     @Override
@@ -123,16 +143,12 @@ public final class ConnectSelfProto {
               break;
             }
             case 18: {
-              GroupInfoProto.GroupInfo.Builder subBuilder = null;
-              if (groups_ != null) {
-                subBuilder = groups_.toBuilder();
+              if (!((mutable_bitField0_ & 0x00000002) == 0x00000002)) {
+                groups_ = new java.util.ArrayList<GroupInfoProto.GroupInfo>();
+                mutable_bitField0_ |= 0x00000002;
               }
-              groups_ = input.readMessage(GroupInfoProto.GroupInfo.parser(), extensionRegistry);
-              if (subBuilder != null) {
-                subBuilder.mergeFrom(groups_);
-                groups_ = subBuilder.buildPartial();
-              }
-
+              groups_.add(
+                  input.readMessage(GroupInfoProto.GroupInfo.parser(), extensionRegistry));
               break;
             }
             default: {
@@ -150,6 +166,9 @@ public final class ConnectSelfProto {
         throw new com.google.protobuf.InvalidProtocolBufferException(
             e).setUnfinishedMessage(this);
       } finally {
+        if (((mutable_bitField0_ & 0x00000002) == 0x00000002)) {
+          groups_ = java.util.Collections.unmodifiableList(groups_);
+        }
         this.unknownFields = unknownFields.build();
         makeExtensionsImmutable();
       }
@@ -167,6 +186,7 @@ public final class ConnectSelfProto {
               ConnectSelfProto.ConnectSelf.class, ConnectSelfProto.ConnectSelf.Builder.class);
     }
 
+    private int bitField0_;
     public static final int LEVEL_FIELD_NUMBER = 1;
     private int level_;
     /**
@@ -181,36 +201,58 @@ public final class ConnectSelfProto {
     }
 
     public static final int GROUPS_FIELD_NUMBER = 2;
-    private GroupInfoProto.GroupInfo groups_;
+    private java.util.List<GroupInfoProto.GroupInfo> groups_;
     /**
      * <pre>
      * 当前连接小组集合
      * </pre>
      *
-     * <code>.GroupInfo groups = 2;</code>
+     * <code>repeated .GroupInfo groups = 2;</code>
      */
-    public boolean hasGroups() {
-      return groups_ != null;
+    public java.util.List<GroupInfoProto.GroupInfo> getGroupsList() {
+      return groups_;
     }
     /**
      * <pre>
      * 当前连接小组集合
      * </pre>
      *
-     * <code>.GroupInfo groups = 2;</code>
+     * <code>repeated .GroupInfo groups = 2;</code>
      */
-    public GroupInfoProto.GroupInfo getGroups() {
-      return groups_ == null ? GroupInfoProto.GroupInfo.getDefaultInstance() : groups_;
+    public java.util.List<? extends GroupInfoProto.GroupInfoOrBuilder>
+        getGroupsOrBuilderList() {
+      return groups_;
     }
     /**
      * <pre>
      * 当前连接小组集合
      * </pre>
      *
-     * <code>.GroupInfo groups = 2;</code>
+     * <code>repeated .GroupInfo groups = 2;</code>
      */
-    public GroupInfoProto.GroupInfoOrBuilder getGroupsOrBuilder() {
-      return getGroups();
+    public int getGroupsCount() {
+      return groups_.size();
+    }
+    /**
+     * <pre>
+     * 当前连接小组集合
+     * </pre>
+     *
+     * <code>repeated .GroupInfo groups = 2;</code>
+     */
+    public GroupInfoProto.GroupInfo getGroups(int index) {
+      return groups_.get(index);
+    }
+    /**
+     * <pre>
+     * 当前连接小组集合
+     * </pre>
+     *
+     * <code>repeated .GroupInfo groups = 2;</code>
+     */
+    public GroupInfoProto.GroupInfoOrBuilder getGroupsOrBuilder(
+        int index) {
+      return groups_.get(index);
     }
 
     private byte memoizedIsInitialized = -1;
@@ -230,8 +272,8 @@ public final class ConnectSelfProto {
       if (level_ != 0) {
         output.writeInt32(1, level_);
       }
-      if (groups_ != null) {
-        output.writeMessage(2, getGroups());
+      for (int i = 0; i < groups_.size(); i++) {
+        output.writeMessage(2, groups_.get(i));
       }
       unknownFields.writeTo(output);
     }
@@ -246,9 +288,9 @@ public final class ConnectSelfProto {
         size += com.google.protobuf.CodedOutputStream
           .computeInt32Size(1, level_);
       }
-      if (groups_ != null) {
+      for (int i = 0; i < groups_.size(); i++) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(2, getGroups());
+          .computeMessageSize(2, groups_.get(i));
       }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
@@ -268,11 +310,8 @@ public final class ConnectSelfProto {
       boolean result = true;
       result = result && (getLevel()
           == other.getLevel());
-      result = result && (hasGroups() == other.hasGroups());
-      if (hasGroups()) {
-        result = result && getGroups()
-            .equals(other.getGroups());
-      }
+      result = result && getGroupsList()
+          .equals(other.getGroupsList());
       result = result && unknownFields.equals(other.unknownFields);
       return result;
     }
@@ -286,9 +325,9 @@ public final class ConnectSelfProto {
       hash = (19 * hash) + getDescriptor().hashCode();
       hash = (37 * hash) + LEVEL_FIELD_NUMBER;
       hash = (53 * hash) + getLevel();
-      if (hasGroups()) {
+      if (getGroupsCount() > 0) {
         hash = (37 * hash) + GROUPS_FIELD_NUMBER;
-        hash = (53 * hash) + getGroups().hashCode();
+        hash = (53 * hash) + getGroupsList().hashCode();
       }
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
@@ -418,6 +457,7 @@ public final class ConnectSelfProto {
       private void maybeForceBuilderInitialization() {
         if (com.google.protobuf.GeneratedMessageV3
                 .alwaysUseFieldBuilders) {
+          getGroupsFieldBuilder();
         }
       }
       @Override
@@ -426,10 +466,10 @@ public final class ConnectSelfProto {
         level_ = 0;
 
         if (groupsBuilder_ == null) {
-          groups_ = null;
+          groups_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000002);
         } else {
-          groups_ = null;
-          groupsBuilder_ = null;
+          groupsBuilder_.clear();
         }
         return this;
       }
@@ -457,12 +497,19 @@ public final class ConnectSelfProto {
       @Override
       public ConnectSelfProto.ConnectSelf buildPartial() {
         ConnectSelfProto.ConnectSelf result = new ConnectSelfProto.ConnectSelf(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
         result.level_ = level_;
         if (groupsBuilder_ == null) {
+          if (((bitField0_ & 0x00000002) == 0x00000002)) {
+            groups_ = java.util.Collections.unmodifiableList(groups_);
+            bitField0_ = (bitField0_ & ~0x00000002);
+          }
           result.groups_ = groups_;
         } else {
           result.groups_ = groupsBuilder_.build();
         }
+        result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
       }
@@ -514,8 +561,31 @@ public final class ConnectSelfProto {
         if (other.getLevel() != 0) {
           setLevel(other.getLevel());
         }
-        if (other.hasGroups()) {
-          mergeGroups(other.getGroups());
+        if (groupsBuilder_ == null) {
+          if (!other.groups_.isEmpty()) {
+            if (groups_.isEmpty()) {
+              groups_ = other.groups_;
+              bitField0_ = (bitField0_ & ~0x00000002);
+            } else {
+              ensureGroupsIsMutable();
+              groups_.addAll(other.groups_);
+            }
+            onChanged();
+          }
+        } else {
+          if (!other.groups_.isEmpty()) {
+            if (groupsBuilder_.isEmpty()) {
+              groupsBuilder_.dispose();
+              groupsBuilder_ = null;
+              groups_ = other.groups_;
+              bitField0_ = (bitField0_ & ~0x00000002);
+              groupsBuilder_ =
+                com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
+                   getGroupsFieldBuilder() : null;
+            } else {
+              groupsBuilder_.addAllMessages(other.groups_);
+            }
+          }
         }
         this.mergeUnknownFields(other.unknownFields);
         onChanged();
@@ -545,6 +615,7 @@ public final class ConnectSelfProto {
         }
         return this;
       }
+      private int bitField0_;
 
       private int level_ ;
       /**
@@ -584,31 +655,30 @@ public final class ConnectSelfProto {
         return this;
       }
 
-      private GroupInfoProto.GroupInfo groups_ = null;
-      private com.google.protobuf.SingleFieldBuilderV3<
-          GroupInfoProto.GroupInfo, GroupInfoProto.GroupInfo.Builder, GroupInfoProto.GroupInfoOrBuilder> groupsBuilder_;
-      /**
-       * <pre>
-       * 当前连接小组集合
-       * </pre>
-       *
-       * <code>.GroupInfo groups = 2;</code>
-       */
-      public boolean hasGroups() {
-        return groupsBuilder_ != null || groups_ != null;
+      private java.util.List<GroupInfoProto.GroupInfo> groups_ =
+        java.util.Collections.emptyList();
+      private void ensureGroupsIsMutable() {
+        if (!((bitField0_ & 0x00000002) == 0x00000002)) {
+          groups_ = new java.util.ArrayList<GroupInfoProto.GroupInfo>(groups_);
+          bitField0_ |= 0x00000002;
+         }
       }
+
+      private com.google.protobuf.RepeatedFieldBuilderV3<
+          GroupInfoProto.GroupInfo, GroupInfoProto.GroupInfo.Builder, GroupInfoProto.GroupInfoOrBuilder> groupsBuilder_;
+
       /**
        * <pre>
        * 当前连接小组集合
        * </pre>
        *
-       * <code>.GroupInfo groups = 2;</code>
+       * <code>repeated .GroupInfo groups = 2;</code>
        */
-      public GroupInfoProto.GroupInfo getGroups() {
+      public java.util.List<GroupInfoProto.GroupInfo> getGroupsList() {
         if (groupsBuilder_ == null) {
-          return groups_ == null ? GroupInfoProto.GroupInfo.getDefaultInstance() : groups_;
+          return java.util.Collections.unmodifiableList(groups_);
         } else {
-          return groupsBuilder_.getMessage();
+          return groupsBuilder_.getMessageList();
         }
       }
       /**
@@ -616,19 +686,48 @@ public final class ConnectSelfProto {
        * 当前连接小组集合
        * </pre>
        *
-       * <code>.GroupInfo groups = 2;</code>
+       * <code>repeated .GroupInfo groups = 2;</code>
        */
-      public Builder setGroups(GroupInfoProto.GroupInfo value) {
+      public int getGroupsCount() {
+        if (groupsBuilder_ == null) {
+          return groups_.size();
+        } else {
+          return groupsBuilder_.getCount();
+        }
+      }
+      /**
+       * <pre>
+       * 当前连接小组集合
+       * </pre>
+       *
+       * <code>repeated .GroupInfo groups = 2;</code>
+       */
+      public GroupInfoProto.GroupInfo getGroups(int index) {
+        if (groupsBuilder_ == null) {
+          return groups_.get(index);
+        } else {
+          return groupsBuilder_.getMessage(index);
+        }
+      }
+      /**
+       * <pre>
+       * 当前连接小组集合
+       * </pre>
+       *
+       * <code>repeated .GroupInfo groups = 2;</code>
+       */
+      public Builder setGroups(
+          int index, GroupInfoProto.GroupInfo value) {
         if (groupsBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
           }
-          groups_ = value;
+          ensureGroupsIsMutable();
+          groups_.set(index, value);
           onChanged();
         } else {
-          groupsBuilder_.setMessage(value);
+          groupsBuilder_.setMessage(index, value);
         }
-
         return this;
       }
       /**
@@ -636,17 +735,76 @@ public final class ConnectSelfProto {
        * 当前连接小组集合
        * </pre>
        *
-       * <code>.GroupInfo groups = 2;</code>
+       * <code>repeated .GroupInfo groups = 2;</code>
        */
       public Builder setGroups(
+          int index, GroupInfoProto.GroupInfo.Builder builderForValue) {
+        if (groupsBuilder_ == null) {
+          ensureGroupsIsMutable();
+          groups_.set(index, builderForValue.build());
+          onChanged();
+        } else {
+          groupsBuilder_.setMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <pre>
+       * 当前连接小组集合
+       * </pre>
+       *
+       * <code>repeated .GroupInfo groups = 2;</code>
+       */
+      public Builder addGroups(GroupInfoProto.GroupInfo value) {
+        if (groupsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureGroupsIsMutable();
+          groups_.add(value);
+          onChanged();
+        } else {
+          groupsBuilder_.addMessage(value);
+        }
+        return this;
+      }
+      /**
+       * <pre>
+       * 当前连接小组集合
+       * </pre>
+       *
+       * <code>repeated .GroupInfo groups = 2;</code>
+       */
+      public Builder addGroups(
+          int index, GroupInfoProto.GroupInfo value) {
+        if (groupsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureGroupsIsMutable();
+          groups_.add(index, value);
+          onChanged();
+        } else {
+          groupsBuilder_.addMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <pre>
+       * 当前连接小组集合
+       * </pre>
+       *
+       * <code>repeated .GroupInfo groups = 2;</code>
+       */
+      public Builder addGroups(
           GroupInfoProto.GroupInfo.Builder builderForValue) {
         if (groupsBuilder_ == null) {
-          groups_ = builderForValue.build();
+          ensureGroupsIsMutable();
+          groups_.add(builderForValue.build());
           onChanged();
         } else {
-          groupsBuilder_.setMessage(builderForValue.build());
+          groupsBuilder_.addMessage(builderForValue.build());
         }
-
         return this;
       }
       /**
@@ -654,21 +812,17 @@ public final class ConnectSelfProto {
        * 当前连接小组集合
        * </pre>
        *
-       * <code>.GroupInfo groups = 2;</code>
+       * <code>repeated .GroupInfo groups = 2;</code>
        */
-      public Builder mergeGroups(GroupInfoProto.GroupInfo value) {
+      public Builder addGroups(
+          int index, GroupInfoProto.GroupInfo.Builder builderForValue) {
         if (groupsBuilder_ == null) {
-          if (groups_ != null) {
-            groups_ =
-              GroupInfoProto.GroupInfo.newBuilder(groups_).mergeFrom(value).buildPartial();
-          } else {
-            groups_ = value;
-          }
+          ensureGroupsIsMutable();
+          groups_.add(index, builderForValue.build());
           onChanged();
         } else {
-          groupsBuilder_.mergeFrom(value);
+          groupsBuilder_.addMessage(index, builderForValue.build());
         }
-
         return this;
       }
       /**
@@ -676,17 +830,35 @@ public final class ConnectSelfProto {
        * 当前连接小组集合
        * </pre>
        *
-       * <code>.GroupInfo groups = 2;</code>
+       * <code>repeated .GroupInfo groups = 2;</code>
+       */
+      public Builder addAllGroups(
+          Iterable<? extends GroupInfoProto.GroupInfo> values) {
+        if (groupsBuilder_ == null) {
+          ensureGroupsIsMutable();
+          com.google.protobuf.AbstractMessageLite.Builder.addAll(
+              values, groups_);
+          onChanged();
+        } else {
+          groupsBuilder_.addAllMessages(values);
+        }
+        return this;
+      }
+      /**
+       * <pre>
+       * 当前连接小组集合
+       * </pre>
+       *
+       * <code>repeated .GroupInfo groups = 2;</code>
        */
       public Builder clearGroups() {
         if (groupsBuilder_ == null) {
-          groups_ = null;
+          groups_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000002);
           onChanged();
         } else {
-          groups_ = null;
-          groupsBuilder_ = null;
+          groupsBuilder_.clear();
         }
-
         return this;
       }
       /**
@@ -694,26 +866,41 @@ public final class ConnectSelfProto {
        * 当前连接小组集合
        * </pre>
        *
-       * <code>.GroupInfo groups = 2;</code>
+       * <code>repeated .GroupInfo groups = 2;</code>
        */
-      public GroupInfoProto.GroupInfo.Builder getGroupsBuilder() {
-
-        onChanged();
-        return getGroupsFieldBuilder().getBuilder();
+      public Builder removeGroups(int index) {
+        if (groupsBuilder_ == null) {
+          ensureGroupsIsMutable();
+          groups_.remove(index);
+          onChanged();
+        } else {
+          groupsBuilder_.remove(index);
+        }
+        return this;
       }
       /**
        * <pre>
        * 当前连接小组集合
        * </pre>
        *
-       * <code>.GroupInfo groups = 2;</code>
+       * <code>repeated .GroupInfo groups = 2;</code>
        */
-      public GroupInfoProto.GroupInfoOrBuilder getGroupsOrBuilder() {
-        if (groupsBuilder_ != null) {
-          return groupsBuilder_.getMessageOrBuilder();
-        } else {
-          return groups_ == null ?
-              GroupInfoProto.GroupInfo.getDefaultInstance() : groups_;
+      public GroupInfoProto.GroupInfo.Builder getGroupsBuilder(
+          int index) {
+        return getGroupsFieldBuilder().getBuilder(index);
+      }
+      /**
+       * <pre>
+       * 当前连接小组集合
+       * </pre>
+       *
+       * <code>repeated .GroupInfo groups = 2;</code>
+       */
+      public GroupInfoProto.GroupInfoOrBuilder getGroupsOrBuilder(
+          int index) {
+        if (groupsBuilder_ == null) {
+          return groups_.get(index);  } else {
+          return groupsBuilder_.getMessageOrBuilder(index);
         }
       }
       /**
@@ -721,15 +908,58 @@ public final class ConnectSelfProto {
        * 当前连接小组集合
        * </pre>
        *
-       * <code>.GroupInfo groups = 2;</code>
+       * <code>repeated .GroupInfo groups = 2;</code>
        */
-      private com.google.protobuf.SingleFieldBuilderV3<
+      public java.util.List<? extends GroupInfoProto.GroupInfoOrBuilder>
+           getGroupsOrBuilderList() {
+        if (groupsBuilder_ != null) {
+          return groupsBuilder_.getMessageOrBuilderList();
+        } else {
+          return java.util.Collections.unmodifiableList(groups_);
+        }
+      }
+      /**
+       * <pre>
+       * 当前连接小组集合
+       * </pre>
+       *
+       * <code>repeated .GroupInfo groups = 2;</code>
+       */
+      public GroupInfoProto.GroupInfo.Builder addGroupsBuilder() {
+        return getGroupsFieldBuilder().addBuilder(
+            GroupInfoProto.GroupInfo.getDefaultInstance());
+      }
+      /**
+       * <pre>
+       * 当前连接小组集合
+       * </pre>
+       *
+       * <code>repeated .GroupInfo groups = 2;</code>
+       */
+      public GroupInfoProto.GroupInfo.Builder addGroupsBuilder(
+          int index) {
+        return getGroupsFieldBuilder().addBuilder(
+            index, GroupInfoProto.GroupInfo.getDefaultInstance());
+      }
+      /**
+       * <pre>
+       * 当前连接小组集合
+       * </pre>
+       *
+       * <code>repeated .GroupInfo groups = 2;</code>
+       */
+      public java.util.List<GroupInfoProto.GroupInfo.Builder>
+           getGroupsBuilderList() {
+        return getGroupsFieldBuilder().getBuilderList();
+      }
+      private com.google.protobuf.RepeatedFieldBuilderV3<
           GroupInfoProto.GroupInfo, GroupInfoProto.GroupInfo.Builder, GroupInfoProto.GroupInfoOrBuilder>
           getGroupsFieldBuilder() {
         if (groupsBuilder_ == null) {
-          groupsBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+          groupsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
               GroupInfoProto.GroupInfo, GroupInfoProto.GroupInfo.Builder, GroupInfoProto.GroupInfoOrBuilder>(
-                  getGroups(),
+                  groups_,
+                  ((bitField0_ & 0x00000002) == 0x00000002),
                   getParentForChildren(),
                   isClean());
           groups_ = null;
@@ -805,7 +1035,7 @@ public final class ConnectSelfProto {
     String[] descriptorData = {
       "\n\033consensus/ConnectSelf.proto\032\031consensus" +
       "/GroupInfo.proto\"8\n\013ConnectSelf\022\r\n\005level" +
-      "\030\001 \001(\005\022\032\n\006groups\030\002 \001(\0132\n.GroupInfoB;\n\'cn" +
+      "\030\001 \001(\005\022\032\n\006groups\030\002 \003(\0132\n.GroupInfoB;\n\'cn" +
       ".aberic.bother.entity.proto.consensusB\020C" +
       "onnectSelfProtob\006proto3"
     };

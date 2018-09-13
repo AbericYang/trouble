@@ -28,11 +28,12 @@ import cn.aberic.bother.entity.block.Block;
 import cn.aberic.bother.entity.consensus.ConnectSelf;
 import cn.aberic.bother.entity.io.MessageData;
 import cn.aberic.bother.entity.proto.block.BlockProto;
+import cn.aberic.bother.entity.proto.consensus.ConnectSelfProto;
+import cn.aberic.bother.tools.MsgPackTool;
 import com.google.gson.Gson;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.util.JsonFormat;
 import io.netty.channel.Channel;
-import org.slf4j.Logger;
 
 /**
  * 应答消息业务处理接口
@@ -42,25 +43,38 @@ import org.slf4j.Logger;
  */
 interface IMsgReceiveService extends IMsgRequestService {
 
-    Logger log();
-
     default void receive(Channel channel, MessageData msgData) {
         log().debug("请求协议：{}，数据ID：{}", msgData.getProtocol().getB(), msgData.getDataId());
         switch (msgData.getProtocol()) {
+            case HEART: // 心跳协议-0x00
+                log().debug("接收心跳协议，什么也不做");
+                log().debug("接收心跳协议，connectSelf = {}", ConnectSelf.obtain().toJsonString());
+                break;
             case JOIN: // 加入新节点协议，follow节点收到新节点加入通知后，发送此协议告知leader节点有新节点加入请求，leader节点直接处理该协议-0x01
                 String address = channel.remoteAddress().toString().split(":")[0].split("/")[1];
                 log().debug("接收加入新节点[{}]协议，执行加入方案", address);
                 // 如果当前节点是本楼Leader节点且当前楼住户未满
-                if (ConnectSelf.obtain().getLevel() == 1 && !ConnectSelf.obtain().getGroups().get(0).max()) {
-
-                    pushAddNode(address); // 通知所有住户有新节点加入
-                }
+//                if (ConnectSelf.obtain().getLevel() == 1 && !ConnectSelf.obtain().getGroups().get(0).max()) {
+                pushAddNode(address); // 通知所有住户有新节点加入
+                pushJoinAccept(channel); // 告知新的接入地址可加入协议
+                ConnectSelf.obtain().getGroups().get(0).add(address); // 有且仅有楼来执行加入
+//                }
                 break;
             case JOIN_ACCEPT: // 告知新的接入地址可加入协议-0x05
-
+                log().debug("告知新的接入地址可加入协议，执行楼同步操作");
+                try {
+                    ConnectSelfProto.ConnectSelf connectSelfProto = ConnectSelfProto.ConnectSelf.parseFrom(msgData.getBytes());
+                    String jsonObject = JsonFormat.printer().print(connectSelfProto);
+                    ConnectSelf.obtain().init(new Gson().fromJson(jsonObject, ConnectSelf.class));
+                    log().debug("connectSelf = {}", ConnectSelf.obtain().toJsonString());
+                } catch (InvalidProtocolBufferException e) {
+                    e.printStackTrace();
+                }
                 break;
             case ADD_NODE: // 由leader节点发出新增小组节点协议-0x02
-
+                address = MsgPackTool.bytes2String(msgData.getBytes());
+                log().debug("接收由leader节点发出新增小组节点{}协议", address);
+                ConnectSelf.obtain().getGroups().get(0).add(address); // 有且仅有楼来执行加入
                 break;
             case UPGRADE_NODE: // 由leader节点发出更新小组节点集合协议-0x03
                 break;
@@ -71,7 +85,7 @@ interface IMsgReceiveService extends IMsgRequestService {
                     String jsonObject = JsonFormat.printer().print(blockProto);
                     // log().debug("jsonObject = {}", jsonObject);
                     Block block = new Gson().fromJson(jsonObject, Block.class);
-                    log().debug("block = {}", block.toString());
+                    log().debug("block = {}", block.toJsonString());
                     // TODO: 2018/9/12 验证并存储
                 } catch (InvalidProtocolBufferException e) {
                     e.printStackTrace();

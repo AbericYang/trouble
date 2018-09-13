@@ -85,9 +85,6 @@ public class EchoClientHandler extends SimpleChannelInboundHandler<MessageData> 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, MessageData msgData) {
         switch (msgData.getProtocol()) {
-            case HEART: // 心跳协议-0x00
-                log().debug("接收心跳协议，什么也不做");
-                break;
             case KEEP: // 保持心跳协议-0x01
                 log().debug("保持心跳协议");
                 keepHeartBeat = true;
@@ -96,6 +93,11 @@ public class EchoClientHandler extends SimpleChannelInboundHandler<MessageData> 
                 log().debug("关闭心跳协议");
                 keepHeartBeat = false;
                 ioClient.shutdown();
+                break;
+            case JOIN_ACCEPT: // 告知新的接入地址可加入协议-0x05
+                log().debug("告知新的接入地址可加入协议，保持心跳协议");
+                keepHeartBeat = true;
+                receive(ctx.channel(), msgData);
                 break;
             default:
                 receive(ctx.channel(), msgData);

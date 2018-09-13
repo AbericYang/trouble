@@ -24,11 +24,13 @@
 
 package cn.aberic.bother.io.message;
 
+import cn.aberic.bother.entity.consensus.ConnectSelf;
 import cn.aberic.bother.entity.enums.ProtocolStatus;
 import cn.aberic.bother.entity.io.MessageData;
 import cn.aberic.bother.io.IOContext;
 import cn.aberic.bother.tools.MsgPackTool;
 import io.netty.channel.Channel;
+import org.slf4j.Logger;
 
 /**
  * 请求消息业务处理接口
@@ -37,6 +39,8 @@ import io.netty.channel.Channel;
  * 邮箱：abericyang@gmail.com
  */
 interface IMsgRequestService {
+
+    Logger log();
 
     /**
      * 在当前channel下发送心跳包
@@ -72,11 +76,10 @@ interface IMsgRequestService {
      * 告知新的接入地址可加入协议
      *
      * @param channel 当前通道
-     * @param address 新节点地址
      */
-    default void pushJoinAccept(Channel channel, String address) {
-        MessageData msgData = new MessageData(ProtocolStatus.JOIN_ACCEPT, MsgPackTool.string2Bytes(address));
-        // IOContext.obtain().send(nextTopLeaderAddress, msgData);
+    default void pushJoinAccept(Channel channel) {
+        MessageData msgData = new MessageData(ProtocolStatus.JOIN_ACCEPT, ConnectSelf.obtain().self2ProtoByteArray());
+        channel.writeAndFlush(msgData);
     }
 
     /**

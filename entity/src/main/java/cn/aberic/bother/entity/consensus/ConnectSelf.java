@@ -24,8 +24,15 @@
 
 package cn.aberic.bother.entity.consensus;
 
+import cn.aberic.bother.entity.BeanJsonField;
+import cn.aberic.bother.entity.enums.ConnectStatus;
+import cn.aberic.bother.entity.proto.consensus.ConnectSelfProto;
+import com.google.protobuf.InvalidProtocolBufferException;
+import com.google.protobuf.util.JsonFormat;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -36,9 +43,11 @@ import java.util.List;
  * 作者：Aberic on 2018/9/12 22:23
  * 邮箱：abericyang@gmail.com
  */
+@Slf4j
 @Setter
 @Getter
-public class ConnectSelf {
+@ToString
+public class ConnectSelf implements BeanJsonField {
 
     /** 自身节点等级，等级0表示未成为任何小组Leader，1表示是一个小组Leader，2表示51个小组Leader，以此类推 */
     private int level;
@@ -59,7 +68,42 @@ public class ConnectSelf {
     }
 
     public ConnectSelf() {
+        GroupInfo info = new GroupInfo();
+        info.setLeaderAddress("");
+        info.setNextLeaderAddress("");
+        info.setStatus(ConnectStatus.NONE);
+        info.setTimestamp(0);
+        info.setAddresses(new LinkedList<>());
         groups = new LinkedList<>();
+        groups.add(info);
+    }
+
+    /**
+     * 初始化外部传来的连接信息对象
+     *
+     * @param connectSelf 连接信息对象
+     */
+    public void init(ConnectSelf connectSelf) {
+        instance = connectSelf;
+        setLevel(0);
+        getGroups().get(0).setStatus(ConnectStatus.FOLLOW);
+    }
+
+    /**
+     * ConnectSelf 对象转成 {@link cn.aberic.bother.entity.proto.consensus.ConnectSelfProto.ConnectSelf} 字节流
+     *
+     * @return proto 字节流
+     */
+    public byte[] self2ProtoByteArray() {
+        ConnectSelfProto.ConnectSelf.Builder builder = ConnectSelfProto.ConnectSelf.newBuilder();
+        String selfJsonFormat = this.toJsonString();
+        log.debug("selfJsonFormat = {}", selfJsonFormat);
+        try {
+            JsonFormat.parser().merge(selfJsonFormat, builder);
+        } catch (InvalidProtocolBufferException e) {
+            e.printStackTrace();
+        }
+        return builder.build().toByteArray();
     }
 
 }

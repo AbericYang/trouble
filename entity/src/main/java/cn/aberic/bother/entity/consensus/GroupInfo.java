@@ -24,6 +24,7 @@
 
 package cn.aberic.bother.entity.consensus;
 
+import cn.aberic.bother.entity.BeanJsonField;
 import cn.aberic.bother.entity.enums.ConnectStatus;
 import lombok.Getter;
 import lombok.Setter;
@@ -40,7 +41,7 @@ import java.util.Random;
  */
 @Setter
 @Getter
-public class GroupInfo {
+public class GroupInfo implements BeanJsonField {
 
     /** 当前Leader的远程地址 */
     private String leaderAddress;
@@ -73,7 +74,7 @@ public class GroupInfo {
      *
      * @return 与否
      */
-    public boolean isElectionTime() {
+    public boolean electionTime() {
         return new Date().getTime() - timestamp > 600000;
     }
 
