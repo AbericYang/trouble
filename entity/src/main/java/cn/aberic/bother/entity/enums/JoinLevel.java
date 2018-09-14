@@ -47,27 +47,27 @@ import lombok.Getter;
 public enum JoinLevel {
 
     /** 孤岛 */
-    LONELY("孤岛", 0),
+    LONELY("孤岛", -1),
     /** 楼 */
-    TOWER("楼", 1),
+    TOWER("楼", 0),
     /** 社区 */
-    COMMUNITY("社区", 2),
+    COMMUNITY("社区", 1),
     /** 县城 */
-    COUNTY("县城", 3),
+    COUNTY("县城", 2),
     /** 市 */
-    CITY("市", 4),
+    CITY("市", 3),
     /** 省 */
-    PROVINCE("省", 5),
+    PROVINCE("省", 4),
     /** 楼 */
-    TOWER_NO_EXEC("楼，无需处理", 6),
+    TOWER_NO_EXEC("楼，无需处理", 5),
     /** 社区 */
-    COMMUNITY_NO_EXEC("社区，无需处理", 7),
+    COMMUNITY_NO_EXEC("社区，无需处理", 6),
     /** 县城 */
-    COUNTY_NO_EXEC("县城，无需处理", 8),
+    COUNTY_NO_EXEC("县城，无需处理", 7),
     /** 市 */
-    CITY_NO_EXEC("市，无需处理", 9),
+    CITY_NO_EXEC("市，无需处理", 8),
     /** 省 */
-    PROVINCE_NO_EXEC("省，无需处理", 10);
+    PROVINCE_NO_EXEC("省，无需处理", 9);
 
     /** 别名描述 */
     private String alias;

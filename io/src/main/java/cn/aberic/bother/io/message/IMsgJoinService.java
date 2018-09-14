@@ -26,10 +26,12 @@ package cn.aberic.bother.io.message;
 
 import cn.aberic.bother.entity.consensus.ConnectSelf;
 import cn.aberic.bother.entity.consensus.JoinFeedback;
+import cn.aberic.bother.entity.consensus.JoinNode;
 import cn.aberic.bother.entity.enums.JoinLevel;
 import cn.aberic.bother.entity.io.MessageData;
 import cn.aberic.bother.entity.proto.consensus.ConnectSelfProto;
 import cn.aberic.bother.entity.proto.consensus.JoinFeedbackProto;
+import cn.aberic.bother.entity.proto.consensus.JoinNodeProto;
 import cn.aberic.bother.io.IOContext;
 import cn.aberic.bother.tools.MsgPackTool;
 import com.google.gson.Gson;
@@ -57,7 +59,7 @@ public interface IMsgJoinService extends IMsgRequestService {
      * @param channel 当前指定通道
      * @param msgData 协议消息对象
      */
-    default void join(Channel channel, MessageData msgData) {
+    default void join(Channel channel, MessageData msgData) throws InvalidProtocolBufferException {
         log().debug("请求协议：{}，数据ID：{}", msgData.getProtocol().getB(), msgData.getDataId());
         String address = channel.remoteAddress().toString().split(":")[0].split("/")[1];
         switch (msgData.getProtocol()) {
@@ -68,8 +70,7 @@ public interface IMsgJoinService extends IMsgRequestService {
                         // 或当前节点是本楼Leader节点且当前楼住户未满
                         (ConnectSelf.obtain().getLevel() == 1 && !ConnectSelf.obtain().getGroups().get(0).max())) {
                     pushJoinAccept(channel); // 告知新的接入地址可加入协议
-                    // TODO: 2018/9/14 下述协议需要明确级别
-                    pushAddNode(address); // 通知所有住户有新节点加入
+                    pushAddNode(new JoinNode(address, JoinLevel.TOWER)); // 通知所有楼中住户有新节点加入
                     ConnectSelf.obtain().getGroups().get(0).add(address); // 有且仅有楼来执行加入
                 } else {
                     // 执行其它应答加入新节点消息业务处理方案——请求加入
@@ -78,14 +79,10 @@ public interface IMsgJoinService extends IMsgRequestService {
                 break;
             case JOIN_ACCEPT: // 告知新的接入地址可加入协议-0x05
                 log().debug("告知新的接入地址可加入协议，执行楼同步操作");
-                try {
-                    ConnectSelfProto.ConnectSelf connectSelfProto = ConnectSelfProto.ConnectSelf.parseFrom(msgData.getBytes());
-                    String jsonObject = JsonFormat.printer().print(connectSelfProto);
-                    ConnectSelf.obtain().init(new Gson().fromJson(jsonObject, ConnectSelf.class));
-                    log().debug("connectSelf = {}", ConnectSelf.obtain().toJsonString());
-                } catch (InvalidProtocolBufferException e) {
-                    e.printStackTrace();
-                }
+                ConnectSelfProto.ConnectSelf connectSelfProto = ConnectSelfProto.ConnectSelf.parseFrom(msgData.getBytes());
+                String jsonObject = JsonFormat.printer().print(connectSelfProto);
+                ConnectSelf.obtain().init(new Gson().fromJson(jsonObject, ConnectSelf.class));
+                log().debug("connectSelf = {}", ConnectSelf.obtain().toJsonString());
                 // 遍历作为客户端的请求并全部关闭
                 IOContext.obtain().closeClient(address);
                 // 如果新加入楼之前也是孤岛入住，则发起Leader选举
@@ -94,20 +91,19 @@ public interface IMsgJoinService extends IMsgRequestService {
                 }
                 break;
             case JOIN_FEEDBACK: // 告知新的接入节点反馈协议-0x06
-                try {
-                    JoinFeedbackProto.JoinFeedback joinFeedbackProto = JoinFeedbackProto.JoinFeedback.parseFrom(msgData.getBytes());
-                    String jsonObject = JsonFormat.printer().print(joinFeedbackProto);
-                    JoinFeedback joinFeedback = new Gson().fromJson(jsonObject, JoinFeedback.class);
-                    log().debug("joinFeedback = {}", joinFeedback.toJsonString());
-                    joinFeedbackExec(channel, joinFeedback);
-                } catch (InvalidProtocolBufferException e) {
-                    e.printStackTrace();
-                }
+                JoinFeedbackProto.JoinFeedback joinFeedbackProto = JoinFeedbackProto.JoinFeedback.parseFrom(msgData.getBytes());
+                jsonObject = JsonFormat.printer().print(joinFeedbackProto);
+                JoinFeedback joinFeedback = new Gson().fromJson(jsonObject, JoinFeedback.class);
+                log().debug("joinFeedback = {}", joinFeedback.toJsonString());
+                joinFeedbackExec(joinFeedback);
                 break;
             case ADD_NODE: // 由leader节点发出新增小组节点协议-0x07
-                address = MsgPackTool.bytes2String(msgData.getBytes());
-                log().debug("接收由leader节点发出新增小组节点{}协议", address);
-                ConnectSelf.obtain().getGroups().get(0).add(address); // 有且仅有楼来执行加入
+                JoinNodeProto.JoinNode joinNodeProto = JoinNodeProto.JoinNode.parseFrom(msgData.getBytes());
+                jsonObject = JsonFormat.printer().print(joinNodeProto);
+                JoinNode joinNode = new Gson().fromJson(jsonObject, JoinNode.class);
+                log().debug("joinNode = {}", joinNode.toJsonString());
+                log().debug("接收由leader节点发出新增小组节点{}协议，加入级别{}", joinNode.getAddress(), joinNode.getLevel());
+                ConnectSelf.obtain().getGroups().get(joinNode.getLevel().getLevel()).add(address); // 有且仅有楼来执行加入
                 break;
             case UPGRADE_NODE: // 由leader节点发出更新小组节点集合协议-0x08
                 break;
@@ -181,10 +177,9 @@ public interface IMsgJoinService extends IMsgRequestService {
     /**
      * 应答加入新节点消息业务处理方案——请求加入应答
      *
-     * @param channel      当前指定通道
      * @param joinFeedback 告知新的接入节点反馈协议对象
      */
-    default void joinFeedbackExec(Channel channel, JoinFeedback joinFeedback) {
+    default void joinFeedbackExec(JoinFeedback joinFeedback) {
         switch (joinFeedback.getLevel()) {
             case LONELY: // 孤岛，得到楼Leader
                 // 向获取到的楼Leader发起加入申请

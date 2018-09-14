@@ -131,7 +131,7 @@ public class PublicContractExec implements IPublicContractExec, IContractBaseExe
         transaction.setContractName(getContract().getName());
         transaction.setContractVersion(getContract().getVersionName());
         transaction.setCreator(request.getAddress());
-        transaction.setTimestamp(new Date().getTime());
+        transaction.setTimestamp(System.currentTimeMillis());
         transaction.setRwSet(rwSet);
         getRequest().setPriECCKey(null);
         if (null != pubECCKey) {

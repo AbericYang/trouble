@@ -48,11 +48,9 @@ public class BlockStorage extends BlockAS implements IDataExec {
 
     /** 主动发起共识操作对象 */
     private Proactive proactive;
-    private BlockAcquire acquire;
 
     public BlockStorage(String contractHash) {
         super(contractHash);
-        acquire = new BlockAcquire(contractHash);
     }
 
     @Override

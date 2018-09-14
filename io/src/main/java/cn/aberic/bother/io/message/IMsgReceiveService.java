@@ -59,7 +59,11 @@ interface IMsgReceiveService extends IMsgJoinService, IMsgElectionService {
             case JOIN_FEEDBACK: // 告知新的接入节点反馈协议-0x06
             case ADD_NODE: // 由leader节点发出新增小组节点协议-0x07
             case UPGRADE_NODE: // 由leader节点发出更新小组节点集合协议-0x08
-                join(channel, msgData);
+                try {
+                    join(channel, msgData);
+                } catch (InvalidProtocolBufferException e) {
+                    e.printStackTrace();
+                }
                 break;
             case ELECTION: // 发起选举协议-0x20
                 election(channel, msgData);

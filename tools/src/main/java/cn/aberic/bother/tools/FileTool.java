@@ -32,7 +32,6 @@ import org.apache.commons.codec.digest.DigestUtils;
 
 import java.io.*;
 import java.nio.charset.Charset;
-import java.util.Date;
 
 /**
  * 文件工具类——公共方法包
@@ -86,7 +85,7 @@ public class FileTool {
      * @return 文件总行数
      */
     public static int getFileLineCount(File file) {
-        long time = new Date().getTime();
+        long time = System.currentTimeMillis();
         int lines = 0;
         long fileLength = file.length();
         try (LineNumberReader lineNumberReader = new LineNumberReader(new FileReader(file));){
@@ -95,7 +94,7 @@ public class FileTool {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        log.debug("getFileLineCount new 处理时长 = {}", new Date().getTime() - time);
+        log.debug("getFileLineCount new 处理时长 = {}", System.currentTimeMillis() - time);
         return lines;
     }
 

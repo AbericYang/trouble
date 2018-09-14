@@ -46,7 +46,6 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.nio.charset.Charset;
-import java.util.Date;
 
 /**
  * 账户、Token 操作业务实现
@@ -64,7 +63,7 @@ public class BusinessServiceImpl implements BusinessService, IResponse {
         Key rsaKey = KeyExec.obtain().createRSAKeyPair();
         Key eccKey = KeyExec.obtain().createECCDSAKeyPair();
 
-        long timestamp = new Date().getTime();
+        long timestamp = System.currentTimeMillis();
 
         AccountInfo info = new AccountInfo();
         info.setPriRSAKey(rsaKey.getPrivateKey());

@@ -27,6 +27,7 @@ package cn.aberic.bother.io.message;
 import cn.aberic.bother.entity.consensus.ConnectSelf;
 import cn.aberic.bother.entity.consensus.GroupInfo;
 import cn.aberic.bother.entity.consensus.JoinFeedback;
+import cn.aberic.bother.entity.consensus.JoinNode;
 import cn.aberic.bother.entity.enums.JoinLevel;
 import cn.aberic.bother.entity.enums.ProtocolStatus;
 import cn.aberic.bother.entity.io.MessageData;
@@ -134,10 +135,10 @@ interface IMsgRequestService {
     /**
      * 广播新增小组节点协议
      *
-     * @param address 新增小组节点地址
+     * @param node 加入节点对象
      */
-    default void pushAddNode(String address) {
-        MessageData msgData = new MessageData(ProtocolStatus.ADD_NODE, MsgPackTool.string2Bytes(address));
+    default void pushAddNode(JoinNode node) {
+        MessageData msgData = new MessageData(ProtocolStatus.ADD_NODE, node.bean2ProtoByteArray());
         IOContext.obtain().broadcast(msgData);
     }
 

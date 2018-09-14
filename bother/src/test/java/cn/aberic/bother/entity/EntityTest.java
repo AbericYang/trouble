@@ -47,7 +47,6 @@ import org.json.JSONObject;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -133,7 +132,7 @@ public class EntityTest {
     }
 
     public static byte[] getBlockBytes() {
-        return createBlock(0).block2ProtoByteArray();
+        return createBlock(0).bean2ProtoByteArray();
     }
 
     private static void protoDemo() {
@@ -205,7 +204,7 @@ public class EntityTest {
             transaction.setErrorMessage(String.format("error message %s", transactionCount));
             transaction.setSign(String.format("sign %s", transactionCount));
             transaction.setTransactionStatusCode(TransactionStatus.SUCCESS.getCode());
-            transaction.setTimestamp(new Date().getTime());
+            transaction.setTimestamp(System.currentTimeMillis());
 
             RWSet rwSet = new RWSet();
             List<ValueRead> reads = new ArrayList<>();

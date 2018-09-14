@@ -30,8 +30,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-import java.util.Date;
-
 /**
  * 区块头部信息——数据操作层-data manipulation
  * <p>
@@ -75,7 +73,7 @@ public class BlockHeader {
      * @return 区快头部构造
      */
     public BlockHeader create() {
-        this.timestamp = new Date().getTime();
+        this.timestamp = System.currentTimeMillis();
         return this;
     }
 

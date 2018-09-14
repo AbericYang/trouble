@@ -40,7 +40,6 @@ import org.slf4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -108,25 +107,25 @@ public interface IDataExec extends IInit, IFile<ContractInfo> {
      */
     default String get(BlockAcquire acquire, String key) {
         String[] results = new String[]{null};
-        long time = new Date().getTime();
+        long time = System.currentTimeMillis();
         String dbResultStr = DBExec.obtain().get(key);
         if (null == dbResultStr) {
             return null;
         }
         String[] strings = dbResultStr.split(",");
-        getLog().debug("DBExec getKey 耗时 = {}", (new Date().getTime() - time));
+        getLog().debug("DBExec getKey 耗时 = {}", (System.currentTimeMillis() - time));
 
-        time = new Date().getTime();
+        time = System.currentTimeMillis();
         Block block = acquire.getBlockByNumAndLine(Integer.valueOf(strings[0]), Integer.valueOf(strings[1]));
-        getLog().debug("Block getBlockByNumAndLine 耗时 = {}", (new Date().getTime() - time));
+        getLog().debug("Block getBlockByNumAndLine 耗时 = {}", (System.currentTimeMillis() - time));
 
-        time = new Date().getTime();
+        time = System.currentTimeMillis();
         block.getBody().getTransactions().forEach(transaction -> transaction.getRwSet().getWrites().forEach(write -> {
             if (StringUtils.equals(write.getStrings()[0], key)) {
                 results[0] = write.getStrings()[1];
             }
         }));
-        getLog().debug("Write getStrings 耗时 = {}", (new Date().getTime() - time));
+        getLog().debug("Write getStrings 耗时 = {}", (System.currentTimeMillis() - time));
         return results[0];
     }
 

@@ -55,6 +55,11 @@ public class JoinNode implements BeanProtoFormat {
     /** 加入节点所在级别 */
     private JoinLevel level;
 
+    public JoinNode(String address, JoinLevel level) {
+        this.address = address;
+        this.level = level;
+    }
+
     /**
      * JoinNode 对象转成 {@link cn.aberic.bother.entity.proto.consensus.JoinNodeProto.JoinNode} 字节流
      *

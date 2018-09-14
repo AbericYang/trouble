@@ -30,7 +30,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
@@ -76,7 +75,7 @@ public class GroupInfo implements BeanJsonField {
      * @return 与否
      */
     public boolean electionTime() {
-        return new Date().getTime() - timestamp > 600000;
+        return System.currentTimeMillis() - timestamp > 600000;
     }
 
     /**

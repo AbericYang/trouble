@@ -28,6 +28,8 @@ import cn.aberic.bother.entity.io.MessageData;
 import io.netty.channel.Channel;
 
 /**
+ * 应答选举消息业务处理接口
+ * <p>
  * 作者：Aberic on 2018/09/14 14:08
  * 邮箱：abericyang@gmail.com
  */
@@ -44,6 +46,8 @@ public interface IMsgElectionService extends IMsgRequestService {
         String address = channel.remoteAddress().toString().split(":")[0].split("/")[1];
         switch (msgData.getProtocol()) {
             case ELECTION: // 发起选举协议-0x20
+
+                break;
         }
     }
 

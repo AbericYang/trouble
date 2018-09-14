@@ -35,7 +35,6 @@ import com.google.common.io.Files;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
-import java.util.Date;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -72,7 +71,7 @@ public interface IBlockTransactionIndexExec extends IInit, IExecInit, IIndexExec
                 break;
             }
         }
-        long time = new Date().getTime();
+        long time = System.currentTimeMillis();
         while (!found) {
             found = checkTimeOut(fileCount, count, blocks[0], time, 300000);
         }

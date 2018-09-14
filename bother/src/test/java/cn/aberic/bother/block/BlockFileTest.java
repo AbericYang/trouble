@@ -56,25 +56,25 @@ public class BlockFileTest {
         log.debug("================= entity file test start =================");
         BlockAcquire acquire = new BlockAcquire(Constant.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH);
 
-        long time = new Date().getTime();
+        long time = System.currentTimeMillis();
         int count = acquire.getFileCount();
-        log.debug("处理时长 = {} | getBlockFileCount = {}", (new Date().getTime() - time), count);
+        log.debug("处理时长 = {} | getBlockFileCount = {}", (System.currentTimeMillis() - time), count);
 
 
         int height = acquire.getHeight();
-        log.debug("处理时长 = {} | getHeight = {}", (new Date().getTime() - time), height);
+        log.debug("处理时长 = {} | getHeight = {}", (System.currentTimeMillis() - time), height);
 
-        time = new Date().getTime();
+        time = System.currentTimeMillis();
         Block block = acquire.getBlockByHeight(45848);
-        log.debug("处理时长 = {} | getBlockByHeight = {}", (new Date().getTime() - time), block.toJsonString());
+        log.debug("处理时长 = {} | getBlockByHeight = {}", (System.currentTimeMillis() - time), block.toJsonString());
 //
-//        time = new Date().getTime();
+//        time = System.currentTimeMillis();
 //        block = acquire.getBlockByHash("8552d5d383d84f3aa34338fb1edd2542e8d031111a46c8b55d6b0744c9a503e1");
-//        log.debug("处理时长 = {} | getBlockByHash = {}", (new Date().getTime() - time), block.toJsonString());
+//        log.debug("处理时长 = {} | getBlockByHash = {}", (System.currentTimeMillis() - time), block.toJsonString());
 //
-//        time = new Date().getTime();
+//        time = System.currentTimeMillis();
 //        block = acquire.getBlockByTransactionHash("c3f0b966bcce948f3059129e8f524426c81002c683091e0f7028c8109c4454d5");
-//        log.debug("处理时长 = {} | getBlockByTransactionHash = {}", (new Date().getTime() - time), block.toJsonString());
+//        log.debug("处理时长 = {} | getBlockByTransactionHash = {}", (System.currentTimeMillis() - time), block.toJsonString());
 //
 //        log.debug("================= entity file test end =================");
     }

@@ -122,7 +122,7 @@ class AccountHelper implements IHelper {
             return exec.response(IResponse.ResponseType.CHEQUE_INVALID);
         }
 
-        long timestamp = new Date().getTime();
+        long timestamp = System.currentTimeMillis();
         // 如果支票已经过期，则此支票无效
         if (timestamp > cheque.getEndTimestamp() || timestamp < cheque.getStartTimestamp()) {
             return exec.response(IResponse.ResponseType.CHEQUE_OVERDUE);
@@ -157,7 +157,7 @@ class AccountHelper implements IHelper {
         account.setPubRSAKey(rsaKey.getPublicKey());
         account.setPubECCKey(eccKey.getPublicKey());
         account.setJsonAccountInfoString(KeyExec.obtain().encryptByStrECDSA(eccKey.getPublicKey(), JSON.toJSONString(info)));
-        account.setTimestamp(new Date().getTime());
+        account.setTimestamp(System.currentTimeMillis());
 
         // 得到即将存储的账户字符串
         String accountStr = JSON.toJSONString(account);

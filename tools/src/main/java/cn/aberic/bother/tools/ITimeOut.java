@@ -28,7 +28,6 @@ package cn.aberic.bother.tools;
 import cn.aberic.bother.tools.exception.SearchDataNotFoundException;
 import cn.aberic.bother.tools.exception.SearchDataTimeoutException;
 
-import java.util.Date;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -55,7 +54,7 @@ public interface ITimeOut {
             if (fileCount == resultCount.intValue()) {
                 throw new SearchDataNotFoundException();
             }
-            if (new Date().getTime() - time > outTime) {
+            if (System.currentTimeMillis() - time > outTime) {
                 throw new SearchDataTimeoutException();
             }
             try {

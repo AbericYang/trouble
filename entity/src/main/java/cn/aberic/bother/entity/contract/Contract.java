@@ -29,8 +29,6 @@ import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.Date;
-
 /**
  * 智能合约对象-smart contract
  * <p>
@@ -75,7 +73,7 @@ public class Contract implements BeanJsonField {
         this.name = name;
         this.versionName = versionName;
         this.versionCode = versionCode;
-        this.timestamp = new Date().getTime();
+        this.timestamp = System.currentTimeMillis();
         this.brief = brief;
     }
 
