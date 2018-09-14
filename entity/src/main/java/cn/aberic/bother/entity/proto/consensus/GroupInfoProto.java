@@ -139,6 +139,94 @@ public final class GroupInfoProto {
      */
     com.google.protobuf.ByteString
         getAddressesBytes(int index);
+
+    /**
+     * <pre>
+     * 当前选举集合
+     * </pre>
+     *
+     * <code>repeated .ElectionVote votes = 6;</code>
+     */
+    java.util.List<ElectionVoteProto.ElectionVote>
+        getVotesList();
+    /**
+     * <pre>
+     * 当前选举集合
+     * </pre>
+     *
+     * <code>repeated .ElectionVote votes = 6;</code>
+     */
+    ElectionVoteProto.ElectionVote getVotes(int index);
+    /**
+     * <pre>
+     * 当前选举集合
+     * </pre>
+     *
+     * <code>repeated .ElectionVote votes = 6;</code>
+     */
+    int getVotesCount();
+    /**
+     * <pre>
+     * 当前选举集合
+     * </pre>
+     *
+     * <code>repeated .ElectionVote votes = 6;</code>
+     */
+    java.util.List<? extends ElectionVoteProto.ElectionVoteOrBuilder>
+        getVotesOrBuilderList();
+    /**
+     * <pre>
+     * 当前选举集合
+     * </pre>
+     *
+     * <code>repeated .ElectionVote votes = 6;</code>
+     */
+    ElectionVoteProto.ElectionVoteOrBuilder getVotesOrBuilder(
+            int index);
+
+    /**
+     * <pre>
+     * 下轮选举集合
+     * </pre>
+     *
+     * <code>repeated .ElectionVote nextVotes = 7;</code>
+     */
+    java.util.List<ElectionVoteProto.ElectionVote>
+        getNextVotesList();
+    /**
+     * <pre>
+     * 下轮选举集合
+     * </pre>
+     *
+     * <code>repeated .ElectionVote nextVotes = 7;</code>
+     */
+    ElectionVoteProto.ElectionVote getNextVotes(int index);
+    /**
+     * <pre>
+     * 下轮选举集合
+     * </pre>
+     *
+     * <code>repeated .ElectionVote nextVotes = 7;</code>
+     */
+    int getNextVotesCount();
+    /**
+     * <pre>
+     * 下轮选举集合
+     * </pre>
+     *
+     * <code>repeated .ElectionVote nextVotes = 7;</code>
+     */
+    java.util.List<? extends ElectionVoteProto.ElectionVoteOrBuilder>
+        getNextVotesOrBuilderList();
+    /**
+     * <pre>
+     * 下轮选举集合
+     * </pre>
+     *
+     * <code>repeated .ElectionVote nextVotes = 7;</code>
+     */
+    ElectionVoteProto.ElectionVoteOrBuilder getNextVotesOrBuilder(
+            int index);
   }
   /**
    * Protobuf type {@code GroupInfo}
@@ -158,6 +246,8 @@ public final class GroupInfoProto {
       status_ = 0;
       timestamp_ = 0L;
       addresses_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      votes_ = java.util.Collections.emptyList();
+      nextVotes_ = java.util.Collections.emptyList();
     }
 
     @Override
@@ -216,6 +306,24 @@ public final class GroupInfoProto {
               addresses_.add(s);
               break;
             }
+            case 50: {
+              if (!((mutable_bitField0_ & 0x00000020) == 0x00000020)) {
+                votes_ = new java.util.ArrayList<ElectionVoteProto.ElectionVote>();
+                mutable_bitField0_ |= 0x00000020;
+              }
+              votes_.add(
+                  input.readMessage(ElectionVoteProto.ElectionVote.parser(), extensionRegistry));
+              break;
+            }
+            case 58: {
+              if (!((mutable_bitField0_ & 0x00000040) == 0x00000040)) {
+                nextVotes_ = new java.util.ArrayList<ElectionVoteProto.ElectionVote>();
+                mutable_bitField0_ |= 0x00000040;
+              }
+              nextVotes_.add(
+                  input.readMessage(ElectionVoteProto.ElectionVote.parser(), extensionRegistry));
+              break;
+            }
             default: {
               if (!parseUnknownFieldProto3(
                   input, unknownFields, extensionRegistry, tag)) {
@@ -233,6 +341,12 @@ public final class GroupInfoProto {
       } finally {
         if (((mutable_bitField0_ & 0x00000010) == 0x00000010)) {
           addresses_ = addresses_.getUnmodifiableView();
+        }
+        if (((mutable_bitField0_ & 0x00000020) == 0x00000020)) {
+          votes_ = java.util.Collections.unmodifiableList(votes_);
+        }
+        if (((mutable_bitField0_ & 0x00000040) == 0x00000040)) {
+          nextVotes_ = java.util.Collections.unmodifiableList(nextVotes_);
         }
         this.unknownFields = unknownFields.build();
         makeExtensionsImmutable();
@@ -567,6 +681,116 @@ public final class GroupInfoProto {
       return addresses_.getByteString(index);
     }
 
+    public static final int VOTES_FIELD_NUMBER = 6;
+    private java.util.List<ElectionVoteProto.ElectionVote> votes_;
+    /**
+     * <pre>
+     * 当前选举集合
+     * </pre>
+     *
+     * <code>repeated .ElectionVote votes = 6;</code>
+     */
+    public java.util.List<ElectionVoteProto.ElectionVote> getVotesList() {
+      return votes_;
+    }
+    /**
+     * <pre>
+     * 当前选举集合
+     * </pre>
+     *
+     * <code>repeated .ElectionVote votes = 6;</code>
+     */
+    public java.util.List<? extends ElectionVoteProto.ElectionVoteOrBuilder>
+        getVotesOrBuilderList() {
+      return votes_;
+    }
+    /**
+     * <pre>
+     * 当前选举集合
+     * </pre>
+     *
+     * <code>repeated .ElectionVote votes = 6;</code>
+     */
+    public int getVotesCount() {
+      return votes_.size();
+    }
+    /**
+     * <pre>
+     * 当前选举集合
+     * </pre>
+     *
+     * <code>repeated .ElectionVote votes = 6;</code>
+     */
+    public ElectionVoteProto.ElectionVote getVotes(int index) {
+      return votes_.get(index);
+    }
+    /**
+     * <pre>
+     * 当前选举集合
+     * </pre>
+     *
+     * <code>repeated .ElectionVote votes = 6;</code>
+     */
+    public ElectionVoteProto.ElectionVoteOrBuilder getVotesOrBuilder(
+        int index) {
+      return votes_.get(index);
+    }
+
+    public static final int NEXTVOTES_FIELD_NUMBER = 7;
+    private java.util.List<ElectionVoteProto.ElectionVote> nextVotes_;
+    /**
+     * <pre>
+     * 下轮选举集合
+     * </pre>
+     *
+     * <code>repeated .ElectionVote nextVotes = 7;</code>
+     */
+    public java.util.List<ElectionVoteProto.ElectionVote> getNextVotesList() {
+      return nextVotes_;
+    }
+    /**
+     * <pre>
+     * 下轮选举集合
+     * </pre>
+     *
+     * <code>repeated .ElectionVote nextVotes = 7;</code>
+     */
+    public java.util.List<? extends ElectionVoteProto.ElectionVoteOrBuilder>
+        getNextVotesOrBuilderList() {
+      return nextVotes_;
+    }
+    /**
+     * <pre>
+     * 下轮选举集合
+     * </pre>
+     *
+     * <code>repeated .ElectionVote nextVotes = 7;</code>
+     */
+    public int getNextVotesCount() {
+      return nextVotes_.size();
+    }
+    /**
+     * <pre>
+     * 下轮选举集合
+     * </pre>
+     *
+     * <code>repeated .ElectionVote nextVotes = 7;</code>
+     */
+    public ElectionVoteProto.ElectionVote getNextVotes(int index) {
+      return nextVotes_.get(index);
+    }
+    /**
+     * <pre>
+     * 下轮选举集合
+     * </pre>
+     *
+     * <code>repeated .ElectionVote nextVotes = 7;</code>
+     */
+    public ElectionVoteProto.ElectionVoteOrBuilder getNextVotesOrBuilder(
+        int index) {
+      return nextVotes_.get(index);
+    }
+
     private byte memoizedIsInitialized = -1;
     @Override
     public final boolean isInitialized() {
@@ -595,6 +819,12 @@ public final class GroupInfoProto {
       }
       for (int i = 0; i < addresses_.size(); i++) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 5, addresses_.getRaw(i));
+      }
+      for (int i = 0; i < votes_.size(); i++) {
+        output.writeMessage(6, votes_.get(i));
+      }
+      for (int i = 0; i < nextVotes_.size(); i++) {
+        output.writeMessage(7, nextVotes_.get(i));
       }
       unknownFields.writeTo(output);
     }
@@ -627,6 +857,14 @@ public final class GroupInfoProto {
         size += dataSize;
         size += 1 * getAddressesList().size();
       }
+      for (int i = 0; i < votes_.size(); i++) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(6, votes_.get(i));
+      }
+      for (int i = 0; i < nextVotes_.size(); i++) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(7, nextVotes_.get(i));
+      }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
       return size;
@@ -652,6 +890,10 @@ public final class GroupInfoProto {
           == other.getTimestamp());
       result = result && getAddressesList()
           .equals(other.getAddressesList());
+      result = result && getVotesList()
+          .equals(other.getVotesList());
+      result = result && getNextVotesList()
+          .equals(other.getNextVotesList());
       result = result && unknownFields.equals(other.unknownFields);
       return result;
     }
@@ -675,6 +917,14 @@ public final class GroupInfoProto {
       if (getAddressesCount() > 0) {
         hash = (37 * hash) + ADDRESSES_FIELD_NUMBER;
         hash = (53 * hash) + getAddressesList().hashCode();
+      }
+      if (getVotesCount() > 0) {
+        hash = (37 * hash) + VOTES_FIELD_NUMBER;
+        hash = (53 * hash) + getVotesList().hashCode();
+      }
+      if (getNextVotesCount() > 0) {
+        hash = (37 * hash) + NEXTVOTES_FIELD_NUMBER;
+        hash = (53 * hash) + getNextVotesList().hashCode();
       }
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
@@ -804,6 +1054,8 @@ public final class GroupInfoProto {
       private void maybeForceBuilderInitialization() {
         if (com.google.protobuf.GeneratedMessageV3
                 .alwaysUseFieldBuilders) {
+          getVotesFieldBuilder();
+          getNextVotesFieldBuilder();
         }
       }
       @Override
@@ -819,6 +1071,18 @@ public final class GroupInfoProto {
 
         addresses_ = com.google.protobuf.LazyStringArrayList.EMPTY;
         bitField0_ = (bitField0_ & ~0x00000010);
+        if (votesBuilder_ == null) {
+          votes_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000020);
+        } else {
+          votesBuilder_.clear();
+        }
+        if (nextVotesBuilder_ == null) {
+          nextVotes_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000040);
+        } else {
+          nextVotesBuilder_.clear();
+        }
         return this;
       }
 
@@ -856,6 +1120,24 @@ public final class GroupInfoProto {
           bitField0_ = (bitField0_ & ~0x00000010);
         }
         result.addresses_ = addresses_;
+        if (votesBuilder_ == null) {
+          if (((bitField0_ & 0x00000020) == 0x00000020)) {
+            votes_ = java.util.Collections.unmodifiableList(votes_);
+            bitField0_ = (bitField0_ & ~0x00000020);
+          }
+          result.votes_ = votes_;
+        } else {
+          result.votes_ = votesBuilder_.build();
+        }
+        if (nextVotesBuilder_ == null) {
+          if (((bitField0_ & 0x00000040) == 0x00000040)) {
+            nextVotes_ = java.util.Collections.unmodifiableList(nextVotes_);
+            bitField0_ = (bitField0_ & ~0x00000040);
+          }
+          result.nextVotes_ = nextVotes_;
+        } else {
+          result.nextVotes_ = nextVotesBuilder_.build();
+        }
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -928,6 +1210,58 @@ public final class GroupInfoProto {
             addresses_.addAll(other.addresses_);
           }
           onChanged();
+        }
+        if (votesBuilder_ == null) {
+          if (!other.votes_.isEmpty()) {
+            if (votes_.isEmpty()) {
+              votes_ = other.votes_;
+              bitField0_ = (bitField0_ & ~0x00000020);
+            } else {
+              ensureVotesIsMutable();
+              votes_.addAll(other.votes_);
+            }
+            onChanged();
+          }
+        } else {
+          if (!other.votes_.isEmpty()) {
+            if (votesBuilder_.isEmpty()) {
+              votesBuilder_.dispose();
+              votesBuilder_ = null;
+              votes_ = other.votes_;
+              bitField0_ = (bitField0_ & ~0x00000020);
+              votesBuilder_ =
+                com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
+                   getVotesFieldBuilder() : null;
+            } else {
+              votesBuilder_.addAllMessages(other.votes_);
+            }
+          }
+        }
+        if (nextVotesBuilder_ == null) {
+          if (!other.nextVotes_.isEmpty()) {
+            if (nextVotes_.isEmpty()) {
+              nextVotes_ = other.nextVotes_;
+              bitField0_ = (bitField0_ & ~0x00000040);
+            } else {
+              ensureNextVotesIsMutable();
+              nextVotes_.addAll(other.nextVotes_);
+            }
+            onChanged();
+          }
+        } else {
+          if (!other.nextVotes_.isEmpty()) {
+            if (nextVotesBuilder_.isEmpty()) {
+              nextVotesBuilder_.dispose();
+              nextVotesBuilder_ = null;
+              nextVotes_ = other.nextVotes_;
+              bitField0_ = (bitField0_ & ~0x00000040);
+              nextVotesBuilder_ =
+                com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
+                   getNextVotesFieldBuilder() : null;
+            } else {
+              nextVotesBuilder_.addAllMessages(other.nextVotes_);
+            }
+          }
         }
         this.mergeUnknownFields(other.unknownFields);
         onChanged();
@@ -1369,6 +1703,630 @@ public final class GroupInfoProto {
         onChanged();
         return this;
       }
+
+      private java.util.List<ElectionVoteProto.ElectionVote> votes_ =
+        java.util.Collections.emptyList();
+      private void ensureVotesIsMutable() {
+        if (!((bitField0_ & 0x00000020) == 0x00000020)) {
+          votes_ = new java.util.ArrayList<ElectionVoteProto.ElectionVote>(votes_);
+          bitField0_ |= 0x00000020;
+         }
+      }
+
+      private com.google.protobuf.RepeatedFieldBuilderV3<
+          ElectionVoteProto.ElectionVote, ElectionVoteProto.ElectionVote.Builder, ElectionVoteProto.ElectionVoteOrBuilder> votesBuilder_;
+
+      /**
+       * <pre>
+       * 当前选举集合
+       * </pre>
+       *
+       * <code>repeated .ElectionVote votes = 6;</code>
+       */
+      public java.util.List<ElectionVoteProto.ElectionVote> getVotesList() {
+        if (votesBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(votes_);
+        } else {
+          return votesBuilder_.getMessageList();
+        }
+      }
+      /**
+       * <pre>
+       * 当前选举集合
+       * </pre>
+       *
+       * <code>repeated .ElectionVote votes = 6;</code>
+       */
+      public int getVotesCount() {
+        if (votesBuilder_ == null) {
+          return votes_.size();
+        } else {
+          return votesBuilder_.getCount();
+        }
+      }
+      /**
+       * <pre>
+       * 当前选举集合
+       * </pre>
+       *
+       * <code>repeated .ElectionVote votes = 6;</code>
+       */
+      public ElectionVoteProto.ElectionVote getVotes(int index) {
+        if (votesBuilder_ == null) {
+          return votes_.get(index);
+        } else {
+          return votesBuilder_.getMessage(index);
+        }
+      }
+      /**
+       * <pre>
+       * 当前选举集合
+       * </pre>
+       *
+       * <code>repeated .ElectionVote votes = 6;</code>
+       */
+      public Builder setVotes(
+          int index, ElectionVoteProto.ElectionVote value) {
+        if (votesBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureVotesIsMutable();
+          votes_.set(index, value);
+          onChanged();
+        } else {
+          votesBuilder_.setMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <pre>
+       * 当前选举集合
+       * </pre>
+       *
+       * <code>repeated .ElectionVote votes = 6;</code>
+       */
+      public Builder setVotes(
+          int index, ElectionVoteProto.ElectionVote.Builder builderForValue) {
+        if (votesBuilder_ == null) {
+          ensureVotesIsMutable();
+          votes_.set(index, builderForValue.build());
+          onChanged();
+        } else {
+          votesBuilder_.setMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <pre>
+       * 当前选举集合
+       * </pre>
+       *
+       * <code>repeated .ElectionVote votes = 6;</code>
+       */
+      public Builder addVotes(ElectionVoteProto.ElectionVote value) {
+        if (votesBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureVotesIsMutable();
+          votes_.add(value);
+          onChanged();
+        } else {
+          votesBuilder_.addMessage(value);
+        }
+        return this;
+      }
+      /**
+       * <pre>
+       * 当前选举集合
+       * </pre>
+       *
+       * <code>repeated .ElectionVote votes = 6;</code>
+       */
+      public Builder addVotes(
+          int index, ElectionVoteProto.ElectionVote value) {
+        if (votesBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureVotesIsMutable();
+          votes_.add(index, value);
+          onChanged();
+        } else {
+          votesBuilder_.addMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <pre>
+       * 当前选举集合
+       * </pre>
+       *
+       * <code>repeated .ElectionVote votes = 6;</code>
+       */
+      public Builder addVotes(
+          ElectionVoteProto.ElectionVote.Builder builderForValue) {
+        if (votesBuilder_ == null) {
+          ensureVotesIsMutable();
+          votes_.add(builderForValue.build());
+          onChanged();
+        } else {
+          votesBuilder_.addMessage(builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <pre>
+       * 当前选举集合
+       * </pre>
+       *
+       * <code>repeated .ElectionVote votes = 6;</code>
+       */
+      public Builder addVotes(
+          int index, ElectionVoteProto.ElectionVote.Builder builderForValue) {
+        if (votesBuilder_ == null) {
+          ensureVotesIsMutable();
+          votes_.add(index, builderForValue.build());
+          onChanged();
+        } else {
+          votesBuilder_.addMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <pre>
+       * 当前选举集合
+       * </pre>
+       *
+       * <code>repeated .ElectionVote votes = 6;</code>
+       */
+      public Builder addAllVotes(
+          Iterable<? extends ElectionVoteProto.ElectionVote> values) {
+        if (votesBuilder_ == null) {
+          ensureVotesIsMutable();
+          com.google.protobuf.AbstractMessageLite.Builder.addAll(
+              values, votes_);
+          onChanged();
+        } else {
+          votesBuilder_.addAllMessages(values);
+        }
+        return this;
+      }
+      /**
+       * <pre>
+       * 当前选举集合
+       * </pre>
+       *
+       * <code>repeated .ElectionVote votes = 6;</code>
+       */
+      public Builder clearVotes() {
+        if (votesBuilder_ == null) {
+          votes_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000020);
+          onChanged();
+        } else {
+          votesBuilder_.clear();
+        }
+        return this;
+      }
+      /**
+       * <pre>
+       * 当前选举集合
+       * </pre>
+       *
+       * <code>repeated .ElectionVote votes = 6;</code>
+       */
+      public Builder removeVotes(int index) {
+        if (votesBuilder_ == null) {
+          ensureVotesIsMutable();
+          votes_.remove(index);
+          onChanged();
+        } else {
+          votesBuilder_.remove(index);
+        }
+        return this;
+      }
+      /**
+       * <pre>
+       * 当前选举集合
+       * </pre>
+       *
+       * <code>repeated .ElectionVote votes = 6;</code>
+       */
+      public ElectionVoteProto.ElectionVote.Builder getVotesBuilder(
+          int index) {
+        return getVotesFieldBuilder().getBuilder(index);
+      }
+      /**
+       * <pre>
+       * 当前选举集合
+       * </pre>
+       *
+       * <code>repeated .ElectionVote votes = 6;</code>
+       */
+      public ElectionVoteProto.ElectionVoteOrBuilder getVotesOrBuilder(
+          int index) {
+        if (votesBuilder_ == null) {
+          return votes_.get(index);  } else {
+          return votesBuilder_.getMessageOrBuilder(index);
+        }
+      }
+      /**
+       * <pre>
+       * 当前选举集合
+       * </pre>
+       *
+       * <code>repeated .ElectionVote votes = 6;</code>
+       */
+      public java.util.List<? extends ElectionVoteProto.ElectionVoteOrBuilder>
+           getVotesOrBuilderList() {
+        if (votesBuilder_ != null) {
+          return votesBuilder_.getMessageOrBuilderList();
+        } else {
+          return java.util.Collections.unmodifiableList(votes_);
+        }
+      }
+      /**
+       * <pre>
+       * 当前选举集合
+       * </pre>
+       *
+       * <code>repeated .ElectionVote votes = 6;</code>
+       */
+      public ElectionVoteProto.ElectionVote.Builder addVotesBuilder() {
+        return getVotesFieldBuilder().addBuilder(
+            ElectionVoteProto.ElectionVote.getDefaultInstance());
+      }
+      /**
+       * <pre>
+       * 当前选举集合
+       * </pre>
+       *
+       * <code>repeated .ElectionVote votes = 6;</code>
+       */
+      public ElectionVoteProto.ElectionVote.Builder addVotesBuilder(
+          int index) {
+        return getVotesFieldBuilder().addBuilder(
+            index, ElectionVoteProto.ElectionVote.getDefaultInstance());
+      }
+      /**
+       * <pre>
+       * 当前选举集合
+       * </pre>
+       *
+       * <code>repeated .ElectionVote votes = 6;</code>
+       */
+      public java.util.List<ElectionVoteProto.ElectionVote.Builder>
+           getVotesBuilderList() {
+        return getVotesFieldBuilder().getBuilderList();
+      }
+      private com.google.protobuf.RepeatedFieldBuilderV3<
+          ElectionVoteProto.ElectionVote, ElectionVoteProto.ElectionVote.Builder, ElectionVoteProto.ElectionVoteOrBuilder>
+          getVotesFieldBuilder() {
+        if (votesBuilder_ == null) {
+          votesBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
+              ElectionVoteProto.ElectionVote, ElectionVoteProto.ElectionVote.Builder, ElectionVoteProto.ElectionVoteOrBuilder>(
+                  votes_,
+                  ((bitField0_ & 0x00000020) == 0x00000020),
+                  getParentForChildren(),
+                  isClean());
+          votes_ = null;
+        }
+        return votesBuilder_;
+      }
+
+      private java.util.List<ElectionVoteProto.ElectionVote> nextVotes_ =
+        java.util.Collections.emptyList();
+      private void ensureNextVotesIsMutable() {
+        if (!((bitField0_ & 0x00000040) == 0x00000040)) {
+          nextVotes_ = new java.util.ArrayList<ElectionVoteProto.ElectionVote>(nextVotes_);
+          bitField0_ |= 0x00000040;
+         }
+      }
+
+      private com.google.protobuf.RepeatedFieldBuilderV3<
+          ElectionVoteProto.ElectionVote, ElectionVoteProto.ElectionVote.Builder, ElectionVoteProto.ElectionVoteOrBuilder> nextVotesBuilder_;
+
+      /**
+       * <pre>
+       * 下轮选举集合
+       * </pre>
+       *
+       * <code>repeated .ElectionVote nextVotes = 7;</code>
+       */
+      public java.util.List<ElectionVoteProto.ElectionVote> getNextVotesList() {
+        if (nextVotesBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(nextVotes_);
+        } else {
+          return nextVotesBuilder_.getMessageList();
+        }
+      }
+      /**
+       * <pre>
+       * 下轮选举集合
+       * </pre>
+       *
+       * <code>repeated .ElectionVote nextVotes = 7;</code>
+       */
+      public int getNextVotesCount() {
+        if (nextVotesBuilder_ == null) {
+          return nextVotes_.size();
+        } else {
+          return nextVotesBuilder_.getCount();
+        }
+      }
+      /**
+       * <pre>
+       * 下轮选举集合
+       * </pre>
+       *
+       * <code>repeated .ElectionVote nextVotes = 7;</code>
+       */
+      public ElectionVoteProto.ElectionVote getNextVotes(int index) {
+        if (nextVotesBuilder_ == null) {
+          return nextVotes_.get(index);
+        } else {
+          return nextVotesBuilder_.getMessage(index);
+        }
+      }
+      /**
+       * <pre>
+       * 下轮选举集合
+       * </pre>
+       *
+       * <code>repeated .ElectionVote nextVotes = 7;</code>
+       */
+      public Builder setNextVotes(
+          int index, ElectionVoteProto.ElectionVote value) {
+        if (nextVotesBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureNextVotesIsMutable();
+          nextVotes_.set(index, value);
+          onChanged();
+        } else {
+          nextVotesBuilder_.setMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <pre>
+       * 下轮选举集合
+       * </pre>
+       *
+       * <code>repeated .ElectionVote nextVotes = 7;</code>
+       */
+      public Builder setNextVotes(
+          int index, ElectionVoteProto.ElectionVote.Builder builderForValue) {
+        if (nextVotesBuilder_ == null) {
+          ensureNextVotesIsMutable();
+          nextVotes_.set(index, builderForValue.build());
+          onChanged();
+        } else {
+          nextVotesBuilder_.setMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <pre>
+       * 下轮选举集合
+       * </pre>
+       *
+       * <code>repeated .ElectionVote nextVotes = 7;</code>
+       */
+      public Builder addNextVotes(ElectionVoteProto.ElectionVote value) {
+        if (nextVotesBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureNextVotesIsMutable();
+          nextVotes_.add(value);
+          onChanged();
+        } else {
+          nextVotesBuilder_.addMessage(value);
+        }
+        return this;
+      }
+      /**
+       * <pre>
+       * 下轮选举集合
+       * </pre>
+       *
+       * <code>repeated .ElectionVote nextVotes = 7;</code>
+       */
+      public Builder addNextVotes(
+          int index, ElectionVoteProto.ElectionVote value) {
+        if (nextVotesBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureNextVotesIsMutable();
+          nextVotes_.add(index, value);
+          onChanged();
+        } else {
+          nextVotesBuilder_.addMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <pre>
+       * 下轮选举集合
+       * </pre>
+       *
+       * <code>repeated .ElectionVote nextVotes = 7;</code>
+       */
+      public Builder addNextVotes(
+          ElectionVoteProto.ElectionVote.Builder builderForValue) {
+        if (nextVotesBuilder_ == null) {
+          ensureNextVotesIsMutable();
+          nextVotes_.add(builderForValue.build());
+          onChanged();
+        } else {
+          nextVotesBuilder_.addMessage(builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <pre>
+       * 下轮选举集合
+       * </pre>
+       *
+       * <code>repeated .ElectionVote nextVotes = 7;</code>
+       */
+      public Builder addNextVotes(
+          int index, ElectionVoteProto.ElectionVote.Builder builderForValue) {
+        if (nextVotesBuilder_ == null) {
+          ensureNextVotesIsMutable();
+          nextVotes_.add(index, builderForValue.build());
+          onChanged();
+        } else {
+          nextVotesBuilder_.addMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <pre>
+       * 下轮选举集合
+       * </pre>
+       *
+       * <code>repeated .ElectionVote nextVotes = 7;</code>
+       */
+      public Builder addAllNextVotes(
+          Iterable<? extends ElectionVoteProto.ElectionVote> values) {
+        if (nextVotesBuilder_ == null) {
+          ensureNextVotesIsMutable();
+          com.google.protobuf.AbstractMessageLite.Builder.addAll(
+              values, nextVotes_);
+          onChanged();
+        } else {
+          nextVotesBuilder_.addAllMessages(values);
+        }
+        return this;
+      }
+      /**
+       * <pre>
+       * 下轮选举集合
+       * </pre>
+       *
+       * <code>repeated .ElectionVote nextVotes = 7;</code>
+       */
+      public Builder clearNextVotes() {
+        if (nextVotesBuilder_ == null) {
+          nextVotes_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000040);
+          onChanged();
+        } else {
+          nextVotesBuilder_.clear();
+        }
+        return this;
+      }
+      /**
+       * <pre>
+       * 下轮选举集合
+       * </pre>
+       *
+       * <code>repeated .ElectionVote nextVotes = 7;</code>
+       */
+      public Builder removeNextVotes(int index) {
+        if (nextVotesBuilder_ == null) {
+          ensureNextVotesIsMutable();
+          nextVotes_.remove(index);
+          onChanged();
+        } else {
+          nextVotesBuilder_.remove(index);
+        }
+        return this;
+      }
+      /**
+       * <pre>
+       * 下轮选举集合
+       * </pre>
+       *
+       * <code>repeated .ElectionVote nextVotes = 7;</code>
+       */
+      public ElectionVoteProto.ElectionVote.Builder getNextVotesBuilder(
+          int index) {
+        return getNextVotesFieldBuilder().getBuilder(index);
+      }
+      /**
+       * <pre>
+       * 下轮选举集合
+       * </pre>
+       *
+       * <code>repeated .ElectionVote nextVotes = 7;</code>
+       */
+      public ElectionVoteProto.ElectionVoteOrBuilder getNextVotesOrBuilder(
+          int index) {
+        if (nextVotesBuilder_ == null) {
+          return nextVotes_.get(index);  } else {
+          return nextVotesBuilder_.getMessageOrBuilder(index);
+        }
+      }
+      /**
+       * <pre>
+       * 下轮选举集合
+       * </pre>
+       *
+       * <code>repeated .ElectionVote nextVotes = 7;</code>
+       */
+      public java.util.List<? extends ElectionVoteProto.ElectionVoteOrBuilder>
+           getNextVotesOrBuilderList() {
+        if (nextVotesBuilder_ != null) {
+          return nextVotesBuilder_.getMessageOrBuilderList();
+        } else {
+          return java.util.Collections.unmodifiableList(nextVotes_);
+        }
+      }
+      /**
+       * <pre>
+       * 下轮选举集合
+       * </pre>
+       *
+       * <code>repeated .ElectionVote nextVotes = 7;</code>
+       */
+      public ElectionVoteProto.ElectionVote.Builder addNextVotesBuilder() {
+        return getNextVotesFieldBuilder().addBuilder(
+            ElectionVoteProto.ElectionVote.getDefaultInstance());
+      }
+      /**
+       * <pre>
+       * 下轮选举集合
+       * </pre>
+       *
+       * <code>repeated .ElectionVote nextVotes = 7;</code>
+       */
+      public ElectionVoteProto.ElectionVote.Builder addNextVotesBuilder(
+          int index) {
+        return getNextVotesFieldBuilder().addBuilder(
+            index, ElectionVoteProto.ElectionVote.getDefaultInstance());
+      }
+      /**
+       * <pre>
+       * 下轮选举集合
+       * </pre>
+       *
+       * <code>repeated .ElectionVote nextVotes = 7;</code>
+       */
+      public java.util.List<ElectionVoteProto.ElectionVote.Builder>
+           getNextVotesBuilderList() {
+        return getNextVotesFieldBuilder().getBuilderList();
+      }
+      private com.google.protobuf.RepeatedFieldBuilderV3<
+          ElectionVoteProto.ElectionVote, ElectionVoteProto.ElectionVote.Builder, ElectionVoteProto.ElectionVoteOrBuilder>
+          getNextVotesFieldBuilder() {
+        if (nextVotesBuilder_ == null) {
+          nextVotesBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
+              ElectionVoteProto.ElectionVote, ElectionVoteProto.ElectionVote.Builder, ElectionVoteProto.ElectionVoteOrBuilder>(
+                  nextVotes_,
+                  ((bitField0_ & 0x00000040) == 0x00000040),
+                  getParentForChildren(),
+                  isClean());
+          nextVotes_ = null;
+        }
+        return nextVotesBuilder_;
+      }
       @Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
@@ -1436,14 +2394,16 @@ public final class GroupInfoProto {
       descriptor;
   static {
     String[] descriptorData = {
-      "\n\031consensus/GroupInfo.proto\"\316\001\n\tGroupInf" +
-      "o\022\025\n\rleaderAddress\030\001 \001(\t\022\031\n\021nextLeaderAd" +
-      "dress\030\002 \001(\t\022(\n\006status\030\003 \001(\0162\030.GroupInfo." +
-      "ConnectStatus\022\021\n\ttimestamp\030\004 \001(\003\022\021\n\taddr" +
-      "esses\030\005 \003(\t\"?\n\rConnectStatus\022\010\n\004NONE\020\000\022\n" +
-      "\n\006LEADER\020\001\022\n\n\006FOLLOW\020\002\022\014\n\010ELECTION\020\003B9\n\'" +
-      "cn.aberic.bother.entity.proto.consensusB" +
-      "\016GroupInfoProtob\006proto3"
+      "\n\031consensus/GroupInfo.proto\032\034consensus/E" +
+      "lectionVote.proto\"\216\002\n\tGroupInfo\022\025\n\rleade" +
+      "rAddress\030\001 \001(\t\022\031\n\021nextLeaderAddress\030\002 \001(" +
+      "\t\022(\n\006status\030\003 \001(\0162\030.GroupInfo.ConnectSta" +
+      "tus\022\021\n\ttimestamp\030\004 \001(\003\022\021\n\taddresses\030\005 \003(" +
+      "\t\022\034\n\005votes\030\006 \003(\0132\r.ElectionVote\022 \n\tnextV" +
+      "otes\030\007 \003(\0132\r.ElectionVote\"?\n\rConnectStat" +
+      "us\022\010\n\004NONE\020\000\022\n\n\006LEADER\020\001\022\n\n\006FOLLOW\020\002\022\014\n\010" +
+      "ELECTION\020\003B9\n\'cn.aberic.bother.entity.pr" +
+      "oto.consensusB\016GroupInfoProtob\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -1456,13 +2416,15 @@ public final class GroupInfoProto {
     com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
         new com.google.protobuf.Descriptors.FileDescriptor[] {
+          ElectionVoteProto.getDescriptor(),
         }, assigner);
     internal_static_GroupInfo_descriptor =
       getDescriptor().getMessageTypes().get(0);
     internal_static_GroupInfo_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_GroupInfo_descriptor,
-        new String[] { "LeaderAddress", "NextLeaderAddress", "Status", "Timestamp", "Addresses", });
+        new String[] { "LeaderAddress", "NextLeaderAddress", "Status", "Timestamp", "Addresses", "Votes", "NextVotes", });
+    ElectionVoteProto.getDescriptor();
   }
 
   // @@protoc_insertion_point(outer_class_scope)

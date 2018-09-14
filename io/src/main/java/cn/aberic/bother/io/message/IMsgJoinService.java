@@ -28,15 +28,15 @@ import cn.aberic.bother.entity.consensus.ConnectSelf;
 import cn.aberic.bother.entity.consensus.JoinFeedback;
 import cn.aberic.bother.entity.consensus.JoinNode;
 import cn.aberic.bother.entity.enums.JoinLevel;
+import cn.aberic.bother.entity.enums.ProtocolStatus;
 import cn.aberic.bother.entity.io.MessageData;
+import cn.aberic.bother.entity.proto.Proto2Bean;
 import cn.aberic.bother.entity.proto.consensus.ConnectSelfProto;
 import cn.aberic.bother.entity.proto.consensus.JoinFeedbackProto;
 import cn.aberic.bother.entity.proto.consensus.JoinNodeProto;
 import cn.aberic.bother.io.IOContext;
 import cn.aberic.bother.tools.MsgPackTool;
-import com.google.gson.Gson;
 import com.google.protobuf.InvalidProtocolBufferException;
-import com.google.protobuf.util.JsonFormat;
 import io.netty.channel.Channel;
 import org.apache.commons.lang3.StringUtils;
 
@@ -51,7 +51,7 @@ import org.apache.commons.lang3.StringUtils;
  * 作者：Aberic on 2018/09/14 10:49
  * 邮箱：abericyang@gmail.com
  */
-public interface IMsgJoinService extends IMsgRequestService {
+public interface IMsgJoinService extends IMsgRequestService, Proto2Bean {
 
     /**
      * 应答加入新节点消息业务处理方案，由{@link IMsgReceiveService}继承并启用该方案
@@ -80,27 +80,25 @@ public interface IMsgJoinService extends IMsgRequestService {
             case JOIN_ACCEPT: // 告知新的接入地址可加入协议-0x05
                 log().debug("告知新的接入地址可加入协议，执行楼同步操作");
                 ConnectSelfProto.ConnectSelf connectSelfProto = ConnectSelfProto.ConnectSelf.parseFrom(msgData.getBytes());
-                String jsonObject = JsonFormat.printer().print(connectSelfProto);
-                ConnectSelf.obtain().init(new Gson().fromJson(jsonObject, ConnectSelf.class));
+                ConnectSelf.obtain().init(trans(connectSelfProto, ConnectSelf.class));
                 log().debug("connectSelf = {}", ConnectSelf.obtain().toJsonString());
                 // 遍历作为客户端的请求并全部关闭
                 IOContext.obtain().closeClient(address);
-                // 如果新加入楼之前也是孤岛入住，则发起Leader选举
+                // 如果新加入楼之前也是孤岛入住，则发起楼选举协议
                 if (StringUtils.isEmpty(ConnectSelf.obtain().getGroups().get(0).getLeaderAddress())) {
-                    sendElection(address, ConnectSelf.obtain().getGroups().get(0).election());
+                    // TODO: 2018/9/14 发起投票应该把投票结果发送到同组的每一个节点
+                    send(address, ProtocolStatus.ELECTION_TOWER, ConnectSelf.obtain().getGroups().get(0).election());
                 }
                 break;
             case JOIN_FEEDBACK: // 告知新的接入节点反馈协议-0x06
                 JoinFeedbackProto.JoinFeedback joinFeedbackProto = JoinFeedbackProto.JoinFeedback.parseFrom(msgData.getBytes());
-                jsonObject = JsonFormat.printer().print(joinFeedbackProto);
-                JoinFeedback joinFeedback = new Gson().fromJson(jsonObject, JoinFeedback.class);
+                JoinFeedback joinFeedback = trans(joinFeedbackProto, JoinFeedback.class);
                 log().debug("joinFeedback = {}", joinFeedback.toJsonString());
                 joinFeedbackExec(joinFeedback);
                 break;
             case ADD_NODE: // 由leader节点发出新增小组节点协议-0x07
                 JoinNodeProto.JoinNode joinNodeProto = JoinNodeProto.JoinNode.parseFrom(msgData.getBytes());
-                jsonObject = JsonFormat.printer().print(joinNodeProto);
-                JoinNode joinNode = new Gson().fromJson(jsonObject, JoinNode.class);
+                JoinNode joinNode = trans(joinNodeProto, JoinNode.class);
                 log().debug("joinNode = {}", joinNode.toJsonString());
                 log().debug("接收由leader节点发出新增小组节点{}协议，加入级别{}", joinNode.getAddress(), joinNode.getLevel());
                 ConnectSelf.obtain().getGroups().get(joinNode.getLevel().getLevel()).add(address); // 有且仅有楼来执行加入
@@ -228,10 +226,10 @@ public interface IMsgJoinService extends IMsgRequestService {
                 for (String address : joinFeedback.getAddresses()) {
                     sendJoin(address, JoinLevel.CITY_NO_EXEC);
                 }
-                if (joinFeedback.getLevel() == JoinLevel.PROVINCE) {
+                // if (joinFeedback.getLevel() == JoinLevel.PROVINCE) {
                     // 向获取到的国Leader发起加入申请，到市级就已经存在6765201个节点了，理论上不会节点个数不会超出县城范围
                     // sendJoin(joinFeedback.getAddress(), JoinLevel.COUNTRY);
-                }
+                // }
                 break;
         }
     }

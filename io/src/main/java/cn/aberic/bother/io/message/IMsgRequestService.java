@@ -32,11 +32,8 @@ import cn.aberic.bother.entity.enums.JoinLevel;
 import cn.aberic.bother.entity.enums.ProtocolStatus;
 import cn.aberic.bother.entity.io.MessageData;
 import cn.aberic.bother.io.IOContext;
-import cn.aberic.bother.tools.MsgPackTool;
 import io.netty.channel.Channel;
 import org.slf4j.Logger;
-
-import java.util.List;
 
 /**
  * 请求消息业务处理接口
@@ -44,7 +41,7 @@ import java.util.List;
  * 作者：Aberic on 2018/09/12 14:12
  * 邮箱：abericyang@gmail.com
  */
-interface IMsgRequestService {
+interface IMsgRequestService extends IMsgRequestSendService, IMsgRequestPushService {
 
     Logger log();
 
@@ -54,8 +51,7 @@ interface IMsgRequestService {
      * @param channel 当前通道
      */
     default void sendHeartBeat(Channel channel) {
-        MessageData msgData = new MessageData(ProtocolStatus.HEART, null);
-        channel.writeAndFlush(msgData);
+        push(channel, ProtocolStatus.HEART);
     }
 
     /**
@@ -65,17 +61,7 @@ interface IMsgRequestService {
      * @param level   请求级别
      */
     default void sendJoin(String address, JoinLevel level) {
-        IOContext.obtain().send(address, new MessageData(ProtocolStatus.JOIN, MsgPackTool.string2Bytes(level.name())));
-    }
-
-    /**
-     * 发起新一轮选举申请
-     *
-     * @param address   当前Leader节点
-     * @param addresses 自行选举后结果
-     */
-    default void sendElection(String address, List<String> addresses) {
-        IOContext.obtain().send(address, new MessageData(ProtocolStatus.ELECTION, MsgPackTool.list2Bytes(addresses)));
+        send(address, ProtocolStatus.JOIN, level.name());
     }
 
     /**
@@ -84,8 +70,7 @@ interface IMsgRequestService {
      * @param channel 当前通道
      */
     default void pushKeepHeartBeat(Channel channel) {
-        MessageData msgData = new MessageData(ProtocolStatus.KEEP, null);
-        channel.writeAndFlush(msgData);
+        push(channel, ProtocolStatus.KEEP);
     }
 
     /**
@@ -94,8 +79,7 @@ interface IMsgRequestService {
      * @param channel 当前通道
      */
     default void pushAnswerOK(Channel channel) {
-        MessageData msgData = new MessageData(ProtocolStatus.OK, null);
-        channel.writeAndFlush(msgData);
+        push(channel, ProtocolStatus.OK);
     }
 
     /**
@@ -104,8 +88,7 @@ interface IMsgRequestService {
      * @param channel 当前通道
      */
     default void pushJoinAccept(Channel channel) {
-        MessageData msgData = new MessageData(ProtocolStatus.JOIN_ACCEPT, ConnectSelf.obtain().bean2ProtoByteArray());
-        channel.writeAndFlush(msgData);
+        push(channel, ProtocolStatus.JOIN_ACCEPT, ConnectSelf.obtain());
     }
 
     /**
@@ -118,8 +101,7 @@ interface IMsgRequestService {
         joinFeedback.setLevel(level);
         joinFeedback.setAddress(info.getLeaderAddress());
         joinFeedback.setAddresses(info.getAddresses());
-        MessageData msgData = new MessageData(ProtocolStatus.JOIN_FEEDBACK, joinFeedback.bean2ProtoByteArray());
-        channel.writeAndFlush(msgData);
+        push(channel, ProtocolStatus.JOIN_FEEDBACK, joinFeedback);
     }
 
     /**
@@ -128,8 +110,7 @@ interface IMsgRequestService {
      * @param channel 当前通道
      */
     default void pushCreateGroup(Channel channel) {
-        MessageData msgData = new MessageData(ProtocolStatus.CREATE_GROUP, null);
-        channel.writeAndFlush(msgData);
+        push(channel, ProtocolStatus.CREATE_GROUP);
     }
 
     /**
@@ -138,8 +119,7 @@ interface IMsgRequestService {
      * @param node 加入节点对象
      */
     default void pushAddNode(JoinNode node) {
-        MessageData msgData = new MessageData(ProtocolStatus.ADD_NODE, node.bean2ProtoByteArray());
-        IOContext.obtain().broadcast(msgData);
+        IOContext.obtain().broadcast(new MessageData(ProtocolStatus.ADD_NODE, node.bean2ProtoByteArray()));
     }
 
 }

@@ -27,6 +27,7 @@ package cn.aberic.bother.entity;
 
 import cn.aberic.bother.entity.block.*;
 import cn.aberic.bother.entity.consensus.ConnectSelf;
+import cn.aberic.bother.entity.consensus.ElectionVote;
 import cn.aberic.bother.entity.consensus.GroupInfo;
 import cn.aberic.bother.entity.consensus.JoinFeedback;
 import cn.aberic.bother.entity.contract.Account;
@@ -39,6 +40,8 @@ import cn.aberic.bother.entity.proto.consensus.ConnectSelfProto;
 import cn.aberic.bother.entity.proto.consensus.JoinFeedbackProto;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
+import com.google.gson.Gson;
+import com.google.protobuf.GeneratedMessageV3;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.util.JsonFormat;
 import lombok.extern.slf4j.Slf4j;
@@ -100,9 +103,12 @@ public class EntityTest {
 
 
         ConnectSelfProto.ConnectSelf selfProto = ConnectSelfProto.ConnectSelf.parseFrom(bytes);
+        ConnectSelf self = trans(selfProto, ConnectSelf.class);
+
         String jsonObject = JsonFormat.printer().print(selfProto);
         log.debug("jsonObject = {}", jsonObject);
         log.debug("Object = {}", JSON.parseObject(jsonObject, new TypeReference<ConnectSelf>() {}).toJsonString());
+        log.debug("self = {}", self.toJsonString());
     }
 
     private static void createJoinFeedbackProtobuf() throws InvalidProtocolBufferException {
@@ -243,12 +249,32 @@ public class EntityTest {
         addresses.add("b");
         addresses.add("c");
 
+        List<ElectionVote> votes = new ArrayList<>();
+
+        ElectionVote vote1 = new ElectionVote();
+        vote1.setAddress("aaa");
+        vote1.setAddresses(addresses);
+
+        ElectionVote vote2 = new ElectionVote();
+        vote2.setAddress("bbb");
+        vote2.setAddresses(addresses);
+
+        ElectionVote vote3 = new ElectionVote();
+        vote3.setAddress("ccc");
+        vote3.setAddresses(addresses);
+
+        votes.add(vote1);
+        votes.add(vote2);
+        votes.add(vote3);
+
         List<GroupInfo> infoList = new ArrayList<>();
         GroupInfo info = new GroupInfo();
         info.setLeaderAddress("setLeaderAddress");
         info.setNextLeaderAddress("setNextLeaderAddress");
         info.setTimestamp(1111111111111111L);
         info.setAddresses(addresses);
+        info.setVotes(votes);
+        info.setNextVotes(votes);
         infoList.add(info);
 
         ConnectSelf connectSelf = new ConnectSelf();
@@ -279,6 +305,11 @@ public class EntityTest {
         account.setAddress("knmlkmldkkflkfskdsknmlkmldkkflkfskdsknmlkmldkkflkfskdsknmlkmldkkflkfskdsknmlkmldkkflkfskdsknmlkmldkkflkfskdsknmlkmldkkflkfskdsknmlkmldkkflkfskdsknmlkmldkkflkfskdsknmlkmldkkflkfskdsknmlkmldkkflkfskdsknmlkmldkkflkfskdsknmlkmldkkflkfskdsknmlkmldkkflkfskdsknmlkmldkkflkfskdsknmlkmldkkflkfskdsknmlkmldkkflkfskdsknmlkmldkkflkfskdsknmlkmldkkflkfskdsknmlkmldkkflkfskdsknmlkmldkkflkfskdsknmlkmldkkflkfskdsknmlkmldkkflkfskdsknmlkmldkkflkfskdsknmlkmldkkflkfskds");
         account.setPubECCKey("cnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjw");
         return account;
+    }
+
+    public static  <M extends GeneratedMessageV3, N extends BeanProtoFormat> N trans(M m, Class<N> clazz) throws InvalidProtocolBufferException {
+        String jsonObject = JsonFormat.printer().print(m);
+        return new Gson().fromJson(jsonObject, clazz);
     }
 
 }

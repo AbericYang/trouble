@@ -28,6 +28,7 @@ import cn.aberic.bother.entity.BeanJsonField;
 import cn.aberic.bother.entity.enums.ConnectStatus;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,9 +54,35 @@ public class GroupInfo implements BeanJsonField {
     private long timestamp;
     /** 当前连接小组集合 */
     private List<String> addresses;
+    /** 当前选举集合 */
+    private List<ElectionVote> votes = new ArrayList<>();
+    /** 下轮选举集合 */
+    private List<ElectionVote> nextVotes = new ArrayList<>();
 
+    /**
+     * 当前连接小组集合新增节点
+     *
+     * @param address 节点地址
+     */
     public void add(String address) {
         addresses.add(address);
+    }
+
+    /**
+     * 下轮选举集合新增选票
+     *
+     * @param vote 选票
+     */
+    public void add(ElectionVote vote) {
+        boolean voted = false; // 该节点是否对本次选举进行过投票
+        for (ElectionVote v : nextVotes) {
+            if (StringUtils.equals(v.getAddress(), vote.getAddress())) {
+                voted = true;
+            }
+        }
+        if (!voted) {
+            nextVotes.add(vote);
+        }
     }
 
     /**

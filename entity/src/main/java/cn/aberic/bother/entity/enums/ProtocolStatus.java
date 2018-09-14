@@ -59,8 +59,16 @@ public enum ProtocolStatus {
     UPGRADE_NODE("更新小组节点集合协议", (byte) 0x08),
     /** 当前没有可加入小组，自建小组并参与小组间选举协议-0x09 */
     CREATE_GROUP("当前没有可加入小组", (byte) 0x09),
-    /** 发起选举协议-0x20 */
-    ELECTION("发起选举协议", (byte) 0x20),
+    /** 发起楼选举协议-0x20 */
+    ELECTION_TOWER("发起楼选举协议", (byte) 0x20),
+    /** 发起社区选举协议-0x21 */
+    ELECTION_COMMUNITY("发起社区选举协议", (byte) 0x21),
+    /** 发起县城选举协议-0x22 */
+    ELECTION_COUNTY("发起县城选举协议", (byte) 0x22),
+    /** 发起市选举协议-0x23 */
+    ELECTION_CITY("发起市选举协议", (byte) 0x23),
+    /** 发起省选举协议-0x24 */
+    ELECTION_PROVINCE("发起省选举协议", (byte) 0x24),
     /** 区块协议-0x51 */
     BLOCK("区块协议", (byte) 0x51);
 
