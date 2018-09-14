@@ -35,6 +35,7 @@ import cn.aberic.bother.tools.Constant;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -184,6 +185,19 @@ public class IOContext {
         ioServerCache.asMap().forEach((ip, ioServer) -> {
             if (ioServer.isConnected()) {
                 ioServer.push(msgData);
+            }
+        });
+    }
+
+    /**
+     * 关闭除了指定地址外地所有作为客户端发起的请求
+     *
+     * @param address 指定地址
+     */
+    public void closeClient(String address) {
+        ioClientCache.asMap().forEach((ip, ioClient) -> {
+            if (!StringUtils.equals(address, ip)) {
+                ioClient.shutdown();
             }
         });
     }

@@ -28,12 +28,15 @@ package cn.aberic.bother.entity;
 import cn.aberic.bother.entity.block.*;
 import cn.aberic.bother.entity.consensus.ConnectSelf;
 import cn.aberic.bother.entity.consensus.GroupInfo;
+import cn.aberic.bother.entity.consensus.JoinFeedback;
 import cn.aberic.bother.entity.contract.Account;
+import cn.aberic.bother.entity.enums.JoinLevel;
 import cn.aberic.bother.entity.enums.TransactionStatus;
+import cn.aberic.bother.entity.proto.ProtoDemo;
 import cn.aberic.bother.entity.proto.block.BlockHeaderProto;
 import cn.aberic.bother.entity.proto.block.BlockProto;
-import cn.aberic.bother.entity.proto.ProtoDemo;
 import cn.aberic.bother.entity.proto.consensus.ConnectSelfProto;
+import cn.aberic.bother.entity.proto.consensus.JoinFeedbackProto;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import com.google.protobuf.InvalidProtocolBufferException;
@@ -57,7 +60,8 @@ public class EntityTest {
     public static void main(String[] args) throws InvalidProtocolBufferException {
         // protoDemo();
         // createBlockProtobuf();
-        createConnectSelfProtobuf();
+        // createConnectSelfProtobuf();
+        createJoinFeedbackProtobuf();
     }
 
     private static void createBlockProtobuf() {
@@ -99,7 +103,33 @@ public class EntityTest {
         ConnectSelfProto.ConnectSelf selfProto = ConnectSelfProto.ConnectSelf.parseFrom(bytes);
         String jsonObject = JsonFormat.printer().print(selfProto);
         log.debug("jsonObject = {}", jsonObject);
-        log.debug("jsonObject = {}", JSON.parseObject(jsonObject, new TypeReference<ConnectSelf>() {}).toJsonString());
+        log.debug("Object = {}", JSON.parseObject(jsonObject, new TypeReference<ConnectSelf>() {}).toJsonString());
+    }
+
+    private static void createJoinFeedbackProtobuf() throws InvalidProtocolBufferException {
+        JoinFeedbackProto.JoinFeedback.Builder builder = JoinFeedbackProto.JoinFeedback.newBuilder();
+        String joinJsonFormat = new JSONObject(createJoinFeedback()).toString();
+        log.debug("joinJsonFormat = {}", joinJsonFormat);
+        try {
+            JsonFormat.parser().merge(joinJsonFormat, builder);
+        } catch (InvalidProtocolBufferException e) {
+            e.printStackTrace();
+        }
+        log.debug("getLevel = {}", builder.getLevel());
+        log.debug("getAddress = {}", builder.getAddress());
+        log.debug("getAddressesCount = {}", builder.getAddressesCount());
+        for (String s : builder.getAddressesList()) {
+            log.debug("next() = {}", s);
+        }
+        log.debug("==============================================");
+        byte[] bytes = builder.build().toByteArray();
+        log.debug("toByteArray = {}", bytes);
+
+
+        JoinFeedbackProto.JoinFeedback joinProto = JoinFeedbackProto.JoinFeedback.parseFrom(bytes);
+        String jsonObject = JsonFormat.printer().print(joinProto);
+        log.debug("jsonObject = {}", jsonObject);
+        log.debug("Object = {}", JSON.parseObject(jsonObject, new TypeReference<JoinFeedback>() {}).toJsonString());
     }
 
     public static byte[] getBlockBytes() {
@@ -226,6 +256,19 @@ public class EntityTest {
         connectSelf.setLevel(0);
         connectSelf.setGroups(infoList);
         return connectSelf;
+    }
+
+    private static JoinFeedback createJoinFeedback() {
+        List<String> addresses = new ArrayList<>();
+        addresses.add("a");
+        addresses.add("b");
+        addresses.add("c");
+
+        JoinFeedback joinFeedback = new JoinFeedback();
+        joinFeedback.setAddress("test");
+        joinFeedback.setAddresses(addresses);
+        joinFeedback.setLevel(JoinLevel.CITY);
+        return joinFeedback;
     }
 
     public static Account createAccount() {

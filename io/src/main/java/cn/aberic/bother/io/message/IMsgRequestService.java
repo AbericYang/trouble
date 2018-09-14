@@ -25,6 +25,9 @@
 package cn.aberic.bother.io.message;
 
 import cn.aberic.bother.entity.consensus.ConnectSelf;
+import cn.aberic.bother.entity.consensus.GroupInfo;
+import cn.aberic.bother.entity.consensus.JoinFeedback;
+import cn.aberic.bother.entity.enums.JoinLevel;
 import cn.aberic.bother.entity.enums.ProtocolStatus;
 import cn.aberic.bother.entity.io.MessageData;
 import cn.aberic.bother.io.IOContext;
@@ -50,6 +53,16 @@ interface IMsgRequestService {
     default void sendHeartBeat(Channel channel) {
         MessageData msgData = new MessageData(ProtocolStatus.HEART, null);
         channel.writeAndFlush(msgData);
+    }
+
+    /**
+     * 向指定地址发送加入请求协议
+     *
+     * @param address 指定地址
+     * @param level   请求级别
+     */
+    default void sendJoin(String address, JoinLevel level) {
+        IOContext.obtain().send(address, new MessageData(ProtocolStatus.JOIN, MsgPackTool.string2Bytes(level.name())));
     }
 
     /**
@@ -79,6 +92,20 @@ interface IMsgRequestService {
      */
     default void pushJoinAccept(Channel channel) {
         MessageData msgData = new MessageData(ProtocolStatus.JOIN_ACCEPT, ConnectSelf.obtain().self2ProtoByteArray());
+        channel.writeAndFlush(msgData);
+    }
+
+    /**
+     * 告知新的接入节点反馈协议
+     *
+     * @param channel 当前通道
+     */
+    default void pushJoinFeedback(Channel channel, JoinLevel level, GroupInfo info) {
+        JoinFeedback joinFeedback = new JoinFeedback();
+        joinFeedback.setLevel(level);
+        joinFeedback.setAddress(info.getLeaderAddress());
+        joinFeedback.setAddresses(info.getAddresses());
+        MessageData msgData = new MessageData(ProtocolStatus.JOIN_FEEDBACK, joinFeedback.join2ProtoByteArray());
         channel.writeAndFlush(msgData);
     }
 
