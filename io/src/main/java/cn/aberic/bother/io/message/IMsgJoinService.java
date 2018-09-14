@@ -68,6 +68,7 @@ public interface IMsgJoinService extends IMsgRequestService {
                         // 或当前节点是本楼Leader节点且当前楼住户未满
                         (ConnectSelf.obtain().getLevel() == 1 && !ConnectSelf.obtain().getGroups().get(0).max())) {
                     pushJoinAccept(channel); // 告知新的接入地址可加入协议
+                    // TODO: 2018/9/14 下述协议需要明确级别
                     pushAddNode(address); // 通知所有住户有新节点加入
                     ConnectSelf.obtain().getGroups().get(0).add(address); // 有且仅有楼来执行加入
                 } else {
@@ -87,6 +88,10 @@ public interface IMsgJoinService extends IMsgRequestService {
                 }
                 // 遍历作为客户端的请求并全部关闭
                 IOContext.obtain().closeClient(address);
+                // 如果新加入楼之前也是孤岛入住，则发起Leader选举
+                if (StringUtils.isEmpty(ConnectSelf.obtain().getGroups().get(0).getLeaderAddress())) {
+                    sendElection(address, ConnectSelf.obtain().getGroups().get(0).election());
+                }
                 break;
             case JOIN_FEEDBACK: // 告知新的接入节点反馈协议-0x06
                 try {

@@ -39,7 +39,7 @@ import io.netty.channel.Channel;
  * 作者：Aberic on 2018/09/12 14:13
  * 邮箱：abericyang@gmail.com
  */
-interface IMsgReceiveService extends IMsgJoinService {
+interface IMsgReceiveService extends IMsgJoinService, IMsgElectionService {
 
     /**
      * 应答消息业务处理方案
@@ -60,6 +60,9 @@ interface IMsgReceiveService extends IMsgJoinService {
             case ADD_NODE: // 由leader节点发出新增小组节点协议-0x07
             case UPGRADE_NODE: // 由leader节点发出更新小组节点集合协议-0x08
                 join(channel, msgData);
+                break;
+            case ELECTION: // 发起选举协议-0x20
+                election(channel, msgData);
                 break;
             case BLOCK: // 区块协议-0x51
                 log().debug("接收区块协议，执行区块同步操作");

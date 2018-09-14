@@ -60,8 +60,8 @@ public class EntityTest {
     public static void main(String[] args) throws InvalidProtocolBufferException {
         // protoDemo();
         // createBlockProtobuf();
-        // createConnectSelfProtobuf();
-        createJoinFeedbackProtobuf();
+        createConnectSelfProtobuf();
+        // createJoinFeedbackProtobuf();
     }
 
     private static void createBlockProtobuf() {

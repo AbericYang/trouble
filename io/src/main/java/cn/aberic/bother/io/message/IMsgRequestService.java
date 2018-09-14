@@ -35,6 +35,8 @@ import cn.aberic.bother.tools.MsgPackTool;
 import io.netty.channel.Channel;
 import org.slf4j.Logger;
 
+import java.util.List;
+
 /**
  * 请求消息业务处理接口
  * <p>
@@ -63,6 +65,16 @@ interface IMsgRequestService {
      */
     default void sendJoin(String address, JoinLevel level) {
         IOContext.obtain().send(address, new MessageData(ProtocolStatus.JOIN, MsgPackTool.string2Bytes(level.name())));
+    }
+
+    /**
+     * 发起新一轮选举申请
+     *
+     * @param address   当前Leader节点
+     * @param addresses 自行选举后结果
+     */
+    default void sendElection(String address, List<String> addresses) {
+        IOContext.obtain().send(address, new MessageData(ProtocolStatus.ELECTION, MsgPackTool.list2Bytes(addresses)));
     }
 
     /**

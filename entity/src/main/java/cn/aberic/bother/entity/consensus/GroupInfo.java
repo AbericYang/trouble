@@ -29,6 +29,7 @@ import cn.aberic.bother.entity.enums.ConnectStatus;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
@@ -85,12 +86,13 @@ public class GroupInfo implements BeanJsonField {
      *
      * @return 选举结果数组
      */
-    public String[] election() {
+    public List<String> election() {
         int size = addresses.size() - 1;
-        return new String[]{
-                addresses.get(new Random().nextInt(size)),
-                addresses.get(new Random().nextInt(size)),
-                addresses.get(new Random().nextInt(size))};
+        List<String> strings = new ArrayList<>();
+        strings.add(addresses.get(new Random().nextInt(size)));
+        strings.add(addresses.get(new Random().nextInt(size)));
+        strings.add(addresses.get(new Random().nextInt(size)));
+        return strings;
     }
 
 }
