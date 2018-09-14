@@ -20,23 +20,22 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- *
  */
 
 package cn.aberic.bother.entity;
 
-import org.json.JSONObject;
-
 /**
- * 通过fastjson转译过参数的对象如果需要全量输出，必须实现此接口
+ * 可转成protobuf对象的对象必须实现此接口以实现转换方法
  * <p>
- * 作者：Aberic on 2018/8/31 00:31
+ * 作者：Aberic on 2018/09/14 14:34
  * 邮箱：abericyang@gmail.com
  */
-public interface BeanJsonField {
+public interface BeanProtoFormat extends BeanJsonField {
 
-    default String toJsonString() {
-        return new JSONObject(this).toString();
-    }
-
+    /**
+     * 当前对象转成对象对应的Protobuf对象字节流
+     *
+     * @return proto 字节流
+     */
+    byte[] bean2ProtoByteArray();
 }

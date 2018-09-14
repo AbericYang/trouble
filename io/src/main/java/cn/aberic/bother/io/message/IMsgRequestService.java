@@ -103,7 +103,7 @@ interface IMsgRequestService {
      * @param channel 当前通道
      */
     default void pushJoinAccept(Channel channel) {
-        MessageData msgData = new MessageData(ProtocolStatus.JOIN_ACCEPT, ConnectSelf.obtain().self2ProtoByteArray());
+        MessageData msgData = new MessageData(ProtocolStatus.JOIN_ACCEPT, ConnectSelf.obtain().bean2ProtoByteArray());
         channel.writeAndFlush(msgData);
     }
 
@@ -117,7 +117,7 @@ interface IMsgRequestService {
         joinFeedback.setLevel(level);
         joinFeedback.setAddress(info.getLeaderAddress());
         joinFeedback.setAddresses(info.getAddresses());
-        MessageData msgData = new MessageData(ProtocolStatus.JOIN_FEEDBACK, joinFeedback.join2ProtoByteArray());
+        MessageData msgData = new MessageData(ProtocolStatus.JOIN_FEEDBACK, joinFeedback.bean2ProtoByteArray());
         channel.writeAndFlush(msgData);
     }
 

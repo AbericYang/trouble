@@ -24,7 +24,7 @@
 
 package cn.aberic.bother.entity.block;
 
-import cn.aberic.bother.entity.BeanJsonField;
+import cn.aberic.bother.entity.BeanProtoFormat;
 import cn.aberic.bother.entity.proto.block.BlockProto;
 import com.alibaba.fastjson.annotation.JSONField;
 import com.google.common.hash.Hashing;
@@ -47,7 +47,7 @@ import java.nio.charset.Charset;
 @Setter
 @Getter
 @ToString
-public class Block implements BeanJsonField {
+public class Block implements BeanProtoFormat {
 
     /** 区块头部信息 */
     @JSONField(name = "h")
@@ -74,7 +74,8 @@ public class Block implements BeanJsonField {
      *
      * @return proto 字节流
      */
-    public byte[] block2ProtoByteArray() {
+    @Override
+    public byte[] bean2ProtoByteArray() {
         BlockProto.Block.Builder builder = BlockProto.Block.newBuilder();
         String blockJsonFormat = this.toJsonString();
         log.debug("blockJsonFormat = {}", blockJsonFormat);

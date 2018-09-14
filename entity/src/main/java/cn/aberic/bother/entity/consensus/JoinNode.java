@@ -26,7 +26,7 @@ package cn.aberic.bother.entity.consensus;
 
 import cn.aberic.bother.entity.BeanProtoFormat;
 import cn.aberic.bother.entity.enums.JoinLevel;
-import cn.aberic.bother.entity.proto.consensus.JoinFeedbackProto;
+import cn.aberic.bother.entity.proto.consensus.JoinNodeProto;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.util.JsonFormat;
 import lombok.Getter;
@@ -34,43 +34,39 @@ import lombok.Setter;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.List;
-
 /**
- * 告知新的接入节点反馈协议对象
- * 可参考{@link cn.aberic.bother.entity.enums.ProtocolStatus}JOIN_FEEDBACK协议
+ * 加入节点对象
  * <p>
- * 作者：Aberic on 2018/09/14 10:11
+ * 即推送或请求至当前组内告知这个待加入的节点和加入级别
+ * 如果是楼内加入，则当前楼加入该节点
+ * 如果是社区内家去，则当前社区小组加入该节点
+ * <p>
+ * 作者：Aberic on 2018/09/14 14:26
  * 邮箱：abericyang@gmail.com
  */
 @Slf4j
 @Setter
 @Getter
 @ToString
-public class JoinFeedback implements BeanProtoFormat {
+public class JoinNode implements BeanProtoFormat {
 
-    /** 请求加入节点当前请求级别 */
-    private JoinLevel level;
-    /** 返回上一层Leader地址，如楼、社区、县城、市、省以及国等 */
+    /** 节点地址 */
     private String address;
-    /**
-     * 返回上一层Leader当前所在域的下级Leader集合
-     * 如 {@link #address} 返回的是社区，则本集合为该社区下的每栋楼的Leader集合
-     */
-    private List<String> addresses;
+    /** 加入节点所在级别 */
+    private JoinLevel level;
 
     /**
-     * JoinFeedback 对象转成 {@link cn.aberic.bother.entity.proto.consensus.JoinFeedbackProto.JoinFeedback} 字节流
+     * JoinNode 对象转成 {@link cn.aberic.bother.entity.proto.consensus.JoinNodeProto.JoinNode} 字节流
      *
      * @return proto 字节流
      */
     @Override
     public byte[] bean2ProtoByteArray() {
-        JoinFeedbackProto.JoinFeedback.Builder builder = JoinFeedbackProto.JoinFeedback.newBuilder();
-        String joinJsonFormat = this.toJsonString();
-        log.debug("joinJsonFormat = {}", joinJsonFormat);
+        JoinNodeProto.JoinNode.Builder builder = JoinNodeProto.JoinNode.newBuilder();
+        String joinNodeJsonFormat = this.toJsonString();
+        log.debug("joinNodeJsonFormat = {}", joinNodeJsonFormat);
         try {
-            JsonFormat.parser().merge(joinJsonFormat, builder);
+            JsonFormat.parser().merge(joinNodeJsonFormat, builder);
         } catch (InvalidProtocolBufferException e) {
             e.printStackTrace();
         }

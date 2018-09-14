@@ -24,7 +24,7 @@
 
 package cn.aberic.bother.entity.consensus;
 
-import cn.aberic.bother.entity.BeanJsonField;
+import cn.aberic.bother.entity.BeanProtoFormat;
 import cn.aberic.bother.entity.enums.ConnectStatus;
 import cn.aberic.bother.entity.proto.consensus.ConnectSelfProto;
 import com.google.protobuf.InvalidProtocolBufferException;
@@ -47,7 +47,7 @@ import java.util.List;
 @Setter
 @Getter
 @ToString
-public class ConnectSelf implements BeanJsonField {
+public class ConnectSelf implements BeanProtoFormat {
 
     /** 自身节点等级，等级0表示未成为任何小组Leader，1表示是一个小组Leader，2表示51个小组Leader，以此类推 */
     private int level;
@@ -94,7 +94,8 @@ public class ConnectSelf implements BeanJsonField {
      *
      * @return proto 字节流
      */
-    public byte[] self2ProtoByteArray() {
+    @Override
+    public byte[] bean2ProtoByteArray() {
         ConnectSelfProto.ConnectSelf.Builder builder = ConnectSelfProto.ConnectSelf.newBuilder();
         String selfJsonFormat = this.toJsonString();
         log.debug("selfJsonFormat = {}", selfJsonFormat);
@@ -105,5 +106,4 @@ public class ConnectSelf implements BeanJsonField {
         }
         return builder.build().toByteArray();
     }
-
 }
