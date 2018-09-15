@@ -27,7 +27,7 @@ package cn.aberic.bother.entity.consensus;
 
 import cn.aberic.bother.entity.BeanProtoFormat;
 import cn.aberic.bother.entity.enums.JoinLevel;
-import cn.aberic.bother.entity.proto.consensus.JoinNodeProto;
+import cn.aberic.bother.entity.proto.consensus.VoteResultProto;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.util.JsonFormat;
 import lombok.Getter;
@@ -53,17 +53,17 @@ public class VoteResult implements BeanProtoFormat {
     private String address;
 
     /**
-     * JoinNode 对象转成 {@link cn.aberic.bother.entity.proto.consensus.JoinNodeProto.JoinNode} 字节流
+     * VoteResult 对象转成 {@link cn.aberic.bother.entity.proto.consensus.VoteResultProto.VoteResult} 字节流
      *
      * @return proto 字节流
      */
     @Override
     public byte[] bean2ProtoByteArray() {
-        JoinNodeProto.JoinNode.Builder builder = JoinNodeProto.JoinNode.newBuilder();
-        String joinNodeJsonFormat = this.toJsonString();
-        log.debug("joinNodeJsonFormat = {}", joinNodeJsonFormat);
+        VoteResultProto.VoteResult.Builder builder = VoteResultProto.VoteResult.newBuilder();
+        String voteResultJsonFormat = this.toJsonString();
+        log.debug("voteResultJsonFormat = {}", voteResultJsonFormat);
         try {
-            JsonFormat.parser().merge(joinNodeJsonFormat, builder);
+            JsonFormat.parser().merge(voteResultJsonFormat, builder);
         } catch (InvalidProtocolBufferException e) {
             e.printStackTrace();
         }

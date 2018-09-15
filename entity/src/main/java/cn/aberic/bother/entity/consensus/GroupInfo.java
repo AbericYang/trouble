@@ -26,6 +26,7 @@ package cn.aberic.bother.entity.consensus;
 
 import cn.aberic.bother.entity.BeanJsonField;
 import cn.aberic.bother.entity.enums.ConnectStatus;
+import cn.aberic.bother.tools.Constant;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
@@ -91,7 +92,7 @@ public class GroupInfo implements BeanJsonField {
      * @return 当前小组是否满员
      */
     public boolean max() {
-        return addresses.size() >= 51;
+        return addresses.size() >= Constant.GROUP_COUNT;
     }
 
     /**
@@ -102,7 +103,7 @@ public class GroupInfo implements BeanJsonField {
      * @return 与否
      */
     public boolean electionTime() {
-        return System.currentTimeMillis() - timestamp > 600000;
+        return System.currentTimeMillis() - timestamp > Constant.GROUP_ELECTION_TIME;
     }
 
     /**

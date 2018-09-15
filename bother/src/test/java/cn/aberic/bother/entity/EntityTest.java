@@ -26,10 +26,7 @@
 package cn.aberic.bother.entity;
 
 import cn.aberic.bother.entity.block.*;
-import cn.aberic.bother.entity.consensus.ConnectSelf;
-import cn.aberic.bother.entity.consensus.ElectionVote;
-import cn.aberic.bother.entity.consensus.GroupInfo;
-import cn.aberic.bother.entity.consensus.JoinFeedback;
+import cn.aberic.bother.entity.consensus.*;
 import cn.aberic.bother.entity.contract.Account;
 import cn.aberic.bother.entity.enums.JoinLevel;
 import cn.aberic.bother.entity.enums.TransactionStatus;
@@ -38,6 +35,7 @@ import cn.aberic.bother.entity.proto.block.BlockHeaderProto;
 import cn.aberic.bother.entity.proto.block.BlockProto;
 import cn.aberic.bother.entity.proto.consensus.ConnectSelfProto;
 import cn.aberic.bother.entity.proto.consensus.JoinFeedbackProto;
+import cn.aberic.bother.entity.proto.consensus.VoteResultProto;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import com.google.gson.Gson;
@@ -61,9 +59,10 @@ public class EntityTest {
 
     public static void main(String[] args) throws InvalidProtocolBufferException {
         // protoDemo();
-        createBlockProtobuf();
+        // createBlockProtobuf();
         // createConnectSelfProtobuf();
         // createJoinFeedbackProtobuf();
+        createVoteResultProtobuf();
     }
 
     private static void createBlockProtobuf() {
@@ -135,6 +134,28 @@ public class EntityTest {
         String jsonObject = JsonFormat.printer().print(joinProto);
         log.debug("jsonObject = {}", jsonObject);
         log.debug("Object = {}", JSON.parseObject(jsonObject, new TypeReference<JoinFeedback>() {}).toJsonString());
+    }
+
+    private static void createVoteResultProtobuf() throws InvalidProtocolBufferException {
+        VoteResultProto.VoteResult.Builder builder = VoteResultProto.VoteResult.newBuilder();
+        String voteResultFormat = new JSONObject(createVoteResult()).toString();
+        log.debug("voteResultFormat = {}", voteResultFormat);
+        try {
+            JsonFormat.parser().merge(voteResultFormat, builder);
+        } catch (InvalidProtocolBufferException e) {
+            e.printStackTrace();
+        }
+        log.debug("getLevel = {}", builder.getLevel());
+        log.debug("getAddress = {}", builder.getAddress());
+        log.debug("==============================================");
+        byte[] bytes = builder.build().toByteArray();
+        log.debug("toByteArray = {}", bytes);
+
+
+        VoteResultProto.VoteResult voteResult = VoteResultProto.VoteResult.parseFrom(bytes);
+        String jsonObject = JsonFormat.printer().print(voteResult);
+        log.debug("jsonObject = {}", jsonObject);
+        log.debug("Object = {}", JSON.parseObject(jsonObject, new TypeReference<VoteResult>() {}).toJsonString());
     }
 
     public static byte[] getBlockBytes() {
@@ -294,6 +315,13 @@ public class EntityTest {
         joinFeedback.setAddresses(addresses);
         joinFeedback.setLevel(JoinLevel.CITY);
         return joinFeedback;
+    }
+
+    private static VoteResult createVoteResult() {
+        VoteResult voteResult = new VoteResult();
+        voteResult.setLevel(JoinLevel.CITY);
+        voteResult.setAddress("a");
+        return voteResult;
     }
 
     public static Account createAccount() {

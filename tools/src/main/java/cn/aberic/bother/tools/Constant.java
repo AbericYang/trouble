@@ -42,6 +42,11 @@ public class Constant {
     /** 长连接客户端写超时时间，需要比服务端读超时时间短，以维持心跳 */
     public static final long IO_SERVER_WRITE_TIME_OUT = 8;
 
+    /** 每个小组允许最大节点数 */
+    public static final int GROUP_COUNT = 51;
+    /** 开启下一轮Leader节点选举的时间间隔/ms */
+    public static final long GROUP_ELECTION_TIME = 600000;
+
     public final static String BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH = "d11d842aca8ee9b82ea1634791f98e83";
     public final static String TOKEN_DEFAULT_PUBLIC_HASH = "ce8abde5e540cb13eefe28759e48317a15129265adc4db7ad4e1f84825c006b4";
     public final static String TOKEN_DEFAULT_SECOND_HASH = "673fe7084b22632c7b20d40ba4aa77a22b2f9361d61d7debde289cab81fe5ad5";

@@ -26,6 +26,7 @@
 package cn.aberic.bother.entity.enums;
 
 import lombok.Getter;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * 请求加入节点当前请求级别
@@ -83,6 +84,16 @@ public enum JoinLevel {
     JoinLevel(String alias, int level) {
         this.alias = alias;
         this.level = level;
+    }
+
+    public static JoinLevel get(String alias) {
+        JoinLevel[] levels = values();
+        for (JoinLevel level : levels) {
+            if (StringUtils.equals(level.alias, alias)) {
+                return level;
+            }
+        }
+        return null;
     }
 
 }
