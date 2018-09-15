@@ -97,6 +97,10 @@ public final class ConnectSelfProto {
             int index);
   }
   /**
+   * <pre>
+   * 连接信息对象，有且仅有一个实例
+   * </pre>
+   *
    * Protobuf type {@code ConnectSelf}
    */
   public  static final class ConnectSelf extends
@@ -425,6 +429,10 @@ public final class ConnectSelfProto {
       return builder;
     }
     /**
+     * <pre>
+     * 连接信息对象，有且仅有一个实例
+     * </pre>
+     *
      * Protobuf type {@code ConnectSelf}
      */
     public static final class Builder extends

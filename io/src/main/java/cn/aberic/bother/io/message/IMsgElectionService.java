@@ -29,8 +29,12 @@ import cn.aberic.bother.entity.consensus.ElectionVote;
 import cn.aberic.bother.entity.consensus.GroupInfo;
 import cn.aberic.bother.entity.enums.JoinLevel;
 import cn.aberic.bother.entity.io.MessageData;
+import cn.aberic.bother.io.IOContext;
 import cn.aberic.bother.tools.MsgPackTool;
 import io.netty.channel.Channel;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 应答选举消息业务处理接口
@@ -58,6 +62,22 @@ public interface IMsgElectionService extends IMsgRequestService {
                 info.add(vote); // 将选票放入下一轮选举结果集合中
                 if (info.electionTime()) { // 判断是否超过投票时间
                     // TODO: 2018/9/14 超过投票时间，则不再接收新的投票提交，直接开启本轮投票结果，并将投票结果发送至已投票的节点进行结果比对
+                    Map<String, Integer> voteMap = new HashMap<>();
+                    ConnectSelf.obtain().getGroups().get(JoinLevel.TOWER.getLevel()).getVotes().forEach(electionVote -> {
+                        electionVote.getAddresses().forEach(ip -> {
+                            Integer i = voteMap.get(ip);
+                            if (null != i) {
+                                voteMap.put(ip, i + 1);
+                            }
+                        });
+                    });
+                    String ipVote = "";
+                    for (Map.Entry<String, Integer> entry : voteMap.entrySet()) {
+                        if (ipVote.isEmpty() || voteMap.get(ipVote) < entry.getValue()) {
+                            ipVote = entry.getKey();
+                        }
+                    }
+                    // IOContext.obtain().broadcast();
                 } else {
                     // TODO: 2018/9/14 通知同组节点尽快完成投票操作
                 }

@@ -1,0 +1,11 @@
+syntax = "proto3";
+//生成文件所在包名
+option java_package = "cn.aberic.bother.entity.proto.enums";
+//生成的java文件名
+option java_outer_classname = "TransactionStatusProto";
+
+// 交易状态
+enum TransactionStatus {
+    SUCCESS = 0; // 交易成功
+    FAIL = 1; // 交易失败
+}

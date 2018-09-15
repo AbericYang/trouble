@@ -1,0 +1,20 @@
+syntax = "proto3";
+//生成文件所在包名
+option java_package = "cn.aberic.bother.entity.proto.enums";
+//生成的java文件名
+option java_outer_classname = "JoinLevelProto";
+
+// 加入节点所在级别
+enum JoinLevel {
+    LONEY = 0; // 孤岛
+    TOWER = 1; // 楼
+    COMMUNITY = 2; // 社区
+    COUNTY = 3; // 县城
+    CITY = 4; // 市
+    PROVINCE = 5; // 省
+    TOWER_NO_EXEC = 6; // 楼，无需处理
+    COMMUNITY_NO_EXEC = 7; // 社区，无需处理
+    COUNTY_NO_EXEC = 8; // 县城，无需处理
+    CITY_NO_EXEC = 9; // 市，无需处理
+    PROVINCE_NO_EXEC = 10; // 省，无需处理
+}

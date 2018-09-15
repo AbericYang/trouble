@@ -6,6 +6,7 @@ option java_outer_classname = "ConnectSelfProto";
 
 import "consensus/GroupInfo.proto";
 
+// 连接信息对象，有且仅有一个实例
 message ConnectSelf {
     int32 level = 1; // 自身节点等级，等级0表示未成为任何小组Leader，1表示是一个小组Leader，2表示51个小组Leader，以此类推
     repeated GroupInfo groups = 2; // 当前连接小组集合

@@ -84,7 +84,7 @@ public final class GroupInfoProto {
      * 自身在此小组中的当前连接状态
      * </pre>
      *
-     * <code>.GroupInfo.ConnectStatus status = 3;</code>
+     * <code>.ConnectStatus status = 3;</code>
      */
     int getStatusValue();
     /**
@@ -92,9 +92,9 @@ public final class GroupInfoProto {
      * 自身在此小组中的当前连接状态
      * </pre>
      *
-     * <code>.GroupInfo.ConnectStatus status = 3;</code>
+     * <code>.ConnectStatus status = 3;</code>
      */
-    GroupInfoProto.GroupInfo.ConnectStatus getStatus();
+    cn.aberic.bother.entity.proto.enums.ConnectStatusProto.ConnectStatus getStatus();
 
     /**
      * <pre>
@@ -229,6 +229,10 @@ public final class GroupInfoProto {
             int index);
   }
   /**
+   * <pre>
+   * 连接小组对象
+   * </pre>
+   *
    * Protobuf type {@code GroupInfo}
    */
   public  static final class GroupInfo extends
@@ -365,154 +369,6 @@ public final class GroupInfoProto {
               GroupInfoProto.GroupInfo.class, GroupInfoProto.GroupInfo.Builder.class);
     }
 
-    /**
-     * Protobuf enum {@code GroupInfo.ConnectStatus}
-     */
-    public enum ConnectStatus
-        implements com.google.protobuf.ProtocolMessageEnum {
-      /**
-       * <pre>
-       * 未连接任何圈子
-       * </pre>
-       *
-       * <code>NONE = 0;</code>
-       */
-      NONE(0),
-      /**
-       * <pre>
-       * 圈子中的Leader节点
-       * </pre>
-       *
-       * <code>LEADER = 1;</code>
-       */
-      LEADER(1),
-      /**
-       * <pre>
-       * 圈子中的Follow节点
-       * </pre>
-       *
-       * <code>FOLLOW = 2;</code>
-       */
-      FOLLOW(2),
-      /**
-       * <pre>
-       * 当前圈子Leader节点选举中
-       * </pre>
-       *
-       * <code>ELECTION = 3;</code>
-       */
-      ELECTION(3),
-      UNRECOGNIZED(-1),
-      ;
-
-      /**
-       * <pre>
-       * 未连接任何圈子
-       * </pre>
-       *
-       * <code>NONE = 0;</code>
-       */
-      public static final int NONE_VALUE = 0;
-      /**
-       * <pre>
-       * 圈子中的Leader节点
-       * </pre>
-       *
-       * <code>LEADER = 1;</code>
-       */
-      public static final int LEADER_VALUE = 1;
-      /**
-       * <pre>
-       * 圈子中的Follow节点
-       * </pre>
-       *
-       * <code>FOLLOW = 2;</code>
-       */
-      public static final int FOLLOW_VALUE = 2;
-      /**
-       * <pre>
-       * 当前圈子Leader节点选举中
-       * </pre>
-       *
-       * <code>ELECTION = 3;</code>
-       */
-      public static final int ELECTION_VALUE = 3;
-
-
-      public final int getNumber() {
-        if (this == UNRECOGNIZED) {
-          throw new IllegalArgumentException(
-              "Can't get the number of an unknown enum value.");
-        }
-        return value;
-      }
-
-      /**
-       * @deprecated Use {@link #forNumber(int)} instead.
-       */
-      @Deprecated
-      public static ConnectStatus valueOf(int value) {
-        return forNumber(value);
-      }
-
-      public static ConnectStatus forNumber(int value) {
-        switch (value) {
-          case 0: return NONE;
-          case 1: return LEADER;
-          case 2: return FOLLOW;
-          case 3: return ELECTION;
-          default: return null;
-        }
-      }
-
-      public static com.google.protobuf.Internal.EnumLiteMap<ConnectStatus>
-          internalGetValueMap() {
-        return internalValueMap;
-      }
-      private static final com.google.protobuf.Internal.EnumLiteMap<
-          ConnectStatus> internalValueMap =
-            new com.google.protobuf.Internal.EnumLiteMap<ConnectStatus>() {
-              public ConnectStatus findValueByNumber(int number) {
-                return ConnectStatus.forNumber(number);
-              }
-            };
-
-      public final com.google.protobuf.Descriptors.EnumValueDescriptor
-          getValueDescriptor() {
-        return getDescriptor().getValues().get(ordinal());
-      }
-      public final com.google.protobuf.Descriptors.EnumDescriptor
-          getDescriptorForType() {
-        return getDescriptor();
-      }
-      public static final com.google.protobuf.Descriptors.EnumDescriptor
-          getDescriptor() {
-        return GroupInfoProto.GroupInfo.getDescriptor().getEnumTypes().get(0);
-      }
-
-      private static final ConnectStatus[] VALUES = values();
-
-      public static ConnectStatus valueOf(
-          com.google.protobuf.Descriptors.EnumValueDescriptor desc) {
-        if (desc.getType() != getDescriptor()) {
-          throw new IllegalArgumentException(
-            "EnumValueDescriptor is not for this type.");
-        }
-        if (desc.getIndex() == -1) {
-          return UNRECOGNIZED;
-        }
-        return VALUES[desc.getIndex()];
-      }
-
-      private final int value;
-
-      private ConnectStatus(int value) {
-        this.value = value;
-      }
-
-      // @@protoc_insertion_point(enum_scope:GroupInfo.ConnectStatus)
-    }
-
     private int bitField0_;
     public static final int LEADERADDRESS_FIELD_NUMBER = 1;
     private volatile Object leaderAddress_;
@@ -605,7 +461,7 @@ public final class GroupInfoProto {
      * 自身在此小组中的当前连接状态
      * </pre>
      *
-     * <code>.GroupInfo.ConnectStatus status = 3;</code>
+     * <code>.ConnectStatus status = 3;</code>
      */
     public int getStatusValue() {
       return status_;
@@ -615,12 +471,12 @@ public final class GroupInfoProto {
      * 自身在此小组中的当前连接状态
      * </pre>
      *
-     * <code>.GroupInfo.ConnectStatus status = 3;</code>
+     * <code>.ConnectStatus status = 3;</code>
      */
-    public GroupInfoProto.GroupInfo.ConnectStatus getStatus() {
+    public cn.aberic.bother.entity.proto.enums.ConnectStatusProto.ConnectStatus getStatus() {
       @SuppressWarnings("deprecation")
-      GroupInfoProto.GroupInfo.ConnectStatus result = GroupInfoProto.GroupInfo.ConnectStatus.valueOf(status_);
-      return result == null ? GroupInfoProto.GroupInfo.ConnectStatus.UNRECOGNIZED : result;
+      cn.aberic.bother.entity.proto.enums.ConnectStatusProto.ConnectStatus result = cn.aberic.bother.entity.proto.enums.ConnectStatusProto.ConnectStatus.valueOf(status_);
+      return result == null ? cn.aberic.bother.entity.proto.enums.ConnectStatusProto.ConnectStatus.UNRECOGNIZED : result;
     }
 
     public static final int TIMESTAMP_FIELD_NUMBER = 4;
@@ -811,7 +667,7 @@ public final class GroupInfoProto {
       if (!getNextLeaderAddressBytes().isEmpty()) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 2, nextLeaderAddress_);
       }
-      if (status_ != GroupInfoProto.GroupInfo.ConnectStatus.NONE.getNumber()) {
+      if (status_ != cn.aberic.bother.entity.proto.enums.ConnectStatusProto.ConnectStatus.NONE.getNumber()) {
         output.writeEnum(3, status_);
       }
       if (timestamp_ != 0L) {
@@ -841,7 +697,7 @@ public final class GroupInfoProto {
       if (!getNextLeaderAddressBytes().isEmpty()) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, nextLeaderAddress_);
       }
-      if (status_ != GroupInfoProto.GroupInfo.ConnectStatus.NONE.getNumber()) {
+      if (status_ != cn.aberic.bother.entity.proto.enums.ConnectStatusProto.ConnectStatus.NONE.getNumber()) {
         size += com.google.protobuf.CodedOutputStream
           .computeEnumSize(3, status_);
       }
@@ -1022,6 +878,10 @@ public final class GroupInfoProto {
       return builder;
     }
     /**
+     * <pre>
+     * 连接小组对象
+     * </pre>
+     *
      * Protobuf type {@code GroupInfo}
      */
     public static final class Builder extends
@@ -1477,7 +1337,7 @@ public final class GroupInfoProto {
        * 自身在此小组中的当前连接状态
        * </pre>
        *
-       * <code>.GroupInfo.ConnectStatus status = 3;</code>
+       * <code>.ConnectStatus status = 3;</code>
        */
       public int getStatusValue() {
         return status_;
@@ -1487,7 +1347,7 @@ public final class GroupInfoProto {
        * 自身在此小组中的当前连接状态
        * </pre>
        *
-       * <code>.GroupInfo.ConnectStatus status = 3;</code>
+       * <code>.ConnectStatus status = 3;</code>
        */
       public Builder setStatusValue(int value) {
         status_ = value;
@@ -1499,21 +1359,21 @@ public final class GroupInfoProto {
        * 自身在此小组中的当前连接状态
        * </pre>
        *
-       * <code>.GroupInfo.ConnectStatus status = 3;</code>
+       * <code>.ConnectStatus status = 3;</code>
        */
-      public GroupInfoProto.GroupInfo.ConnectStatus getStatus() {
+      public cn.aberic.bother.entity.proto.enums.ConnectStatusProto.ConnectStatus getStatus() {
         @SuppressWarnings("deprecation")
-        GroupInfoProto.GroupInfo.ConnectStatus result = GroupInfoProto.GroupInfo.ConnectStatus.valueOf(status_);
-        return result == null ? GroupInfoProto.GroupInfo.ConnectStatus.UNRECOGNIZED : result;
+        cn.aberic.bother.entity.proto.enums.ConnectStatusProto.ConnectStatus result = cn.aberic.bother.entity.proto.enums.ConnectStatusProto.ConnectStatus.valueOf(status_);
+        return result == null ? cn.aberic.bother.entity.proto.enums.ConnectStatusProto.ConnectStatus.UNRECOGNIZED : result;
       }
       /**
        * <pre>
        * 自身在此小组中的当前连接状态
        * </pre>
        *
-       * <code>.GroupInfo.ConnectStatus status = 3;</code>
+       * <code>.ConnectStatus status = 3;</code>
        */
-      public Builder setStatus(GroupInfoProto.GroupInfo.ConnectStatus value) {
+      public Builder setStatus(cn.aberic.bother.entity.proto.enums.ConnectStatusProto.ConnectStatus value) {
         if (value == null) {
           throw new NullPointerException();
         }
@@ -1527,7 +1387,7 @@ public final class GroupInfoProto {
        * 自身在此小组中的当前连接状态
        * </pre>
        *
-       * <code>.GroupInfo.ConnectStatus status = 3;</code>
+       * <code>.ConnectStatus status = 3;</code>
        */
       public Builder clearStatus() {
 
@@ -2395,15 +2255,14 @@ public final class GroupInfoProto {
   static {
     String[] descriptorData = {
       "\n\031consensus/GroupInfo.proto\032\034consensus/E" +
-      "lectionVote.proto\"\216\002\n\tGroupInfo\022\025\n\rleade" +
-      "rAddress\030\001 \001(\t\022\031\n\021nextLeaderAddress\030\002 \001(" +
-      "\t\022(\n\006status\030\003 \001(\0162\030.GroupInfo.ConnectSta" +
-      "tus\022\021\n\ttimestamp\030\004 \001(\003\022\021\n\taddresses\030\005 \003(" +
-      "\t\022\034\n\005votes\030\006 \003(\0132\r.ElectionVote\022 \n\tnextV" +
-      "otes\030\007 \003(\0132\r.ElectionVote\"?\n\rConnectStat" +
-      "us\022\010\n\004NONE\020\000\022\n\n\006LEADER\020\001\022\n\n\006FOLLOW\020\002\022\014\n\010" +
-      "ELECTION\020\003B9\n\'cn.aberic.bother.entity.pr" +
-      "oto.consensusB\016GroupInfoProtob\006proto3"
+      "lectionVote.proto\032\031enums/ConnectStatus.p" +
+      "roto\"\303\001\n\tGroupInfo\022\025\n\rleaderAddress\030\001 \001(" +
+      "\t\022\031\n\021nextLeaderAddress\030\002 \001(\t\022\036\n\006status\030\003" +
+      " \001(\0162\016.ConnectStatus\022\021\n\ttimestamp\030\004 \001(\003\022" +
+      "\021\n\taddresses\030\005 \003(\t\022\034\n\005votes\030\006 \003(\0132\r.Elec" +
+      "tionVote\022 \n\tnextVotes\030\007 \003(\0132\r.ElectionVo" +
+      "teB9\n\'cn.aberic.bother.entity.proto.cons" +
+      "ensusB\016GroupInfoProtob\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -2417,6 +2276,7 @@ public final class GroupInfoProto {
       .internalBuildGeneratedFileFrom(descriptorData,
         new com.google.protobuf.Descriptors.FileDescriptor[] {
           ElectionVoteProto.getDescriptor(),
+          cn.aberic.bother.entity.proto.enums.ConnectStatusProto.getDescriptor(),
         }, assigner);
     internal_static_GroupInfo_descriptor =
       getDescriptor().getMessageTypes().get(0);
@@ -2425,6 +2285,7 @@ public final class GroupInfoProto {
         internal_static_GroupInfo_descriptor,
         new String[] { "LeaderAddress", "NextLeaderAddress", "Status", "Timestamp", "Addresses", "Votes", "NextVotes", });
     ElectionVoteProto.getDescriptor();
+    cn.aberic.bother.entity.proto.enums.ConnectStatusProto.getDescriptor();
   }
 
   // @@protoc_insertion_point(outer_class_scope)

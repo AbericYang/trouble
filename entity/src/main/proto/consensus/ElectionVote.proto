@@ -4,8 +4,8 @@ option java_package = "cn.aberic.bother.entity.proto.consensus";
 //生成的java文件名
 option java_outer_classname = "ElectionVoteProto";
 
+// 节点发起选举投票对象
 message ElectionVote {
     string address = 1; // 本次投票节点地址
     repeated string addresses = 2; // 本次投票节点结果集合
-
 }

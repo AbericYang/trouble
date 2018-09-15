@@ -190,7 +190,7 @@ public final class TransactionProto {
      * 交易状态
      * </pre>
      *
-     * <code>.Transaction.TransactionStatus transactionStatusCode = 9;</code>
+     * <code>.TransactionStatus transactionStatusCode = 9;</code>
      */
     int getTransactionStatusCodeValue();
     /**
@@ -198,9 +198,9 @@ public final class TransactionProto {
      * 交易状态
      * </pre>
      *
-     * <code>.Transaction.TransactionStatus transactionStatusCode = 9;</code>
+     * <code>.TransactionStatus transactionStatusCode = 9;</code>
      */
-    TransactionProto.Transaction.TransactionStatus getTransactionStatusCode();
+    cn.aberic.bother.entity.proto.enums.TransactionStatusProto.TransactionStatus getTransactionStatusCode();
 
     /**
      * <pre>
@@ -452,104 +452,6 @@ public final class TransactionProto {
       return TransactionProto.internal_static_Transaction_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
               TransactionProto.Transaction.class, TransactionProto.Transaction.Builder.class);
-    }
-
-    /**
-     * Protobuf enum {@code Transaction.TransactionStatus}
-     */
-    public enum TransactionStatus
-        implements com.google.protobuf.ProtocolMessageEnum {
-      /**
-       * <code>SUCCESS = 0;</code>
-       */
-      SUCCESS(0),
-      /**
-       * <code>FAIL = 1;</code>
-       */
-      FAIL(1),
-      UNRECOGNIZED(-1),
-      ;
-
-      /**
-       * <code>SUCCESS = 0;</code>
-       */
-      public static final int SUCCESS_VALUE = 0;
-      /**
-       * <code>FAIL = 1;</code>
-       */
-      public static final int FAIL_VALUE = 1;
-
-
-      public final int getNumber() {
-        if (this == UNRECOGNIZED) {
-          throw new IllegalArgumentException(
-              "Can't get the number of an unknown enum value.");
-        }
-        return value;
-      }
-
-      /**
-       * @deprecated Use {@link #forNumber(int)} instead.
-       */
-      @Deprecated
-      public static TransactionStatus valueOf(int value) {
-        return forNumber(value);
-      }
-
-      public static TransactionStatus forNumber(int value) {
-        switch (value) {
-          case 0: return SUCCESS;
-          case 1: return FAIL;
-          default: return null;
-        }
-      }
-
-      public static com.google.protobuf.Internal.EnumLiteMap<TransactionStatus>
-          internalGetValueMap() {
-        return internalValueMap;
-      }
-      private static final com.google.protobuf.Internal.EnumLiteMap<
-          TransactionStatus> internalValueMap =
-            new com.google.protobuf.Internal.EnumLiteMap<TransactionStatus>() {
-              public TransactionStatus findValueByNumber(int number) {
-                return TransactionStatus.forNumber(number);
-              }
-            };
-
-      public final com.google.protobuf.Descriptors.EnumValueDescriptor
-          getValueDescriptor() {
-        return getDescriptor().getValues().get(ordinal());
-      }
-      public final com.google.protobuf.Descriptors.EnumDescriptor
-          getDescriptorForType() {
-        return getDescriptor();
-      }
-      public static final com.google.protobuf.Descriptors.EnumDescriptor
-          getDescriptor() {
-        return TransactionProto.Transaction.getDescriptor().getEnumTypes().get(0);
-      }
-
-      private static final TransactionStatus[] VALUES = values();
-
-      public static TransactionStatus valueOf(
-          com.google.protobuf.Descriptors.EnumValueDescriptor desc) {
-        if (desc.getType() != getDescriptor()) {
-          throw new IllegalArgumentException(
-            "EnumValueDescriptor is not for this type.");
-        }
-        if (desc.getIndex() == -1) {
-          return UNRECOGNIZED;
-        }
-        return VALUES[desc.getIndex()];
-      }
-
-      private final int value;
-
-      private TransactionStatus(int value) {
-        this.value = value;
-      }
-
-      // @@protoc_insertion_point(enum_scope:Transaction.TransactionStatus)
     }
 
     public static final int HASH_FIELD_NUMBER = 1;
@@ -857,7 +759,7 @@ public final class TransactionProto {
      * 交易状态
      * </pre>
      *
-     * <code>.Transaction.TransactionStatus transactionStatusCode = 9;</code>
+     * <code>.TransactionStatus transactionStatusCode = 9;</code>
      */
     public int getTransactionStatusCodeValue() {
       return transactionStatusCode_;
@@ -867,12 +769,12 @@ public final class TransactionProto {
      * 交易状态
      * </pre>
      *
-     * <code>.Transaction.TransactionStatus transactionStatusCode = 9;</code>
+     * <code>.TransactionStatus transactionStatusCode = 9;</code>
      */
-    public TransactionProto.Transaction.TransactionStatus getTransactionStatusCode() {
+    public cn.aberic.bother.entity.proto.enums.TransactionStatusProto.TransactionStatus getTransactionStatusCode() {
       @SuppressWarnings("deprecation")
-      TransactionProto.Transaction.TransactionStatus result = TransactionProto.Transaction.TransactionStatus.valueOf(transactionStatusCode_);
-      return result == null ? TransactionProto.Transaction.TransactionStatus.UNRECOGNIZED : result;
+      cn.aberic.bother.entity.proto.enums.TransactionStatusProto.TransactionStatus result = cn.aberic.bother.entity.proto.enums.TransactionStatusProto.TransactionStatus.valueOf(transactionStatusCode_);
+      return result == null ? cn.aberic.bother.entity.proto.enums.TransactionStatusProto.TransactionStatus.UNRECOGNIZED : result;
     }
 
     public static final int ERRORMESSAGE_FIELD_NUMBER = 10;
@@ -1072,7 +974,7 @@ public final class TransactionProto {
       if (!getTxHashBytes().isEmpty()) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 8, txHash_);
       }
-      if (transactionStatusCode_ != TransactionProto.Transaction.TransactionStatus.SUCCESS.getNumber()) {
+      if (transactionStatusCode_ != cn.aberic.bother.entity.proto.enums.TransactionStatusProto.TransactionStatus.SUCCESS.getNumber()) {
         output.writeEnum(9, transactionStatusCode_);
       }
       if (!getErrorMessageBytes().isEmpty()) {
@@ -1122,7 +1024,7 @@ public final class TransactionProto {
       if (!getTxHashBytes().isEmpty()) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(8, txHash_);
       }
-      if (transactionStatusCode_ != TransactionProto.Transaction.TransactionStatus.SUCCESS.getNumber()) {
+      if (transactionStatusCode_ != cn.aberic.bother.entity.proto.enums.TransactionStatusProto.TransactionStatus.SUCCESS.getNumber()) {
         size += com.google.protobuf.CodedOutputStream
           .computeEnumSize(9, transactionStatusCode_);
       }
@@ -2298,7 +2200,7 @@ public final class TransactionProto {
        * 交易状态
        * </pre>
        *
-       * <code>.Transaction.TransactionStatus transactionStatusCode = 9;</code>
+       * <code>.TransactionStatus transactionStatusCode = 9;</code>
        */
       public int getTransactionStatusCodeValue() {
         return transactionStatusCode_;
@@ -2308,7 +2210,7 @@ public final class TransactionProto {
        * 交易状态
        * </pre>
        *
-       * <code>.Transaction.TransactionStatus transactionStatusCode = 9;</code>
+       * <code>.TransactionStatus transactionStatusCode = 9;</code>
        */
       public Builder setTransactionStatusCodeValue(int value) {
         transactionStatusCode_ = value;
@@ -2320,21 +2222,21 @@ public final class TransactionProto {
        * 交易状态
        * </pre>
        *
-       * <code>.Transaction.TransactionStatus transactionStatusCode = 9;</code>
+       * <code>.TransactionStatus transactionStatusCode = 9;</code>
        */
-      public TransactionProto.Transaction.TransactionStatus getTransactionStatusCode() {
+      public cn.aberic.bother.entity.proto.enums.TransactionStatusProto.TransactionStatus getTransactionStatusCode() {
         @SuppressWarnings("deprecation")
-        TransactionProto.Transaction.TransactionStatus result = TransactionProto.Transaction.TransactionStatus.valueOf(transactionStatusCode_);
-        return result == null ? TransactionProto.Transaction.TransactionStatus.UNRECOGNIZED : result;
+        cn.aberic.bother.entity.proto.enums.TransactionStatusProto.TransactionStatus result = cn.aberic.bother.entity.proto.enums.TransactionStatusProto.TransactionStatus.valueOf(transactionStatusCode_);
+        return result == null ? cn.aberic.bother.entity.proto.enums.TransactionStatusProto.TransactionStatus.UNRECOGNIZED : result;
       }
       /**
        * <pre>
        * 交易状态
        * </pre>
        *
-       * <code>.Transaction.TransactionStatus transactionStatusCode = 9;</code>
+       * <code>.TransactionStatus transactionStatusCode = 9;</code>
        */
-      public Builder setTransactionStatusCode(TransactionProto.Transaction.TransactionStatus value) {
+      public Builder setTransactionStatusCode(cn.aberic.bother.entity.proto.enums.TransactionStatusProto.TransactionStatus value) {
         if (value == null) {
           throw new NullPointerException();
         }
@@ -2348,7 +2250,7 @@ public final class TransactionProto {
        * 交易状态
        * </pre>
        *
-       * <code>.Transaction.TransactionStatus transactionStatusCode = 9;</code>
+       * <code>.TransactionStatus transactionStatusCode = 9;</code>
        */
       public Builder clearTransactionStatusCode() {
 
@@ -2844,18 +2746,17 @@ public final class TransactionProto {
   static {
     String[] descriptorData = {
       "\n\027block/Transaction.proto\032\021block/RWSet.p" +
-      "roto\032\023block/Request.proto\"\340\002\n\013Transactio" +
-      "n\022\014\n\004hash\030\001 \001(\t\022\024\n\014contractName\030\002 \001(\t\022\027\n" +
-      "\017contractVersion\030\003 \001(\t\022\017\n\007creator\030\004 \001(\t\022" +
-      "\014\n\004sign\030\005 \001(\t\022\025\n\005rwSet\030\006 \001(\0132\006.RWSet\022\021\n\t" +
-      "timestamp\030\007 \001(\004\022\016\n\006txHash\030\010 \001(\t\022=\n\025trans" +
-      "actionStatusCode\030\t \001(\0162\036.Transaction.Tra" +
-      "nsactionStatus\022\024\n\014errorMessage\030\n \001(\t\022\014\n\004" +
-      "time\030\013 \001(\t\022\031\n\007request\030\014 \001(\0132\010.Request\022\021\n" +
-      "\tpubECCKey\030\r \001(\t\"*\n\021TransactionStatus\022\013\n" +
-      "\007SUCCESS\020\000\022\010\n\004FAIL\020\001B7\n#cn.aberic.bother" +
-      ".entity.proto.blockB\020TransactionProtob\006p" +
-      "roto3"
+      "roto\032\023block/Request.proto\032\035enums/Transac" +
+      "tionStatus.proto\"\250\002\n\013Transaction\022\014\n\004hash" +
+      "\030\001 \001(\t\022\024\n\014contractName\030\002 \001(\t\022\027\n\017contract" +
+      "Version\030\003 \001(\t\022\017\n\007creator\030\004 \001(\t\022\014\n\004sign\030\005" +
+      " \001(\t\022\025\n\005rwSet\030\006 \001(\0132\006.RWSet\022\021\n\ttimestamp" +
+      "\030\007 \001(\004\022\016\n\006txHash\030\010 \001(\t\0221\n\025transactionSta" +
+      "tusCode\030\t \001(\0162\022.TransactionStatus\022\024\n\014err" +
+      "orMessage\030\n \001(\t\022\014\n\004time\030\013 \001(\t\022\031\n\007request" +
+      "\030\014 \001(\0132\010.Request\022\021\n\tpubECCKey\030\r \001(\tB7\n#c" +
+      "n.aberic.bother.entity.proto.blockB\020Tran" +
+      "sactionProtob\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -2870,6 +2771,7 @@ public final class TransactionProto {
         new com.google.protobuf.Descriptors.FileDescriptor[] {
           RWSetProto.getDescriptor(),
           RequestProto.getDescriptor(),
+          cn.aberic.bother.entity.proto.enums.TransactionStatusProto.getDescriptor(),
         }, assigner);
     internal_static_Transaction_descriptor =
       getDescriptor().getMessageTypes().get(0);
@@ -2879,6 +2781,7 @@ public final class TransactionProto {
         new String[] { "Hash", "ContractName", "ContractVersion", "Creator", "Sign", "RwSet", "Timestamp", "TxHash", "TransactionStatusCode", "ErrorMessage", "Time", "Request", "PubECCKey", });
     RWSetProto.getDescriptor();
     RequestProto.getDescriptor();
+    cn.aberic.bother.entity.proto.enums.TransactionStatusProto.getDescriptor();
   }
 
   // @@protoc_insertion_point(outer_class_scope)

@@ -6,6 +6,7 @@ option java_outer_classname = "TransactionProto";
 
 import "block/RWSet.proto";
 import "block/Request.proto";
+import "enums/TransactionStatus.proto";
 
 message Transaction {
     string hash = 1; // 本次写入值链码hash
@@ -21,9 +22,4 @@ message Transaction {
     string time = 11; // 交易时间戳转字符串——yyyy/MM/dd HH:mm:ss
     Request request = 12; // 智能合约请求对象
     string pubECCKey = 13; // 账户 ECC 公钥
-
-    enum TransactionStatus{
-        SUCCESS = 0;
-        FAIL = 1;
-    }
 }

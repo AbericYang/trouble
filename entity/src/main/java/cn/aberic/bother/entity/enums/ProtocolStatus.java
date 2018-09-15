@@ -69,6 +69,8 @@ public enum ProtocolStatus {
     ELECTION_CITY("发起市选举协议", (byte) 0x23),
     /** 发起省选举协议-0x24 */
     ELECTION_PROVINCE("发起省选举协议", (byte) 0x24),
+    /** 发起楼选举结果协议-0x25 */
+    ELECTION_RESULT("发起楼选举结果协议", (byte) 0x25),
     /** 区块协议-0x51 */
     BLOCK("区块协议", (byte) 0x51);
 

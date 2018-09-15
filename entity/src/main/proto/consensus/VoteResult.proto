@@ -2,12 +2,12 @@ syntax = "proto3";
 //生成文件所在包名
 option java_package = "cn.aberic.bother.entity.proto.consensus";
 //生成的java文件名
-option java_outer_classname = "JoinNodeProto";
+option java_outer_classname = "VoteResultProto";
 
 import "enums/JoinLevel.proto";
 
 // 加入节点对象
-message JoinNode {
-    string address = 1; // 节点地址
-    JoinLevel level = 2; // 加入节点所在级别
+message VoteResult {
+    JoinLevel level = 1; // 加入节点所在级别
+    string address = 2; // 节点地址
 }

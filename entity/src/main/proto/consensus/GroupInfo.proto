@@ -5,7 +5,9 @@ option java_package = "cn.aberic.bother.entity.proto.consensus";
 option java_outer_classname = "GroupInfoProto";
 
 import "consensus/ElectionVote.proto";
+import "enums/ConnectStatus.proto";
 
+// 连接小组对象
 message GroupInfo {
     string leaderAddress = 1; // 当前Leader的远程地址
     string nextLeaderAddress = 2; // 下一个Leader的远程地址
@@ -14,12 +16,4 @@ message GroupInfo {
     repeated string addresses = 5; // 当前连接小组集合
     repeated ElectionVote votes = 6; // 当前选举集合
     repeated ElectionVote nextVotes = 7; // 下轮选举集合
-
-    enum ConnectStatus{
-        NONE = 0; // 未连接任何圈子
-        LEADER = 1; // 圈子中的Leader节点
-        FOLLOW = 2; // 圈子中的Follow节点
-        ELECTION = 3; // 当前圈子Leader节点选举中
-    }
-
 }
