@@ -25,6 +25,8 @@
 
 package cn.aberic.bother.io;
 
+import cn.aberic.bother.entity.consensus.ConnectSelf;
+import cn.aberic.bother.entity.enums.JoinLevel;
 import cn.aberic.bother.entity.enums.ProtocolStatus;
 import cn.aberic.bother.entity.io.MessageData;
 import cn.aberic.bother.entity.io.Remote;
@@ -37,8 +39,6 @@ import com.google.common.cache.CacheBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
@@ -55,8 +55,6 @@ public class IOContext {
     private Cache<String, IOServer> ioServerCache;
     /** 作为客户端所接收到的链接集合 */
     private Cache<String, IOClient> ioClientCache;
-    /** 作为应答端所接收到的链接集合 */
-    private List<String> ips;
     private IOFactory ioServerFactory;
     private IOFactory ioClientFactory;
 
@@ -76,7 +74,6 @@ public class IOContext {
     private IOContext() {
         ioServerCache = CacheBuilder.newBuilder().maximumSize(10).expireAfterAccess(15, TimeUnit.MINUTES).build();
         ioClientCache = CacheBuilder.newBuilder().maximumSize(10).expireAfterAccess(15, TimeUnit.MINUTES).build();
-        ips = new ArrayList<>();
         ioServerFactory = new IONettyServerFactory();
         ioClientFactory = new IONettyClientFactory();
     }
@@ -135,14 +132,6 @@ public class IOContext {
         ioClientCache.invalidate(ip);
     }
 
-    public void add(String ip) {
-        ips.add(ip);
-    }
-
-    public List<String> getIps() {
-        return ips;
-    }
-
     /**
      * 作为客户端发起请求协议
      *
@@ -175,18 +164,33 @@ public class IOContext {
 
     /**
      * 广播消息
-     * 先执行服务端广播消息操作，
-     * 如果与服务端连接的客户端ip已找到，但缓存没有，
-     * 则新建一个自身作为客户端的连接尝试通过客户端的身份发送本次消息
+     * 根据当前Server所在组级别进行消息广播
      *
      * @param msgData 消息体
+     * @param level   当前广播所在组级别
      */
-    public void broadcast(MessageData msgData) {
-        ioServerCache.asMap().forEach((ip, ioServer) -> {
-            if (ioServer.isConnected()) {
-                ioServer.push(msgData);
-            }
+    public void broadcast(MessageData msgData, JoinLevel level) {
+        ConnectSelf.obtain().getGroups().get(level.getLevel()).getAddresses().forEach(address -> {
+            Objects.requireNonNull(ioServerCache.getIfPresent(address)).push(msgData);
         });
+    }
+
+    /**
+     * 全组同步消息
+     * 根据当前所在组级别进行消息同步
+     *
+     * @param msgData 消息体
+     * @param level   当前同步所在组级别
+     */
+    public void sync(MessageData msgData, JoinLevel level) {
+        // 如果自身组级别大于当前组级别，则为组Leader节点，执行广播操作
+        if (ConnectSelf.obtain().getLevel() > level.getLevel()) {
+            broadcast(msgData, level);
+        } else { // 否则为Follow节点，执行发送操作
+            ConnectSelf.obtain().getGroups().get(level.getLevel()).getAddresses().forEach(address -> {
+                Objects.requireNonNull(ioClientCache.getIfPresent(address)).send(msgData);
+            });
+        }
     }
 
     /**

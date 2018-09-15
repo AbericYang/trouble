@@ -27,6 +27,7 @@ package cn.aberic.bother.io.message;
 import cn.aberic.bother.entity.consensus.ConnectSelf;
 import cn.aberic.bother.entity.consensus.JoinFeedback;
 import cn.aberic.bother.entity.consensus.JoinNode;
+import cn.aberic.bother.entity.enums.ConnectStatus;
 import cn.aberic.bother.entity.enums.JoinLevel;
 import cn.aberic.bother.entity.enums.ProtocolStatus;
 import cn.aberic.bother.entity.io.MessageData;
@@ -71,7 +72,11 @@ public interface IMsgJoinService extends IMsgRequestService, Proto2Bean {
                         (ConnectSelf.obtain().getLevel() == 1 && !ConnectSelf.obtain().getGroups().get(0).max())) {
                     pushJoinAccept(channel); // 告知新的接入地址可加入协议
                     pushAddNode(new JoinNode(address, JoinLevel.TOWER)); // 通知所有楼中住户有新节点加入
-                    ConnectSelf.obtain().getGroups().get(0).add(address); // 有且仅有楼来执行加入
+                    ConnectSelf.obtain().getGroups().get(JoinLevel.TOWER.getLevel()).add(address); // 有且仅有楼来执行加入
+                    // 设置自身所在组级别
+                    ConnectSelf.obtain().setLevel(JoinLevel.COMMUNITY.getLevel());
+                    // 设置自身所在组当前状态
+                    ConnectSelf.obtain().getGroups().get(JoinLevel.TOWER.getLevel()).setStatus(ConnectStatus.LEADER);
                 } else {
                     // 执行其它应答加入新节点消息业务处理方案——请求加入
                     joinExec(channel, msgData);
@@ -86,7 +91,7 @@ public interface IMsgJoinService extends IMsgRequestService, Proto2Bean {
                 IOContext.obtain().closeClient(address);
                 // 如果新加入楼之前也是孤岛入住，则发起楼选举协议
                 if (StringUtils.isEmpty(ConnectSelf.obtain().getGroups().get(0).getLeaderAddress())) {
-                    // TODO: 2018/9/14 发起投票应该把投票结果发送到同组的每一个节点
+                    // 发起投票应该把投票结果发送到同组的每一个节点，本次投票发起特殊在于目前已知仅有两个节点
                     send(address, ProtocolStatus.ELECTION_TOWER, ConnectSelf.obtain().getGroups().get(0).election());
                 }
                 break;
@@ -100,10 +105,15 @@ public interface IMsgJoinService extends IMsgRequestService, Proto2Bean {
                 JoinNodeProto.JoinNode joinNodeProto = JoinNodeProto.JoinNode.parseFrom(msgData.getBytes());
                 JoinNode joinNode = trans(joinNodeProto, JoinNode.class);
                 log().debug("joinNode = {}", joinNode.toJsonString());
+                String leaderAddress = ConnectSelf.obtain().getGroups().get(joinNode.getLevel().getLevel()).getLeaderAddress();
+                // 如果当前广播节点并非当前组Leader节点
+                if (!verify(channel, address, leaderAddress)) {
+                    break;
+                }
                 log().debug("接收由leader节点发出新增小组节点{}协议，加入级别{}", joinNode.getAddress(), joinNode.getLevel());
                 ConnectSelf.obtain().getGroups().get(joinNode.getLevel().getLevel()).add(address); // 有且仅有楼来执行加入
                 break;
-            case UPGRADE_NODE: // 由leader节点发出更新小组节点集合协议-0x08
+            case UPGRADE_NODE: // 由leader节点发出更新当前小组节点集合协议-0x08
                 break;
         }
     }
@@ -227,8 +237,8 @@ public interface IMsgJoinService extends IMsgRequestService, Proto2Bean {
                     sendJoin(address, JoinLevel.CITY_NO_EXEC);
                 }
                 // if (joinFeedback.getLevel() == JoinLevel.PROVINCE) {
-                    // 向获取到的国Leader发起加入申请，到市级就已经存在6765201个节点了，理论上不会节点个数不会超出县城范围
-                    // sendJoin(joinFeedback.getAddress(), JoinLevel.COUNTRY);
+                // 向获取到的国Leader发起加入申请，到市级就已经存在6765201个节点了，理论上不会节点个数不会超出县城范围
+                // sendJoin(joinFeedback.getAddress(), JoinLevel.COUNTRY);
                 // }
                 break;
         }

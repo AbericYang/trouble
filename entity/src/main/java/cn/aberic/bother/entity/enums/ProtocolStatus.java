@@ -55,8 +55,8 @@ public enum ProtocolStatus {
     JOIN_FEEDBACK("告知新的接入节点反馈协议", (byte) 0x06),
     /** 由leader节点发出新增小组节点协议-0x07 */
     ADD_NODE("新增小组节点协议", (byte) 0x07),
-    /** 由leader节点发出更新小组节点集合协议-0x08 */
-    UPGRADE_NODE("更新小组节点集合协议", (byte) 0x08),
+    /** 由leader节点发出更新当前小组节点集合协议-0x08 */
+    UPGRADE_NODE("更新当前小组节点集合协议", (byte) 0x08),
     /** 当前没有可加入小组，自建小组并参与小组间选举协议-0x09 */
     CREATE_GROUP("当前没有可加入小组", (byte) 0x09),
     /** 发起楼选举协议-0x20 */

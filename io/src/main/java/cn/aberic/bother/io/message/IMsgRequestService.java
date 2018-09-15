@@ -33,6 +33,7 @@ import cn.aberic.bother.entity.enums.ProtocolStatus;
 import cn.aberic.bother.entity.io.MessageData;
 import cn.aberic.bother.io.IOContext;
 import io.netty.channel.Channel;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 
 /**
@@ -119,7 +120,27 @@ interface IMsgRequestService extends IMsgRequestSendService, IMsgRequestPushServ
      * @param node 加入节点对象
      */
     default void pushAddNode(JoinNode node) {
-        IOContext.obtain().broadcast(new MessageData(ProtocolStatus.ADD_NODE, node.bean2ProtoByteArray()));
+        IOContext.obtain().broadcast(new MessageData(ProtocolStatus.ADD_NODE, node.bean2ProtoByteArray()), node.getLevel());
+    }
+
+    /**
+     * 验证当前通道下的广播节点是否当前组Leader节点
+     *
+     * @param channel       当前通道
+     * @param address       广播节点地址
+     * @param leaderAddress Leader节点地址
+     *
+     * @return 与否
+     */
+    default boolean verify(Channel channel, String address, String leaderAddress) {
+        // 如果当前广播节点并非当前组Leader节点
+        if (!StringUtils.equals(address, leaderAddress)) {
+            log().debug("拒绝执行，当前组地址：{}，广播的地址：{}", leaderAddress, address);
+            // 关闭连接
+            channel.close();
+            return false;
+        }
+        return true;
     }
 
 }
