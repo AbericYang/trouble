@@ -64,39 +64,61 @@ public interface IMsgElectionService extends IMsgRequestService {
                 break;
             case ELECTION_TOWER: // 接收到发起楼选举协议-0x20
                 level = JoinLevel.TOWER;
-                ElectionVote vote = new ElectionVote(); // 新建选票
-                vote.setAddress(address); // 该选票的投票节点地址
-                vote.setAddresses(MsgPackTool.bytes2List(msgData.getBytes())); // 接收到的该选票节点地址提交的选举结果
-                GroupInfo info = ConnectSelf.obtain().getGroups().get(level.getLevel()); // 获取当前楼小组
-                info.add(vote); // 将选票放入下一轮选举结果集合中
-                // 如果自身不是Leader节点，则执行到此结束
-                if (ConnectSelf.obtain().getGroups().get(level.getLevel()).getStatus() != ConnectStatus.LEADER) {
-                    break;
-                }
-                if (info.electionTime()) { // 判断是否超过投票时间
-                    // 超过投票时间，则不再接收新的投票提交，直接开启本轮投票结果，并将投票结果广播至本组所有节点进行结果比对
-                    Map<String, Integer> voteMap = new HashMap<>();
-                    ConnectSelf.obtain().getGroups().get(level.getLevel()).getVotes().forEach(electionVote -> electionVote.getAddresses().forEach(ip -> {
-                        Integer i = voteMap.get(ip);
-                        if (null != i) {
-                            voteMap.put(ip, i + 1);
-                        }
-                    }));
-                    String ipVote = "";
-                    for (Map.Entry<String, Integer> entry : voteMap.entrySet()) {
-                        if (ipVote.isEmpty() || voteMap.get(ipVote) < entry.getValue()) {
-                            ipVote = entry.getKey();
-                        }
-                    }
-                    VoteResult result = new VoteResult();
-                    result.setLevel(level);
-                    result.setAddress(ipVote);
-                    IOContext.obtain().broadcast(ProtocolStatus.ELECTION_RESULT, result, level);
-                } else {
-                    // 通知同组节点尽快完成投票操作
-                    IOContext.obtain().broadcast(ProtocolStatus.ELECTION_QUICK, level.getAlias(), level);
-                }
+                electionExec(address, msgData, level);
                 break;
+            case ELECTION_COMMUNITY: // 接收到发起社区选举协议-0x21
+                level = JoinLevel.COMMUNITY;
+                electionExec(address, msgData, level);
+                break;
+            case ELECTION_COUNTY: // 接收到发起县城选举协议-0x22
+                level = JoinLevel.COUNTY;
+                electionExec(address, msgData, level);
+                break;
+            case ELECTION_CITY: // 接收到发起市选举协议-0x23
+                level = JoinLevel.CITY;
+                electionExec(address, msgData, level);
+                break;
+            case ELECTION_PROVINCE: // 接收到发起省选举协议-0x24
+                level = JoinLevel.PROVINCE;
+                electionExec(address, msgData, level);
+                break;
+            case ELECTION_RESULT: // 接收到发起楼选举结果协议-0x25
+                break;
+        }
+    }
+
+    default void electionExec(String address, MessageData msgData, JoinLevel level) {
+        ElectionVote vote = new ElectionVote(); // 新建选票
+        vote.setAddress(address); // 该选票的投票节点地址
+        vote.setAddresses(MsgPackTool.bytes2List(msgData.getBytes())); // 接收到的该选票节点地址提交的选举结果
+        GroupInfo info = ConnectSelf.obtain().getGroups().get(level.getLevel()); // 获取当前楼小组
+        info.add(vote); // 将选票放入下一轮选举结果集合中
+        // 如果自身不是Leader节点，则执行到此结束
+        if (ConnectSelf.obtain().getGroups().get(level.getLevel()).getStatus() != ConnectStatus.LEADER) {
+            return;
+        }
+        if (info.electionTime()) { // 判断是否超过投票时间
+            // 超过投票时间，则不再接收新的投票提交，直接开启本轮投票结果，并将投票结果广播至本组所有节点进行结果比对
+            Map<String, Integer> voteMap = new HashMap<>();
+            ConnectSelf.obtain().getGroups().get(level.getLevel()).getVotes().forEach(electionVote -> electionVote.getAddresses().forEach(ip -> {
+                Integer i = voteMap.get(ip);
+                if (null != i) {
+                    voteMap.put(ip, i + 1);
+                }
+            }));
+            String ipVote = "";
+            for (Map.Entry<String, Integer> entry : voteMap.entrySet()) {
+                if (ipVote.isEmpty() || voteMap.get(ipVote) < entry.getValue()) {
+                    ipVote = entry.getKey();
+                }
+            }
+            VoteResult result = new VoteResult();
+            result.setLevel(level);
+            result.setAddress(ipVote);
+            IOContext.obtain().broadcast(ProtocolStatus.ELECTION_RESULT, result, level);
+        } else {
+            // 通知同组节点尽快完成投票操作
+            IOContext.obtain().broadcast(ProtocolStatus.ELECTION_QUICK, level.getAlias(), level);
         }
     }
 

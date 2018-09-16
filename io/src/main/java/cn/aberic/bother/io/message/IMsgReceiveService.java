@@ -64,7 +64,13 @@ interface IMsgReceiveService extends IMsgJoinService, IMsgElectionService, Proto
                     e.printStackTrace();
                 }
                 break;
-            case ELECTION_TOWER: // 发起选举协议-0x20
+            case ELECTION_QUICK: // 接收到通知同组节点尽快完成投票操作
+            case ELECTION_TOWER: // 接收到发起楼选举协议-0x20
+            case ELECTION_COMMUNITY: // 接收到发起社区选举协议-0x21
+            case ELECTION_COUNTY: // 接收到发起县城选举协议-0x22
+            case ELECTION_CITY: // 接收到发起市选举协议-0x23
+            case ELECTION_PROVINCE: // 接收到发起省选举协议-0x24
+            case ELECTION_RESULT: // 接收到发起楼选举结果协议-0x25
                 election(channel, msgData);
                 break;
             case BLOCK: // 区块协议-0x51
