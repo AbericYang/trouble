@@ -123,6 +123,10 @@ interface IMsgRequestService extends IMsgRequestSendService, IMsgRequestPushServ
         IOContext.obtain().broadcast(new MessageData(ProtocolStatus.ADD_NODE, node.bean2ProtoByteArray()), node.getLevel());
     }
 
+    default void pushUpgradeNode(String address) {
+        // ConnectSelf.
+    }
+
     /**
      * 验证当前通道下的广播节点是否当前组Leader节点
      *

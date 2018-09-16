@@ -96,6 +96,7 @@ public class EchoServerHandler extends ChannelInboundHandlerAdapter implements I
                 log.info("已经{}秒没有接收到客户端的信息了", Constant.IO_SERVER_READ_TIME_OUT);
                 if (idleCount > 2) {
                     log.info("关闭这个不活跃的channel");
+
                     ctx.channel().close();
                 }
                 idleCount++;

@@ -26,6 +26,8 @@ package cn.aberic.bother.io.message;
 
 import cn.aberic.bother.entity.block.Block;
 import cn.aberic.bother.entity.consensus.ConnectSelf;
+import cn.aberic.bother.entity.consensus.GroupInfo;
+import cn.aberic.bother.entity.enums.ConnectStatus;
 import cn.aberic.bother.entity.io.MessageData;
 import cn.aberic.bother.entity.proto.Proto2Bean;
 import cn.aberic.bother.entity.proto.block.BlockProto;
@@ -47,11 +49,16 @@ interface IMsgReceiveService extends IMsgJoinService, IMsgElectionService, Proto
      * @param msgData 协议消息对象
      */
     default void receive(Channel channel, MessageData msgData) {
+        String address = channel.remoteAddress().toString().split(":")[0].split("/")[1];
         log().debug("请求协议：{}，数据ID：{}", msgData.getProtocol().getB(), msgData.getDataId());
         switch (msgData.getProtocol()) {
             case HEART: // 心跳协议-0x00
-                log().debug("接收心跳协议，什么也不做");
-                log().debug("接收心跳协议，connectSelf = {}", ConnectSelf.obtain().toJsonString());
+                log().debug("接收心跳协议，如果自己是Leader节点的话，要求对方保持心跳");
+                for (GroupInfo info : ConnectSelf.obtain().getGroups()) {
+                    if (info.getStatus() == ConnectStatus.LEADER && info.getAddresses().contains(address)) {
+                        pushKeepHeartBeat(channel);
+                    }
+                }
                 break;
             case JOIN: // 加入新节点协议，follow节点收到新节点加入通知后，发送此协议告知leader节点有新节点加入请求，leader节点直接处理该协议-0x01
             case JOIN_ACCEPT: // 告知新的接入地址可加入协议-0x05
@@ -59,7 +66,7 @@ interface IMsgReceiveService extends IMsgJoinService, IMsgElectionService, Proto
             case ADD_NODE: // 由leader节点发出新增小组节点协议-0x07
             case UPGRADE_NODE: // 由leader节点发出更新小组节点集合协议-0x08
                 try {
-                    join(channel, msgData);
+                    join(address, channel, msgData);
                 } catch (InvalidProtocolBufferException e) {
                     e.printStackTrace();
                 }
@@ -71,7 +78,7 @@ interface IMsgReceiveService extends IMsgJoinService, IMsgElectionService, Proto
             case ELECTION_CITY: // 接收到发起市选举协议-0x23
             case ELECTION_PROVINCE: // 接收到发起省选举协议-0x24
             case ELECTION_RESULT: // 接收到发起楼选举结果协议-0x25
-                election(channel, msgData);
+                election(address, msgData);
                 break;
             case BLOCK: // 区块协议-0x51
                 log().debug("接收区块协议，执行区块同步操作");

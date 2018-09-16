@@ -57,12 +57,11 @@ public interface IMsgJoinService extends IMsgRequestService, Proto2Bean {
     /**
      * 应答加入新节点消息业务处理方案，由{@link IMsgReceiveService}继承并启用该方案
      *
+     * @param address 当前指定通道的连接地址
      * @param channel 当前指定通道
      * @param msgData 协议消息对象
      */
-    default void join(Channel channel, MessageData msgData) throws InvalidProtocolBufferException {
-        log().debug("请求协议：{}，数据ID：{}", msgData.getProtocol().getB(), msgData.getDataId());
-        String address = channel.remoteAddress().toString().split(":")[0].split("/")[1];
+    default void join(String address, Channel channel, MessageData msgData) throws InvalidProtocolBufferException {
         switch (msgData.getProtocol()) {
             case JOIN: // 加入新节点协议，follow节点收到新节点加入通知后，发送此协议告知leader节点有新节点加入请求，leader节点直接处理该协议-0x01
                 log().debug("接收加入新节点[{}]协议，执行加入方案", address);

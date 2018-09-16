@@ -34,7 +34,6 @@ import cn.aberic.bother.entity.enums.ProtocolStatus;
 import cn.aberic.bother.entity.io.MessageData;
 import cn.aberic.bother.io.IOContext;
 import cn.aberic.bother.tools.MsgPackTool;
-import io.netty.channel.Channel;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -50,12 +49,10 @@ public interface IMsgElectionService extends IMsgRequestService {
     /**
      * 应答选举消息业务处理方案，由{@link IMsgReceiveService}继承并启用该方案
      *
-     * @param channel 当前指定通道
+     * @param address 当前指定通道的连接地址
      * @param msgData 协议消息对象
      */
-    default void election(Channel channel, MessageData msgData) {
-        log().debug("请求协议：{}，数据ID：{}", msgData.getProtocol().getB(), msgData.getDataId());
-        String address = channel.remoteAddress().toString().split(":")[0].split("/")[1];
+    default void election(String address, MessageData msgData) {
         switch (msgData.getProtocol()) {
             case ELECTION_QUICK: // 接收到通知同组节点尽快完成投票操作
                 JoinLevel level = JoinLevel.get(MsgPackTool.bytes2String(msgData.getBytes()));
@@ -83,6 +80,7 @@ public interface IMsgElectionService extends IMsgRequestService {
                 electionExec(address, msgData, level);
                 break;
             case ELECTION_RESULT: // 接收到发起楼选举结果协议-0x25
+
                 break;
         }
     }
