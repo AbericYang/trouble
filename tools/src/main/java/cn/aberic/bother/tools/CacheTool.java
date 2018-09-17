@@ -34,6 +34,7 @@ import java.util.concurrent.TimeUnit;
  * 缓存——公共方法包
  *
  * 作者：Aberic on 2018/8/24 23:31
+ * <p>
  * 邮箱：abericyang@gmail.com
  */
 public class CacheTool {

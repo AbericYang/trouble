@@ -37,6 +37,7 @@ import java.util.List;
  * 请求消息业务最基本/默认处理接口
  * <p>
  * 作者：Aberic on 2018/9/14 21:38
+ * <p>
  * 邮箱：abericyang@gmail.com
  */
 public interface IMsgRequestSendService {

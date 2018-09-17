@@ -29,6 +29,7 @@ package cn.aberic.bother.tools.exception;
  * Token 字段为空异常——公共方法包
  * <p>
  * 作者：Aberic on 2018/9/3 22:23
+ * <p>
  * 邮箱：abericyang@gmail.com
  */
 public class TokenParamException extends NullPointerException {

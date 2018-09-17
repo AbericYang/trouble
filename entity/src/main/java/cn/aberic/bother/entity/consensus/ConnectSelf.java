@@ -44,6 +44,7 @@ import java.util.List;
  * 连接信息对象，有且仅有一个实例
  * <p>
  * 作者：Aberic on 2018/9/12 22:23
+ * <p>
  * 邮箱：abericyang@gmail.com
  */
 @Slf4j

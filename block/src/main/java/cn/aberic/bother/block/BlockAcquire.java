@@ -24,7 +24,6 @@
 
 package cn.aberic.bother.block;
 
-import cn.aberic.bother.encryption.Hash;
 import cn.aberic.bother.entity.block.Block;
 import cn.aberic.bother.tools.exception.SearchDataNotFoundException;
 import cn.aberic.bother.tools.exception.SearchDataTimeoutException;
@@ -33,6 +32,7 @@ import cn.aberic.bother.tools.exception.SearchDataTimeoutException;
  * 获取区块——数据操作层-data manipulation
  * <p>
  * 作者：Aberic on 2018/08/24 11:27
+ * <p>
  * 邮箱：abericyang@gmail.com
  */
 public class BlockAcquire extends BlockAS {

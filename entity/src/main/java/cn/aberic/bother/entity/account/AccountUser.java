@@ -32,6 +32,7 @@ import lombok.ToString;
  * 用户持有的账户信息，必须妥善保管，丢失后将无法找回
  * <p>
  * 作者：Aberic on 2018/9/4 22:51
+ * <p>
  * 邮箱：abericyang@gmail.com
  */
 @Setter

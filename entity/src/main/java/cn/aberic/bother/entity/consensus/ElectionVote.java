@@ -39,6 +39,7 @@ import java.util.List;
  * 这些节点最终会在当前Leader节点中进行排序比对，以确定最终的下一轮Leader节点
  * <p>
  * 作者：Aberic on 2018/9/14 21:06
+ * <p>
  * 邮箱：abericyang@gmail.com
  */
 @Setter

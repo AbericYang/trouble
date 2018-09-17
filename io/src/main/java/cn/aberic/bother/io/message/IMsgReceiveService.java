@@ -36,6 +36,7 @@ import io.netty.channel.Channel;
  * 应答消息业务处理接口
  * <p>
  * 作者：Aberic on 2018/09/12 14:13
+ * <p>
  * 邮箱：abericyang@gmail.com
  */
 interface IMsgReceiveService extends IMsgJoinService, IMsgElectionService {

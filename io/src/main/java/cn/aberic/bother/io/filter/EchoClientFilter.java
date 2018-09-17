@@ -40,6 +40,7 @@ import java.util.concurrent.TimeUnit;
  * <p>
  * 增加了心跳的相关设置
  * 作者：Aberic on 2018/09/10 13:59
+ * <p>
  * 邮箱：abericyang@gmail.com
  */
 public class EchoClientFilter extends ChannelInitializer<SocketChannel> {

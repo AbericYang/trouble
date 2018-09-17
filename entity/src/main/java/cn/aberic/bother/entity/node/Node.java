@@ -41,6 +41,7 @@ import java.util.List;
  * A收到X的推送后保存并向Y发送加入请求，Y收到A的加入请求后将A加入到当前竞选节点序列之下，告知A保持心跳并返回当前竞选节点，并允许A参与下一轮排序
  * <p>
  * 作者：Aberic on 2018/09/17 14:05
+ * <p>
  * 邮箱：abericyang@gmail.com
  */
 @Setter

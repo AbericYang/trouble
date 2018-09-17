@@ -27,6 +27,7 @@ package cn.aberic.bother.tools.exception;
 
 /**
  * 作者：Aberic on 2018/9/6 19:36
+ * <p>
  * 邮箱：abericyang@gmail.com
  */
 public class ERC20TokenECCPrivateKeyNullException extends RuntimeException {

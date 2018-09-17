@@ -33,6 +33,7 @@ import com.alibaba.fastjson.JSONObject;
  * 验证通用工具
  * <p>
  * 作者：Aberic on 2018/8/31 00:26
+ * <p>
  * 邮箱：abericyang@gmail.com
  */
 public class VerifyTool {

@@ -33,6 +33,7 @@ import lombok.Setter;
  * 账户信息详情，此对象存储时必须执行ECC加密
  * <p>
  * 作者：Aberic on 2018/9/4 21:27
+ * <p>
  * 邮箱：abericyang@gmail.com
  */
 @Setter

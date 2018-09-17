@@ -33,6 +33,7 @@ import lombok.ToString;
  * 数据传输消息体对象
  * <p>
  * 作者：Aberic on 2018/09/11 11:28
+ * <p>
  * 邮箱：abericyang@gmail.com
  */
 @Setter

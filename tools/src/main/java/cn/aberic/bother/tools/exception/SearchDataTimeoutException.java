@@ -27,6 +27,7 @@ package cn.aberic.bother.tools.exception;
 
 /**
  * 作者：Aberic on 2018/9/5 22:38
+ * <p>
  * 邮箱：abericyang@gmail.com
  */
 public class SearchDataTimeoutException extends Exception {

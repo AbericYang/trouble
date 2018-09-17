@@ -39,6 +39,7 @@ import org.slf4j.Logger;
 
 /**
  * 作者：Aberic on 2018/9/9 19:37
+ * <p>
  * 邮箱：abericyang@gmail.com
  */
 // 标示一个ChannelHandler 可以被多个Channel 安全地共享

@@ -33,6 +33,7 @@ import cn.aberic.bother.token.exec.service.ITokenTmpExec;
  * 账户基本操作对象
  * <p>
  * 作者：Aberic on 2018/9/3 20:56
+ * <p>
  * 邮箱：abericyang@gmail.com
  */
 public class TokenManager {

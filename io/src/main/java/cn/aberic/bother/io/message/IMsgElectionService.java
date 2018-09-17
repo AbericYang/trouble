@@ -39,6 +39,7 @@ import java.util.*;
  * 应答选举消息业务处理接口
  * <p>
  * 作者：Aberic on 2018/09/14 14:08
+ * <p>
  * 邮箱：abericyang@gmail.com
  */
 public interface IMsgElectionService extends IMsgRequestService {

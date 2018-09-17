@@ -47,6 +47,7 @@ import org.apache.commons.lang3.StringUtils;
  * 会自行创建一个新楼来匹配到目前的网络环境中
  * <p>
  * 作者：Aberic on 2018/09/14 10:49
+ * <p>
  * 邮箱：abericyang@gmail.com
  */
 public interface IMsgJoinService extends IMsgRequestService {

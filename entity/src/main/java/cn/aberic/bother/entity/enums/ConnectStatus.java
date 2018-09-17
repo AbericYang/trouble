@@ -31,6 +31,7 @@ import lombok.Getter;
  * 当前连接状态
  * <p>
  * 作者：Aberic on 2018/9/12 21:16
+ * <p>
  * 邮箱：abericyang@gmail.com
  */
 @Getter

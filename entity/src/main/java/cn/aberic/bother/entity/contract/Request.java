@@ -34,6 +34,7 @@ import lombok.Setter;
  * 智能合约请求对象
  * <p>
  * 作者：Aberic on 2018/9/2 19:57
+ * <p>
  * 邮箱：abericyang@gmail.com
  */
 @Setter

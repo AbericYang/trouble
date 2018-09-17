@@ -45,6 +45,7 @@ import org.slf4j.Logger;
  * 实现了业务逻辑，该实例可初始化每一个新的Channel
  * <p>
  * 作者：Aberic on 2018/9/9 18:00
+ * <p>
  * 邮箱：abericyang@gmail.com
  */
 // 标示一个ChannelHandler可以被多个Channel安全地共享

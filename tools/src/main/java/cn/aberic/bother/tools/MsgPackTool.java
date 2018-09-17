@@ -36,6 +36,7 @@ import java.util.List;
  * MsgPack 序列化工具，非对象类型由 MsgPack 来执行序列化，对象类型走 protobuf
  * <p>
  * 作者：Aberic on 2018/09/13 11:36
+ * <p>
  * 邮箱：abericyang@gmail.com
  */
 public class MsgPackTool {

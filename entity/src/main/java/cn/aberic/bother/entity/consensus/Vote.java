@@ -30,6 +30,7 @@ import lombok.Setter;
 /**
  * 投票对象
  * 作者：Aberic on 2018/09/17 10:14
+ * <p>
  * 邮箱：abericyang@gmail.com
  */
 @Setter

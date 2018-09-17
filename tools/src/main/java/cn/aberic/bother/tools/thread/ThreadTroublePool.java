@@ -31,6 +31,7 @@ import java.util.concurrent.*;
  * 开启一个线程池——公共方法包
  * * <p>
  * * 作者：Aberic on 2018/08/24 11:44
+ * <p>
  * * 邮箱：abericyang@gmail.com
  */
 public class ThreadTroublePool {

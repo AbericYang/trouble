@@ -44,6 +44,7 @@ import lombok.extern.slf4j.Slf4j;
  * 如果是社区内家去，则当前社区小组加入该节点
  * <p>
  * 作者：Aberic on 2018/09/14 14:26
+ * <p>
  * 邮箱：abericyang@gmail.com
  */
 @Slf4j

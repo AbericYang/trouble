@@ -30,6 +30,7 @@ import cn.aberic.bother.entity.enums.ConsensusStatus;
  * 主动发起共识操作对象——共识实现层-cta to achieve
  * <p>
  * 作者：Aberic on 2018/8/24 21:27
+ * <p>
  * 邮箱：abericyang@gmail.com
  */
 public class Proactive {

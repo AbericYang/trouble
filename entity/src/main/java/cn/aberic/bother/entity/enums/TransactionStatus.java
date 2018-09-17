@@ -30,6 +30,7 @@ import lombok.Getter;
  * 交易状态
  * <p>
  * 作者：Aberic on 2018/8/23 23:01
+ * <p>
  * 邮箱：abericyang@gmail.com
  */
 @Getter

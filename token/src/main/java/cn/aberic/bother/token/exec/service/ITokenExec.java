@@ -43,6 +43,7 @@ import java.io.IOException;
  * Token 文件本地读写接口
  * <p>
  * 作者：Aberic on 2018/9/3 20:45
+ * <p>
  * 邮箱：abericyang@gmail.com
  */
 public interface ITokenExec extends IFile<Token>, ITimeOut {

@@ -28,6 +28,7 @@ package cn.aberic.bother.tools.exception;
  * 智能合约重复/多副本异常——公共方法包
  * <p>
  * 作者：Aberic on 2018/08/30 16:24
+ * <p>
  * 邮箱：abericyang@gmail.com
  */
 public class ContractRepetitionException extends RuntimeException {

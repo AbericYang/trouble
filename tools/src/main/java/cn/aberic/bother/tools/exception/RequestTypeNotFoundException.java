@@ -28,6 +28,7 @@ package cn.aberic.bother.tools.exception;
  * 请求类型异常
  * <p>
  * 作者：Aberic on 2018/09/07 12:44
+ * <p>
  * 邮箱：abericyang@gmail.com
  */
 public class RequestTypeNotFoundException extends RuntimeException {

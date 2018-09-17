@@ -33,6 +33,7 @@ import java.util.zip.Inflater;
  * deflater字符串压缩工具——公共方法包
  * <p>
  * 作者：Aberic on 2018/08/29 13:49
+ * <p>
  * 邮箱：abericyang@gmail.com
  */
 public class DeflaterTool {

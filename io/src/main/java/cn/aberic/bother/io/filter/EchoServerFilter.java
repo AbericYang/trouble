@@ -41,6 +41,7 @@ import java.util.concurrent.TimeUnit;
  * 增加了心跳的相关设置
  * <p>
  * 作者：Aberic on 2018/09/10 12:50
+ * <p>
  * 邮箱：abericyang@gmail.com
  */
 public class EchoServerFilter extends ChannelInitializer<SocketChannel> {

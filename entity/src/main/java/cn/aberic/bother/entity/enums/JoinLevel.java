@@ -42,6 +42,7 @@ import org.apache.commons.lang3.StringUtils;
  * 请求节点此时需要遍历社区下所有楼节点信息，此时楼节点将不再返回任何内容，除非允许其加入，避免无限循环
  * <p>
  * 作者：Aberic on 2018/9/13 20:22
+ * <p>
  * 邮箱：abericyang@gmail.com
  */
 @Getter
