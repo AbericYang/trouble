@@ -28,6 +28,7 @@ package cn.aberic.bother.tools;
  * 常量——公共方法包
  * <p>
  * 作者：Aberic on 2018/8/20 20:24
+ * <p>
  * 邮箱：abericyang@gmail.com
  */
 public class Constant {
@@ -46,6 +47,13 @@ public class Constant {
     public static final int GROUP_COUNT = 51;
     /** 开启下一轮Leader节点选举的时间间隔/ms */
     public static final long GROUP_ELECTION_TIME = 600000;
+
+    /** 节点竞选CPU系数 */
+    public static final double ELECTION_CPU = 0.5;
+    /** 节点竞选内存系数 */
+    public static final double ELECTION_MEMORY = 0.4;
+    /** 节点竞选Token系数 */
+    public static final double ELECTION_TOKEN = 0.1;
 
     public final static String BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH = "d11d842aca8ee9b82ea1634791f98e83";
     public final static String TOKEN_DEFAULT_PUBLIC_HASH = "ce8abde5e540cb13eefe28759e48317a15129265adc4db7ad4e1f84825c006b4";
