@@ -48,6 +48,8 @@ public class Constant {
     /** 开启下一轮Leader节点选举的时间间隔/ms */
     public static final long GROUP_ELECTION_TIME = 600000;
 
+    /** 节点竞选集合总数 */
+    public static final int ELECTION_COUNT = 50;
     /** 节点竞选CPU系数 */
     public static final double ELECTION_CPU = 0.5;
     /** 节点竞选内存系数 */

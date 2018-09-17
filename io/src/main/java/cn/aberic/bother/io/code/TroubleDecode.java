@@ -60,7 +60,7 @@ public class TroubleDecode extends ByteToMessageDecoder implements TroubleCode {
     protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
         int size = in.readableBytes();
         if (size < HEADER_SIZE) {
-            throw new Exception("错误的消息");
+            throw new RuntimeException("错误的消息");
         }
 
         byte[] bytes = new byte[]{in.getByte(5), in.getByte(6), in.getByte(7), in.getByte(8)};
