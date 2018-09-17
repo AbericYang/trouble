@@ -27,6 +27,8 @@ package cn.aberic.bother.entity.consensus;
 import cn.aberic.bother.entity.BeanProtoFormat;
 import cn.aberic.bother.entity.enums.ConnectStatus;
 import cn.aberic.bother.entity.proto.consensus.ConnectSelfProto;
+import com.google.gson.Gson;
+import com.google.protobuf.GeneratedMessageV3;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.util.JsonFormat;
 import lombok.Getter;
@@ -109,4 +111,17 @@ public class ConnectSelf implements BeanProtoFormat {
         }
         return builder.build().toByteArray();
     }
+
+    @Override
+    public <M extends GeneratedMessageV3> ConnectSelf proto2Bean(M m) throws InvalidProtocolBufferException {
+        String jsonObject = JsonFormat.printer().print(m);
+        return new Gson().fromJson(jsonObject, ConnectSelf.class);
+    }
+
+    @Override
+    public ConnectSelf protoByteArray2Bean(byte[] bytes) throws InvalidProtocolBufferException {
+        String jsonObject = JsonFormat.printer().print(ConnectSelfProto.ConnectSelf.parseFrom(bytes));
+        return new Gson().fromJson(jsonObject, ConnectSelf.class);
+    }
+
 }

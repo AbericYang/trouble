@@ -31,10 +31,7 @@ import cn.aberic.bother.entity.enums.ConnectStatus;
 import cn.aberic.bother.entity.enums.JoinLevel;
 import cn.aberic.bother.entity.enums.ProtocolStatus;
 import cn.aberic.bother.entity.io.MessageData;
-import cn.aberic.bother.entity.proto.Proto2Bean;
 import cn.aberic.bother.entity.proto.consensus.ConnectSelfProto;
-import cn.aberic.bother.entity.proto.consensus.JoinFeedbackProto;
-import cn.aberic.bother.entity.proto.consensus.JoinNodeProto;
 import cn.aberic.bother.io.IOContext;
 import cn.aberic.bother.tools.MsgPackTool;
 import com.google.protobuf.InvalidProtocolBufferException;
@@ -52,7 +49,7 @@ import org.apache.commons.lang3.StringUtils;
  * 作者：Aberic on 2018/09/14 10:49
  * 邮箱：abericyang@gmail.com
  */
-public interface IMsgJoinService extends IMsgRequestService, Proto2Bean {
+public interface IMsgJoinService extends IMsgRequestService {
 
     /**
      * 应答加入新节点消息业务处理方案，由{@link IMsgReceiveService}继承并启用该方案
@@ -84,7 +81,7 @@ public interface IMsgJoinService extends IMsgRequestService, Proto2Bean {
             case JOIN_ACCEPT: // 告知新的接入地址可加入协议-0x05
                 log().debug("告知新的接入地址可加入协议，执行楼同步操作");
                 ConnectSelfProto.ConnectSelf connectSelfProto = ConnectSelfProto.ConnectSelf.parseFrom(msgData.getBytes());
-                ConnectSelf.obtain().init(trans(connectSelfProto, ConnectSelf.class));
+                ConnectSelf.obtain().init(ConnectSelf.obtain().proto2Bean(connectSelfProto));
                 log().debug("connectSelf = {}", ConnectSelf.obtain().toJsonString());
                 // 遍历作为客户端的请求并全部关闭
                 IOContext.obtain().closeClient(address);
@@ -95,14 +92,12 @@ public interface IMsgJoinService extends IMsgRequestService, Proto2Bean {
                 }
                 break;
             case JOIN_FEEDBACK: // 告知新的接入节点反馈协议-0x06
-                JoinFeedbackProto.JoinFeedback joinFeedbackProto = JoinFeedbackProto.JoinFeedback.parseFrom(msgData.getBytes());
-                JoinFeedback joinFeedback = trans(joinFeedbackProto, JoinFeedback.class);
+                JoinFeedback joinFeedback = new JoinFeedback().protoByteArray2Bean(msgData.getBytes());
                 log().debug("joinFeedback = {}", joinFeedback.toJsonString());
                 joinFeedbackExec(joinFeedback);
                 break;
             case ADD_NODE: // 由leader节点发出新增小组节点协议-0x07
-                JoinNodeProto.JoinNode joinNodeProto = JoinNodeProto.JoinNode.parseFrom(msgData.getBytes());
-                JoinNode joinNode = trans(joinNodeProto, JoinNode.class);
+                JoinNode joinNode = new JoinNode().protoByteArray2Bean(msgData.getBytes());
                 log().debug("joinNode = {}", joinNode.toJsonString());
                 String leaderAddress = ConnectSelf.obtain().getGroups().get(joinNode.getLevel().getLevel()).getLeaderAddress();
                 // 如果当前广播节点并非当前组Leader节点

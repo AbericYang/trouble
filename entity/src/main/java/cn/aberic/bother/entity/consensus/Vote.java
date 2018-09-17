@@ -20,28 +20,29 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- *
  */
 
-package cn.aberic.bother.entity.proto;
+package cn.aberic.bother.entity.consensus;
 
-import cn.aberic.bother.entity.BeanProtoFormat;
-import com.google.gson.Gson;
-import com.google.protobuf.GeneratedMessageV3;
-import com.google.protobuf.InvalidProtocolBufferException;
-import com.google.protobuf.util.JsonFormat;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
- * 将Protobuf对象转成普通的Bean对象
- * <p>
- * 作者：Aberic on 2018/9/14 21:53
+ * 投票对象
+ * 作者：Aberic on 2018/09/17 10:14
  * 邮箱：abericyang@gmail.com
  */
-public interface Proto2Bean {
+@Setter
+@Getter
+public class Vote {
 
-    default <M extends GeneratedMessageV3, N extends BeanProtoFormat> N trans(M m, Class<N> clazz) throws InvalidProtocolBufferException {
-        String jsonObject = JsonFormat.printer().print(m);
-        return new Gson().fromJson(jsonObject, clazz);
+    /** 当前被投票地址 */
+    private String address;
+    /** 当前被投票地址所得选票 */
+    private int count;
+
+    public Vote(String address, int count) {
+        this.address = address;
+        this.count = count;
     }
-
 }

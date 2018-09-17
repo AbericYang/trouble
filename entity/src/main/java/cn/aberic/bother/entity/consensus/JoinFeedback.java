@@ -27,6 +27,8 @@ package cn.aberic.bother.entity.consensus;
 import cn.aberic.bother.entity.BeanProtoFormat;
 import cn.aberic.bother.entity.enums.JoinLevel;
 import cn.aberic.bother.entity.proto.consensus.JoinFeedbackProto;
+import com.google.gson.Gson;
+import com.google.protobuf.GeneratedMessageV3;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.util.JsonFormat;
 import lombok.Getter;
@@ -75,6 +77,18 @@ public class JoinFeedback implements BeanProtoFormat {
             e.printStackTrace();
         }
         return builder.build().toByteArray();
+    }
+
+    @Override
+    public <M extends GeneratedMessageV3> JoinFeedback proto2Bean(M m) throws InvalidProtocolBufferException {
+        String jsonObject = JsonFormat.printer().print(m);
+        return new Gson().fromJson(jsonObject, JoinFeedback.class);
+    }
+
+    @Override
+    public JoinFeedback protoByteArray2Bean(byte[] bytes) throws InvalidProtocolBufferException {
+        String jsonObject = JsonFormat.printer().print(JoinFeedbackProto.JoinFeedback.parseFrom(bytes));
+        return new Gson().fromJson(jsonObject, JoinFeedback.class);
     }
 
 }

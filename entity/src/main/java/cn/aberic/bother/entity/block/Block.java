@@ -28,6 +28,8 @@ import cn.aberic.bother.entity.BeanProtoFormat;
 import cn.aberic.bother.entity.proto.block.BlockProto;
 import com.alibaba.fastjson.annotation.JSONField;
 import com.google.common.hash.Hashing;
+import com.google.gson.Gson;
+import com.google.protobuf.GeneratedMessageV3;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.util.JsonFormat;
 import lombok.Getter;
@@ -55,6 +57,8 @@ public class Block implements BeanProtoFormat {
     /** 区块数据体 */
     @JSONField(name = "b")
     private BlockBody body;
+
+    public Block() {}
 
     public Block(BlockHeader header, BlockBody body) {
         this.header = header;
@@ -85,6 +89,18 @@ public class Block implements BeanProtoFormat {
             e.printStackTrace();
         }
         return builder.build().toByteArray();
+    }
+
+    @Override
+    public <M extends GeneratedMessageV3> Block proto2Bean(M m) throws InvalidProtocolBufferException {
+        String jsonObject = JsonFormat.printer().print(m);
+        return new Gson().fromJson(jsonObject, Block.class);
+    }
+
+    @Override
+    public Block protoByteArray2Bean(byte[] bytes) throws InvalidProtocolBufferException {
+        String jsonObject = JsonFormat.printer().print(BlockProto.Block.parseFrom(bytes));
+        return new Gson().fromJson(jsonObject, Block.class);
     }
 
 }

@@ -146,7 +146,7 @@ public class EntityTest {
             e.printStackTrace();
         }
         log.debug("getLevel = {}", builder.getLevel());
-        log.debug("getAddress = {}", builder.getAddress());
+        log.debug("getAddresses = {}", builder.getAddressesList());
         log.debug("==============================================");
         byte[] bytes = builder.build().toByteArray();
         log.debug("toByteArray = {}", bytes);
@@ -154,8 +154,13 @@ public class EntityTest {
 
         VoteResultProto.VoteResult voteResult = VoteResultProto.VoteResult.parseFrom(bytes);
         String jsonObject = JsonFormat.printer().print(voteResult);
+        VoteResult result = new VoteResult();
+        result = result.proto2Bean(voteResult);
+        result = result.protoByteArray2Bean(bytes);
         log.debug("jsonObject = {}", jsonObject);
         log.debug("Object = {}", JSON.parseObject(jsonObject, new TypeReference<VoteResult>() {}).toJsonString());
+        log.debug("result1 = {}", result.toJsonString());
+        log.debug("result2 = {}", result.toJsonString());
     }
 
     public static byte[] getBlockBytes() {
@@ -318,9 +323,14 @@ public class EntityTest {
     }
 
     private static VoteResult createVoteResult() {
+        List<String> addresses = new ArrayList<>();
+        addresses.add("a");
+        addresses.add("b");
+        addresses.add("c");
+
         VoteResult voteResult = new VoteResult();
         voteResult.setLevel(JoinLevel.CITY);
-        voteResult.setAddress("a");
+        voteResult.setAddresses(addresses);
         return voteResult;
     }
 

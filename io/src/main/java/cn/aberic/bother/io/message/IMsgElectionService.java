@@ -24,19 +24,16 @@
 
 package cn.aberic.bother.io.message;
 
-import cn.aberic.bother.entity.consensus.ConnectSelf;
-import cn.aberic.bother.entity.consensus.ElectionVote;
-import cn.aberic.bother.entity.consensus.GroupInfo;
-import cn.aberic.bother.entity.consensus.VoteResult;
+import cn.aberic.bother.entity.consensus.*;
 import cn.aberic.bother.entity.enums.ConnectStatus;
 import cn.aberic.bother.entity.enums.JoinLevel;
 import cn.aberic.bother.entity.enums.ProtocolStatus;
 import cn.aberic.bother.entity.io.MessageData;
 import cn.aberic.bother.io.IOContext;
 import cn.aberic.bother.tools.MsgPackTool;
+import com.google.protobuf.InvalidProtocolBufferException;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 应答选举消息业务处理接口
@@ -52,7 +49,7 @@ public interface IMsgElectionService extends IMsgRequestService {
      * @param address 当前指定通道的连接地址
      * @param msgData 协议消息对象
      */
-    default void election(String address, MessageData msgData) {
+    default void election(String address, MessageData msgData) throws InvalidProtocolBufferException {
         switch (msgData.getProtocol()) {
             case ELECTION_QUICK: // 接收到通知同组节点尽快完成投票操作
                 JoinLevel level = JoinLevel.get(MsgPackTool.bytes2String(msgData.getBytes()));
@@ -80,7 +77,9 @@ public interface IMsgElectionService extends IMsgRequestService {
                 electionExec(address, msgData, level);
                 break;
             case ELECTION_RESULT: // 接收到发起楼选举结果协议-0x25
-
+                VoteResult voteResult = new VoteResult();
+                voteResult = voteResult.protoByteArray2Bean(msgData.getBytes());
+                // voteResult = voteResult.trans(VoteResultProto.VoteResult.parseFrom(msgData.getBytes()), VoteResult.class);
                 break;
         }
     }
@@ -104,16 +103,20 @@ public interface IMsgElectionService extends IMsgRequestService {
                     voteMap.put(ip, i + 1);
                 }
             }));
-            String ipVote = "";
+            List<Vote> votes = new ArrayList<>();
             for (Map.Entry<String, Integer> entry : voteMap.entrySet()) {
-                if (ipVote.isEmpty() || voteMap.get(ipVote) < entry.getValue()) {
-                    ipVote = entry.getKey();
-                }
+                votes.add(new Vote(entry.getKey(), entry.getValue()));
             }
-            VoteResult result = new VoteResult();
-            result.setLevel(level);
-            result.setAddress(ipVote);
-            IOContext.obtain().broadcast(ProtocolStatus.ELECTION_RESULT, result, level);
+            votes.sort(Comparator.comparingInt(Vote::getCount));
+            List<String> addresses = new ArrayList<>();
+            votes = votes.size() > 7 ? votes.subList(0, 6) : votes;
+            votes.forEach(v -> {
+                addresses.add(v.getAddress());
+            });
+            VoteResult voteResult = new VoteResult();
+            voteResult.setLevel(level);
+            voteResult.setAddresses(addresses);
+            IOContext.obtain().broadcast(ProtocolStatus.ELECTION_RESULT, voteResult, level);
         } else {
             // 通知同组节点尽快完成投票操作
             IOContext.obtain().broadcast(ProtocolStatus.ELECTION_QUICK, level.getAlias(), level);

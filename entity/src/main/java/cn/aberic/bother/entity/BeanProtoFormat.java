@@ -24,6 +24,9 @@
 
 package cn.aberic.bother.entity;
 
+import com.google.protobuf.GeneratedMessageV3;
+import com.google.protobuf.InvalidProtocolBufferException;
+
 /**
  * 可转成protobuf对象的对象必须实现此接口以实现转换方法
  * <p>
@@ -38,4 +41,8 @@ public interface BeanProtoFormat extends BeanJsonField {
      * @return proto 字节流
      */
     byte[] bean2ProtoByteArray();
+
+    <M extends GeneratedMessageV3> BeanProtoFormat proto2Bean(M m) throws InvalidProtocolBufferException;
+
+    BeanProtoFormat protoByteArray2Bean(byte[] bytes) throws InvalidProtocolBufferException;
 }

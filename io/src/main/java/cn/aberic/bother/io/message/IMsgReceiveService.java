@@ -29,8 +29,6 @@ import cn.aberic.bother.entity.consensus.ConnectSelf;
 import cn.aberic.bother.entity.consensus.GroupInfo;
 import cn.aberic.bother.entity.enums.ConnectStatus;
 import cn.aberic.bother.entity.io.MessageData;
-import cn.aberic.bother.entity.proto.Proto2Bean;
-import cn.aberic.bother.entity.proto.block.BlockProto;
 import com.google.protobuf.InvalidProtocolBufferException;
 import io.netty.channel.Channel;
 
@@ -40,7 +38,7 @@ import io.netty.channel.Channel;
  * 作者：Aberic on 2018/09/12 14:13
  * 邮箱：abericyang@gmail.com
  */
-interface IMsgReceiveService extends IMsgJoinService, IMsgElectionService, Proto2Bean {
+interface IMsgReceiveService extends IMsgJoinService, IMsgElectionService {
 
     /**
      * 应答消息业务处理方案
@@ -78,13 +76,16 @@ interface IMsgReceiveService extends IMsgJoinService, IMsgElectionService, Proto
             case ELECTION_CITY: // 接收到发起市选举协议-0x23
             case ELECTION_PROVINCE: // 接收到发起省选举协议-0x24
             case ELECTION_RESULT: // 接收到发起楼选举结果协议-0x25
-                election(address, msgData);
+                try {
+                    election(address, msgData);
+                } catch (InvalidProtocolBufferException e) {
+                    e.printStackTrace();
+                }
                 break;
             case BLOCK: // 区块协议-0x51
                 log().debug("接收区块协议，执行区块同步操作");
                 try {
-                    BlockProto.Block blockProto = BlockProto.Block.parseFrom(msgData.getBytes());
-                    Block block = trans(blockProto, Block.class);
+                    Block block = new Block().protoByteArray2Bean(msgData.getBytes());
                     log().debug("block = {}", block.toJsonString());
                     // TODO: 2018/9/12 验证并存储
                 } catch (InvalidProtocolBufferException e) {

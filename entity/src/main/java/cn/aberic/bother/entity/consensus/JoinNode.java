@@ -27,6 +27,8 @@ package cn.aberic.bother.entity.consensus;
 import cn.aberic.bother.entity.BeanProtoFormat;
 import cn.aberic.bother.entity.enums.JoinLevel;
 import cn.aberic.bother.entity.proto.consensus.JoinNodeProto;
+import com.google.gson.Gson;
+import com.google.protobuf.GeneratedMessageV3;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.util.JsonFormat;
 import lombok.Getter;
@@ -55,6 +57,8 @@ public class JoinNode implements BeanProtoFormat {
     /** 加入节点所在级别 */
     private JoinLevel level;
 
+    public JoinNode() {}
+
     public JoinNode(String address, JoinLevel level) {
         this.address = address;
         this.level = level;
@@ -76,6 +80,18 @@ public class JoinNode implements BeanProtoFormat {
             e.printStackTrace();
         }
         return builder.build().toByteArray();
+    }
+
+    @Override
+    public <M extends GeneratedMessageV3> JoinNode proto2Bean(M m) throws InvalidProtocolBufferException {
+        String jsonObject = JsonFormat.printer().print(m);
+        return new Gson().fromJson(jsonObject, JoinNode.class);
+    }
+
+    @Override
+    public JoinNode protoByteArray2Bean(byte[] bytes) throws InvalidProtocolBufferException {
+        String jsonObject = JsonFormat.printer().print(JoinNodeProto.JoinNode.parseFrom(bytes));
+        return new Gson().fromJson(jsonObject, JoinNode.class);
     }
 
 }

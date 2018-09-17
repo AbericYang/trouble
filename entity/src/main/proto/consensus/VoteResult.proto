@@ -9,5 +9,5 @@ import "enums/JoinLevel.proto";
 // 加入节点对象
 message VoteResult {
     JoinLevel level = 1; // 加入节点所在级别
-    string address = 2; // 节点地址
+    repeated string addresses = 2; // 节点地址
 }
