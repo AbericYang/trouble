@@ -57,6 +57,10 @@ public class Constant {
     /** 节点竞选Token系数 */
     public static final double ELECTION_TOKEN = 0.1;
 
+    /** node节点对象本地序列化地址 */
+    public final static String NODE_FILE = "/Users/Aberic/Documents/tmp/trouble/node/node.bean";
+    // public final static String NODE_FILE = "/data/trouble/node/node.bean";
+
     public final static String BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH = "d11d842aca8ee9b82ea1634791f98e83";
     public final static String TOKEN_DEFAULT_PUBLIC_HASH = "ce8abde5e540cb13eefe28759e48317a15129265adc4db7ad4e1f84825c006b4";
     public final static String TOKEN_DEFAULT_SECOND_HASH = "673fe7084b22632c7b20d40ba4aa77a22b2f9361d61d7debde289cab81fe5ad5";

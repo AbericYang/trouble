@@ -168,8 +168,9 @@ public class EntityTest {
     }
 
     private static void createNodeProtobuf() throws InvalidProtocolBufferException {
+        createNode();
         NodeProto.Node.Builder builder = NodeProto.Node.newBuilder();
-        String format = new JSONObject(createNode()).toString();
+        String format = new JSONObject(Node.obtain()).toString();
         log.debug("format = {}", format);
         try {
             JsonFormat.parser().merge(format, builder);
@@ -182,13 +183,10 @@ public class EntityTest {
 
         NodeProto.Node node = NodeProto.Node.parseFrom(bytes);
         String jsonObject = JsonFormat.printer().print(node);
-        Node result = new Node();
         log.debug("jsonObject = {}", jsonObject);
         log.debug("Object = {}", JSON.parseObject(jsonObject, new TypeReference<Node>() {}).toJsonString());
-        result = result.proto2Bean(node);
-        log.debug("result1 = {}", result.toJsonString());
-        result = result.protoByteArray2Bean(bytes);
-        log.debug("result2 = {}", result.toJsonString());
+        log.debug("result1 = {}", Node.obtain().proto2Bean(node).toJsonString());
+        log.debug("result2 = {}", Node.obtain().protoByteArray2Bean(bytes).toJsonString());
     }
 
     public static byte[] getBlockBytes() {
@@ -373,7 +371,7 @@ public class EntityTest {
         return account;
     }
 
-    private static Node createNode() {
+    private static void createNode() {
         List<String> stringList = new ArrayList<>();
         stringList.add("a");
         stringList.add("b");
@@ -409,18 +407,17 @@ public class EntityTest {
         nodeElectionMap.put("k", nodeElection);
         nodeElectionMap.put("l", nodeElection);
 
-        Node node = new Node();
-        node.setAddressElectionMap(addressElectionMap);
-        node.setNodeAssistMap(nodeAssistMap);
-        node.setAddressElectionsMap(addressElectionsMap);
-        node.setAddressMap(addressMap);
-        node.setNodeBaseAssistMap(nodeBaseAssistMap);
-        node.setNodeElectionMap(nodeElectionMap);
+        log.debug("createNode = {}", Node.obtain().toJsonString());
 
-        return node;
+        Node.obtain().setAddressElectionMap(addressElectionMap);
+        Node.obtain().setNodeAssistMap(nodeAssistMap);
+        Node.obtain().setAddressElectionsMap(addressElectionsMap);
+        Node.obtain().setAddressMap(addressMap);
+        Node.obtain().setNodeBaseAssistMap(nodeBaseAssistMap);
+        Node.obtain().setNodeElectionMap(nodeElectionMap);
     }
 
-    public static  <M extends GeneratedMessageV3, N extends BeanProtoFormat> N trans(M m, Class<N> clazz) throws InvalidProtocolBufferException {
+    public static <M extends GeneratedMessageV3, N extends BeanProtoFormat> N trans(M m, Class<N> clazz) throws InvalidProtocolBufferException {
         String jsonObject = JsonFormat.printer().print(m);
         return new Gson().fromJson(jsonObject, clazz);
     }

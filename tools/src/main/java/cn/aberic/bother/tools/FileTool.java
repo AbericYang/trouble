@@ -29,6 +29,7 @@ import com.google.common.io.FileWriteMode;
 import com.google.common.io.Files;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.io.FileUtils;
 
 import java.io.*;
 import java.nio.charset.Charset;
@@ -47,6 +48,7 @@ public class FileTool {
      * 创建第一个隶属指定目录下的文件
      *
      * @param filePath 文件完整路径及文件名
+     *
      * @return 创建的文件
      */
     public static File createFirstFile(String filePath) throws IOException {
@@ -57,6 +59,69 @@ public class FileTool {
         // 创建新文件
         Preconditions.checkArgument(file.createNewFile(), "file can't be created");
         return file;
+    }
+
+    /**
+     * 创建File文件
+     *
+     * @param filePath file文件地址
+     */
+    public static void createFile(String filePath) {
+        File file = new File(filePath);
+        if (!file.exists()) {
+            try {
+                Files.createParentDirs(file);
+                file.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * 向File文件中写入内容
+     *
+     * @param file   File文件
+     * @param string 内容
+     */
+    public static void write(File file, String string) {
+        try {
+            Files.write(string.getBytes(Charset.forName("UTF-8")), file);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 向File文件中写入内容
+     *
+     * @param filePath File文件地址
+     * @param string   内容
+     */
+    public static void write(String filePath, String string) {
+        write(new File(filePath), string);
+    }
+
+    /**
+     * 获取File文件第一行字符串内容
+     *
+     * @param file File文件
+     *
+     * @return 字符串内容
+     */
+    public static String getStringFromFile(File file) throws IOException {
+        return FileUtils.readFileToString(file, Charset.forName("UTF-8"));
+    }
+
+    /**
+     * 获取File文件第一行字符串内容
+     *
+     * @param filePath File文件地址
+     *
+     * @return 字符串内容
+     */
+    public static String getStringFromPath(String filePath) throws IOException {
+        return getStringFromFile(new File(filePath));
     }
 
     /**
@@ -83,13 +148,14 @@ public class FileTool {
      * 获取文件中的总行数，适合单行内容较多较长的情况
      *
      * @param file 文件
+     *
      * @return 文件总行数
      */
     public static int getFileLineCount(File file) {
         long time = System.currentTimeMillis();
         int lines = 0;
         long fileLength = file.length();
-        try (LineNumberReader lineNumberReader = new LineNumberReader(new FileReader(file));){
+        try (LineNumberReader lineNumberReader = new LineNumberReader(new FileReader(file))) {
             lineNumberReader.skip(fileLength);
             lines = lineNumberReader.getLineNumber() + 1;
         } catch (IOException e) {
@@ -103,6 +169,7 @@ public class FileTool {
      * 获取文件MD5的值
      *
      * @param file 文件
+     *
      * @return MD5值
      */
     public static String getMD5(File file) {

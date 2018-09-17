@@ -27,6 +27,10 @@ package cn.aberic.bother.entity.node;
 import cn.aberic.bother.entity.BeanProtoFormat;
 import cn.aberic.bother.entity.MapListString;
 import cn.aberic.bother.entity.proto.node.NodeProto;
+import cn.aberic.bother.tools.Constant;
+import cn.aberic.bother.tools.FileTool;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
 import com.google.gson.Gson;
 import com.google.protobuf.GeneratedMessageV3;
 import com.google.protobuf.InvalidProtocolBufferException;
@@ -34,7 +38,10 @@ import com.google.protobuf.util.JsonFormat;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 
+import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -59,6 +66,8 @@ import java.util.Map;
 @Getter
 public class Node extends NodeBase implements BeanProtoFormat {
 
+    private static Node instance;
+
     /** 当前Hash访问的竞选中节点 */
     private Map<String, String> addressElectionMap;
     /**
@@ -78,6 +87,42 @@ public class Node extends NodeBase implements BeanProtoFormat {
     /** 当前Hash节点竞选对象 */
     private Map<String, NodeElection> nodeElectionMap;
 
+    public static Node obtain() {
+        if (null == instance) {
+            synchronized (Node.class) {
+                if (null == instance) {
+                    instance = getNode();
+                }
+            }
+        }
+        return instance;
+    }
+
+    private static Node getNode() {
+        Node node;
+        String nodeJsonString = null;
+        try {
+            nodeJsonString = FileTool.getStringFromPath(Constant.NODE_FILE);
+        } catch (IOException e) {
+            FileTool.createFile(Constant.NODE_FILE);
+        }
+        if (StringUtils.isEmpty(nodeJsonString)) {
+            node = new Node();
+        } else {
+            node = JSON.parseObject(nodeJsonString, new TypeReference<Node>() {});
+        }
+        return node;
+    }
+
+    private Node() {
+        addressElectionMap = new HashMap<>();
+        nodeBaseAssistMap = new HashMap<>();
+        addressElectionsMap = new HashMap<>();
+        addressMap = new HashMap<>();
+        nodeAssistMap = new HashMap<>();
+        nodeElectionMap = new HashMap<>();
+    }
+
     @Override
     public byte[] bean2ProtoByteArray() {
         NodeProto.Node.Builder builder = NodeProto.Node.newBuilder();
@@ -94,13 +139,14 @@ public class Node extends NodeBase implements BeanProtoFormat {
     @Override
     public <M extends GeneratedMessageV3> Node proto2Bean(M m) throws InvalidProtocolBufferException {
         String jsonObject = JsonFormat.printer().print(m);
-        return new Gson().fromJson(jsonObject, Node.class);
+        instance = new Gson().fromJson(jsonObject, Node.class);
+        FileTool.write(Constant.NODE_FILE, JSON.toJSONString(instance));
+        return this;
     }
 
     @Override
     public Node protoByteArray2Bean(byte[] bytes) throws InvalidProtocolBufferException {
-        String jsonObject = JsonFormat.printer().print(NodeProto.Node.parseFrom(bytes));
-        return new Gson().fromJson(jsonObject, Node.class);
+        return proto2Bean(NodeProto.Node.parseFrom(bytes));
     }
 
 }
