@@ -25,9 +25,6 @@
 package cn.aberic.bother.io.message;
 
 import cn.aberic.bother.entity.block.Block;
-import cn.aberic.bother.entity.consensus.ConnectSelf;
-import cn.aberic.bother.entity.consensus.GroupInfo;
-import cn.aberic.bother.entity.enums.ConnectStatus;
 import cn.aberic.bother.entity.io.MessageData;
 import com.google.protobuf.InvalidProtocolBufferException;
 import io.netty.channel.Channel;
