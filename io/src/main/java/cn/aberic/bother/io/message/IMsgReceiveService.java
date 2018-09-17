@@ -52,12 +52,7 @@ interface IMsgReceiveService extends IMsgJoinService, IMsgElectionService {
         log().debug("请求协议：{}，数据ID：{}", msgData.getProtocol().getB(), msgData.getDataId());
         switch (msgData.getProtocol()) {
             case HEART: // 心跳协议-0x00
-                log().debug("接收心跳协议，如果自己是Leader节点的话，要求对方保持心跳");
-                for (GroupInfo info : ConnectSelf.obtain().getGroups()) {
-                    if (info.getStatus() == ConnectStatus.LEADER && info.getAddresses().contains(address)) {
-                        pushKeepHeartBeat(channel);
-                    }
-                }
+                log().debug("接收心跳协议，什么也不做");
                 break;
             case JOIN: // 加入新节点协议，follow节点收到新节点加入通知后，发送此协议告知leader节点有新节点加入请求，leader节点直接处理该协议-0x01
             case JOIN_ACCEPT: // 告知新的接入地址可加入协议-0x05

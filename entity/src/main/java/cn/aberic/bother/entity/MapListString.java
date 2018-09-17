@@ -40,4 +40,24 @@ public class MapListString {
 
     List<String> stringList;
 
+    /** 新增节点 */
+    public void add(String string) {
+        stringList.add(string);
+    }
+
+    /** 获取下标节点 */
+    public String get(int index) {
+        return stringList.get(index);
+    }
+
+    /** 移除下标节点 */
+    public void remove(int index) {
+        stringList.remove(index);
+    }
+
+    /** 移除节点对象 */
+    public void remove(String string) {
+        stringList.remove(string);
+    }
+
 }
