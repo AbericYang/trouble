@@ -24,10 +24,18 @@
 
 package cn.aberic.bother.entity.node;
 
+import cn.aberic.bother.entity.BeanProtoFormat;
+import cn.aberic.bother.entity.MapListString;
+import cn.aberic.bother.entity.proto.node.NodeProto;
+import com.google.gson.Gson;
+import com.google.protobuf.GeneratedMessageV3;
+import com.google.protobuf.InvalidProtocolBufferException;
+import com.google.protobuf.util.JsonFormat;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
-import java.util.List;
+import java.util.Map;
 
 /**
  * 节点对象<p>
@@ -46,27 +54,53 @@ import java.util.List;
  * <p>
  * 邮箱：abericyang@gmail.com
  */
+@Slf4j
 @Setter
 @Getter
-public class Node extends NodeBase {
+public class Node extends NodeBase implements BeanProtoFormat {
 
-    /** 当前访问的竞选中节点 */
-    private String addressElection;
+    /** 当前Hash访问的竞选中节点 */
+    private Map<String, String> addressElectionMap;
     /**
-     * 当前访问的竞选节点指定协助节点<p>
+     * 当前Hash访问的竞选节点指定协助节点<p>
      * 协助节点将辅助竞选节点管理竞选节点下的子节点<p>
      * 即用于处理除了竞选工作以外的所有事务<p>
      * 如：内部排序、节点加减管理等
      */
-    private NodeBase nodeBaseAssist;
-    /** 当前竞选中节点集合 <= 50 */
-    private List<String> addressElections;
-    /** 当前已知备用节点集合/随机节点数 <= 100 */
-    private List<String> addresses;
+    private Map<String, NodeBase> nodeBaseAssistMap;
+    /** 当前Hash竞选中节点集合 <= 50 */
+    private Map<String, MapListString> addressElectionsMap;
+    /** 当前Hash已知备用节点集合/随机节点数 <= 100 */
+    private Map<String, MapListString> addressMap;
 
-    /** 当前协助节点对象 */
-    private NodeAssist nodeAssist;
-    /** 当前节点竞选对象 */
-    private NodeElection nodeElection;
+    /** 当前Hash协助节点对象 */
+    private Map<String, NodeAssist> nodeAssistMap;
+    /** 当前Hash节点竞选对象 */
+    private Map<String, NodeElection> nodeElectionMap;
+
+    @Override
+    public byte[] bean2ProtoByteArray() {
+        NodeProto.Node.Builder builder = NodeProto.Node.newBuilder();
+        String jsonFormat = this.toJsonString();
+        log.debug("jsonFormat = {}", jsonFormat);
+        try {
+            JsonFormat.parser().merge(jsonFormat, builder);
+        } catch (InvalidProtocolBufferException e) {
+            e.printStackTrace();
+        }
+        return builder.build().toByteArray();
+    }
+
+    @Override
+    public <M extends GeneratedMessageV3> Node proto2Bean(M m) throws InvalidProtocolBufferException {
+        String jsonObject = JsonFormat.printer().print(m);
+        return new Gson().fromJson(jsonObject, Node.class);
+    }
+
+    @Override
+    public Node protoByteArray2Bean(byte[] bytes) throws InvalidProtocolBufferException {
+        String jsonObject = JsonFormat.printer().print(NodeProto.Node.parseFrom(bytes));
+        return new Gson().fromJson(jsonObject, Node.class);
+    }
 
 }

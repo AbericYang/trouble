@@ -24,8 +24,15 @@
 
 package cn.aberic.bother.entity.node;
 
+import cn.aberic.bother.entity.BeanProtoFormat;
+import cn.aberic.bother.entity.proto.node.NodeAssistProto;
+import com.google.gson.Gson;
+import com.google.protobuf.GeneratedMessageV3;
+import com.google.protobuf.InvalidProtocolBufferException;
+import com.google.protobuf.util.JsonFormat;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.Comparator;
 import java.util.List;
@@ -37,9 +44,10 @@ import java.util.List;
  * <p>
  * 邮箱：abericyang@gmail.com
  */
+@Slf4j
 @Setter
 @Getter
-public class NodeAssist {
+public class NodeAssist implements BeanProtoFormat {
 
     /** 当前竞选节点下的节点集合 */
     private List<NodeBase> nodeBases;
@@ -67,6 +75,31 @@ public class NodeAssist {
     /** 节点排序 */
     public void sort(Comparator<NodeBase> c) {
         nodeBases.sort(c);
+    }
+
+    @Override
+    public byte[] bean2ProtoByteArray() {
+        NodeAssistProto.NodeAssist.Builder builder = NodeAssistProto.NodeAssist.newBuilder();
+        String jsonFormat = this.toJsonString();
+        log.debug("jsonFormat = {}", jsonFormat);
+        try {
+            JsonFormat.parser().merge(jsonFormat, builder);
+        } catch (InvalidProtocolBufferException e) {
+            e.printStackTrace();
+        }
+        return builder.build().toByteArray();
+    }
+
+    @Override
+    public <M extends GeneratedMessageV3> NodeAssist proto2Bean(M m) throws InvalidProtocolBufferException {
+        String jsonObject = JsonFormat.printer().print(m);
+        return new Gson().fromJson(jsonObject, NodeAssist.class);
+    }
+
+    @Override
+    public NodeAssist protoByteArray2Bean(byte[] bytes) throws InvalidProtocolBufferException {
+        String jsonObject = JsonFormat.printer().print(NodeAssistProto.NodeAssist.parseFrom(bytes));
+        return new Gson().fromJson(jsonObject, NodeAssist.class);
     }
 
 }

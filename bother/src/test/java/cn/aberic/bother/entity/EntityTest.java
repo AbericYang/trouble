@@ -30,12 +30,17 @@ import cn.aberic.bother.entity.consensus.*;
 import cn.aberic.bother.entity.contract.Account;
 import cn.aberic.bother.entity.enums.JoinLevel;
 import cn.aberic.bother.entity.enums.TransactionStatus;
+import cn.aberic.bother.entity.node.Node;
+import cn.aberic.bother.entity.node.NodeAssist;
+import cn.aberic.bother.entity.node.NodeBase;
+import cn.aberic.bother.entity.node.NodeElection;
 import cn.aberic.bother.entity.proto.ProtoDemo;
 import cn.aberic.bother.entity.proto.block.BlockHeaderProto;
 import cn.aberic.bother.entity.proto.block.BlockProto;
 import cn.aberic.bother.entity.proto.consensus.ConnectSelfProto;
 import cn.aberic.bother.entity.proto.consensus.JoinFeedbackProto;
 import cn.aberic.bother.entity.proto.consensus.VoteResultProto;
+import cn.aberic.bother.entity.proto.node.NodeProto;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import com.google.gson.Gson;
@@ -46,9 +51,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 /**
  * 作者：Aberic on 2018/9/11 22:26
@@ -62,7 +65,8 @@ public class EntityTest {
         // createBlockProtobuf();
         // createConnectSelfProtobuf();
         // createJoinFeedbackProtobuf();
-        createVoteResultProtobuf();
+        // createVoteResultProtobuf();
+        createNodeProtobuf();
     }
 
     private static void createBlockProtobuf() {
@@ -160,6 +164,30 @@ public class EntityTest {
         log.debug("jsonObject = {}", jsonObject);
         log.debug("Object = {}", JSON.parseObject(jsonObject, new TypeReference<VoteResult>() {}).toJsonString());
         log.debug("result1 = {}", result.toJsonString());
+        log.debug("result2 = {}", result.toJsonString());
+    }
+
+    private static void createNodeProtobuf() throws InvalidProtocolBufferException {
+        NodeProto.Node.Builder builder = NodeProto.Node.newBuilder();
+        String format = new JSONObject(createNode()).toString();
+        log.debug("format = {}", format);
+        try {
+            JsonFormat.parser().merge(format, builder);
+        } catch (InvalidProtocolBufferException e) {
+            e.printStackTrace();
+        }
+        log.debug("==============================================");
+        byte[] bytes = builder.build().toByteArray();
+        log.debug("toByteArray = {}", bytes);
+
+        NodeProto.Node node = NodeProto.Node.parseFrom(bytes);
+        String jsonObject = JsonFormat.printer().print(node);
+        Node result = new Node();
+        log.debug("jsonObject = {}", jsonObject);
+        log.debug("Object = {}", JSON.parseObject(jsonObject, new TypeReference<Node>() {}).toJsonString());
+        result = result.proto2Bean(node);
+        log.debug("result1 = {}", result.toJsonString());
+        result = result.protoByteArray2Bean(bytes);
         log.debug("result2 = {}", result.toJsonString());
     }
 
@@ -343,6 +371,53 @@ public class EntityTest {
         account.setAddress("knmlkmldkkflkfskdsknmlkmldkkflkfskdsknmlkmldkkflkfskdsknmlkmldkkflkfskdsknmlkmldkkflkfskdsknmlkmldkkflkfskdsknmlkmldkkflkfskdsknmlkmldkkflkfskdsknmlkmldkkflkfskdsknmlkmldkkflkfskdsknmlkmldkkflkfskdsknmlkmldkkflkfskdsknmlkmldkkflkfskdsknmlkmldkkflkfskdsknmlkmldkkflkfskdsknmlkmldkkflkfskdsknmlkmldkkflkfskdsknmlkmldkkflkfskdsknmlkmldkkflkfskdsknmlkmldkkflkfskdsknmlkmldkkflkfskdsknmlkmldkkflkfskdsknmlkmldkkflkfskdsknmlkmldkkflkfskdsknmlkmldkkflkfskds");
         account.setPubECCKey("cnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjw");
         return account;
+    }
+
+    private static Node createNode() {
+        List<String> stringList = new ArrayList<>();
+        stringList.add("a");
+        stringList.add("b");
+        stringList.add("c");
+        NodeBase nodeBase = new NodeBase();
+        List<NodeBase> nodeBases = new ArrayList<>();
+        nodeBases.add(nodeBase);
+        nodeBases.add(nodeBase);
+        NodeAssist nodeAssist = new NodeAssist();
+        nodeAssist.setNodeBases(nodeBases);
+        NodeElection nodeElection = new NodeElection();
+        nodeElection.setAddresses(stringList);
+        nodeElection.setNodeBases(nodeBases);
+        MapListString mapListString = new MapListString();
+        mapListString.setStringList(stringList);
+
+        Map<String, String> addressElectionMap = new HashMap<>();
+        addressElectionMap.put("a", "1");
+        addressElectionMap.put("b", "2");
+        Map<String, NodeBase> nodeBaseAssistMap = new HashMap<>();
+        nodeBaseAssistMap.put("c", new NodeBase());
+        nodeBaseAssistMap.put("d", new NodeBase());
+        Map<String, MapListString> addressElectionsMap = new HashMap<>();
+        addressElectionsMap.put("e", mapListString);
+        addressElectionsMap.put("f", mapListString);
+        Map<String, MapListString> addressMap = new HashMap<>();
+        addressMap.put("g", mapListString);
+        addressMap.put("h", mapListString);
+        Map<String, NodeAssist> nodeAssistMap = new HashMap<>();
+        nodeAssistMap.put("i", nodeAssist);
+        nodeAssistMap.put("j", nodeAssist);
+        Map<String, NodeElection> nodeElectionMap = new HashMap<>();
+        nodeElectionMap.put("k", nodeElection);
+        nodeElectionMap.put("l", nodeElection);
+
+        Node node = new Node();
+        node.setAddressElectionMap(addressElectionMap);
+        node.setNodeAssistMap(nodeAssistMap);
+        node.setAddressElectionsMap(addressElectionsMap);
+        node.setAddressMap(addressMap);
+        node.setNodeBaseAssistMap(nodeBaseAssistMap);
+        node.setNodeElectionMap(nodeElectionMap);
+
+        return node;
     }
 
     public static  <M extends GeneratedMessageV3, N extends BeanProtoFormat> N trans(M m, Class<N> clazz) throws InvalidProtocolBufferException {

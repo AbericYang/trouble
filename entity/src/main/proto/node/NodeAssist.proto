@@ -1,0 +1,12 @@
+syntax = "proto3";
+//生成文件所在包名
+option java_package = "cn.aberic.bother.entity.proto.node";
+//生成的java文件名
+option java_outer_classname = "NodeAssistProto";
+
+import "node/NodeBase.proto";
+
+// 当前协助节点对象
+message NodeAssist {
+    repeated NodeBase nodeBases = 1; // 当前竞选节点下的节点集合 <= 50
+}

@@ -1,0 +1,15 @@
+syntax = "proto3";
+//生成文件所在包名
+option java_package = "cn.aberic.bother.entity.proto.node";
+//生成的java文件名
+option java_outer_classname = "NodeBaseProto";
+
+// 节点基类对象
+message NodeBase {
+    int64 timestamp = 1; // 创建时间戳/节点ID
+    string address = 2; // 节点地址
+    string accountAddress = 3; // 节点绑定账户地址
+    int32 cpu = 4; // CPU个数
+    int64 totalMemory = 5; // 总内存
+    repeated string hashes = 6; // 节点执行合约的Hash列表
+}
