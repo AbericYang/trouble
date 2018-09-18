@@ -243,9 +243,6 @@ public class EntityTest {
         Map<String, NodeBase> nodeBaseAssistMap = new HashMap<>();
         nodeBaseAssistMap.put("c", new NodeBase());
         nodeBaseAssistMap.put("d", new NodeBase());
-        Map<String, MapListString> addressElectionsMap = new HashMap<>();
-        addressElectionsMap.put("e", mapListString);
-        addressElectionsMap.put("f", mapListString);
         Map<String, MapListString> addressMap = new HashMap<>();
         addressMap.put("g", mapListString);
         addressMap.put("h", mapListString);
@@ -261,7 +258,6 @@ public class EntityTest {
         Node.obtain().setNodeBase(nodeBase);
         Node.obtain().setAddressElectionMap(addressElectionMap);
         Node.obtain().setNodeAssistMap(nodeAssistMap);
-        Node.obtain().setAddressElectionsMap(addressElectionsMap);
         Node.obtain().setAddressMap(addressMap);
         Node.obtain().setNodeBaseAssistMap(nodeBaseAssistMap);
         Node.obtain().setNodeElectionMap(nodeElectionMap);

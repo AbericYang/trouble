@@ -70,13 +70,4 @@ interface IMsgRequestService extends IMsgRequestSendService, IMsgRequestPushServ
         push(channel, ProtocolStatus.KEEP);
     }
 
-    /**
-     * 在当前channel下发送关闭远程连接及心跳允许协议包
-     *
-     * @param channel 当前通道
-     */
-    default void pushClose(Channel channel) {
-        push(channel, ProtocolStatus.CLOSE);
-    }
-
 }

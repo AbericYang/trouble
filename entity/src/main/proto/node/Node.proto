@@ -14,8 +14,7 @@ message Node {
     NodeBase nodeBase = 1; // 当前节点的基本信息
     map<string, string> addressElectionMap = 2; // 当前Hash访问的竞选中节点
     map<string, NodeBase> nodeBaseAssistMap = 3; // 当前Hash访问的竞选节点指定协助节点，协助节点将辅助竞选节点管理竞选节点下的子节点，即用于处理除了竞选工作以外的所有事务，如：内部排序、节点加减管理等
-    map<string, MapListString> addressElectionsMap = 4; // 当前Hash竞选中节点集合 <= 50
-    map<string, MapListString> addressMap = 5; // 当前Hash已知备用节点集合/随机节点数 <= 100
-    map<string, NodeAssist> nodeAssistMap = 6; // 当前Hash协助节点对象
-    map<string, NodeElection> nodeElectionMap = 7; // 当前Hash节点竞选对象
+    map<string, MapListString> addressMap = 4; // 当前Hash已知备用节点集合/随机节点数 <= 100
+    map<string, NodeAssist> nodeAssistMap = 5; // 当前Hash协助节点对象
+    map<string, NodeElection> nodeElectionMap = 6; // 当前Hash节点竞选对象
 }

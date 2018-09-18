@@ -61,6 +61,7 @@ public class NodeElection implements BeanProtoFormat {
      * 当前Hash合约选举节点基本信息集合添加新节点
      *
      * @param nodeBase 节点基本信息
+     *
      * @return 成功与否
      */
     public boolean add(NodeBase nodeBase) {
@@ -93,6 +94,15 @@ public class NodeElection implements BeanProtoFormat {
         //使用迭代器的remove()方法删除元素
         nodeBases.removeIf(nodeBase -> StringUtils.equals(nodeBase.getAddress(), address));
         addresses.remove(address);
+    }
+
+    /**
+     * 判断当前Hash合约下竞选节点总数量是否充足
+     *
+     * @return 与否
+     */
+    public boolean full() {
+        return nodeBases.size() >= Constant.NODE_ELECTION_COUNT;
     }
 
     @Override

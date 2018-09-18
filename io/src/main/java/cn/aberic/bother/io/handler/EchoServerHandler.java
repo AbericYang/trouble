@@ -24,6 +24,7 @@
 
 package cn.aberic.bother.io.handler;
 
+import cn.aberic.bother.entity.enums.ProtocolStatus;
 import cn.aberic.bother.entity.io.MessageData;
 import cn.aberic.bother.entity.io.Remote;
 import cn.aberic.bother.io.IOContext;
@@ -65,7 +66,8 @@ public class EchoServerHandler extends ChannelInboundHandlerAdapter implements I
 
     @Override
     public void shutdown() {
-        pushClose(channel);
+        push(channel, ProtocolStatus.CLOSE);
+        channel.close();
     }
 
     @Override

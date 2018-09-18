@@ -74,7 +74,7 @@ public interface IMsgJoinService extends IMsgRequestService {
                         joinExec(channel, joinsContractHash, nodeBaseJoin);
                     } else {
                         log().debug("自身无此Hash合约，关闭远程连接及心跳允许");
-                        pushClose(channel);
+                        shutdown();
                     }
                 });
                 break;
@@ -123,7 +123,7 @@ public interface IMsgJoinService extends IMsgRequestService {
                     break;
                 }
                 Node.obtain().putAddressElectionMap(contractHash, nodeAssist.getAddressElectionMap().get(contractHash));
-                Node.obtain().putAddressElectionsMap(contractHash, nodeAssist.getAddressElectionsMap().get(contractHash));
+                // Node.obtain().putAddressElectionsMap(contractHash, nodeAssist.getAddressElectionsMap().get(contractHash));
                 Node.obtain().putAddressMap(contractHash, nodeAssist.getAddressMap().get(contractHash));
                 break;
         }
@@ -132,18 +132,18 @@ public interface IMsgJoinService extends IMsgRequestService {
     default void joinExec(Channel channel, String contractHash, NodeBase nodeBaseJoin) {
         // 判断自身在当前Hash合约中的身份
         if (Node.obtain().isElectionNode(contractHash)) { // 表示自身为当前Hash合约的竞选节点之一
-            // 检查当前竞选节点集合是否满足Constant.ELECTION_COUNT数量，如果不满足，则将该节点当做竞选节点之一
-            if (Node.obtain().getAddressElectionsMap().size() < Constant.NODE_ELECTION_COUNT) {
-                Node.obtain().getNodeElectionMap().get(contractHash).add(nodeBaseJoin);
-                // 当前Hash合约竞选节点集合内部广播新节点加入
-                Node.obtain().getAddressElectionsMap().get(contractHash).getStringList().forEach(
-                        address -> send(address, ProtocolStatus.JOIN_NEW_ELECTION, new NodeHash(contractHash, nodeBaseJoin)));
-                // 将自身在当前竞选节点集合中的信息push给当前加入节点
-                push(channel, ProtocolStatus.JOIN_AS_ELECTION, Node.obtain().getNodeElectionMap().get(contractHash));
-            } else { // 如果满足Constant.ELECTION_COUNT数量，将自己的协助节点发回
+            // 检查当前竞选节点集合是否满足Constant.ELECTION_COUNT数量
+            if (Node.obtain().getNodeElectionMap().get(contractHash).full()) { // 如果满足Constant.ELECTION_COUNT数量，将自己的协助节点发回
                 NodeBase nodeBaseAssist = Node.obtain().getNodeBaseAssistMap().get(contractHash);
                 NodeHash nodeHash = new NodeHash(contractHash, nodeBaseAssist);
                 push(channel, ProtocolStatus.JOIN_TO_ASSIST, nodeHash);
+            } else { // 如果不满足，则将该节点当做竞选节点之一
+                Node.obtain().add(contractHash, nodeBaseJoin);
+                // 当前Hash合约竞选节点集合内部广播新节点加入
+                Node.obtain().getNodeElectionMap().get(contractHash).getNodeBases().forEach(
+                        nodeBase -> send(nodeBase.getAddress(), ProtocolStatus.JOIN_NEW_ELECTION, new NodeHash(contractHash, nodeBaseJoin)));
+                // 将自身在当前竞选节点集合中的信息push给当前加入节点
+                push(channel, ProtocolStatus.JOIN_AS_ELECTION, Node.obtain().getNodeElectionMap().get(contractHash));
             }
         } else if (Node.obtain().isAssistNode(contractHash)) { // 表示自身为当前Hash合约的协助节点之一
             // 将自己当前竞选中的节点集合以及备用节点集合发回
@@ -152,7 +152,7 @@ public interface IMsgJoinService extends IMsgRequestService {
             node.setNodeBase(null);
             // 使用迭代器的remove()方法删除元素
             node.getAddressElectionMap().entrySet().removeIf(stringStringEntry -> !StringUtils.equals(stringStringEntry.getKey(), contractHash));
-            node.getAddressElectionsMap().entrySet().removeIf(stringStringEntry -> !StringUtils.equals(stringStringEntry.getKey(), contractHash));
+            // node.getAddressElectionsMap().entrySet().removeIf(stringStringEntry -> !StringUtils.equals(stringStringEntry.getKey(), contractHash));
             node.getAddressMap().entrySet().removeIf(stringStringEntry -> !StringUtils.equals(stringStringEntry.getKey(), contractHash));
             push(channel, ProtocolStatus.JOIN_FOLLOW_ME, node);
         } else if (Node.obtain().hasNode(contractHash)) { // 表示自身为当前Hash合约的普通节点
@@ -160,7 +160,7 @@ public interface IMsgJoinService extends IMsgRequestService {
             push(channel, ProtocolStatus.JOIN_ASK_ELECTION, Node.obtain().getAddressElectionMap().get(contractHash));
         } else {
             log().debug("怪事，关闭远程连接及心跳允许");
-            pushClose(channel);
+            shutdown();
         }
     }
 

@@ -80,8 +80,6 @@ public class Node implements BeanProtoFormat {
      * 如：内部排序、节点加减管理等
      */
     private Map<String, NodeBase> nodeBaseAssistMap;
-    /** 当前合约Hash竞选中节点集合 <= 50 */
-    private Map<String, MapListString> addressElectionsMap;
     /** 当前合约Hash已知备用节点集合/随机节点数 <= 100 */
     private Map<String, MapListString> addressMap;
 
@@ -109,21 +107,6 @@ public class Node implements BeanProtoFormat {
      */
     public void putAddressElectionMap(String contractHash, String address) {
         addressElectionMap.put(contractHash, address);
-        FileTool.write(Constant.NODE_FILE, JSON.toJSONString(instance));
-    }
-
-    /**
-     * 新增当前合约Hash竞选中节点集合
-     *
-     * @param contractHash  合约Hash
-     * @param mapListString 竞选中节点集合
-     */
-    public void putAddressElectionsMap(String contractHash, MapListString mapListString) {
-        MapListString mapListStringTmp = addressElectionsMap.get(contractHash);
-        mapListStringTmp.getStringList().addAll(mapListString.getStringList());
-        if (mapListStringTmp.getStringList().size() > Constant.NODE_ELECTION_COUNT) {
-            mapListStringTmp.setStringList(mapListStringTmp.getStringList().subList(mapListStringTmp.getStringList().size() - (Constant.NODE_BACK_COUNT + 1), mapListStringTmp.getStringList().size() - 1));
-        }
         FileTool.write(Constant.NODE_FILE, JSON.toJSONString(instance));
     }
 
@@ -189,7 +172,6 @@ public class Node implements BeanProtoFormat {
         nodeBase = new NodeBase();
         addressElectionMap = new HashMap<>();
         nodeBaseAssistMap = new HashMap<>();
-        addressElectionsMap = new HashMap<>();
         addressMap = new HashMap<>();
         nodeAssistMap = new HashMap<>();
         nodeElectionMap = new HashMap<>();
@@ -250,8 +232,7 @@ public class Node implements BeanProtoFormat {
      * @return 成功与否
      */
     public boolean add(String contractHash, NodeBase nodeBase) {
-        if (addressElectionsMap.get(contractHash).getStringList().size() < Constant.NODE_ELECTION_COUNT) {
-            addressElectionsMap.get(contractHash).getStringList().add(nodeBase.getAddress());
+        if (!nodeElectionMap.get(contractHash).full()) {
             if (addressMap.get(contractHash).getStringList().contains(nodeBase.getAddress())) {
                 return saveForNewElection(contractHash, nodeBase);
             }
