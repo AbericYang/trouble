@@ -41,6 +41,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -49,8 +50,8 @@ import java.util.Map;
  * 新节点A加入后，会将自己的节点基本信息{@link NodeBase}发送至某一已知节点M<p>
  * 如果M本身即为当前竞选节点之一，有如下两种情况
  * ①检查当前竞选节点集合是否满足{@link cn.aberic.bother.tools.Constant}ELECTION_COUNT数量，如果不满足，则将该节点当做竞选节点之一。如果满足，则进入第二种情况<p>
- * ②将自己的协助节点、当前竞选中的节点集合以及备用节点集合发回给A<p>
- * 如果M本身即为当前竞选节点都协助节点，则直接将A加入到当前竞选节点序列之下，告知A保持心跳并返回当前竞选节点，并允许A参与下一轮排序<p>
+ * ②将自己的协助节点发回给A<p>
+ * 如果M本身即为当前竞选节点的协助节点，则将自己当前竞选中的节点集合以及备用节点集合发回给A，并将A加入到当前竞选节点序列之下，告知A保持心跳并返回当前竞选节点，并允许A参与下一轮排序<p>
  * 如果M为普通节点，则M接收到A加入请求后，会将自己当前访问的竞选节点X发回给A<p>
  * A接收到当前可访问X后，会向X发送接入请求<p>
  * X收到A的接入请求后首先判断自己是否依旧是当前竞选节点之一，如果不是，则重复M的操作<p>
@@ -70,23 +71,23 @@ public class Node implements BeanProtoFormat {
 
     /** 当前节点的基本信息 */
     private NodeBase nodeBase;
-    /** 当前Hash访问的竞选中节点 */
+    /** 当前合约Hash访问的竞选中节点 */
     private Map<String, String> addressElectionMap;
     /**
-     * 当前Hash访问的竞选节点指定协助节点<p>
+     * 当前合约Hash访问的竞选节点指定协助节点<p>
      * 协助节点将辅助竞选节点管理竞选节点下的子节点<p>
      * 即用于处理除了竞选工作以外的所有事务<p>
      * 如：内部排序、节点加减管理等
      */
     private Map<String, NodeBase> nodeBaseAssistMap;
-    /** 当前Hash竞选中节点集合 <= 50 */
+    /** 当前合约Hash竞选中节点集合 <= 50 */
     private Map<String, MapListString> addressElectionsMap;
-    /** 当前Hash已知备用节点集合/随机节点数 <= 100 */
+    /** 当前合约Hash已知备用节点集合/随机节点数 <= 100 */
     private Map<String, MapListString> addressMap;
 
-    /** 当前Hash协助节点对象 */
+    /** 当前合约Hash协助节点对象 */
     private Map<String, NodeAssist> nodeAssistMap;
-    /** 当前Hash节点竞选对象 */
+    /** 当前合约Hash节点竞选对象 */
     private Map<String, NodeElection> nodeElectionMap;
 
     public static Node obtain() {
@@ -98,6 +99,74 @@ public class Node implements BeanProtoFormat {
             }
         }
         return instance;
+    }
+
+    /**
+     * 新增当前合约Hash访问的竞选中节点
+     *
+     * @param contractHash 合约Hash
+     * @param address      竞选中节点
+     */
+    public void putAddressElectionMap(String contractHash, String address) {
+        addressElectionMap.put(contractHash, address);
+        FileTool.write(Constant.NODE_FILE, JSON.toJSONString(instance));
+    }
+
+    /**
+     * 新增当前合约Hash竞选中节点集合
+     *
+     * @param contractHash  合约Hash
+     * @param mapListString 竞选中节点集合
+     */
+    public void putAddressElectionsMap(String contractHash, MapListString mapListString) {
+        MapListString mapListStringTmp = addressElectionsMap.get(contractHash);
+        mapListStringTmp.getStringList().addAll(mapListString.getStringList());
+        if (mapListStringTmp.getStringList().size() > Constant.NODE_ELECTION_COUNT) {
+            mapListStringTmp.setStringList(mapListStringTmp.getStringList().subList(mapListStringTmp.getStringList().size() - (Constant.NODE_BACK_COUNT + 1), mapListStringTmp.getStringList().size() - 1));
+        }
+        FileTool.write(Constant.NODE_FILE, JSON.toJSONString(instance));
+    }
+
+    /**
+     * 新增当前合约Hash已知备用节点集合/随机节点数
+     *
+     * @param contractHash  合约Hash
+     * @param mapListString 备用节点集合
+     */
+    public void putAddressMap(String contractHash, MapListString mapListString) {
+        MapListString mapListStringTmp = addressMap.get(contractHash);
+        mapListStringTmp.getStringList().addAll(mapListString.getStringList());
+        if (mapListStringTmp.getStringList().size() > Constant.NODE_BACK_COUNT) {
+            mapListStringTmp.setStringList(mapListStringTmp.getStringList().subList(mapListStringTmp.getStringList().size() - (Constant.NODE_BACK_COUNT + 1), mapListStringTmp.getStringList().size() - 1));
+        }
+        FileTool.write(Constant.NODE_FILE, JSON.toJSONString(instance));
+    }
+
+    /**
+     * 当前节点被设定为当前合约Hash竞选中节点之一
+     *
+     * @param contractHash 当前合约Hash
+     * @param election     当前节点竞选对象
+     */
+    public void putNodeElection(String contractHash, NodeElection election) {
+        nodeElectionMap.put(contractHash, election);
+        MapListString mapListString = new MapListString();
+        mapListString.getStringList().addAll(election.getAddresses());
+        if (mapListString.getStringList().size() > Constant.NODE_BACK_COUNT) {
+            mapListString.setStringList(mapListString.getStringList().subList(mapListString.getStringList().size() - (Constant.NODE_BACK_COUNT + 1), mapListString.getStringList().size() - 1));
+        }
+        addressMap.put(contractHash, mapListString);
+        FileTool.write(Constant.NODE_FILE, JSON.toJSONString(instance));
+    }
+
+    /**
+     * 当前节点被移除当前合约Hash竞选中节点集合
+     *
+     * @param contractHash 合约Hash
+     */
+    public void removeNodeElection(String contractHash) {
+        nodeElectionMap.remove(contractHash);
+        FileTool.write(Constant.NODE_FILE, JSON.toJSONString(instance));
     }
 
     private static Node getNode() {
@@ -124,6 +193,12 @@ public class Node implements BeanProtoFormat {
         addressMap = new HashMap<>();
         nodeAssistMap = new HashMap<>();
         nodeElectionMap = new HashMap<>();
+        NodeElection election = new NodeElection();
+        election.setContractHash(Constant.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH);
+        election.setAddresses(new ArrayList<>());
+        election.setNodeBases(new ArrayList<NodeBase>() {{add(nodeBase);}});
+        nodeElectionMap.put(Constant.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH, election);
+        FileTool.write(Constant.NODE_FILE, JSON.toJSONString(instance));
     }
 
     /**
@@ -159,17 +234,34 @@ public class Node implements BeanProtoFormat {
      * @return 成功与否
      */
     public boolean add(String contractHash, NodeBase nodeBase) {
-        if (addressElectionsMap.get(contractHash).getStringList().size() < 50) {
+        if (addressElectionsMap.get(contractHash).getStringList().size() < Constant.NODE_ELECTION_COUNT) {
             addressElectionsMap.get(contractHash).getStringList().add(nodeBase.getAddress());
-            if (addressMap.get(contractHash).getStringList().size() < 100) {
+            if (addressMap.get(contractHash).getStringList().contains(nodeBase.getAddress())) {
+                return saveForNewElection(contractHash, nodeBase);
+            }
+            if (addressMap.get(contractHash).getStringList().size() < Constant.NODE_BACK_COUNT) {
                 addressMap.get(contractHash).getStringList().add(nodeBase.getAddress());
             } else {
                 addressMap.get(contractHash).getStringList().remove(0);
                 addressMap.get(contractHash).getStringList().add(nodeBase.getAddress());
             }
-            return nodeElectionMap.get(contractHash).add(nodeBase);
+            return saveForNewElection(contractHash, nodeBase);
         }
         return false;
+    }
+
+    private boolean saveForNewElection(String contractHash, NodeBase nodeBase) {
+        if (nodeElectionMap.get(contractHash).add(nodeBase)) {
+            FileTool.write(Constant.NODE_FILE, JSON.toJSONString(instance));
+            return true;
+        } else {
+            FileTool.write(Constant.NODE_FILE, JSON.toJSONString(instance));
+            return false;
+        }
+    }
+
+    public Node getFromBytes(byte[] bytes) throws InvalidProtocolBufferException {
+        return protoByteArray2Bean(bytes);
     }
 
     @Override

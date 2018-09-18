@@ -51,14 +51,16 @@ public class Constant {
     /** 开启下一轮Leader节点选举的时间间隔/ms */
     public static final long GROUP_ELECTION_TIME = 600000;
 
+    /** 节点备用数量100 */
+    public static final int NODE_BACK_COUNT = 100;
     /** 节点竞选集合总数 */
-    public static final int ELECTION_COUNT = 50;
+    public static final int NODE_ELECTION_COUNT = 50;
     /** 节点竞选CPU系数 */
-    public static final double ELECTION_CPU = 0.5;
+    public static final double NODE_ELECTION_CPU = 0.5;
     /** 节点竞选内存系数 */
-    public static final double ELECTION_MEMORY = 0.4;
+    public static final double NODE_ELECTION_MEMORY = 0.4;
     /** 节点竞选Token系数 */
-    public static final double ELECTION_TOKEN = 0.1;
+    public static final double NODE_ELECTION_TOKEN = 0.1;
 
     /** node节点对象本地序列化地址 */
     public final static String NODE_FILE = "/Users/Aberic/Documents/tmp/trouble/node/node.bean";

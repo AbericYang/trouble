@@ -60,6 +60,10 @@ public enum ProtocolStatus {
     JOIN_AS_ELECTION("告知新的接入节点准许加入，且为当前Hash合约的竞选节点", (byte) 0x07),
     /** 告知当前Hash合约的竞选节点有新的竞选节点加入-0x08 */
     JOIN_NEW_ELECTION("告知当前Hash合约的竞选节点有新的竞选节点加入", (byte) 0x08),
+    /** 告知新的接入节点当前Hash合约的竞选节点的协助节点-0x09 */
+    JOIN_TO_ASSIST("告知新的接入节点当前Hash合约的竞选节点的协助节点", (byte) 0x09),
+    /** 告知新的接入节点当前Hash合约的基本信息并要求跟随自己-0x10 */
+    JOIN_FOLLOW_ME("告知新的接入节点当前Hash合约的基本信息并要求跟随自己", (byte) 0x10),
     /** 发起选举协议-0x20 */
     ELECTION("发起选举协议", (byte) 0x20),
     /** 区块协议-0x51 */

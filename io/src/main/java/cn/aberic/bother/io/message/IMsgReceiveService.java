@@ -68,7 +68,7 @@ interface IMsgReceiveService extends IMsgJoinService, IMsgElectionService {
                 // 先检查自身是否在当前Hash合约竞选节点集合中
                 if (null != election) {
                     // 检查自身是否为当前Hash合约竞选节点集合中的Leader，且当前Hash合约竞选节点集合包含有该节点地址
-                    if (election.getNodeBases().get(0).getTimestamp() == Node.obtain().getNodeBase().getTimestamp() &&
+                    if (Node.obtain().isElectionNode(contractHash) &&
                             Node.obtain().getAddressElectionsMap().get(contractHash).getStringList().contains(address)) {
                         pushKeepHeartBeat(channel); // 是Leader节点，告知保持长连接
                     } else { // 自身为当前Hash合约竞选节点之一

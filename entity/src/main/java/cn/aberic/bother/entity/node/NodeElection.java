@@ -26,6 +26,7 @@ package cn.aberic.bother.entity.node;
 
 import cn.aberic.bother.entity.BeanProtoFormat;
 import cn.aberic.bother.entity.proto.node.NodeElectionProto;
+import cn.aberic.bother.tools.Constant;
 import com.google.gson.Gson;
 import com.google.protobuf.GeneratedMessageV3;
 import com.google.protobuf.InvalidProtocolBufferException;
@@ -63,14 +64,21 @@ public class NodeElection implements BeanProtoFormat {
      * @return 成功与否
      */
     public boolean add(NodeBase nodeBase) {
-        if (nodeBases.size() < 50) {
-            nodeBases.add(nodeBase);
-            if (addresses.size() < 100) {
+        if (!addresses.contains(nodeBase.getAddress())) {
+            if (addresses.size() < Constant.NODE_BACK_COUNT) {
                 addresses.add(nodeBase.getAddress());
             } else {
                 addresses.remove(0);
                 addresses.add(nodeBase.getAddress());
             }
+        }
+        for (NodeBase node : nodeBases) {
+            if (StringUtils.equals(node.getAddress(), nodeBase.getAddress())) {
+                return true;
+            }
+        }
+        if (nodeBases.size() < Constant.NODE_ELECTION_COUNT) {
+            nodeBases.add(nodeBase);
             return true;
         }
         return false;
