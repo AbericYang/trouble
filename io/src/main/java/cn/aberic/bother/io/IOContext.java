@@ -26,11 +26,11 @@
 package cn.aberic.bother.io;
 
 import cn.aberic.bother.entity.BeanProtoFormat;
-import cn.aberic.bother.entity.consensus.ConnectSelf;
-import cn.aberic.bother.entity.enums.JoinLevel;
 import cn.aberic.bother.entity.enums.ProtocolStatus;
 import cn.aberic.bother.entity.io.MessageData;
 import cn.aberic.bother.entity.io.Remote;
+import cn.aberic.bother.entity.node.Node;
+import cn.aberic.bother.entity.node.NodeBase;
 import cn.aberic.bother.io.exec.client.EchoClient;
 import cn.aberic.bother.io.exec.factory.*;
 import cn.aberic.bother.io.exec.server.EchoServer;
@@ -147,6 +147,18 @@ public class IOContext {
     }
 
     /**
+     * 作为客户端发起请求协议
+     *
+     * @param address 请求地址
+     * @param status  消息协议
+     * @param t       请求对象——继承BeanProtoFormat的对象
+     */
+    public <T extends BeanProtoFormat> void send(String address, ProtocolStatus status, T t) {
+        MessageData msgData = new MessageData(status, t.bean2ProtoByteArray());
+        send(address, msgData);
+    }
+
+    /**
      * 作为服务端推送消息协议
      *
      * @param address 推送地址
@@ -162,133 +174,130 @@ public class IOContext {
      * @param address 申请的服务端地址
      */
     public void join(String address) {
-        MessageData msgData = new MessageData(ProtocolStatus.JOIN, null);
-        Objects.requireNonNull(ioClientCache.getIfPresent(address)).send(msgData);
+        send(address, ProtocolStatus.JOIN, new NodeBase());
     }
 
     /**
      * 广播消息
-     * 根据当前Server所在组级别进行消息广播
+     * 根据当前Server所在智能合约Hash
      *
-     * @param msgData 消息体
-     * @param level   当前广播所在组级别
+     * @param contractHash 当前广播所在智能合约Hash
+     * @param msgData      消息体
      */
-    public void broadcast(MessageData msgData, JoinLevel level) {
-        ConnectSelf.obtain().getGroups().get(level.getLevel()).getAddresses().forEach(address -> {
-            Objects.requireNonNull(ioServerCache.getIfPresent(address)).push(msgData);
+    public void broadcast(String contractHash, MessageData msgData) {
+        Node.obtain().getNodeAssistMap().get(contractHash).getNodeBases().forEach(nodeBase -> {
+            Objects.requireNonNull(ioServerCache.getIfPresent(nodeBase.getAddress())).push(msgData);
         });
     }
 
     /**
      * 广播消息
-     * 根据当前Server所在组级别进行消息广播
+     * 根据当前Server所在智能合约Hash
      *
-     * @param status 消息协议
-     * @param t      请求对象——继承BeanProtoFormat的对象
-     * @param level  当前广播所在组级别
+     * @param contractHash 当前广播所在智能合约Hash
+     * @param status       消息协议
+     * @param t            请求对象——继承BeanProtoFormat的对象
      */
-    public <T extends BeanProtoFormat> void broadcast(ProtocolStatus status, T t, JoinLevel level) {
-        broadcast(new MessageData(status, t.bean2ProtoByteArray()), level);
+    public <T extends BeanProtoFormat> void broadcast(String contractHash, ProtocolStatus status, T t) {
+        broadcast(contractHash, new MessageData(status, t.bean2ProtoByteArray()));
     }
 
     /**
      * 广播空消息
-     * 根据当前Server所在组级别进行消息广播
+     * 根据当前Server所在智能合约Hash
      *
-     * @param status 消息协议
-     * @param level  当前广播所在组级别
+     * @param contractHash 当前广播所在智能合约Hash
+     * @param status       消息协议
      */
-    public void broadcast(ProtocolStatus status, JoinLevel level) {
-        broadcast(new MessageData(status, null), level);
+    public void broadcast(String contractHash, ProtocolStatus status) {
+        broadcast(contractHash, new MessageData(status, null));
     }
 
     /**
-     * 广播字符串消息
-     * 根据当前Server所在组级别进行消息广播
+     * 广播消息
+     * 根据当前Server所在智能合约Hash
      *
-     * @param status 消息协议
-     * @param string 字符串消息
-     * @param level  当前广播所在组级别
+     * @param contractHash 当前广播所在智能合约Hash
+     * @param status       消息协议
+     * @param string       字符串消息
      */
-    public void broadcast(ProtocolStatus status, String string, JoinLevel level) {
-        broadcast(new MessageData(status, MsgPackTool.string2Bytes(string)), level);
+    public void broadcast(String contractHash, ProtocolStatus status, String string) {
+        broadcast(contractHash, new MessageData(status, MsgPackTool.string2Bytes(string)));
     }
 
     /**
-     * 广播字符串集合消息
-     * 根据当前Server所在组级别进行消息广播
+     * 广播消息
+     * 根据当前Server所在智能合约Hash
      *
-     * @param status 消息协议
-     * @param stringList 字符串集合消息
-     * @param level  当前广播所在组级别
+     * @param contractHash 当前广播所在智能合约Hash
+     * @param status       消息协议
+     * @param stringList   字符串集合消息
      */
-    public void broadcast(ProtocolStatus status, List<String> stringList, JoinLevel level) {
-        broadcast(new MessageData(status, MsgPackTool.list2Bytes(stringList)), level);
+    public void broadcast(String contractHash, ProtocolStatus status, List<String> stringList) {
+        broadcast(contractHash, new MessageData(status, MsgPackTool.list2Bytes(stringList)));
     }
 
     /**
      * 全组同步消息
-     * 根据当前所在组级别进行消息同步
+     * 根据当前广播所在智能合约Hash进行消息同步
      *
-     * @param msgData 消息体
-     * @param level   当前同步所在组级别
+     * @param contractHash 当前广播所在智能合约Hash
+     * @param msgData      消息体
      */
-    public void sync(MessageData msgData, JoinLevel level) {
-        // 如果自身组级别大于当前组级别，则为组Leader节点，执行广播操作
-        if (ConnectSelf.obtain().getLevel() > level.getLevel()) {
-            broadcast(msgData, level);
-        } else { // 否则为Follow节点，执行发送操作
-            ConnectSelf.obtain().getGroups().get(level.getLevel()).getAddresses().forEach(address -> {
-                Objects.requireNonNull(ioClientCache.getIfPresent(address)).send(msgData);
-            });
+    public void sync(String contractHash, MessageData msgData) {
+        // 判断是否为辅助节点
+        if (Node.obtain().isAssistNode(contractHash)) {
+            broadcast(contractHash, msgData);
+        } else {
+            log.debug("无当前Hash合约竞选节点下的广播权限");
         }
     }
 
     /**
      * 全组同步消息
-     * 根据当前所在组级别进行消息同步
+     * 根据当前广播所在智能合约Hash进行消息同步
      *
-     * @param status 请求协议
-     * @param t      请求对象——继承BeanProtoFormat的对象
-     * @param level  当前广播所在组级别
+     * @param contractHash 当前广播所在智能合约Hash
+     * @param status       请求协议
+     * @param t            请求对象——继承BeanProtoFormat的对象
      */
-    public <T extends BeanProtoFormat> void sync(ProtocolStatus status, T t, JoinLevel level) {
-        sync(new MessageData(status, t.bean2ProtoByteArray()), level);
+    public <T extends BeanProtoFormat> void sync(String contractHash, ProtocolStatus status, T t) {
+        sync(contractHash, new MessageData(status, t.bean2ProtoByteArray()));
     }
 
     /**
      * 全组同步消息
-     * 根据当前所在组级别进行消息同步
+     * 根据当前广播所在智能合约Hash进行消息同步
      *
-     * @param status 消息协议
-     * @param level  当前同步所在组级别
+     * @param contractHash 当前广播所在智能合约Hash
+     * @param status       消息协议
      */
-    public void sync(ProtocolStatus status, JoinLevel level) {
-        sync(new MessageData(status, null), level);
+    public void sync(String contractHash, ProtocolStatus status) {
+        sync(contractHash, new MessageData(status, null));
     }
 
     /**
      * 全组同步消息
-     * 根据当前所在组级别进行消息同步
+     * 根据当前广播所在智能合约Hash进行消息同步
      *
-     * @param status 消息协议
-     * @param string 字符串消息
-     * @param level  当前同步所在组级别
+     * @param contractHash 当前广播所在智能合约Hash
+     * @param status       消息协议
+     * @param string       字符串消息
      */
-    public void sync(ProtocolStatus status, String string, JoinLevel level) {
-        sync(new MessageData(status, MsgPackTool.string2Bytes(string)), level);
+    public void sync(String contractHash, ProtocolStatus status, String string) {
+        sync(contractHash, new MessageData(status, MsgPackTool.string2Bytes(string)));
     }
 
     /**
      * 全组同步消息
-     * 根据当前所在组级别进行消息同步
+     * 根据当前广播所在智能合约Hash进行消息同步
      *
-     * @param status 消息协议
-     * @param stringList 字符串集合消息
-     * @param level  当前同步所在组级别
+     * @param contractHash 当前广播所在智能合约Hash
+     * @param status       消息协议
+     * @param stringList   字符串集合消息
      */
-    public void sync(ProtocolStatus status, List<String> stringList, JoinLevel level) {
-        sync(new MessageData(status, MsgPackTool.list2Bytes(stringList)), level);
+    public void sync(String contractHash, ProtocolStatus status, List<String> stringList) {
+        sync(contractHash, new MessageData(status, MsgPackTool.list2Bytes(stringList)));
     }
 
     /**

@@ -48,7 +48,7 @@ import java.util.Map;
  * 节点对象<p>
  * 新节点A加入后，会将自己的节点基本信息{@link NodeBase}发送至某一已知节点M<p>
  * 如果M本身即为当前竞选节点之一，有如下两种情况
- * ①检查当前竞选节点集合是否满足{@link cn.aberic.bother.tools.Constant}ELECTION_COUNT数量，如果不满足，则将该节点当做竞选节点之一，如果满足，则进入第二种情况<p>
+ * ①检查当前竞选节点集合是否满足{@link cn.aberic.bother.tools.Constant}ELECTION_COUNT数量，如果不满足，则将该节点当做竞选节点之一。如果满足，则进入第二种情况<p>
  * ②将自己的协助节点、当前竞选中的节点集合以及备用节点集合发回给A<p>
  * 如果M本身即为当前竞选节点都协助节点，则直接将A加入到当前竞选节点序列之下，告知A保持心跳并返回当前竞选节点，并允许A参与下一轮排序<p>
  * 如果M为普通节点，则M接收到A加入请求后，会将自己当前访问的竞选节点X发回给A<p>
@@ -64,10 +64,12 @@ import java.util.Map;
 @Slf4j
 @Setter
 @Getter
-public class Node extends NodeBase implements BeanProtoFormat {
+public class Node implements BeanProtoFormat {
 
     private static Node instance;
 
+    /** 当前节点的基本信息 */
+    private NodeBase nodeBase;
     /** 当前Hash访问的竞选中节点 */
     private Map<String, String> addressElectionMap;
     /**
@@ -115,12 +117,59 @@ public class Node extends NodeBase implements BeanProtoFormat {
     }
 
     private Node() {
+        nodeBase = new NodeBase();
         addressElectionMap = new HashMap<>();
         nodeBaseAssistMap = new HashMap<>();
         addressElectionsMap = new HashMap<>();
         addressMap = new HashMap<>();
         nodeAssistMap = new HashMap<>();
         nodeElectionMap = new HashMap<>();
+    }
+
+    /**
+     * 本节点是否为当前Hash合约竞选节点集合中的Leader
+     *
+     * @param contractHash 合约Hash
+     * @return 与否
+     */
+    public boolean isElectionNode(String contractHash) {
+        if (nodeElectionMap.size() > 0 && nodeElectionMap.containsKey(contractHash)) {
+            return nodeElectionMap.get(contractHash).getNodeBases().get(0).getTimestamp() == nodeBase.getTimestamp();
+        }
+        return false;
+    }
+
+    /**
+     * 本节点是否为当前Hash合约竞选节点之一的辅助节点
+     *
+     * @param contractHash 合约Hash
+     * @return 与否
+     */
+    public boolean isAssistNode(String contractHash) {
+        if (nodeBaseAssistMap.size() > 0 && nodeBaseAssistMap.containsKey(contractHash)) {
+            return nodeBaseAssistMap.get(contractHash).getTimestamp() == nodeBase.getTimestamp();
+        }
+        return false;
+    }
+
+    /**
+     * 当前Hash合约选举节点基本信息集合添加新节点
+     *
+     * @param nodeBase 节点基本信息
+     * @return 成功与否
+     */
+    public boolean add(String contractHash, NodeBase nodeBase) {
+        if (addressElectionsMap.get(contractHash).getStringList().size() < 50) {
+            addressElectionsMap.get(contractHash).getStringList().add(nodeBase.getAddress());
+            if (addressMap.get(contractHash).getStringList().size() < 100) {
+                addressMap.get(contractHash).getStringList().add(nodeBase.getAddress());
+            } else {
+                addressMap.get(contractHash).getStringList().remove(0);
+                addressMap.get(contractHash).getStringList().add(nodeBase.getAddress());
+            }
+            return nodeElectionMap.get(contractHash).add(nodeBase);
+        }
+        return false;
     }
 
     @Override

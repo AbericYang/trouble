@@ -24,16 +24,8 @@
 
 package cn.aberic.bother.io.message;
 
-import cn.aberic.bother.entity.consensus.*;
-import cn.aberic.bother.entity.enums.ConnectStatus;
-import cn.aberic.bother.entity.enums.JoinLevel;
-import cn.aberic.bother.entity.enums.ProtocolStatus;
 import cn.aberic.bother.entity.io.MessageData;
-import cn.aberic.bother.io.IOContext;
-import cn.aberic.bother.tools.MsgPackTool;
 import com.google.protobuf.InvalidProtocolBufferException;
-
-import java.util.*;
 
 /**
  * 应答选举消息业务处理接口
@@ -52,76 +44,10 @@ public interface IMsgElectionService extends IMsgRequestService {
      */
     default void election(String address, MessageData msgData) throws InvalidProtocolBufferException {
         switch (msgData.getProtocol()) {
-            case ELECTION_QUICK: // 接收到通知同组节点尽快完成投票操作
-                JoinLevel level = JoinLevel.get(MsgPackTool.bytes2String(msgData.getBytes()));
-                // 发起投票应该把投票结果发送到同组的每一个节点
-                IOContext.obtain().sync(msgData.getProtocol(), ConnectSelf.obtain().getGroups().get(0).election(), level);
-                break;
-            case ELECTION_TOWER: // 接收到发起楼选举协议-0x20
-                level = JoinLevel.TOWER;
-                electionExec(address, msgData, level);
-                break;
-            case ELECTION_COMMUNITY: // 接收到发起社区选举协议-0x21
-                level = JoinLevel.COMMUNITY;
-                electionExec(address, msgData, level);
-                break;
-            case ELECTION_COUNTY: // 接收到发起县城选举协议-0x22
-                level = JoinLevel.COUNTY;
-                electionExec(address, msgData, level);
-                break;
-            case ELECTION_CITY: // 接收到发起市选举协议-0x23
-                level = JoinLevel.CITY;
-                electionExec(address, msgData, level);
-                break;
-            case ELECTION_PROVINCE: // 接收到发起省选举协议-0x24
-                level = JoinLevel.PROVINCE;
-                electionExec(address, msgData, level);
-                break;
-            case ELECTION_RESULT: // 接收到发起楼选举结果协议-0x25
-                VoteResult voteResult = new VoteResult();
-                voteResult = voteResult.protoByteArray2Bean(msgData.getBytes());
-                // voteResult = voteResult.trans(VoteResultProto.VoteResult.parseFrom(msgData.getBytes()), VoteResult.class);
-                break;
         }
     }
 
-    default void electionExec(String address, MessageData msgData, JoinLevel level) {
-        ElectionVote vote = new ElectionVote(); // 新建选票
-        vote.setAddress(address); // 该选票的投票节点地址
-        vote.setAddresses(MsgPackTool.bytes2List(msgData.getBytes())); // 接收到的该选票节点地址提交的选举结果
-        GroupInfo info = ConnectSelf.obtain().getGroups().get(level.getLevel()); // 获取当前楼小组
-        info.add(vote); // 将选票放入下一轮选举结果集合中
-        // 如果自身不是Leader节点，则执行到此结束
-        if (ConnectSelf.obtain().getGroups().get(level.getLevel()).getStatus() != ConnectStatus.LEADER) {
-            return;
-        }
-        if (info.electionTime()) { // 判断是否超过投票时间
-            // 超过投票时间，则不再接收新的投票提交，直接开启本轮投票结果，并将投票结果广播至本组所有节点进行结果比对
-            Map<String, Integer> voteMap = new HashMap<>();
-            ConnectSelf.obtain().getGroups().get(level.getLevel()).getVotes().forEach(electionVote -> electionVote.getAddresses().forEach(ip -> {
-                Integer i = voteMap.get(ip);
-                if (null != i) {
-                    voteMap.put(ip, i + 1);
-                }
-            }));
-            List<Vote> votes = new ArrayList<>();
-            for (Map.Entry<String, Integer> entry : voteMap.entrySet()) {
-                votes.add(new Vote(entry.getKey(), entry.getValue()));
-            }
-            votes.sort(Comparator.comparingInt(Vote::getCount));
-            List<String> addresses = new ArrayList<>();
-            votes = votes.size() > 7 ? votes.subList(0, 6) : votes;
-            votes.forEach(v -> {
-                addresses.add(v.getAddress());
-            });
-            VoteResult voteResult = new VoteResult();
-            voteResult.setLevel(level);
-            voteResult.setAddresses(addresses);
-            IOContext.obtain().broadcast(ProtocolStatus.ELECTION_RESULT, voteResult, level);
-        } else {
-            // 通知同组节点尽快完成投票操作
-            IOContext.obtain().broadcast(ProtocolStatus.ELECTION_QUICK, level.getAlias(), level);
-        }
+    default void electionExec(String address, MessageData msgData) {
     }
 
 }

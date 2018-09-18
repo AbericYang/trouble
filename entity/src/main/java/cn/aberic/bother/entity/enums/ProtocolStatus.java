@@ -44,36 +44,24 @@ public enum ProtocolStatus {
     BYE("关闭心跳协议", (byte) 0x02),
     /** 应答协议-0x03 */
     OK("应答协议", (byte) 0x03),
+    /** 请求保持心跳协议-0x04 */
+    HEART_KEEP_ASK("请求保持心跳协议", (byte) 0x04),
+    /** 告知请求长连接节点当前Hash合约竞选节点集合Leader发生变更，并返回一个可以尝试再次发起请求长连接的节点地址-0x04 */
+    HEART_KEEP_ASK_CHANGE("告知请求长连接节点当前Hash合约竞选节点集合Leader发生变更", (byte) 0x04),
     /**
      * 加入新节点协议
      * follow节点收到新节点加入通知后，发送此协议告知leader节点有新节点加入请求
-     * leader节点直接处理该协议-0x04
+     * leader节点直接处理该协议-0x05
      */
-    JOIN("加入新节点协议", (byte) 0x04),
-    /** 告知新的接入地址可加入协议-0x05 */
-    JOIN_ACCEPT("告知新的接入地址可加入协议", (byte) 0x05),
-    /** 告知新的接入节点反馈协议-0x06 */
-    JOIN_FEEDBACK("告知新的接入节点反馈协议", (byte) 0x06),
-    /** 由leader节点发出新增小组节点协议-0x07 */
-    ADD_NODE("新增小组节点协议", (byte) 0x07),
-    /** 由leader节点发出更新当前小组节点集合协议-0x08 */
-    UPGRADE_NODE("更新当前小组节点集合协议", (byte) 0x08),
-    /** 当前没有可加入小组，自建小组并参与小组间选举协议-0x09 */
-    CREATE_GROUP("当前没有可加入小组", (byte) 0x09),
-    /** 发起楼选举协议-0x20 */
-    ELECTION_TOWER("发起楼选举协议", (byte) 0x20),
-    /** 发起社区选举协议-0x21 */
-    ELECTION_COMMUNITY("发起社区选举协议", (byte) 0x21),
-    /** 发起县城选举协议-0x22 */
-    ELECTION_COUNTY("发起县城选举协议", (byte) 0x22),
-    /** 发起市选举协议-0x23 */
-    ELECTION_CITY("发起市选举协议", (byte) 0x23),
-    /** 发起省选举协议-0x24 */
-    ELECTION_PROVINCE("发起省选举协议", (byte) 0x24),
-    /** 发起楼选举结果协议-0x25 */
-    ELECTION_RESULT("发起楼选举结果协议", (byte) 0x25),
-    /** 通知同组节点尽快完成投票操作协议-0x26 */
-    ELECTION_QUICK("通知同组节点尽快完成投票操作", (byte) 0x26),
+    JOIN("加入新节点协议", (byte) 0x05),
+    /** 告知新的接入节点当前Hash合约的竞选节点地址-0x06 */
+    JOIN_ASK_ELECTION("告知新的接入节点当前Hash合约的竞选节点地址", (byte) 0x06),
+    /** 告知新的接入节点准许加入，且为当前Hash合约的竞选节点-0x07 */
+    JOIN_AS_ELECTION("告知新的接入节点准许加入，且为当前Hash合约的竞选节点", (byte) 0x07),
+    /** 告知当前Hash合约的竞选节点有新的竞选节点加入-0x08 */
+    JOIN_NEW_ELECTION("告知当前Hash合约的竞选节点有新的竞选节点加入", (byte) 0x08),
+    /** 发起选举协议-0x20 */
+    ELECTION("发起选举协议", (byte) 0x20),
     /** 区块协议-0x51 */
     BLOCK("区块协议", (byte) 0x51);
 

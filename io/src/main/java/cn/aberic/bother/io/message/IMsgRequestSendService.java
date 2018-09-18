@@ -54,6 +54,16 @@ public interface IMsgRequestSendService {
     }
 
     /**
+     * 发送连接请求内容为空
+     *
+     * @param address 请求地址
+     * @param status  请求协议
+     */
+    default void send(String address, ProtocolStatus status) {
+        IOContext.obtain().send(address, new MessageData(status, null));
+    }
+
+    /**
      * 发送连接请求
      *
      * @param address 请求地址

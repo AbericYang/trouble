@@ -33,6 +33,7 @@ import com.google.protobuf.util.JsonFormat;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
 
@@ -48,10 +49,43 @@ import java.util.List;
 @Getter
 public class NodeElection implements BeanProtoFormat {
 
-    /** 当前选举节点基本信息集合 <= 50 */
+    /** 当前节点竞选对象所属智能合约Hash */
+    private String contractHash;
+    /** 当前Hash合约选举节点基本信息集合 <= 50 */
     private List<NodeBase> nodeBases;
-    /** 从其它竞选节点获取其两个子节点的而组成的备用节点集合 <= 100 */
+    /** Hash合约从其它竞选节点获取其两个子节点的而组成的备用节点集合 <= 100 */
     private List<String> addresses;
+
+    /**
+     * 当前Hash合约选举节点基本信息集合添加新节点
+     *
+     * @param nodeBase 节点基本信息
+     * @return 成功与否
+     */
+    public boolean add(NodeBase nodeBase) {
+        if (nodeBases.size() < 50) {
+            nodeBases.add(nodeBase);
+            if (addresses.size() < 100) {
+                addresses.add(nodeBase.getAddress());
+            } else {
+                addresses.remove(0);
+                addresses.add(nodeBase.getAddress());
+            }
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * 删除当前Hash合约选举节点基本信息集合中指定节点地址的节点
+     *
+     * @param address 节点地址
+     */
+    public void remove(String address) {
+        //使用迭代器的remove()方法删除元素
+        nodeBases.removeIf(nodeBase -> StringUtils.equals(nodeBase.getAddress(), address));
+        addresses.remove(address);
+    }
 
     @Override
     public byte[] bean2ProtoByteArray() {

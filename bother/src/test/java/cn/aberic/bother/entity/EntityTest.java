@@ -26,9 +26,7 @@
 package cn.aberic.bother.entity;
 
 import cn.aberic.bother.entity.block.*;
-import cn.aberic.bother.entity.consensus.*;
 import cn.aberic.bother.entity.contract.Account;
-import cn.aberic.bother.entity.enums.JoinLevel;
 import cn.aberic.bother.entity.enums.TransactionStatus;
 import cn.aberic.bother.entity.node.Node;
 import cn.aberic.bother.entity.node.NodeAssist;
@@ -37,9 +35,6 @@ import cn.aberic.bother.entity.node.NodeElection;
 import cn.aberic.bother.entity.proto.ProtoDemo;
 import cn.aberic.bother.entity.proto.block.BlockHeaderProto;
 import cn.aberic.bother.entity.proto.block.BlockProto;
-import cn.aberic.bother.entity.proto.consensus.ConnectSelfProto;
-import cn.aberic.bother.entity.proto.consensus.JoinFeedbackProto;
-import cn.aberic.bother.entity.proto.consensus.VoteResultProto;
 import cn.aberic.bother.entity.proto.node.NodeProto;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
@@ -84,87 +79,6 @@ public class EntityTest {
         log.debug("previousDataHash = {}", header.getPreviousDataHash());
         log.debug("timestamp = {}", header.getTimestamp());
         log.debug("time = {}", header.getTime());
-    }
-
-    private static void createConnectSelfProtobuf() throws InvalidProtocolBufferException {
-        ConnectSelfProto.ConnectSelf.Builder builder = ConnectSelfProto.ConnectSelf.newBuilder();
-        String selfJsonFormat = new JSONObject(createConnectSelf()).toString();
-        log.debug("selfJsonFormat = {}", selfJsonFormat);
-        try {
-            JsonFormat.parser().merge(selfJsonFormat, builder);
-        } catch (InvalidProtocolBufferException e) {
-            e.printStackTrace();
-        }
-        log.debug("getLevel = {}", builder.getLevel());
-        log.debug("getLeaderAddress = {}", builder.getGroups(0).getLeaderAddress());
-        log.debug("getNextLeaderAddress = {}", builder.getGroups(0).getNextLeaderAddress());
-        log.debug("getTimestamp = {}", builder.getGroups(0).getTimestamp());
-        log.debug("getLeaderAddress = {}", builder.getGroups(0).getAddresses(1));
-        log.debug("==============================================");
-        byte[] bytes = builder.build().toByteArray();
-        log.debug("toByteArray = {}", bytes);
-
-
-        ConnectSelfProto.ConnectSelf selfProto = ConnectSelfProto.ConnectSelf.parseFrom(bytes);
-        ConnectSelf self = trans(selfProto, ConnectSelf.class);
-
-        String jsonObject = JsonFormat.printer().print(selfProto);
-        log.debug("jsonObject = {}", jsonObject);
-        log.debug("Object = {}", JSON.parseObject(jsonObject, new TypeReference<ConnectSelf>() {}).toJsonString());
-        log.debug("self = {}", self.toJsonString());
-    }
-
-    private static void createJoinFeedbackProtobuf() throws InvalidProtocolBufferException {
-        JoinFeedbackProto.JoinFeedback.Builder builder = JoinFeedbackProto.JoinFeedback.newBuilder();
-        String joinJsonFormat = new JSONObject(createJoinFeedback()).toString();
-        log.debug("joinJsonFormat = {}", joinJsonFormat);
-        try {
-            JsonFormat.parser().merge(joinJsonFormat, builder);
-        } catch (InvalidProtocolBufferException e) {
-            e.printStackTrace();
-        }
-        log.debug("getLevel = {}", builder.getLevel());
-        log.debug("getAddress = {}", builder.getAddress());
-        log.debug("getAddressesCount = {}", builder.getAddressesCount());
-        for (String s : builder.getAddressesList()) {
-            log.debug("next() = {}", s);
-        }
-        log.debug("==============================================");
-        byte[] bytes = builder.build().toByteArray();
-        log.debug("toByteArray = {}", bytes);
-
-
-        JoinFeedbackProto.JoinFeedback joinProto = JoinFeedbackProto.JoinFeedback.parseFrom(bytes);
-        String jsonObject = JsonFormat.printer().print(joinProto);
-        log.debug("jsonObject = {}", jsonObject);
-        log.debug("Object = {}", JSON.parseObject(jsonObject, new TypeReference<JoinFeedback>() {}).toJsonString());
-    }
-
-    private static void createVoteResultProtobuf() throws InvalidProtocolBufferException {
-        VoteResultProto.VoteResult.Builder builder = VoteResultProto.VoteResult.newBuilder();
-        String voteResultFormat = new JSONObject(createVoteResult()).toString();
-        log.debug("voteResultFormat = {}", voteResultFormat);
-        try {
-            JsonFormat.parser().merge(voteResultFormat, builder);
-        } catch (InvalidProtocolBufferException e) {
-            e.printStackTrace();
-        }
-        log.debug("getLevel = {}", builder.getLevel());
-        log.debug("getAddresses = {}", builder.getAddressesList());
-        log.debug("==============================================");
-        byte[] bytes = builder.build().toByteArray();
-        log.debug("toByteArray = {}", bytes);
-
-
-        VoteResultProto.VoteResult voteResult = VoteResultProto.VoteResult.parseFrom(bytes);
-        String jsonObject = JsonFormat.printer().print(voteResult);
-        VoteResult result = new VoteResult();
-        result = result.proto2Bean(voteResult);
-        result = result.protoByteArray2Bean(bytes);
-        log.debug("jsonObject = {}", jsonObject);
-        log.debug("Object = {}", JSON.parseObject(jsonObject, new TypeReference<VoteResult>() {}).toJsonString());
-        log.debug("result1 = {}", result.toJsonString());
-        log.debug("result2 = {}", result.toJsonString());
     }
 
     private static void createNodeProtobuf() throws InvalidProtocolBufferException {
@@ -295,71 +209,6 @@ public class EntityTest {
         return new Block(header, body);
     }
 
-    private static ConnectSelf createConnectSelf() {
-        List<String> addresses = new ArrayList<>();
-        addresses.add("a");
-        addresses.add("b");
-        addresses.add("c");
-
-        List<ElectionVote> votes = new ArrayList<>();
-
-        ElectionVote vote1 = new ElectionVote();
-        vote1.setAddress("aaa");
-        vote1.setAddresses(addresses);
-
-        ElectionVote vote2 = new ElectionVote();
-        vote2.setAddress("bbb");
-        vote2.setAddresses(addresses);
-
-        ElectionVote vote3 = new ElectionVote();
-        vote3.setAddress("ccc");
-        vote3.setAddresses(addresses);
-
-        votes.add(vote1);
-        votes.add(vote2);
-        votes.add(vote3);
-
-        List<GroupInfo> infoList = new ArrayList<>();
-        GroupInfo info = new GroupInfo();
-        info.setLeaderAddress("setLeaderAddress");
-        info.setNextLeaderAddress("setNextLeaderAddress");
-        info.setTimestamp(1111111111111111L);
-        info.setAddresses(addresses);
-        info.setVotes(votes);
-        info.setNextVotes(votes);
-        infoList.add(info);
-
-        ConnectSelf connectSelf = new ConnectSelf();
-        connectSelf.setLevel(0);
-        connectSelf.setGroups(infoList);
-        return connectSelf;
-    }
-
-    private static JoinFeedback createJoinFeedback() {
-        List<String> addresses = new ArrayList<>();
-        addresses.add("a");
-        addresses.add("b");
-        addresses.add("c");
-
-        JoinFeedback joinFeedback = new JoinFeedback();
-        joinFeedback.setAddress("test");
-        joinFeedback.setAddresses(addresses);
-        joinFeedback.setLevel(JoinLevel.CITY);
-        return joinFeedback;
-    }
-
-    private static VoteResult createVoteResult() {
-        List<String> addresses = new ArrayList<>();
-        addresses.add("a");
-        addresses.add("b");
-        addresses.add("c");
-
-        VoteResult voteResult = new VoteResult();
-        voteResult.setLevel(JoinLevel.CITY);
-        voteResult.setAddresses(addresses);
-        return voteResult;
-    }
-
     public static Account createAccount() {
         Account account = new Account();
         account.setCount(new BigDecimal(1));
@@ -409,6 +258,7 @@ public class EntityTest {
 
         log.debug("createNode = {}", Node.obtain().toJsonString());
 
+        Node.obtain().setNodeBase(nodeBase);
         Node.obtain().setAddressElectionMap(addressElectionMap);
         Node.obtain().setNodeAssistMap(nodeAssistMap);
         Node.obtain().setAddressElectionsMap(addressElectionsMap);

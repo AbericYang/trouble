@@ -1,0 +1,13 @@
+syntax = "proto3";
+//生成文件所在包名
+option java_package = "cn.aberic.bother.entity.proto.node";
+//生成的java文件名
+option java_outer_classname = "NodeHashProto";
+
+import "node/NodeBase.proto";
+
+// 节点基类对象
+message NodeHash {
+    string contractHash = 1; // 智能合约hash
+    NodeBase nodeBase = 2; // 当前节点的基本信息
+}

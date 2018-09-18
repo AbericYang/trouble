@@ -26,12 +26,10 @@
 package cn.aberic.bother.io.exec.client;
 
 import cn.aberic.bother.entity.EntityTest;
-import cn.aberic.bother.entity.enums.JoinLevel;
 import cn.aberic.bother.entity.enums.ProtocolStatus;
 import cn.aberic.bother.entity.io.MessageData;
 import cn.aberic.bother.entity.io.Remote;
 import cn.aberic.bother.io.IOContext;
-import cn.aberic.bother.tools.MsgPackTool;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -49,7 +47,7 @@ public class ClientTest {
 
         MessageData msgData = new MessageData(ProtocolStatus.BLOCK, EntityTest.getBlockBytes());
         IOContext.obtain().send("127.0.0.1", msgData);
-        IOContext.obtain().send("127.0.0.1", new MessageData(ProtocolStatus.JOIN, MsgPackTool.string2Bytes(JoinLevel.TOWER.name())));
+        IOContext.obtain().join("127.0.0.1");
     }
 
 }

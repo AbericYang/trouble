@@ -33,15 +33,18 @@ package cn.aberic.bother.tools;
  */
 public class Constant {
 
+    /** 公网锚节点ip */
+    public final static String ANCHOR_IP = "127.0.0.1";
+
     /** netty 服务端默认端口号 */
     public final static int NETTY_SERVER_PORT = 63715;
     /** netty 客户端连接超时时间 */
     public final static int NETTY_CONNECT_TIMEOUT_MILLIS = 300000;
 
     /** 长连接服务端读超时时间 */
-    public static final long IO_SERVER_READ_TIME_OUT = 10;
+    public static final long IO_SERVER_READ_TIME_OUT = 3;
     /** 长连接客户端写超时时间，需要比服务端读超时时间短，以维持心跳 */
-    public static final long IO_SERVER_WRITE_TIME_OUT = 8;
+    public static final long IO_SERVER_WRITE_TIME_OUT = 2;
 
     /** 每个小组允许最大节点数 */
     public static final int GROUP_COUNT = 51;

@@ -25,9 +25,18 @@
 package cn.aberic.bother.io.message;
 
 import cn.aberic.bother.entity.block.Block;
+import cn.aberic.bother.entity.enums.ProtocolStatus;
 import cn.aberic.bother.entity.io.MessageData;
+import cn.aberic.bother.entity.node.Node;
+import cn.aberic.bother.entity.node.NodeElection;
+import cn.aberic.bother.io.IOContext;
+import cn.aberic.bother.tools.Constant;
+import cn.aberic.bother.tools.MsgPackTool;
 import com.google.protobuf.InvalidProtocolBufferException;
 import io.netty.channel.Channel;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 应答消息业务处理接口
@@ -48,27 +57,54 @@ interface IMsgReceiveService extends IMsgJoinService, IMsgElectionService {
         String address = channel.remoteAddress().toString().split(":")[0].split("/")[1];
         log().debug("请求协议：{}，数据ID：{}", msgData.getProtocol().getB(), msgData.getDataId());
         switch (msgData.getProtocol()) {
-            case HEART: // 心跳协议-0x00
+            case HEART: // 心跳协议
                 log().debug("接收心跳协议，什么也不做");
                 break;
-            case JOIN: // 加入新节点协议，follow节点收到新节点加入通知后，发送此协议告知leader节点有新节点加入请求，leader节点直接处理该协议-0x01
-            case JOIN_ACCEPT: // 告知新的接入地址可加入协议-0x05
-            case JOIN_FEEDBACK: // 告知新的接入节点反馈协议-0x06
-            case ADD_NODE: // 由leader节点发出新增小组节点协议-0x07
-            case UPGRADE_NODE: // 由leader节点发出更新小组节点集合协议-0x08
+            case HEART_KEEP_ASK: // 接收到请求保持心跳协议
+                // 获取请求该协议的合约Hash
+                String contractHash = MsgPackTool.bytes2String(msgData.getBytes());
+                // 得到当前Hash合约竞选节点对象
+                NodeElection election = Node.obtain().getNodeElectionMap().get(contractHash);
+                // 先检查自身是否在当前Hash合约竞选节点集合中
+                if (null != election) {
+                    // 检查自身是否为当前Hash合约竞选节点集合中的Leader，且当前Hash合约竞选节点集合包含有该节点地址
+                    if (election.getNodeBases().get(0).getTimestamp() == Node.obtain().getNodeBase().getTimestamp() &&
+                            Node.obtain().getAddressElectionsMap().get(contractHash).getStringList().contains(address)) {
+                        pushKeepHeartBeat(channel); // 是Leader节点，告知保持长连接
+                    } else { // 自身为当前Hash合约竞选节点之一
+                        // 将合约Hash与建议请求地址打包到List中发送
+                        List<String> list = new ArrayList<>();
+                        list.add(contractHash);
+                        list.add(election.getNodeBases().get(0).getAddress());
+                        push(channel, ProtocolStatus.HEART_KEEP_ASK_CHANGE, list);
+                    }
+                } else { // 不是Leader节点
+                    // 将合约Hash与建议请求地址打包到List中发送
+                    List<String> list = new ArrayList<>();
+                    list.add(contractHash);
+                    list.add(Node.obtain().getAddressElectionMap().get(contractHash));
+                    push(channel, ProtocolStatus.HEART_KEEP_ASK_CHANGE, list);
+                }
+                break;
+            case HEART_KEEP_ASK_CHANGE: // 告知请求长连接节点当前Hash合约竞选节点集合Leader发生变更，并返回一个可以尝试再次发起请求长连接的节点地址
+                List<String> arrayResult = MsgPackTool.bytes2List(msgData.getBytes());
+                if (null != arrayResult && arrayResult.size() == 2) {
+                    sendHeartBeatKeepAsk(arrayResult.get(1), arrayResult.get(0));
+                } else {
+                    IOContext.obtain().join(Constant.ANCHOR_IP);
+                }
+                break;
+            case JOIN: // 加入新节点协议
+            case JOIN_AS_ELECTION: // 告知新的接入节点准许加入，且为当前Hash合约的竞选节点
+            case JOIN_ASK_ELECTION: // 告知新的接入节点当前Hash合约的竞选节点地址
+            case JOIN_NEW_ELECTION: // 告知当前Hash合约的竞选节点有新的竞选节点加入
                 try {
                     join(address, channel, msgData);
                 } catch (InvalidProtocolBufferException e) {
                     e.printStackTrace();
                 }
                 break;
-            case ELECTION_QUICK: // 接收到通知同组节点尽快完成投票操作
-            case ELECTION_TOWER: // 接收到发起楼选举协议-0x20
-            case ELECTION_COMMUNITY: // 接收到发起社区选举协议-0x21
-            case ELECTION_COUNTY: // 接收到发起县城选举协议-0x22
-            case ELECTION_CITY: // 接收到发起市选举协议-0x23
-            case ELECTION_PROVINCE: // 接收到发起省选举协议-0x24
-            case ELECTION_RESULT: // 接收到发起楼选举结果协议-0x25
+            case ELECTION: // 接收到通知同组节点尽快完成投票操作
                 try {
                     election(address, msgData);
                 } catch (InvalidProtocolBufferException e) {

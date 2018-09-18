@@ -8,6 +8,7 @@ import "node/NodeBase.proto";
 
 // 当前节点竞选对象
 message NodeElection {
-    repeated NodeBase nodeBases = 1; // 当前选举节点基本信息集合 <= 50
-    repeated string addresses = 2; // 从其它竞选节点获取其两个子节点的而组成的备用节点集合 <= 100
+    string contractHash = 1; // 当前节点竞选对象所属智能合约Hash
+    repeated NodeBase nodeBases = 2; // 当前选举节点基本信息集合 <= 50
+    repeated string addresses = 3; // 从其它竞选节点获取其两个子节点的而组成的备用节点集合 <= 100
 }

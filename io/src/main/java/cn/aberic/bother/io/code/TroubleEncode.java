@@ -57,8 +57,6 @@ public class TroubleEncode extends MessageToByteEncoder<MessageData> implements 
             case KEEP: // 保持心跳协议-0x01
             case BYE: // 关闭心跳协议-0x02
             case OK: // 应答协议-0x03
-            case CREATE_GROUP: // 当前没有可加入小组，自建小组并参与小组间选举协议-0x08
-            case JOIN: // 加入新节点协议 follow节点收到新节点加入通知后，发送此协议告知leader节点有新节点加入请求 leader节点直接处理该协议-0x04
                 byte[] bytes = createEmpty();
                 out.writeBytes(ByteTool.intToBytes(bytes.length));
                 out.writeBytes(bytes);

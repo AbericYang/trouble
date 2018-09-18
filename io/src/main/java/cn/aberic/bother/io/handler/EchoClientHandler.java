@@ -95,11 +95,6 @@ public class EchoClientHandler extends SimpleChannelInboundHandler<MessageData> 
                 keepHeartBeat = false;
                 ioClient.shutdown();
                 break;
-            case JOIN_ACCEPT: // 告知新的接入地址可加入协议-0x05
-                log().debug("告知新的接入地址可加入协议，保持心跳协议");
-                keepHeartBeat = true;
-                receive(ctx.channel(), msgData);
-                break;
             default:
                 receive(ctx.channel(), msgData);
                 break;
