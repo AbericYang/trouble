@@ -46,7 +46,7 @@ public interface IPublicContractFileExec extends IInit, IFile<Contract> {
         Contract contract = new Contract("pub", "1.0", 1, "让连接更有价值！no trouble, no bother!");
         contract.setTimestamp(515260800000L);
         contract.setHash(Constant.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH);
-        contract.setDir("6c5ea876d5220135ee0c05d0f0840efe");
+        contract.setDir(Constant.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH);
         return contract;
     }
 

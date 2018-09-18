@@ -33,6 +33,8 @@ import org.apache.commons.io.FileUtils;
 
 import java.io.*;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 文件工具类——公共方法包
@@ -163,6 +165,18 @@ public class FileTool {
         }
         log.debug("getFileLineCount new 处理时长 = {}", System.currentTimeMillis() - time);
         return lines;
+    }
+
+    /**
+     * 获取所有已安装智能合约Hash
+     *
+     * @return 已安装智能合约集合
+     */
+    public static List<String> getContractHashList() {
+        List<String> contractHashList = new ArrayList<>();
+        contractHashList.add(Constant.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH);
+        Files.fileTraverser().breadthFirst(new File(Constant.CONTRACT_FILE_CUSTOM_DIR)).forEach(file -> contractHashList.add(file.getName()));
+        return contractHashList;
     }
 
     /**

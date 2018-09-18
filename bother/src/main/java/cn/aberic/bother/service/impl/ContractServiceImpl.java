@@ -54,6 +54,7 @@ public class ContractServiceImpl implements ContractService {
         if (response.isSend()) {
             Block block = blockService.checkBlockVerify(exec);
             if (null != block) {
+                // TODO: 2018/9/18 实际应发送至 Leader 节点统一打包，此方法应当返回 Block 对象，并交由 Controller 进行转发
                 new ThreadTroublePool().submit(() -> exec.sendTransaction(blockService.checkBlockVerify(exec)));
             } else {
                 exec.response(IResponse.ResponseType.FAIL);

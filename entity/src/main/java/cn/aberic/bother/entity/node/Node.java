@@ -196,15 +196,18 @@ public class Node implements BeanProtoFormat {
         NodeElection election = new NodeElection();
         election.setContractHash(Constant.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH);
         election.setAddresses(new ArrayList<>());
-        election.setNodeBases(new ArrayList<NodeBase>() {{add(nodeBase);}});
+        election.setNodeBases(new ArrayList<NodeBase>() {{
+            add(nodeBase);
+        }});
         nodeElectionMap.put(Constant.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH, election);
         FileTool.write(Constant.NODE_FILE, JSON.toJSONString(instance));
     }
 
     /**
-     * 本节点是否为当前Hash合约竞选节点集合中的Leader
+     * 本节点是否为指定Hash合约竞选节点集合中的Leader
      *
      * @param contractHash 合约Hash
+     *
      * @return 与否
      */
     public boolean isElectionNode(String contractHash) {
@@ -215,9 +218,10 @@ public class Node implements BeanProtoFormat {
     }
 
     /**
-     * 本节点是否为当前Hash合约竞选节点之一的辅助节点
+     * 本节点是否为指定Hash合约竞选节点之一的辅助节点
      *
      * @param contractHash 合约Hash
+     *
      * @return 与否
      */
     public boolean isAssistNode(String contractHash) {
@@ -228,9 +232,21 @@ public class Node implements BeanProtoFormat {
     }
 
     /**
+     * 本节点是否为指定Hash合约中的节点
+     *
+     * @param contractHash 指定Hash合约
+     *
+     * @return 与否
+     */
+    public boolean hasNode(String contractHash) {
+        return nodeBase.getHashes().contains(contractHash);
+    }
+
+    /**
      * 当前Hash合约选举节点基本信息集合添加新节点
      *
      * @param nodeBase 节点基本信息
+     *
      * @return 成功与否
      */
     public boolean add(String contractHash, NodeBase nodeBase) {

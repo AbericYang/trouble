@@ -31,10 +31,13 @@ import cn.aberic.bother.entity.node.NodeBase;
 import cn.aberic.bother.entity.node.NodeElection;
 import cn.aberic.bother.entity.node.NodeHash;
 import cn.aberic.bother.tools.Constant;
+import cn.aberic.bother.tools.FileTool;
 import cn.aberic.bother.tools.MsgPackTool;
 import com.google.protobuf.InvalidProtocolBufferException;
 import io.netty.channel.Channel;
 import org.apache.commons.lang3.StringUtils;
+
+import java.util.List;
 
 /**
  * 应答加入新节点消息业务处理接口
@@ -107,7 +110,11 @@ public interface IMsgJoinService extends IMsgRequestService {
                 for (String key : nodeAssist.getAddressMap().keySet()) {
                     contractHash = key; // 获取当前操作Hash
                 }
-                // TODO: 2018/9/18 需要获取所有已安装合约并比对当前合约是否其中之一，需要防作恶
+                // 获取所有已安装合约并比对当前合约是否其中之一，防作恶
+                List<String> contractHashList = FileTool.getContractHashList();
+                if (!contractHashList.contains(contractHash)) { // 如果给定的合约Hash与已安装不符，则再次请求锚节点加入
+                    send(Constant.ANCHOR_IP, ProtocolStatus.JOIN, Node.obtain().getNodeBase());
+                }
                 Node.obtain().putAddressElectionMap(contractHash, nodeAssist.getAddressElectionMap().get(contractHash));
                 Node.obtain().putAddressElectionsMap(contractHash, nodeAssist.getAddressElectionsMap().get(contractHash));
                 Node.obtain().putAddressMap(contractHash, nodeAssist.getAddressMap().get(contractHash));
@@ -117,8 +124,7 @@ public interface IMsgJoinService extends IMsgRequestService {
 
     default void joinExec(Channel channel, String contractHash, NodeBase nodeBaseJoin) {
         // 判断自身在当前Hash合约中的身份
-        if (null != Node.obtain().getNodeElectionMap().get(contractHash)) {
-            // 表示自身为当前Hash合约的竞选节点之一
+        if (Node.obtain().isElectionNode(contractHash)) { // 表示自身为当前Hash合约的竞选节点之一
             // 检查当前竞选节点集合是否满足Constant.ELECTION_COUNT数量，如果不满足，则将该节点当做竞选节点之一
             if (Node.obtain().getAddressElectionsMap().size() < Constant.NODE_ELECTION_COUNT) {
                 Node.obtain().getNodeElectionMap().get(contractHash).add(nodeBaseJoin);
@@ -132,8 +138,7 @@ public interface IMsgJoinService extends IMsgRequestService {
                 NodeHash nodeHash = new NodeHash(contractHash, nodeBaseAssist);
                 push(channel, ProtocolStatus.JOIN_TO_ASSIST, nodeHash);
             }
-        } else if (null != Node.obtain().getNodeAssistMap().get(contractHash)) {
-            // 表示自身为当前Hash合约的协助节点之一
+        } else if (Node.obtain().isAssistNode(contractHash)) { // 表示自身为当前Hash合约的协助节点之一
             // 将自己当前竞选中的节点集合以及备用节点集合发回
             Node node = Node.obtain();
             // 将无用信息赋空
@@ -143,9 +148,8 @@ public interface IMsgJoinService extends IMsgRequestService {
             node.getAddressElectionsMap().entrySet().removeIf(stringStringEntry -> !StringUtils.equals(stringStringEntry.getKey(), contractHash));
             node.getAddressMap().entrySet().removeIf(stringStringEntry -> !StringUtils.equals(stringStringEntry.getKey(), contractHash));
             push(channel, ProtocolStatus.JOIN_FOLLOW_ME, node);
-        } else {
-            // TODO: 2018/9/18
-            // 告知新的接入地址可加入协议
+        } else if (Node.obtain().hasNode(contractHash)) { // 表示自身为当前Hash合约的普通节点
+            // 告知新的接入地址当前Hash合约下的竞选节点地址
             push(channel, ProtocolStatus.JOIN_ASK_ELECTION, Node.obtain().getAddressElectionMap().get(contractHash));
         }
     }
