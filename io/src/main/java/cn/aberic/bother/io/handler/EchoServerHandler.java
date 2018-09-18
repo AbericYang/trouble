@@ -33,6 +33,7 @@ import cn.aberic.bother.io.message.IMsgService;
 import cn.aberic.bother.tools.Constant;
 import cn.aberic.bother.tools.DateTool;
 import io.netty.buffer.Unpooled;
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -53,6 +54,7 @@ import org.slf4j.Logger;
 @Slf4j
 public class EchoServerHandler extends ChannelInboundHandlerAdapter implements IMsgService {
 
+    private Channel channel;
     /** 空闲次数 */
     private int idleCount = 1;
 
@@ -62,8 +64,14 @@ public class EchoServerHandler extends ChannelInboundHandlerAdapter implements I
     }
 
     @Override
+    public void shutdown() {
+        pushClose(channel);
+    }
+
+    @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         super.channelActive(ctx);
+        this.channel = ctx.channel();
         // 加入服务端所接收到的链接集合
         Remote remote = new Remote();
         remote.setAddress(ctx.channel().remoteAddress().toString().split(":")[0].split("/")[1]);

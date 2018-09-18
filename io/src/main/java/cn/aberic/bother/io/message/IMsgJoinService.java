@@ -73,13 +73,15 @@ public interface IMsgJoinService extends IMsgRequestService {
                     if (Node.obtain().getNodeBase().getHashes().contains(joinsContractHash)) {
                         joinExec(channel, joinsContractHash, nodeBaseJoin);
                     } else {
-                        log().debug("自身无此Hash合约，故不做处理");
+                        log().debug("自身无此Hash合约，关闭远程连接及心跳允许");
+                        pushClose(channel);
                     }
                 });
                 break;
             case JOIN_ASK_ELECTION: // 接收到告知新的接入节点当前Hash合约的竞选节点地址
                 // 作为客户端向当前Hash合约竞选节点发送请求加入协议
                 send(MsgPackTool.bytes2String(msgData.getBytes()), ProtocolStatus.JOIN, Node.obtain().getNodeBase());
+                shutdown();
                 break;
             case JOIN_AS_ELECTION: // 接收到告知新的接入节点准许加入，且为当前Hash合约的竞选节点
                 // 获取当前竞选节点集合的基本信息
@@ -87,6 +89,7 @@ public interface IMsgJoinService extends IMsgRequestService {
                 Node.obtain().putNodeElection(election.getContractHash(), election);
                 // 请求与当前竞选节点集合中的Leader保持长连接
                 sendHeartBeatKeepAsk(election.getNodeBases().get(0).getAddress(), election.getContractHash());
+                shutdown();
                 break;
             case JOIN_NEW_ELECTION: // 接收到告知当前Hash合约的所有竞选节点有新的竞选节点加入
                 NodeHash nodeHash = new NodeHash().protoByteArray2Bean(msgData.getBytes());
@@ -99,11 +102,13 @@ public interface IMsgJoinService extends IMsgRequestService {
                 Node.obtain().getNodeBaseAssistMap().put(nodeHash.getContractHash(), nodeHash.getNodeBase());
                 // 向协助节点继续发送加入请求
                 send(nodeHash.getNodeBase().getAddress(), ProtocolStatus.JOIN, Node.obtain().getNodeBase());
+                shutdown();
                 break;
             case JOIN_FOLLOW_ME: // 接收到告知新的接入节点当前Hash合约的基本信息并要求跟随自己
                 Node nodeAssist = Node.obtain().getFromBytes(msgData.getBytes());
                 if (nodeAssist.getAddressMap().size() != 1) { // 如果给定的合约Hash不为1，则再次请求锚节点加入
                     send(Constant.ANCHOR_IP, ProtocolStatus.JOIN, Node.obtain().getNodeBase());
+                    shutdown();
                     break;
                 }
                 String contractHash = "";
@@ -114,6 +119,8 @@ public interface IMsgJoinService extends IMsgRequestService {
                 List<String> contractHashList = FileTool.getContractHashList();
                 if (!contractHashList.contains(contractHash)) { // 如果给定的合约Hash与已安装不符，则再次请求锚节点加入
                     send(Constant.ANCHOR_IP, ProtocolStatus.JOIN, Node.obtain().getNodeBase());
+                    shutdown();
+                    break;
                 }
                 Node.obtain().putAddressElectionMap(contractHash, nodeAssist.getAddressElectionMap().get(contractHash));
                 Node.obtain().putAddressElectionsMap(contractHash, nodeAssist.getAddressElectionsMap().get(contractHash));
@@ -151,6 +158,9 @@ public interface IMsgJoinService extends IMsgRequestService {
         } else if (Node.obtain().hasNode(contractHash)) { // 表示自身为当前Hash合约的普通节点
             // 告知新的接入地址当前Hash合约下的竞选节点地址
             push(channel, ProtocolStatus.JOIN_ASK_ELECTION, Node.obtain().getAddressElectionMap().get(contractHash));
+        } else {
+            log().debug("怪事，关闭远程连接及心跳允许");
+            pushClose(channel);
         }
     }
 

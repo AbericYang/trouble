@@ -41,33 +41,31 @@ public enum ProtocolStatus {
     /** 保持心跳协议-0x01 */
     KEEP("心跳协议", (byte) 0x01),
     /** 关闭心跳协议-0x02 */
-    BYE("关闭心跳协议", (byte) 0x02),
-    /** 应答协议-0x03 */
-    OK("应答协议", (byte) 0x03),
-    /** 请求保持心跳协议-0x04 */
-    HEART_KEEP_ASK("请求保持心跳协议", (byte) 0x04),
+    CLOSE("关闭心跳协议", (byte) 0x02),
+    /** 请求保持心跳协议-0x03 */
+    HEART_KEEP_ASK("请求保持心跳协议", (byte) 0x03),
     /** 告知请求长连接节点当前Hash合约竞选节点集合Leader发生变更，并返回一个可以尝试再次发起请求长连接的节点地址-0x04 */
     HEART_KEEP_ASK_CHANGE("告知请求长连接节点当前Hash合约竞选节点集合Leader发生变更", (byte) 0x04),
     /**
      * 加入新节点协议
      * follow节点收到新节点加入通知后，发送此协议告知leader节点有新节点加入请求
-     * leader节点直接处理该协议-0x05
+     * leader节点直接处理该协议-0x20
      */
-    JOIN("加入新节点协议", (byte) 0x05),
-    /** 告知新的接入节点当前Hash合约的竞选节点地址-0x06 */
-    JOIN_ASK_ELECTION("告知新的接入节点当前Hash合约的竞选节点地址", (byte) 0x06),
-    /** 告知新的接入节点准许加入，且为当前Hash合约的竞选节点-0x07 */
-    JOIN_AS_ELECTION("告知新的接入节点准许加入，且为当前Hash合约的竞选节点", (byte) 0x07),
-    /** 告知当前Hash合约的竞选节点有新的竞选节点加入-0x08 */
-    JOIN_NEW_ELECTION("告知当前Hash合约的竞选节点有新的竞选节点加入", (byte) 0x08),
-    /** 告知新的接入节点当前Hash合约的竞选节点的协助节点-0x09 */
-    JOIN_TO_ASSIST("告知新的接入节点当前Hash合约的竞选节点的协助节点", (byte) 0x09),
-    /** 告知新的接入节点当前Hash合约的基本信息并要求跟随自己-0x10 */
-    JOIN_FOLLOW_ME("告知新的接入节点当前Hash合约的基本信息并要求跟随自己", (byte) 0x10),
-    /** 发起选举协议-0x20 */
-    ELECTION("发起选举协议", (byte) 0x20),
-    /** 区块协议-0x51 */
-    BLOCK("区块协议", (byte) 0x51);
+    JOIN("加入新节点协议", (byte) 0x20),
+    /** 告知新的接入节点当前Hash合约的竞选节点地址-0x21 */
+    JOIN_ASK_ELECTION("告知新的接入节点当前Hash合约的竞选节点地址", (byte) 0x21),
+    /** 告知新的接入节点准许加入，且为当前Hash合约的竞选节点-0x22 */
+    JOIN_AS_ELECTION("告知新的接入节点准许加入，且为当前Hash合约的竞选节点", (byte) 0x22),
+    /** 告知当前Hash合约的竞选节点有新的竞选节点加入-0x23 */
+    JOIN_NEW_ELECTION("告知当前Hash合约的竞选节点有新的竞选节点加入", (byte) 0x23),
+    /** 告知新的接入节点当前Hash合约的竞选节点的协助节点-0x24 */
+    JOIN_TO_ASSIST("告知新的接入节点当前Hash合约的竞选节点的协助节点", (byte) 0x24),
+    /** 告知新的接入节点当前Hash合约的基本信息并要求跟随自己-0x25 */
+    JOIN_FOLLOW_ME("告知新的接入节点当前Hash合约的基本信息并要求跟随自己", (byte) 0x25),
+    /** 发起选举协议-0x40 */
+    ELECTION("发起选举协议", (byte) 0x40),
+    /** 区块协议-0x60 */
+    BLOCK("区块协议", (byte) 0x60);
 
     /** 协议描述 */
     private String brief;

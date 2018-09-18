@@ -53,10 +53,9 @@ public class TroubleEncode extends MessageToByteEncoder<MessageData> implements 
         out.writeByte(msgData.getProtocol().getB());
         out.writeBytes(ByteTool.intToBytes(msgData.getDataId()));
         switch (msgData.getProtocol()) {
-            case HEART: // 心跳协议-0x00
-            case KEEP: // 保持心跳协议-0x01
-            case BYE: // 关闭心跳协议-0x02
-            case OK: // 应答协议-0x03
+            case HEART: // 心跳协议
+            case KEEP: // 保持心跳协议
+            case CLOSE: // 关闭心跳协议
                 byte[] bytes = createEmpty();
                 out.writeBytes(ByteTool.intToBytes(bytes.length));
                 out.writeBytes(bytes);

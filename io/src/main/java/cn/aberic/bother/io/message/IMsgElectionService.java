@@ -44,6 +44,8 @@ public interface IMsgElectionService extends IMsgRequestService {
      */
     default void election(String address, MessageData msgData) throws InvalidProtocolBufferException {
         switch (msgData.getProtocol()) {
+            case ELECTION: // 接收到发起选举协议
+                break;
         }
     }
 

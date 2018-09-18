@@ -39,6 +39,9 @@ interface IMsgRequestService extends IMsgRequestSendService, IMsgRequestPushServ
 
     Logger log();
 
+    /** 关闭当前通道且禁止长连接 */
+    void shutdown();
+
     /**
      * 在当前channel下发送心跳包
      *
@@ -68,12 +71,12 @@ interface IMsgRequestService extends IMsgRequestSendService, IMsgRequestPushServ
     }
 
     /**
-     * 在当前channel下发送应答协议包
+     * 在当前channel下发送关闭远程连接及心跳允许协议包
      *
      * @param channel 当前通道
      */
-    default void pushAnswerOK(Channel channel) {
-        push(channel, ProtocolStatus.OK);
+    default void pushClose(Channel channel) {
+        push(channel, ProtocolStatus.CLOSE);
     }
 
 }

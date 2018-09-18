@@ -104,7 +104,7 @@ interface IMsgReceiveService extends IMsgJoinService, IMsgElectionService {
                     e.printStackTrace();
                 }
                 break;
-            case ELECTION: // 接收到通知同组节点尽快完成投票操作
+            case ELECTION: // 接收到发起选举协议
                 try {
                     election(address, msgData);
                 } catch (InvalidProtocolBufferException e) {

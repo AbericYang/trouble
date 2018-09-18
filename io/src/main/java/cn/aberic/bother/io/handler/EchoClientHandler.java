@@ -65,6 +65,11 @@ public class EchoClientHandler extends SimpleChannelInboundHandler<MessageData> 
         return log;
     }
 
+    @Override
+    public void shutdown() {
+        ioClient.shutdown();
+    }
+
     public void setIoClient(IOClient ioClient) {
         this.ioClient = ioClient;
     }
@@ -90,7 +95,7 @@ public class EchoClientHandler extends SimpleChannelInboundHandler<MessageData> 
                 log().debug("保持心跳协议");
                 keepHeartBeat = true;
                 break;
-            case BYE: // 关闭心跳协议-0x02
+            case CLOSE: // 关闭心跳协议-0x02
                 log().debug("关闭心跳协议");
                 keepHeartBeat = false;
                 ioClient.shutdown();
