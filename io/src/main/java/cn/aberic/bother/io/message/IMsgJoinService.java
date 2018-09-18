@@ -123,7 +123,6 @@ public interface IMsgJoinService extends IMsgRequestService {
                     break;
                 }
                 Node.obtain().putAddressElectionMap(contractHash, nodeAssist.getAddressElectionMap().get(contractHash));
-                // Node.obtain().putAddressElectionsMap(contractHash, nodeAssist.getAddressElectionsMap().get(contractHash));
                 Node.obtain().putAddressMap(contractHash, nodeAssist.getAddressMap().get(contractHash));
                 break;
         }
@@ -152,7 +151,6 @@ public interface IMsgJoinService extends IMsgRequestService {
             node.setNodeBase(null);
             // 使用迭代器的remove()方法删除元素
             node.getAddressElectionMap().entrySet().removeIf(stringStringEntry -> !StringUtils.equals(stringStringEntry.getKey(), contractHash));
-            // node.getAddressElectionsMap().entrySet().removeIf(stringStringEntry -> !StringUtils.equals(stringStringEntry.getKey(), contractHash));
             node.getAddressMap().entrySet().removeIf(stringStringEntry -> !StringUtils.equals(stringStringEntry.getKey(), contractHash));
             push(channel, ProtocolStatus.JOIN_FOLLOW_ME, node);
         } else if (Node.obtain().hasNode(contractHash)) { // 表示自身为当前Hash合约的普通节点

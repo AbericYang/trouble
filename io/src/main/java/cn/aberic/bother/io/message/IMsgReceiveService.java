@@ -29,7 +29,6 @@ import cn.aberic.bother.entity.enums.ProtocolStatus;
 import cn.aberic.bother.entity.io.MessageData;
 import cn.aberic.bother.entity.node.Node;
 import cn.aberic.bother.entity.node.NodeBase;
-import cn.aberic.bother.entity.node.NodeElection;
 import cn.aberic.bother.io.IOContext;
 import cn.aberic.bother.tools.Constant;
 import cn.aberic.bother.tools.MsgPackTool;

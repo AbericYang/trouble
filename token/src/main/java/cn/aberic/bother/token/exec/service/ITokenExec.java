@@ -27,8 +27,6 @@ package cn.aberic.bother.token.exec.service;
 
 import cn.aberic.bother.entity.token.Token;
 import cn.aberic.bother.storage.IFile;
-import cn.aberic.bother.tools.DeflaterTool;
-import cn.aberic.bother.tools.ITimeOut;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import com.google.common.io.Files;
