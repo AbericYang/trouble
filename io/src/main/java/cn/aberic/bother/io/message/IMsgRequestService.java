@@ -58,7 +58,7 @@ interface IMsgRequestService extends IMsgRequestSendService, IMsgRequestPushServ
      * @param contractHash 合约Hash
      */
     default void sendHeartBeatKeepAsk(String address, String contractHash) {
-        send(address, ProtocolStatus.HEART_KEEP_ASK, contractHash);
+        send(address, ProtocolStatus.ELECTION_TO_LEADER_HEART_KEEP_ASK, contractHash);
     }
 
     /**
@@ -66,7 +66,7 @@ interface IMsgRequestService extends IMsgRequestSendService, IMsgRequestPushServ
      *
      * @param channel 当前通道
      */
-    default void pushKeepHeartBeat(Channel channel) {
+    default void pushKeep(Channel channel) {
         push(channel, ProtocolStatus.KEEP);
     }
 

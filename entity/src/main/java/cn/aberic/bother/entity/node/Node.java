@@ -100,6 +100,28 @@ public class Node implements BeanProtoFormat {
     }
 
     /**
+     * 新增或更新当前合约Hash协助节点对象
+     *
+     * @param contractHash 合约Hash
+     * @param assist       协助节点对象
+     */
+    public void putNodeAssistMap(String contractHash, NodeAssist assist) {
+        nodeAssistMap.put(contractHash, assist);
+        FileTool.write(Constant.NODE_FILE, JSON.toJSONString(instance));
+    }
+
+    /**
+     * 新增或更新当前合约Hash访问的竞选节点指定协助节点
+     *
+     * @param contractHash 合约Hash
+     * @param nodeBase     节点基本信息对象
+     */
+    public void putNodeBaseAssistMap(String contractHash, NodeBase nodeBase) {
+        nodeBaseAssistMap.put(contractHash, nodeBase);
+        FileTool.write(Constant.NODE_FILE, JSON.toJSONString(instance));
+    }
+
+    /**
      * 新增当前合约Hash访问的竞选中节点
      *
      * @param contractHash 合约Hash
@@ -113,14 +135,27 @@ public class Node implements BeanProtoFormat {
     /**
      * 新增当前合约Hash已知备用节点集合/随机节点数
      *
+     * @param contractHash 合约Hash
+     * @param address      备用节点地址
+     */
+    public void putAddressMap(String contractHash, String address) {
+        if (addressMap.get(contractHash).size() >= Constant.NODE_BACK_COUNT) {
+            addressMap.get(contractHash).remove(0);
+        }
+        addressMap.get(contractHash).add(address);
+        FileTool.write(Constant.NODE_FILE, JSON.toJSONString(instance));
+    }
+
+    /**
+     * 新增当前合约Hash已知备用节点集合/随机节点数
+     *
      * @param contractHash  合约Hash
      * @param mapListString 备用节点集合
      */
     public void putAddressMap(String contractHash, MapListString mapListString) {
-        MapListString mapListStringTmp = addressMap.get(contractHash);
-        mapListStringTmp.getStringList().addAll(mapListString.getStringList());
-        if (mapListStringTmp.getStringList().size() > Constant.NODE_BACK_COUNT) {
-            mapListStringTmp.setStringList(mapListStringTmp.getStringList().subList(mapListStringTmp.getStringList().size() - (Constant.NODE_BACK_COUNT + 1), mapListStringTmp.getStringList().size() - 1));
+        addressMap.get(contractHash).addAll(mapListString.getStringList());
+        if (addressMap.get(contractHash).size() > Constant.NODE_BACK_COUNT) {
+            addressMap.get(contractHash).setStringList(addressMap.get(contractHash).subList(addressMap.get(contractHash).size() - (Constant.NODE_BACK_COUNT + 1), addressMap.get(contractHash).size() - 1));
         }
         FileTool.write(Constant.NODE_FILE, JSON.toJSONString(instance));
     }
@@ -149,6 +184,16 @@ public class Node implements BeanProtoFormat {
      */
     public void removeNodeElection(String contractHash) {
         nodeElectionMap.remove(contractHash);
+        FileTool.write(Constant.NODE_FILE, JSON.toJSONString(instance));
+    }
+
+    /**
+     * 移除指定合约Hash的协助节点对象，即自身不再担任此Hash合约的协助节点
+     *
+     * @param contractHash 合约Hash
+     */
+    public void removeNodeAssistMap(String contractHash) {
+        nodeAssistMap.remove(contractHash);
         FileTool.write(Constant.NODE_FILE, JSON.toJSONString(instance));
     }
 
@@ -181,6 +226,7 @@ public class Node implements BeanProtoFormat {
         election.setNodeBases(new ArrayList<NodeBase>() {{
             add(nodeBase);
         }});
+        // 初始化默认自身为当前Hash的竞选节点
         nodeElectionMap.put(Constant.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH, election);
         FileTool.write(Constant.NODE_FILE, JSON.toJSONString(instance));
     }
@@ -189,7 +235,6 @@ public class Node implements BeanProtoFormat {
      * 本节点是否为指定Hash合约竞选节点集合中的Leader
      *
      * @param contractHash 合约Hash
-     *
      * @return 与否
      */
     public boolean isElectionNode(String contractHash) {
@@ -203,7 +248,6 @@ public class Node implements BeanProtoFormat {
      * 本节点是否为指定Hash合约竞选节点之一的辅助节点
      *
      * @param contractHash 合约Hash
-     *
      * @return 与否
      */
     public boolean isAssistNode(String contractHash) {
@@ -217,7 +261,6 @@ public class Node implements BeanProtoFormat {
      * 本节点是否为指定Hash合约中的节点
      *
      * @param contractHash 指定Hash合约
-     *
      * @return 与否
      */
     public boolean hasNode(String contractHash) {
@@ -225,10 +268,19 @@ public class Node implements BeanProtoFormat {
     }
 
     /**
+     * 判断本节点是否有当前Hash合约的辅助节点
+     *
+     * @param contractHash 当前合约Hash
+     * @return 与否
+     */
+    public boolean hasAssistNode(String contractHash) {
+        return null != nodeBaseAssistMap.get(contractHash);
+    }
+
+    /**
      * 当前Hash合约选举节点基本信息集合添加新节点
      *
      * @param nodeBase 节点基本信息
-     *
      * @return 成功与否
      */
     public boolean add(String contractHash, NodeBase nodeBase) {

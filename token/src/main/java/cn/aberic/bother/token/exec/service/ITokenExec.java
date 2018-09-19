@@ -44,7 +44,7 @@ import java.io.IOException;
  * <p>
  * 邮箱：abericyang@gmail.com
  */
-public interface ITokenExec extends IFile<Token>, ITimeOut {
+public interface ITokenExec extends IFile<Token> {
 
     /**
      * 创建或更新 Token 信息

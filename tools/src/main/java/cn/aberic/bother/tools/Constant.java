@@ -42,9 +42,9 @@ public class Constant {
     public final static int NETTY_CONNECT_TIMEOUT_MILLIS = 300000;
 
     /** 长连接服务端读超时时间 */
-    public static final long IO_SERVER_READ_TIME_OUT = 3;
+    public static final long IO_SERVER_READ_TIME_OUT = 180;
     /** 长连接客户端写超时时间，需要比服务端读超时时间短，以维持心跳 */
-    public static final long IO_SERVER_WRITE_TIME_OUT = 2;
+    public static final long IO_SERVER_WRITE_TIME_OUT = 150;
 
     /** 每个小组允许最大节点数 */
     public static final int GROUP_COUNT = 51;

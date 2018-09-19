@@ -72,6 +72,11 @@ public class NodeBase implements BeanProtoFormat {
         totalMemory = r.totalMemory();
     }
 
+    public NodeBase clear() {
+        hashes.clear();
+        return this;
+    }
+
     @Override
     public byte[] bean2ProtoByteArray() {
         NodeBaseProto.NodeBase.Builder builder = NodeBaseProto.NodeBase.newBuilder();

@@ -40,9 +40,23 @@ public class MapListString {
 
     List<String> stringList;
 
+    /**
+     * 返回当前对象所属字符串集合长度
+     *
+     * @return 长度
+     */
+    public int size() {
+        return stringList.size();
+    }
+
     /** 新增节点 */
     public void add(String string) {
         stringList.add(string);
+    }
+
+    /** 批量新增 */
+    public void addAll(List<String> strings) {
+        stringList.addAll(strings);
     }
 
     /** 获取下标节点 */
@@ -58,6 +72,10 @@ public class MapListString {
     /** 移除节点对象 */
     public void remove(String string) {
         stringList.remove(string);
+    }
+
+    public List<String> subList(int fromIndex, int toIndex) {
+        return stringList.subList(fromIndex, toIndex);
     }
 
 }

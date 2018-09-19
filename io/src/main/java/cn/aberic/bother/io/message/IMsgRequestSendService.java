@@ -30,6 +30,7 @@ import cn.aberic.bother.entity.enums.ProtocolStatus;
 import cn.aberic.bother.entity.io.MessageData;
 import cn.aberic.bother.io.IOContext;
 import cn.aberic.bother.tools.MsgPackTool;
+import io.netty.channel.Channel;
 
 import java.util.List;
 
@@ -93,7 +94,61 @@ public interface IMsgRequestSendService {
      * @param t       请求对象——继承BeanProtoFormat的对象
      */
     default <T extends BeanProtoFormat> void send(String address, ProtocolStatus status, T t) {
-        IOContext.obtain().send(address, new MessageData(status, t.bean2ProtoByteArray()));
+        send(address, status, t.bean2ProtoByteArray());
+    }
+
+    /**
+     * 发送连接请求
+     *
+     * @param channel 请求通道
+     * @param status  请求协议
+     * @param bytes   请求内容字节数组
+     */
+    default void send(Channel channel, ProtocolStatus status, byte[] bytes) {
+        channel.writeAndFlush(new MessageData(status, bytes));
+    }
+
+    /**
+     * 发送连接请求内容为空
+     *
+     * @param channel 请求通道
+     * @param status  请求协议
+     */
+    default void send(Channel channel, ProtocolStatus status) {
+        channel.writeAndFlush(new MessageData(status, null));
+    }
+
+    /**
+     * 发送连接请求
+     *
+     * @param channel 请求通道
+     * @param status  请求协议
+     * @param string  请求字符串内容
+     */
+    default void send(Channel channel, ProtocolStatus status, String string) {
+        send(channel, status, MsgPackTool.string2Bytes(string));
+    }
+
+    /**
+     * 发送连接请求
+     *
+     * @param channel    请求通道
+     * @param status     请求协议
+     * @param stringList 请求字符串集合内容
+     */
+    default void send(Channel channel, ProtocolStatus status, List<String> stringList) {
+        send(channel, status, MsgPackTool.list2Bytes(stringList));
+    }
+
+    /**
+     * 发送连接请求
+     *
+     * @param channel 请求通道
+     * @param status  请求协议
+     * @param t       请求对象——继承BeanProtoFormat的对象
+     */
+    default <T extends BeanProtoFormat> void send(Channel channel, ProtocolStatus status, T t) {
+        send(channel, status, t.bean2ProtoByteArray());
     }
 
 }
