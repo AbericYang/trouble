@@ -25,19 +25,9 @@
 package cn.aberic.bother.io.message;
 
 import cn.aberic.bother.entity.block.Block;
-import cn.aberic.bother.entity.enums.ProtocolStatus;
 import cn.aberic.bother.entity.io.MessageData;
-import cn.aberic.bother.entity.node.Node;
-import cn.aberic.bother.entity.node.NodeBase;
-import cn.aberic.bother.io.IOContext;
-import cn.aberic.bother.tools.Constant;
-import cn.aberic.bother.tools.MsgPackTool;
 import com.google.protobuf.InvalidProtocolBufferException;
 import io.netty.channel.Channel;
-import org.apache.commons.lang3.StringUtils;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * 应答消息业务处理接口
@@ -62,9 +52,15 @@ interface IMsgReceiveService extends IMsgJoinService, IMsgElectionService {
                 log().debug("接收心跳协议，什么也不做");
                 break;
             case JOIN: // 加入新节点协议
-            case JOIN_AS_ELECTION: // 告知新的接入节点准许加入，且为当前Hash合约的竞选节点
             case JOIN_ASK_ELECTION: // 告知新的接入节点当前Hash合约的竞选节点地址
+            case JOIN_AS_ELECTION: // 告知新的接入节点准许加入，且为当前Hash合约的竞选节点
+            case JOIN_AS_ASSIST: // 接收到告知新的接入节点准许加入，且为当前Hash合约竞选节点的协助节点
+            case JOIN_NEW_ASSIST: // 接收到告知当前Hash合约的竞选节点有新的协助节点加入
             case JOIN_NEW_ELECTION: // 告知当前Hash合约的竞选节点有新的竞选节点加入
+            case JOIN_TO_ASSIST: // 接收到告知新的接入节点当前Hash合约的竞选节点的协助节点
+            case JOIN_FOLLOW_ME: // 接收到告知新的接入节点当前Hash合约的基本信息并要求跟随自己
+            case JOIN_FOLLOW_U:
+            case JOIN_RESULT_TO_UPGRADE_NODE_COUNT:
                 try {
                     join(address, channel, msgData);
                 } catch (InvalidProtocolBufferException e) {

@@ -62,10 +62,19 @@ public final class NodeElectionProto {
 
     /**
      * <pre>
+     * 当前Hash合约竞选节点所属子节点总数
+     * </pre>
+     *
+     * <code>int32 nodeCount = 2;</code>
+     */
+    int getNodeCount();
+
+    /**
+     * <pre>
      * 当前选举节点基本信息集合 &lt;= 50
      * </pre>
      *
-     * <code>repeated .NodeBase nodeBases = 2;</code>
+     * <code>repeated .NodeBase nodeBases = 3;</code>
      */
     java.util.List<NodeBaseProto.NodeBase>
         getNodeBasesList();
@@ -74,7 +83,7 @@ public final class NodeElectionProto {
      * 当前选举节点基本信息集合 &lt;= 50
      * </pre>
      *
-     * <code>repeated .NodeBase nodeBases = 2;</code>
+     * <code>repeated .NodeBase nodeBases = 3;</code>
      */
     NodeBaseProto.NodeBase getNodeBases(int index);
     /**
@@ -82,7 +91,7 @@ public final class NodeElectionProto {
      * 当前选举节点基本信息集合 &lt;= 50
      * </pre>
      *
-     * <code>repeated .NodeBase nodeBases = 2;</code>
+     * <code>repeated .NodeBase nodeBases = 3;</code>
      */
     int getNodeBasesCount();
     /**
@@ -90,7 +99,7 @@ public final class NodeElectionProto {
      * 当前选举节点基本信息集合 &lt;= 50
      * </pre>
      *
-     * <code>repeated .NodeBase nodeBases = 2;</code>
+     * <code>repeated .NodeBase nodeBases = 3;</code>
      */
     java.util.List<? extends NodeBaseProto.NodeBaseOrBuilder>
         getNodeBasesOrBuilderList();
@@ -99,7 +108,7 @@ public final class NodeElectionProto {
      * 当前选举节点基本信息集合 &lt;= 50
      * </pre>
      *
-     * <code>repeated .NodeBase nodeBases = 2;</code>
+     * <code>repeated .NodeBase nodeBases = 3;</code>
      */
     NodeBaseProto.NodeBaseOrBuilder getNodeBasesOrBuilder(
             int index);
@@ -109,7 +118,7 @@ public final class NodeElectionProto {
      * 从其它竞选节点获取其两个子节点的而组成的备用节点集合 &lt;= 100
      * </pre>
      *
-     * <code>repeated string addresses = 3;</code>
+     * <code>repeated string addresses = 4;</code>
      */
     java.util.List<String>
         getAddressesList();
@@ -118,7 +127,7 @@ public final class NodeElectionProto {
      * 从其它竞选节点获取其两个子节点的而组成的备用节点集合 &lt;= 100
      * </pre>
      *
-     * <code>repeated string addresses = 3;</code>
+     * <code>repeated string addresses = 4;</code>
      */
     int getAddressesCount();
     /**
@@ -126,7 +135,7 @@ public final class NodeElectionProto {
      * 从其它竞选节点获取其两个子节点的而组成的备用节点集合 &lt;= 100
      * </pre>
      *
-     * <code>repeated string addresses = 3;</code>
+     * <code>repeated string addresses = 4;</code>
      */
     String getAddresses(int index);
     /**
@@ -134,7 +143,7 @@ public final class NodeElectionProto {
      * 从其它竞选节点获取其两个子节点的而组成的备用节点集合 &lt;= 100
      * </pre>
      *
-     * <code>repeated string addresses = 3;</code>
+     * <code>repeated string addresses = 4;</code>
      */
     com.google.protobuf.ByteString
         getAddressesBytes(int index);
@@ -157,6 +166,7 @@ public final class NodeElectionProto {
     }
     private NodeElection() {
       contractHash_ = "";
+      nodeCount_ = 0;
       nodeBases_ = java.util.Collections.emptyList();
       addresses_ = com.google.protobuf.LazyStringArrayList.EMPTY;
     }
@@ -191,20 +201,25 @@ public final class NodeElectionProto {
               contractHash_ = s;
               break;
             }
-            case 18: {
-              if (!((mutable_bitField0_ & 0x00000002) == 0x00000002)) {
+            case 16: {
+
+              nodeCount_ = input.readInt32();
+              break;
+            }
+            case 26: {
+              if (!((mutable_bitField0_ & 0x00000004) == 0x00000004)) {
                 nodeBases_ = new java.util.ArrayList<NodeBaseProto.NodeBase>();
-                mutable_bitField0_ |= 0x00000002;
+                mutable_bitField0_ |= 0x00000004;
               }
               nodeBases_.add(
                   input.readMessage(NodeBaseProto.NodeBase.parser(), extensionRegistry));
               break;
             }
-            case 26: {
+            case 34: {
               String s = input.readStringRequireUtf8();
-              if (!((mutable_bitField0_ & 0x00000004) == 0x00000004)) {
+              if (!((mutable_bitField0_ & 0x00000008) == 0x00000008)) {
                 addresses_ = new com.google.protobuf.LazyStringArrayList();
-                mutable_bitField0_ |= 0x00000004;
+                mutable_bitField0_ |= 0x00000008;
               }
               addresses_.add(s);
               break;
@@ -224,10 +239,10 @@ public final class NodeElectionProto {
         throw new com.google.protobuf.InvalidProtocolBufferException(
             e).setUnfinishedMessage(this);
       } finally {
-        if (((mutable_bitField0_ & 0x00000002) == 0x00000002)) {
+        if (((mutable_bitField0_ & 0x00000004) == 0x00000004)) {
           nodeBases_ = java.util.Collections.unmodifiableList(nodeBases_);
         }
-        if (((mutable_bitField0_ & 0x00000004) == 0x00000004)) {
+        if (((mutable_bitField0_ & 0x00000008) == 0x00000008)) {
           addresses_ = addresses_.getUnmodifiableView();
         }
         this.unknownFields = unknownFields.build();
@@ -290,14 +305,27 @@ public final class NodeElectionProto {
       }
     }
 
-    public static final int NODEBASES_FIELD_NUMBER = 2;
+    public static final int NODECOUNT_FIELD_NUMBER = 2;
+    private int nodeCount_;
+    /**
+     * <pre>
+     * 当前Hash合约竞选节点所属子节点总数
+     * </pre>
+     *
+     * <code>int32 nodeCount = 2;</code>
+     */
+    public int getNodeCount() {
+      return nodeCount_;
+    }
+
+    public static final int NODEBASES_FIELD_NUMBER = 3;
     private java.util.List<NodeBaseProto.NodeBase> nodeBases_;
     /**
      * <pre>
      * 当前选举节点基本信息集合 &lt;= 50
      * </pre>
      *
-     * <code>repeated .NodeBase nodeBases = 2;</code>
+     * <code>repeated .NodeBase nodeBases = 3;</code>
      */
     public java.util.List<NodeBaseProto.NodeBase> getNodeBasesList() {
       return nodeBases_;
@@ -307,7 +335,7 @@ public final class NodeElectionProto {
      * 当前选举节点基本信息集合 &lt;= 50
      * </pre>
      *
-     * <code>repeated .NodeBase nodeBases = 2;</code>
+     * <code>repeated .NodeBase nodeBases = 3;</code>
      */
     public java.util.List<? extends NodeBaseProto.NodeBaseOrBuilder>
         getNodeBasesOrBuilderList() {
@@ -318,7 +346,7 @@ public final class NodeElectionProto {
      * 当前选举节点基本信息集合 &lt;= 50
      * </pre>
      *
-     * <code>repeated .NodeBase nodeBases = 2;</code>
+     * <code>repeated .NodeBase nodeBases = 3;</code>
      */
     public int getNodeBasesCount() {
       return nodeBases_.size();
@@ -328,7 +356,7 @@ public final class NodeElectionProto {
      * 当前选举节点基本信息集合 &lt;= 50
      * </pre>
      *
-     * <code>repeated .NodeBase nodeBases = 2;</code>
+     * <code>repeated .NodeBase nodeBases = 3;</code>
      */
     public NodeBaseProto.NodeBase getNodeBases(int index) {
       return nodeBases_.get(index);
@@ -338,21 +366,21 @@ public final class NodeElectionProto {
      * 当前选举节点基本信息集合 &lt;= 50
      * </pre>
      *
-     * <code>repeated .NodeBase nodeBases = 2;</code>
+     * <code>repeated .NodeBase nodeBases = 3;</code>
      */
     public NodeBaseProto.NodeBaseOrBuilder getNodeBasesOrBuilder(
         int index) {
       return nodeBases_.get(index);
     }
 
-    public static final int ADDRESSES_FIELD_NUMBER = 3;
+    public static final int ADDRESSES_FIELD_NUMBER = 4;
     private com.google.protobuf.LazyStringList addresses_;
     /**
      * <pre>
      * 从其它竞选节点获取其两个子节点的而组成的备用节点集合 &lt;= 100
      * </pre>
      *
-     * <code>repeated string addresses = 3;</code>
+     * <code>repeated string addresses = 4;</code>
      */
     public com.google.protobuf.ProtocolStringList
         getAddressesList() {
@@ -363,7 +391,7 @@ public final class NodeElectionProto {
      * 从其它竞选节点获取其两个子节点的而组成的备用节点集合 &lt;= 100
      * </pre>
      *
-     * <code>repeated string addresses = 3;</code>
+     * <code>repeated string addresses = 4;</code>
      */
     public int getAddressesCount() {
       return addresses_.size();
@@ -373,7 +401,7 @@ public final class NodeElectionProto {
      * 从其它竞选节点获取其两个子节点的而组成的备用节点集合 &lt;= 100
      * </pre>
      *
-     * <code>repeated string addresses = 3;</code>
+     * <code>repeated string addresses = 4;</code>
      */
     public String getAddresses(int index) {
       return addresses_.get(index);
@@ -383,7 +411,7 @@ public final class NodeElectionProto {
      * 从其它竞选节点获取其两个子节点的而组成的备用节点集合 &lt;= 100
      * </pre>
      *
-     * <code>repeated string addresses = 3;</code>
+     * <code>repeated string addresses = 4;</code>
      */
     public com.google.protobuf.ByteString
         getAddressesBytes(int index) {
@@ -407,11 +435,14 @@ public final class NodeElectionProto {
       if (!getContractHashBytes().isEmpty()) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 1, contractHash_);
       }
+      if (nodeCount_ != 0) {
+        output.writeInt32(2, nodeCount_);
+      }
       for (int i = 0; i < nodeBases_.size(); i++) {
-        output.writeMessage(2, nodeBases_.get(i));
+        output.writeMessage(3, nodeBases_.get(i));
       }
       for (int i = 0; i < addresses_.size(); i++) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 3, addresses_.getRaw(i));
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 4, addresses_.getRaw(i));
       }
       unknownFields.writeTo(output);
     }
@@ -425,9 +456,13 @@ public final class NodeElectionProto {
       if (!getContractHashBytes().isEmpty()) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, contractHash_);
       }
+      if (nodeCount_ != 0) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(2, nodeCount_);
+      }
       for (int i = 0; i < nodeBases_.size(); i++) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(2, nodeBases_.get(i));
+          .computeMessageSize(3, nodeBases_.get(i));
       }
       {
         int dataSize = 0;
@@ -455,6 +490,8 @@ public final class NodeElectionProto {
       boolean result = true;
       result = result && getContractHash()
           .equals(other.getContractHash());
+      result = result && (getNodeCount()
+          == other.getNodeCount());
       result = result && getNodeBasesList()
           .equals(other.getNodeBasesList());
       result = result && getAddressesList()
@@ -472,6 +509,8 @@ public final class NodeElectionProto {
       hash = (19 * hash) + getDescriptor().hashCode();
       hash = (37 * hash) + CONTRACTHASH_FIELD_NUMBER;
       hash = (53 * hash) + getContractHash().hashCode();
+      hash = (37 * hash) + NODECOUNT_FIELD_NUMBER;
+      hash = (53 * hash) + getNodeCount();
       if (getNodeBasesCount() > 0) {
         hash = (37 * hash) + NODEBASES_FIELD_NUMBER;
         hash = (53 * hash) + getNodeBasesList().hashCode();
@@ -620,14 +659,16 @@ public final class NodeElectionProto {
         super.clear();
         contractHash_ = "";
 
+        nodeCount_ = 0;
+
         if (nodeBasesBuilder_ == null) {
           nodeBases_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000002);
+          bitField0_ = (bitField0_ & ~0x00000004);
         } else {
           nodeBasesBuilder_.clear();
         }
         addresses_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-        bitField0_ = (bitField0_ & ~0x00000004);
+        bitField0_ = (bitField0_ & ~0x00000008);
         return this;
       }
 
@@ -657,18 +698,19 @@ public final class NodeElectionProto {
         int from_bitField0_ = bitField0_;
         int to_bitField0_ = 0;
         result.contractHash_ = contractHash_;
+        result.nodeCount_ = nodeCount_;
         if (nodeBasesBuilder_ == null) {
-          if (((bitField0_ & 0x00000002) == 0x00000002)) {
+          if (((bitField0_ & 0x00000004) == 0x00000004)) {
             nodeBases_ = java.util.Collections.unmodifiableList(nodeBases_);
-            bitField0_ = (bitField0_ & ~0x00000002);
+            bitField0_ = (bitField0_ & ~0x00000004);
           }
           result.nodeBases_ = nodeBases_;
         } else {
           result.nodeBases_ = nodeBasesBuilder_.build();
         }
-        if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        if (((bitField0_ & 0x00000008) == 0x00000008)) {
           addresses_ = addresses_.getUnmodifiableView();
-          bitField0_ = (bitField0_ & ~0x00000004);
+          bitField0_ = (bitField0_ & ~0x00000008);
         }
         result.addresses_ = addresses_;
         result.bitField0_ = to_bitField0_;
@@ -724,11 +766,14 @@ public final class NodeElectionProto {
           contractHash_ = other.contractHash_;
           onChanged();
         }
+        if (other.getNodeCount() != 0) {
+          setNodeCount(other.getNodeCount());
+        }
         if (nodeBasesBuilder_ == null) {
           if (!other.nodeBases_.isEmpty()) {
             if (nodeBases_.isEmpty()) {
               nodeBases_ = other.nodeBases_;
-              bitField0_ = (bitField0_ & ~0x00000002);
+              bitField0_ = (bitField0_ & ~0x00000004);
             } else {
               ensureNodeBasesIsMutable();
               nodeBases_.addAll(other.nodeBases_);
@@ -741,7 +786,7 @@ public final class NodeElectionProto {
               nodeBasesBuilder_.dispose();
               nodeBasesBuilder_ = null;
               nodeBases_ = other.nodeBases_;
-              bitField0_ = (bitField0_ & ~0x00000002);
+              bitField0_ = (bitField0_ & ~0x00000004);
               nodeBasesBuilder_ =
                 com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                    getNodeBasesFieldBuilder() : null;
@@ -753,7 +798,7 @@ public final class NodeElectionProto {
         if (!other.addresses_.isEmpty()) {
           if (addresses_.isEmpty()) {
             addresses_ = other.addresses_;
-            bitField0_ = (bitField0_ & ~0x00000004);
+            bitField0_ = (bitField0_ & ~0x00000008);
           } else {
             ensureAddressesIsMutable();
             addresses_.addAll(other.addresses_);
@@ -879,12 +924,50 @@ public final class NodeElectionProto {
         return this;
       }
 
+      private int nodeCount_ ;
+      /**
+       * <pre>
+       * 当前Hash合约竞选节点所属子节点总数
+       * </pre>
+       *
+       * <code>int32 nodeCount = 2;</code>
+       */
+      public int getNodeCount() {
+        return nodeCount_;
+      }
+      /**
+       * <pre>
+       * 当前Hash合约竞选节点所属子节点总数
+       * </pre>
+       *
+       * <code>int32 nodeCount = 2;</code>
+       */
+      public Builder setNodeCount(int value) {
+
+        nodeCount_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <pre>
+       * 当前Hash合约竞选节点所属子节点总数
+       * </pre>
+       *
+       * <code>int32 nodeCount = 2;</code>
+       */
+      public Builder clearNodeCount() {
+
+        nodeCount_ = 0;
+        onChanged();
+        return this;
+      }
+
       private java.util.List<NodeBaseProto.NodeBase> nodeBases_ =
         java.util.Collections.emptyList();
       private void ensureNodeBasesIsMutable() {
-        if (!((bitField0_ & 0x00000002) == 0x00000002)) {
+        if (!((bitField0_ & 0x00000004) == 0x00000004)) {
           nodeBases_ = new java.util.ArrayList<NodeBaseProto.NodeBase>(nodeBases_);
-          bitField0_ |= 0x00000002;
+          bitField0_ |= 0x00000004;
          }
       }
 
@@ -896,7 +979,7 @@ public final class NodeElectionProto {
        * 当前选举节点基本信息集合 &lt;= 50
        * </pre>
        *
-       * <code>repeated .NodeBase nodeBases = 2;</code>
+       * <code>repeated .NodeBase nodeBases = 3;</code>
        */
       public java.util.List<NodeBaseProto.NodeBase> getNodeBasesList() {
         if (nodeBasesBuilder_ == null) {
@@ -910,7 +993,7 @@ public final class NodeElectionProto {
        * 当前选举节点基本信息集合 &lt;= 50
        * </pre>
        *
-       * <code>repeated .NodeBase nodeBases = 2;</code>
+       * <code>repeated .NodeBase nodeBases = 3;</code>
        */
       public int getNodeBasesCount() {
         if (nodeBasesBuilder_ == null) {
@@ -924,7 +1007,7 @@ public final class NodeElectionProto {
        * 当前选举节点基本信息集合 &lt;= 50
        * </pre>
        *
-       * <code>repeated .NodeBase nodeBases = 2;</code>
+       * <code>repeated .NodeBase nodeBases = 3;</code>
        */
       public NodeBaseProto.NodeBase getNodeBases(int index) {
         if (nodeBasesBuilder_ == null) {
@@ -938,7 +1021,7 @@ public final class NodeElectionProto {
        * 当前选举节点基本信息集合 &lt;= 50
        * </pre>
        *
-       * <code>repeated .NodeBase nodeBases = 2;</code>
+       * <code>repeated .NodeBase nodeBases = 3;</code>
        */
       public Builder setNodeBases(
           int index, NodeBaseProto.NodeBase value) {
@@ -959,7 +1042,7 @@ public final class NodeElectionProto {
        * 当前选举节点基本信息集合 &lt;= 50
        * </pre>
        *
-       * <code>repeated .NodeBase nodeBases = 2;</code>
+       * <code>repeated .NodeBase nodeBases = 3;</code>
        */
       public Builder setNodeBases(
           int index, NodeBaseProto.NodeBase.Builder builderForValue) {
@@ -977,7 +1060,7 @@ public final class NodeElectionProto {
        * 当前选举节点基本信息集合 &lt;= 50
        * </pre>
        *
-       * <code>repeated .NodeBase nodeBases = 2;</code>
+       * <code>repeated .NodeBase nodeBases = 3;</code>
        */
       public Builder addNodeBases(NodeBaseProto.NodeBase value) {
         if (nodeBasesBuilder_ == null) {
@@ -997,7 +1080,7 @@ public final class NodeElectionProto {
        * 当前选举节点基本信息集合 &lt;= 50
        * </pre>
        *
-       * <code>repeated .NodeBase nodeBases = 2;</code>
+       * <code>repeated .NodeBase nodeBases = 3;</code>
        */
       public Builder addNodeBases(
           int index, NodeBaseProto.NodeBase value) {
@@ -1018,7 +1101,7 @@ public final class NodeElectionProto {
        * 当前选举节点基本信息集合 &lt;= 50
        * </pre>
        *
-       * <code>repeated .NodeBase nodeBases = 2;</code>
+       * <code>repeated .NodeBase nodeBases = 3;</code>
        */
       public Builder addNodeBases(
           NodeBaseProto.NodeBase.Builder builderForValue) {
@@ -1036,7 +1119,7 @@ public final class NodeElectionProto {
        * 当前选举节点基本信息集合 &lt;= 50
        * </pre>
        *
-       * <code>repeated .NodeBase nodeBases = 2;</code>
+       * <code>repeated .NodeBase nodeBases = 3;</code>
        */
       public Builder addNodeBases(
           int index, NodeBaseProto.NodeBase.Builder builderForValue) {
@@ -1054,7 +1137,7 @@ public final class NodeElectionProto {
        * 当前选举节点基本信息集合 &lt;= 50
        * </pre>
        *
-       * <code>repeated .NodeBase nodeBases = 2;</code>
+       * <code>repeated .NodeBase nodeBases = 3;</code>
        */
       public Builder addAllNodeBases(
           Iterable<? extends NodeBaseProto.NodeBase> values) {
@@ -1073,12 +1156,12 @@ public final class NodeElectionProto {
        * 当前选举节点基本信息集合 &lt;= 50
        * </pre>
        *
-       * <code>repeated .NodeBase nodeBases = 2;</code>
+       * <code>repeated .NodeBase nodeBases = 3;</code>
        */
       public Builder clearNodeBases() {
         if (nodeBasesBuilder_ == null) {
           nodeBases_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000002);
+          bitField0_ = (bitField0_ & ~0x00000004);
           onChanged();
         } else {
           nodeBasesBuilder_.clear();
@@ -1090,7 +1173,7 @@ public final class NodeElectionProto {
        * 当前选举节点基本信息集合 &lt;= 50
        * </pre>
        *
-       * <code>repeated .NodeBase nodeBases = 2;</code>
+       * <code>repeated .NodeBase nodeBases = 3;</code>
        */
       public Builder removeNodeBases(int index) {
         if (nodeBasesBuilder_ == null) {
@@ -1107,7 +1190,7 @@ public final class NodeElectionProto {
        * 当前选举节点基本信息集合 &lt;= 50
        * </pre>
        *
-       * <code>repeated .NodeBase nodeBases = 2;</code>
+       * <code>repeated .NodeBase nodeBases = 3;</code>
        */
       public NodeBaseProto.NodeBase.Builder getNodeBasesBuilder(
           int index) {
@@ -1118,7 +1201,7 @@ public final class NodeElectionProto {
        * 当前选举节点基本信息集合 &lt;= 50
        * </pre>
        *
-       * <code>repeated .NodeBase nodeBases = 2;</code>
+       * <code>repeated .NodeBase nodeBases = 3;</code>
        */
       public NodeBaseProto.NodeBaseOrBuilder getNodeBasesOrBuilder(
           int index) {
@@ -1132,7 +1215,7 @@ public final class NodeElectionProto {
        * 当前选举节点基本信息集合 &lt;= 50
        * </pre>
        *
-       * <code>repeated .NodeBase nodeBases = 2;</code>
+       * <code>repeated .NodeBase nodeBases = 3;</code>
        */
       public java.util.List<? extends NodeBaseProto.NodeBaseOrBuilder>
            getNodeBasesOrBuilderList() {
@@ -1147,7 +1230,7 @@ public final class NodeElectionProto {
        * 当前选举节点基本信息集合 &lt;= 50
        * </pre>
        *
-       * <code>repeated .NodeBase nodeBases = 2;</code>
+       * <code>repeated .NodeBase nodeBases = 3;</code>
        */
       public NodeBaseProto.NodeBase.Builder addNodeBasesBuilder() {
         return getNodeBasesFieldBuilder().addBuilder(
@@ -1158,7 +1241,7 @@ public final class NodeElectionProto {
        * 当前选举节点基本信息集合 &lt;= 50
        * </pre>
        *
-       * <code>repeated .NodeBase nodeBases = 2;</code>
+       * <code>repeated .NodeBase nodeBases = 3;</code>
        */
       public NodeBaseProto.NodeBase.Builder addNodeBasesBuilder(
           int index) {
@@ -1170,7 +1253,7 @@ public final class NodeElectionProto {
        * 当前选举节点基本信息集合 &lt;= 50
        * </pre>
        *
-       * <code>repeated .NodeBase nodeBases = 2;</code>
+       * <code>repeated .NodeBase nodeBases = 3;</code>
        */
       public java.util.List<NodeBaseProto.NodeBase.Builder>
            getNodeBasesBuilderList() {
@@ -1183,7 +1266,7 @@ public final class NodeElectionProto {
           nodeBasesBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
               NodeBaseProto.NodeBase, NodeBaseProto.NodeBase.Builder, NodeBaseProto.NodeBaseOrBuilder>(
                   nodeBases_,
-                  ((bitField0_ & 0x00000002) == 0x00000002),
+                  ((bitField0_ & 0x00000004) == 0x00000004),
                   getParentForChildren(),
                   isClean());
           nodeBases_ = null;
@@ -1193,9 +1276,9 @@ public final class NodeElectionProto {
 
       private com.google.protobuf.LazyStringList addresses_ = com.google.protobuf.LazyStringArrayList.EMPTY;
       private void ensureAddressesIsMutable() {
-        if (!((bitField0_ & 0x00000004) == 0x00000004)) {
+        if (!((bitField0_ & 0x00000008) == 0x00000008)) {
           addresses_ = new com.google.protobuf.LazyStringArrayList(addresses_);
-          bitField0_ |= 0x00000004;
+          bitField0_ |= 0x00000008;
          }
       }
       /**
@@ -1203,7 +1286,7 @@ public final class NodeElectionProto {
        * 从其它竞选节点获取其两个子节点的而组成的备用节点集合 &lt;= 100
        * </pre>
        *
-       * <code>repeated string addresses = 3;</code>
+       * <code>repeated string addresses = 4;</code>
        */
       public com.google.protobuf.ProtocolStringList
           getAddressesList() {
@@ -1214,7 +1297,7 @@ public final class NodeElectionProto {
        * 从其它竞选节点获取其两个子节点的而组成的备用节点集合 &lt;= 100
        * </pre>
        *
-       * <code>repeated string addresses = 3;</code>
+       * <code>repeated string addresses = 4;</code>
        */
       public int getAddressesCount() {
         return addresses_.size();
@@ -1224,7 +1307,7 @@ public final class NodeElectionProto {
        * 从其它竞选节点获取其两个子节点的而组成的备用节点集合 &lt;= 100
        * </pre>
        *
-       * <code>repeated string addresses = 3;</code>
+       * <code>repeated string addresses = 4;</code>
        */
       public String getAddresses(int index) {
         return addresses_.get(index);
@@ -1234,7 +1317,7 @@ public final class NodeElectionProto {
        * 从其它竞选节点获取其两个子节点的而组成的备用节点集合 &lt;= 100
        * </pre>
        *
-       * <code>repeated string addresses = 3;</code>
+       * <code>repeated string addresses = 4;</code>
        */
       public com.google.protobuf.ByteString
           getAddressesBytes(int index) {
@@ -1245,7 +1328,7 @@ public final class NodeElectionProto {
        * 从其它竞选节点获取其两个子节点的而组成的备用节点集合 &lt;= 100
        * </pre>
        *
-       * <code>repeated string addresses = 3;</code>
+       * <code>repeated string addresses = 4;</code>
        */
       public Builder setAddresses(
           int index, String value) {
@@ -1262,7 +1345,7 @@ public final class NodeElectionProto {
        * 从其它竞选节点获取其两个子节点的而组成的备用节点集合 &lt;= 100
        * </pre>
        *
-       * <code>repeated string addresses = 3;</code>
+       * <code>repeated string addresses = 4;</code>
        */
       public Builder addAddresses(
           String value) {
@@ -1279,7 +1362,7 @@ public final class NodeElectionProto {
        * 从其它竞选节点获取其两个子节点的而组成的备用节点集合 &lt;= 100
        * </pre>
        *
-       * <code>repeated string addresses = 3;</code>
+       * <code>repeated string addresses = 4;</code>
        */
       public Builder addAllAddresses(
           Iterable<String> values) {
@@ -1294,11 +1377,11 @@ public final class NodeElectionProto {
        * 从其它竞选节点获取其两个子节点的而组成的备用节点集合 &lt;= 100
        * </pre>
        *
-       * <code>repeated string addresses = 3;</code>
+       * <code>repeated string addresses = 4;</code>
        */
       public Builder clearAddresses() {
         addresses_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-        bitField0_ = (bitField0_ & ~0x00000004);
+        bitField0_ = (bitField0_ & ~0x00000008);
         onChanged();
         return this;
       }
@@ -1307,7 +1390,7 @@ public final class NodeElectionProto {
        * 从其它竞选节点获取其两个子节点的而组成的备用节点集合 &lt;= 100
        * </pre>
        *
-       * <code>repeated string addresses = 3;</code>
+       * <code>repeated string addresses = 4;</code>
        */
       public Builder addAddressesBytes(
           com.google.protobuf.ByteString value) {
@@ -1388,10 +1471,11 @@ public final class NodeElectionProto {
   static {
     String[] descriptorData = {
       "\n\027node/NodeElection.proto\032\023node/NodeBase" +
-      ".proto\"U\n\014NodeElection\022\024\n\014contractHash\030\001" +
-      " \001(\t\022\034\n\tnodeBases\030\002 \003(\0132\t.NodeBase\022\021\n\tad" +
-      "dresses\030\003 \003(\tB7\n\"cn.aberic.bother.entity" +
-      ".proto.nodeB\021NodeElectionProtob\006proto3"
+      ".proto\"h\n\014NodeElection\022\024\n\014contractHash\030\001" +
+      " \001(\t\022\021\n\tnodeCount\030\002 \001(\005\022\034\n\tnodeBases\030\003 \003" +
+      "(\0132\t.NodeBase\022\021\n\taddresses\030\004 \003(\tB7\n\"cn.a" +
+      "beric.bother.entity.proto.nodeB\021NodeElec" +
+      "tionProtob\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -1411,7 +1495,7 @@ public final class NodeElectionProto {
     internal_static_NodeElection_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_NodeElection_descriptor,
-        new String[] { "ContractHash", "NodeBases", "Addresses", });
+        new String[] { "ContractHash", "NodeCount", "NodeBases", "Addresses", });
     NodeBaseProto.getDescriptor();
   }
 

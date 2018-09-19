@@ -100,6 +100,26 @@ public class Node implements BeanProtoFormat {
     }
 
     /**
+     * 获取当前Hash合约的竞选节点地址
+     *
+     * @param contractHash 合约Hash
+     * @return 竞选节点地址
+     */
+    public String getElectionAddress(String contractHash) {
+        return addressElectionMap.get(contractHash);
+    }
+
+    /**
+     * 获取当前Hash合约的协助节点地址
+     *
+     * @param contractHash 合约Hash
+     * @return 协助节点地址
+     */
+    public String getAssistAddress(String contractHash) {
+        return nodeBaseAssistMap.get(contractHash).getAddress();
+    }
+
+    /**
      * 新增或更新当前合约Hash协助节点对象
      *
      * @param contractHash 合约Hash
@@ -222,6 +242,7 @@ public class Node implements BeanProtoFormat {
         nodeElectionMap = new HashMap<>();
         NodeElection election = new NodeElection();
         election.setContractHash(Constant.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH);
+        election.setNodeCount(1);
         election.setAddresses(new ArrayList<>());
         election.setNodeBases(new ArrayList<NodeBase>() {{
             add(nodeBase);
@@ -268,7 +289,7 @@ public class Node implements BeanProtoFormat {
     }
 
     /**
-     * 判断本节点是否有当前Hash合约的辅助节点
+     * 判断本节点是否有当前Hash合约的协助节点
      *
      * @param contractHash 当前合约Hash
      * @return 与否

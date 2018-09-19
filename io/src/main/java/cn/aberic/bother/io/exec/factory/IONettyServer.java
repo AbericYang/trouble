@@ -24,6 +24,7 @@
 
 package cn.aberic.bother.io.exec.factory;
 
+import cn.aberic.bother.entity.enums.ProtocolStatus;
 import cn.aberic.bother.entity.io.MessageData;
 import cn.aberic.bother.entity.io.Remote;
 import io.netty.channel.Channel;
@@ -57,6 +58,7 @@ public class IONettyServer implements IOServer {
 
     @Override
     public void shutdown() {
+        channel.writeAndFlush(new MessageData(ProtocolStatus.CLOSE, null));
         channel.close();
     }
 

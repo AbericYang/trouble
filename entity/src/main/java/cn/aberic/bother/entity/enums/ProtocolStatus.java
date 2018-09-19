@@ -58,6 +58,10 @@ public enum ProtocolStatus {
     JOIN_TO_ASSIST("告知新的接入节点当前Hash合约的竞选节点的协助节点", (byte) 0x26),
     /** 告知新的接入节点当前Hash合约的基本信息并要求跟随自己-0x27 */
     JOIN_FOLLOW_ME("告知新的接入节点当前Hash合约的基本信息并要求跟随自己", (byte) 0x27),
+    /** 告知当前Hash合约的协助节点已经加入该协助节点信息-0x28 */
+    JOIN_FOLLOW_U("告知当前Hash合约的协助节点已经加入该协助节点信息", (byte) 0x28),
+    /** 告知当前Hash合约的竞选节点更新其下属子节点总数-0x29 */
+    JOIN_RESULT_TO_UPGRADE_NODE_COUNT("告知当前Hash合约的竞选节点更新其下属子节点总数", (byte) 0x29),
     /** 发起选举协议-0x40 */
     ELECTION("发起选举协议", (byte) 0x40),
     /** 请求当前竞选节点Leader保持心跳协议-0x41 */

@@ -34,6 +34,7 @@ import com.google.protobuf.InvalidProtocolBufferException;
 import io.netty.channel.Channel;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -63,7 +64,7 @@ public interface IMsgJoinService extends IMsgRequestService {
                 nodeBaseJoin.getHashes().forEach(joinsContractHash -> {
                     // 跟自身所持有的Hash进行比较，查找其中相同部分
                     if (Node.obtain().getNodeBase().getHashes().contains(joinsContractHash)) {
-                        joinExec(channel, joinsContractHash, nodeBaseJoin);
+                        join(channel, joinsContractHash, nodeBaseJoin);
                     } else {
                         log().debug("自身无此Hash合约，关闭远程连接及心跳允许");
                         shutdown();
@@ -107,8 +108,7 @@ public interface IMsgJoinService extends IMsgRequestService {
                 nodeHash = new NodeHash().protoByteArray2Bean(msgData.getBytes());
                 // 判断自身是否已有协助节点
                 if (Node.obtain().hasAssistNode(nodeHash.getContractHash())) { // 如果已有，则通知其接入协助节点
-                    NodeBase nodeBaseAssist = Node.obtain().getNodeBaseAssistMap().get(nodeHash.getContractHash());
-                    nodeHash.setNodeBase(nodeBaseAssist);
+                    nodeHash.setNodeBase(Node.obtain().getNodeBaseAssistMap().get(nodeHash.getContractHash()));
                     push(channel, ProtocolStatus.JOIN_TO_ASSIST, nodeHash);
                     shutdown();
                 } else { // 如果没有，则准许其作为协助节点接入
@@ -141,6 +141,11 @@ public interface IMsgJoinService extends IMsgRequestService {
                 }
                 // 获取当前操作Hash
                 String contractHash = nodeAssist.getAddressMap().keySet().iterator().next();
+                // 判断自身是否已加入其它协助节点
+                if (Node.obtain().hasAssistNode(contractHash)) {
+                    log().debug("已加入其它协助节点，关闭连接");
+                    shutdown();
+                }
                 // 获取所有已安装合约并比对当前合约是否其中之一，防作恶
                 List<String> contractHashList = FileTool.getContractHashList();
                 if (!contractHashList.contains(contractHash)) { // 如果给定的合约Hash与已安装不符，则再次请求锚节点加入
@@ -151,19 +156,58 @@ public interface IMsgJoinService extends IMsgRequestService {
                 Node.obtain().putNodeBaseAssistMap(contractHash, nodeAssist.getNodeBase());
                 Node.obtain().putAddressElectionMap(contractHash, nodeAssist.getAddressElectionMap().get(contractHash));
                 Node.obtain().putAddressMap(contractHash, nodeAssist.getAddressMap().get(contractHash));
+                send(channel, ProtocolStatus.JOIN_FOLLOW_U, new NodeHash(contractHash, Node.obtain().getNodeBase().clear()));
+                break;
+            case JOIN_FOLLOW_U: // 告知当前Hash合约的协助节点已经加入该协助节点信息
+                // 获取当前NodeHash
+                nodeHash = new NodeHash().protoByteArray2Bean(msgData.getBytes());
+                // 判断自己是否是当前Hash合约的协助节点
+                if (Node.obtain().isAssistNode(nodeHash.getContractHash())) { // 如果是协助节点
+                    // 将此新节点加入到协助节点所管理的下属节点集合中
+                    Node.obtain().getNodeAssistMap().get(nodeHash.getContractHash()).add(nodeHash.getNodeBase());
+                    // 通知当前竞选节点更新下属节点数量
+                    List<String> strings = new ArrayList<>();
+                    strings.add(nodeHash.getContractHash());
+                    strings.add(String.valueOf(Node.obtain().getNodeAssistMap().get(nodeHash.getContractHash()).size()));
+                    send(Node.obtain().getElectionAddress(nodeHash.getContractHash()), ProtocolStatus.JOIN_RESULT_TO_UPGRADE_NODE_COUNT, strings);
+                } else { // 如果不是协助节点
+                    // 将自己的协助节点发回并关闭连接
+                    nodeHash.setNodeBase(Node.obtain().getNodeBaseAssistMap().get(nodeHash.getContractHash()));
+                    push(channel, ProtocolStatus.JOIN_TO_ASSIST, nodeHash);
+                    shutdown();
+                }
+                break;
+            case JOIN_RESULT_TO_UPGRADE_NODE_COUNT: // 接收到告知当前Hash合约的竞选节点更新其下属子节点总数
+                List<String> strings = MsgPackTool.bytes2List(msgData.getBytes());
+                // 如果接收到的参数不正确
+                if (null == strings || strings.size() != 2) {
+                    log().debug("接收到告知当前Hash合约的竞选节点更新其下属子节点总数——参数不正确");
+                    break;
+                }
+                // 判断当前提交请求节点是否为协助节点
+                if (!StringUtils.equals(address, Node.obtain().getAssistAddress(strings.get(0)))) {
+                    log().debug("当前提交请求节点不是协助节点");
+                    break;
+                }
+                // 判断自身是否为当前竞选节点
+                if (Node.obtain().isElectionNode(strings.get(0))) { // 如果是竞选节点
+                    Node.obtain().getNodeElectionMap().get(strings.get(0)).setNodeCount(Integer.valueOf(strings.get(1)));
+                } else { // 如果不是竞选节点
+                    log().debug("当前节点不是竞选节点，无法更新下属节点总数");
+                    break;
+                }
                 break;
         }
     }
 
-    default void joinExec(Channel channel, String contractHash, NodeBase nodeBaseJoin) {
+    default void join(Channel channel, String contractHash, NodeBase nodeBaseJoin) {
         // 判断自身在当前Hash合约中的身份
         if (Node.obtain().isElectionNode(contractHash)) { // 表示自身为当前Hash合约的竞选节点之一
             // 检查当前竞选节点集合是否满足Constant.ELECTION_COUNT数量
             if (Node.obtain().getNodeElectionMap().get(contractHash).full()) { // 如果满足Constant.ELECTION_COUNT数量
                 // 先判断自己是否有协助节点
                 if (Node.obtain().hasAssistNode(contractHash)) { // 如果有，则将自己的协助节点发回
-                    NodeBase nodeBaseAssist = Node.obtain().getNodeBaseAssistMap().get(contractHash);
-                    NodeHash nodeHash = new NodeHash(contractHash, nodeBaseAssist);
+                    NodeHash nodeHash = new NodeHash(contractHash, Node.obtain().getNodeBaseAssistMap().get(contractHash));
                     push(channel, ProtocolStatus.JOIN_TO_ASSIST, nodeHash);
                     shutdown();
                 } else { // 如果没有，则将此节点当做自身的协助节点

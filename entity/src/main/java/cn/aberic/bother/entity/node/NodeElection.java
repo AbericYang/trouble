@@ -52,7 +52,9 @@ public class NodeElection implements BeanProtoFormat {
 
     /** 当前节点竞选对象所属智能合约Hash */
     private String contractHash;
-    /** 当前Hash合约选举节点基本信息集合 <= 50 */
+    /** 当前Hash合约竞选节点所属子节点总数 */
+    private int nodeCount;
+    /** 当前Hash合约竞选节点基本信息集合 <= 50 */
     private List<NodeBase> nodeBases;
     /** Hash合约从其它竞选节点获取其两个子节点的而组成的备用节点集合 <= 100 */
     private List<String> addresses;
@@ -61,7 +63,6 @@ public class NodeElection implements BeanProtoFormat {
      * 当前Hash合约选举节点基本信息集合添加新节点
      *
      * @param nodeBase 节点基本信息
-     *
      * @return 成功与否
      */
     public boolean add(NodeBase nodeBase) {

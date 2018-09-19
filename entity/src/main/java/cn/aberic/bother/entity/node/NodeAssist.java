@@ -72,6 +72,15 @@ public class NodeAssist implements BeanProtoFormat {
         nodeBases.remove(nodeBase);
     }
 
+    /**
+     * 获取当前竞选节点下节点集合的长度
+     *
+     * @return 节点集合的长度
+     */
+    public int size() {
+        return nodeBases.size();
+    }
+
     /** 节点排序 */
     public void sort(Comparator<NodeBase> c) {
         nodeBases.sort(c);
