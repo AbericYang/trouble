@@ -31,7 +31,6 @@ import cn.aberic.bother.entity.node.NodeBase;
 import cn.aberic.bother.io.IOContext;
 import cn.aberic.bother.tools.Constant;
 import cn.aberic.bother.tools.MsgPackTool;
-import com.google.protobuf.InvalidProtocolBufferException;
 import io.netty.channel.Channel;
 import org.apache.commons.lang3.StringUtils;
 
@@ -53,68 +52,91 @@ public interface IMsgElectionService extends IMsgRequestService {
      * @param address 当前指定通道的连接地址
      * @param msgData 协议消息对象
      */
-    default void election(Channel channel, String address, MessageData msgData) throws InvalidProtocolBufferException {
+    default void election(Channel channel, String address, MessageData msgData) {
         switch (msgData.getProtocol()) {
             case ELECTION: // 接收到发起选举协议
+                election();
                 break;
             case ELECTION_TO_LEADER_HEART_KEEP_ASK: // 接收到请求保持心跳协议
-                // 获取请求该协议的合约Hash
-                String contractHash = MsgPackTool.bytes2String(msgData.getBytes());
-                // 先检查自身是否在当前Hash合约竞选节点集合中
-                if (Node.obtain().isElectionNode(contractHash)) {
-                    // 确定本节点是否包含请求心跳的地址
-                    boolean hasAddress = false;
-                    for (NodeBase nodeBase: Node.obtain().getNodeElectionMap().get(contractHash).getNodeBases()) {
-                        if (StringUtils.equals(nodeBase.getAddress(), address)) {
-                            hasAddress = true;
-                            break;
-                        }
-                    }
-                    // 检查自身是否为当前Hash合约竞选节点集合中的Leader，且当前Hash合约竞选节点集合包含有该节点地址
-                    if (Node.obtain().isElectionNode(contractHash) && hasAddress) {
-                        pushKeep(channel); // 是Leader节点，告知保持长连接
-                    } else { // 自身为当前Hash合约竞选节点之一
-                        // 将合约Hash与建议请求地址打包到List中发送
-                        List<String> list = new ArrayList<>();
-                        list.add(contractHash);
-                        list.add(Node.obtain().getNodeElectionMap().get(contractHash).getNodeBases().get(0).getAddress());
-                        push(channel, ProtocolStatus.ELECTION_TO_LEADER_HEART_KEEP_ASK_CHANGE, list);
-                    }
-                } else { // 不是Leader节点
-                    // 将合约Hash与建议请求地址打包到List中发送
-                    List<String> list = new ArrayList<>();
-                    list.add(contractHash);
-                    list.add(Node.obtain().getAddressElectionMap().get(contractHash));
-                    push(channel, ProtocolStatus.ELECTION_TO_LEADER_HEART_KEEP_ASK_CHANGE, list);
-                }
+                electionToLeaderHeartKeepAsk(channel, address, msgData);
                 break;
             case ELECTION_TO_LEADER_HEART_KEEP_ASK_CHANGE: // 接收到告知请求长连接节点当前Hash合约竞选节点集合Leader发生变更，并返回一个可以尝试再次发起请求长连接的节点地址
-                List<String> arrayResult = MsgPackTool.bytes2List(msgData.getBytes());
-                if (null != arrayResult && arrayResult.size() == 2) {
-                    sendHeartBeatKeepAsk(arrayResult.get(1), arrayResult.get(0));
-                } else {
-                    IOContext.obtain().join(Constant.ANCHOR_IP);
-                }
+                electionToLeaderHeartKeepAskChange(msgData);
                 break;
             case ELECTION_UPGRADE_NODE_COUNT: // 接收到告知当前Hash合约的竞选节点集合更新其下属子节点总数
-                List<String> strings = MsgPackTool.bytes2List(msgData.getBytes());
-                // 如果接收到的参数不正确
-                if (null == strings || strings.size() != 2) {
-                    log().debug("接收到告知当前Hash合约的竞选节点集合更新其下属子节点总数——参数不正确");
-                    break;
-                }
-                // 判断自身是否为当前竞选节点
-                if (Node.obtain().isElectionNode(strings.get(0))) { // 如果是竞选节点
-                    // 更新当前作为竞选节点之一请求地址的下属子节点总数
-                    Node.obtain().getNodeElectionMap().get(strings.get(0)).put(address, Integer.valueOf(strings.get(1)));
-                } else { // 如果不是竞选节点
-                    log().debug("当前节点不是竞选节点，无法更新当前请求节点其下属节点总数");
-                }
+                electionUpgradeNodeCount(address, msgData);
                 break;
         }
     }
+    /** 接收到发起选举协议 */
+    default void election() {
 
-    default void electionExec(String address, MessageData msgData) {
+    }
+
+    /** 接收到请求保持心跳协议 */
+    default void electionToLeaderHeartKeepAsk(Channel channel, String address, MessageData msgData) {
+        // 获取请求该协议的合约Hash
+        String contractHash = MsgPackTool.bytes2String(msgData.getBytes());
+        // 先检查自身是否在当前Hash合约竞选节点集合中
+        if (Node.obtain().isElectionNode(contractHash)) {
+            // 确定本节点是否包含请求心跳的地址
+            boolean hasAddress = false;
+            for (NodeBase nodeBase : Node.obtain().getNodeElectionMap().get(contractHash).getNodeBases()) {
+                if (StringUtils.equals(nodeBase.getAddress(), address)) {
+                    hasAddress = true;
+                    break;
+                }
+            }
+            // 检查自身是否为当前Hash合约竞选节点集合中的Leader，且当前Hash合约竞选节点集合包含有该节点地址
+            if (Node.obtain().isElectionNodeLeader(contractHash) && hasAddress) {
+                pushKeep(channel); // 是Leader节点，告知保持长连接
+            } else { // 自身为当前Hash合约竞选节点之一
+                // 将合约Hash与建议请求地址打包到List中发送
+                List<String> list = new ArrayList<>();
+                list.add(contractHash);
+                list.add(Node.obtain().getNodeElectionMap().get(contractHash).getNodeBases().get(0).getAddress());
+                push(channel, ProtocolStatus.ELECTION_TO_LEADER_HEART_KEEP_ASK_CHANGE, list);
+            }
+        } else { // 不是Leader节点
+            // 将合约Hash与建议请求地址打包到List中发送
+            List<String> list = new ArrayList<>();
+            list.add(contractHash);
+            list.add(Node.obtain().getAddressElectionMap().get(contractHash));
+            push(channel, ProtocolStatus.ELECTION_TO_LEADER_HEART_KEEP_ASK_CHANGE, list);
+        }
+    }
+
+    /** 接收到告知请求长连接节点当前Hash合约竞选节点集合Leader发生变更，并返回一个可以尝试再次发起请求长连接的节点地址 */
+    default void electionToLeaderHeartKeepAskChange(MessageData msgData) {
+        List<String> arrayResult = MsgPackTool.bytes2List(msgData.getBytes());
+        if (null != arrayResult && arrayResult.size() == 2) {
+            sendHeartBeatKeepAsk(arrayResult.get(1), arrayResult.get(0));
+        } else {
+            IOContext.obtain().join(Constant.ANCHOR_IP);
+        }
+    }
+
+    /** 接收到告知当前Hash合约的竞选节点集合更新其下属子节点总数 */
+    default void electionUpgradeNodeCount(String address, MessageData msgData) {
+        List<String> strings = MsgPackTool.bytes2List(msgData.getBytes());
+        // 如果接收到的参数不正确
+        if (null == strings || strings.size() != 2) {
+            log().debug("接收到告知当前Hash合约的竞选节点集合更新其下属子节点总数——参数不正确");
+            shutdown();
+            return;
+        }
+        // 判断自身是否为当前竞选节点
+        if (Node.obtain().isElectionNode(strings.get(0))) { // 如果是竞选节点
+            // 更新当前作为竞选节点之一请求地址的下属子节点总数
+            Node.obtain().getNodeElectionMap().get(strings.get(0)).put(address, Integer.valueOf(strings.get(1)));
+            if (Node.obtain().getNodeElectionMap().get(strings.get(0)).getNodeBases().get(0).getTimestamp() !=
+                    Node.obtain().getNodeBase().getTimestamp()) { // 如果自身不是竞选节点集合中的Leader，关闭连接
+                shutdown();
+            }
+        } else { // 如果不是竞选节点
+            log().debug("当前节点不是竞选节点，无法更新当前请求节点其下属节点总数");
+            shutdown();
+        }
     }
 
 }

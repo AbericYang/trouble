@@ -253,13 +253,23 @@ public class Node implements BeanProtoFormat {
     }
 
     /**
-     * 本节点是否为指定Hash合约竞选节点集合中的Leader
+     * 本节点是否为指定Hash合约竞选节点
      *
      * @param contractHash 合约Hash
      * @return 与否
      */
     public boolean isElectionNode(String contractHash) {
-        if (nodeElectionMap.size() > 0 && nodeElectionMap.containsKey(contractHash)) {
+        return nodeElectionMap.containsKey(contractHash);
+    }
+
+    /**
+     * 本节点是否为指定Hash合约竞选节点集合中的Leader
+     *
+     * @param contractHash 合约Hash
+     * @return 与否
+     */
+    public boolean isElectionNodeLeader(String contractHash) {
+        if (nodeElectionMap.containsKey(contractHash)) {
             return nodeElectionMap.get(contractHash).getNodeBases().get(0).getTimestamp() == nodeBase.getTimestamp();
         }
         return false;

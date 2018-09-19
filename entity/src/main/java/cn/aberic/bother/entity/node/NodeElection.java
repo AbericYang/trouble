@@ -62,6 +62,12 @@ public class NodeElection implements BeanProtoFormat {
     /** 当前Hash合约竞选节点其下属子节点个数集合 */
     private Map<String, Integer> nodesCount;
 
+    /**
+     * 新增或更新当前Hash合约指定地址竞选节点其下属子节点个数集合
+     *
+     * @param address 指定竞选节点地址
+     * @param count   子节点个数集合
+     */
     public void put(String address, int count) {
         nodesCount.put(address, count);
     }
