@@ -191,7 +191,11 @@ public interface IMsgJoinService extends IMsgRequestService {
                 }
                 // 判断自身是否为当前竞选节点
                 if (Node.obtain().isElectionNode(strings.get(0))) { // 如果是竞选节点
+                    // 更新自己的下属节点总数
                     Node.obtain().getNodeElectionMap().get(strings.get(0)).setNodeCount(Integer.valueOf(strings.get(1)));
+                    // 将自己下属节点总数变更在竞选节点集合中进行广播
+                    Node.obtain().getNodeElectionMap().get(strings.get(0)).getNodeBases().forEach(nodeBase ->
+                            send(nodeBase.getAddress(), ProtocolStatus.ELECTION_UPGRADE_NODE_COUNT, strings));
                 } else { // 如果不是竞选节点
                     log().debug("当前节点不是竞选节点，无法更新下属节点总数");
                     break;
@@ -205,6 +209,29 @@ public interface IMsgJoinService extends IMsgRequestService {
         if (Node.obtain().isElectionNode(contractHash)) { // 表示自身为当前Hash合约的竞选节点之一
             // 检查当前竞选节点集合是否满足Constant.ELECTION_COUNT数量
             if (Node.obtain().getNodeElectionMap().get(contractHash).full()) { // 如果满足Constant.ELECTION_COUNT数量
+                // 判断自身下属节点总数是否超额
+                if (Node.obtain().getNodeElectionMap().get(contractHash).getNodeCount() >= Constant.NODE_MAX_COUNT_1) {
+                    // 获取当前竞选节点集合中下属子节点总数最少的竞选节点地址
+                    String addressIdlest = Node.obtain().getNodeElectionMap().get(contractHash).getIdlest();
+                    if (addressIdlest != null && addressIdlest.equals("")) { // 节点总数最少也大于等于1000
+                        // 新增竞选节点
+                        Node.obtain().add(contractHash, nodeBaseJoin);
+                        // 当前Hash合约竞选节点集合内部广播新节点加入
+                        Node.obtain().getNodeElectionMap().get(contractHash).getNodeBases().forEach(
+                                nodeBase -> send(nodeBase.getAddress(), ProtocolStatus.JOIN_NEW_ELECTION, new NodeHash(contractHash, nodeBaseJoin)));
+                        // 将自身在当前竞选节点集合中的信息push给当前加入节点
+                        push(channel, ProtocolStatus.JOIN_AS_ELECTION, Node.obtain().getNodeElectionMap().get(contractHash));
+                        shutdown();
+                    } else if (StringUtils.isNotEmpty(addressIdlest)) {
+                        // 告知新的接入地址当前Hash合约下其它竞选节点地址
+                        push(channel, ProtocolStatus.JOIN_ASK_ELECTION, addressIdlest);
+                        shutdown();
+                    } else { // 强行新增
+                        NodeHash nodeHash = new NodeHash(contractHash, Node.obtain().getNodeBaseAssistMap().get(contractHash));
+                        push(channel, ProtocolStatus.JOIN_TO_ASSIST, nodeHash);
+                        shutdown();
+                    }
+                }
                 // 先判断自己是否有协助节点
                 if (Node.obtain().hasAssistNode(contractHash)) { // 如果有，则将自己的协助节点发回
                     NodeHash nodeHash = new NodeHash(contractHash, Node.obtain().getNodeBaseAssistMap().get(contractHash));
@@ -235,7 +262,7 @@ public interface IMsgJoinService extends IMsgRequestService {
             push(channel, ProtocolStatus.JOIN_FOLLOW_ME, node);
         } else if (Node.obtain().hasNode(contractHash)) { // 表示自身为当前Hash合约的普通节点
             // 告知新的接入地址当前Hash合约下的竞选节点地址
-            push(channel, ProtocolStatus.JOIN_ASK_ELECTION, Node.obtain().getAddressElectionMap().get(contractHash));
+            push(channel, ProtocolStatus.JOIN_ASK_ELECTION, Node.obtain().getElectionAddress(contractHash));
         } else {
             log().debug("怪事，关闭远程连接及心跳允许");
             shutdown();

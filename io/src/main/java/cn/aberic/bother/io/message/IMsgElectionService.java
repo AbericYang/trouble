@@ -88,12 +88,27 @@ public interface IMsgElectionService extends IMsgRequestService {
                     push(channel, ProtocolStatus.ELECTION_TO_LEADER_HEART_KEEP_ASK_CHANGE, list);
                 }
                 break;
-            case ELECTION_TO_LEADER_HEART_KEEP_ASK_CHANGE: // 告知请求长连接节点当前Hash合约竞选节点集合Leader发生变更，并返回一个可以尝试再次发起请求长连接的节点地址
+            case ELECTION_TO_LEADER_HEART_KEEP_ASK_CHANGE: // 接收到告知请求长连接节点当前Hash合约竞选节点集合Leader发生变更，并返回一个可以尝试再次发起请求长连接的节点地址
                 List<String> arrayResult = MsgPackTool.bytes2List(msgData.getBytes());
                 if (null != arrayResult && arrayResult.size() == 2) {
                     sendHeartBeatKeepAsk(arrayResult.get(1), arrayResult.get(0));
                 } else {
                     IOContext.obtain().join(Constant.ANCHOR_IP);
+                }
+                break;
+            case ELECTION_UPGRADE_NODE_COUNT: // 接收到告知当前Hash合约的竞选节点集合更新其下属子节点总数
+                List<String> strings = MsgPackTool.bytes2List(msgData.getBytes());
+                // 如果接收到的参数不正确
+                if (null == strings || strings.size() != 2) {
+                    log().debug("接收到告知当前Hash合约的竞选节点集合更新其下属子节点总数——参数不正确");
+                    break;
+                }
+                // 判断自身是否为当前竞选节点
+                if (Node.obtain().isElectionNode(strings.get(0))) { // 如果是竞选节点
+                    // 更新当前作为竞选节点之一请求地址的下属子节点总数
+                    Node.obtain().getNodeElectionMap().get(strings.get(0)).put(address, Integer.valueOf(strings.get(1)));
+                } else { // 如果不是竞选节点
+                    log().debug("当前节点不是竞选节点，无法更新当前请求节点其下属节点总数");
                 }
                 break;
         }

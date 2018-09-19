@@ -70,6 +70,7 @@ interface IMsgReceiveService extends IMsgJoinService, IMsgElectionService {
             case ELECTION: // 接收到发起选举协议
             case ELECTION_TO_LEADER_HEART_KEEP_ASK: // 接收到请求保持心跳协议
             case ELECTION_TO_LEADER_HEART_KEEP_ASK_CHANGE: // 告知请求长连接节点当前Hash合约竞选节点集合Leader发生变更，并返回一个可以尝试再次发起请求长连接的节点地址
+            case ELECTION_UPGRADE_NODE_COUNT: // 告知当前Hash合约的竞选节点集合更新其下属子节点总数
                 try {
                     election(channel, address, msgData);
                 } catch (InvalidProtocolBufferException e) {

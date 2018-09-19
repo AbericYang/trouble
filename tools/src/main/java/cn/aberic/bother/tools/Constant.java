@@ -55,6 +55,10 @@ public class Constant {
     public static final int NODE_BACK_COUNT = 100;
     /** 节点竞选集合总数 */
     public static final int NODE_ELECTION_COUNT = 50;
+    /** 竞选节点下属节点第一级总数上限 */
+    public static final int NODE_MAX_COUNT_1 = 100;
+    /** 竞选节点下属节点第二级总数上限 */
+    public static final int NODE_MAX_COUNT_2 = 1000;
     /** 节点竞选CPU系数 */
     public static final double NODE_ELECTION_CPU = 0.5;
     /** 节点竞选内存系数 */

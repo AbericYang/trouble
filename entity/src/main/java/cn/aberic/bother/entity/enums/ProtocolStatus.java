@@ -68,6 +68,8 @@ public enum ProtocolStatus {
     ELECTION_TO_LEADER_HEART_KEEP_ASK("请求当前竞选节点Leader保持心跳协议", (byte) 0x41),
     /** 告知请求长连接节点当前Hash合约竞选节点集合Leader发生变更，并返回一个可以尝试再次发起请求长连接的节点地址-0x42 */
     ELECTION_TO_LEADER_HEART_KEEP_ASK_CHANGE("告知请求长连接节点当前Hash合约竞选节点集合Leader发生变更", (byte) 0x42),
+    /** 告知当前Hash合约的竞选节点集合更新其下属子节点总数-0x43 */
+    ELECTION_UPGRADE_NODE_COUNT("告知当前Hash合约的竞选节点集合更新其下属子节点总数", (byte) 0x43),
     /** 区块协议-0x60 */
     BLOCK("区块协议", (byte) 0x60);
 

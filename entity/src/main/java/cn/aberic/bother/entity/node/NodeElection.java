@@ -37,6 +37,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 当前节点竞选对象
@@ -58,6 +59,47 @@ public class NodeElection implements BeanProtoFormat {
     private List<NodeBase> nodeBases;
     /** Hash合约从其它竞选节点获取其两个子节点的而组成的备用节点集合 <= 100 */
     private List<String> addresses;
+    /** 当前Hash合约竞选节点其下属子节点个数集合 */
+    private Map<String, Integer> nodesCount;
+
+    public void put(String address, int count) {
+        nodesCount.put(address, count);
+    }
+
+    /**
+     * 获取当前竞选节点集合中下属子节点总数最少的竞选节点地址
+     * <p>
+     * 返回null表示没有可用节点，自行新增
+     * <p>
+     * 返回空字符串表示所有竞选节点子节点总数都超过NODE_MAX_COUNT_2，新增竞选节点
+     *
+     * @return 竞选节点地址
+     */
+    public String getIdlest() {
+        String address = null; // 即将返回的竞选节点地址
+        int count = -1; // 即将返回的竞选节点下属子节点个数
+        if (nodesCount.size() == 0) {
+            return null;
+        }
+        for (Map.Entry<String, Integer> entry : nodesCount.entrySet()) {
+            if (count == -1) {
+                address = entry.getKey();
+                count = entry.getValue();
+                if (count >= Constant.NODE_MAX_COUNT_2) {
+                    address = "";
+                }
+            } else {
+                if (entry.getValue() < count) {
+                    address = entry.getKey();
+                    count = entry.getValue();
+                    if (count >= Constant.NODE_MAX_COUNT_2) {
+                        address = "";
+                    }
+                }
+            }
+        }
+        return address;
+    }
 
     /**
      * 当前Hash合约选举节点基本信息集合添加新节点
@@ -81,6 +123,7 @@ public class NodeElection implements BeanProtoFormat {
         }
         if (nodeBases.size() < Constant.NODE_ELECTION_COUNT) {
             nodeBases.add(nodeBase);
+            nodesCount.put(nodeBase.getAddress(), 0);
             return true;
         }
         return false;
@@ -94,6 +137,7 @@ public class NodeElection implements BeanProtoFormat {
     public void remove(String address) {
         //使用迭代器的remove()方法删除元素
         nodeBases.removeIf(nodeBase -> StringUtils.equals(nodeBase.getAddress(), address));
+        nodesCount.remove(address);
         addresses.remove(address);
     }
 
