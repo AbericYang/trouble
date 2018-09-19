@@ -234,6 +234,8 @@ public class EntityTest {
         NodeElection nodeElection = new NodeElection();
         nodeElection.setAddresses(stringList);
         nodeElection.setNodeBases(nodeBases);
+        nodeElection.setNodeCount(1);
+        nodeElection.setNodesCount(new HashMap<>());
         MapListString mapListString = new MapListString();
         mapListString.setStringList(stringList);
 

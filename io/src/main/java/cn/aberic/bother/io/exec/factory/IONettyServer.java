@@ -59,7 +59,9 @@ public class IONettyServer implements IOServer {
     @Override
     public void shutdown() {
         channel.writeAndFlush(new MessageData(ProtocolStatus.CLOSE, null));
-        channel.close();
+        if (channel.isActive() || channel.isOpen()) {
+            channel.close();
+        }
     }
 
     @Override

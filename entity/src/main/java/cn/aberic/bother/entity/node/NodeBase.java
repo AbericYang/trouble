@@ -58,8 +58,8 @@ public class NodeBase implements BeanProtoFormat {
     private String accountAddress;
     /** CPU 个数 */
     private int cpu;
-    /** 总内存 */
-    private long totalMemory;
+    /** 可用剩余内存 */
+    private long freeMemory;
     /** 节点执行合约的Hash列表 */
     private List<String> hashes;
 
@@ -69,7 +69,7 @@ public class NodeBase implements BeanProtoFormat {
         accountAddress = Constant.TOKEN_DEFAULT_SECOND_HASH;
         Runtime r = Runtime.getRuntime();
         cpu = r.availableProcessors();
-        totalMemory = r.totalMemory();
+        freeMemory = r.freeMemory();
     }
 
     public NodeBase clear() {

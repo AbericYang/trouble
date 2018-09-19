@@ -99,12 +99,12 @@ public final class NodeBaseProto {
 
     /**
      * <pre>
-     * 总内存
+     * 可用剩余内存
      * </pre>
      *
-     * <code>int64 totalMemory = 5;</code>
+     * <code>int64 freeMemory = 5;</code>
      */
-    long getTotalMemory();
+    long getFreeMemory();
 
     /**
      * <pre>
@@ -162,7 +162,7 @@ public final class NodeBaseProto {
       address_ = "";
       accountAddress_ = "";
       cpu_ = 0;
-      totalMemory_ = 0L;
+      freeMemory_ = 0L;
       hashes_ = com.google.protobuf.LazyStringArrayList.EMPTY;
     }
 
@@ -214,7 +214,7 @@ public final class NodeBaseProto {
             }
             case 40: {
 
-              totalMemory_ = input.readInt64();
+              freeMemory_ = input.readInt64();
               break;
             }
             case 50: {
@@ -372,17 +372,17 @@ public final class NodeBaseProto {
       return cpu_;
     }
 
-    public static final int TOTALMEMORY_FIELD_NUMBER = 5;
-    private long totalMemory_;
+    public static final int FREEMEMORY_FIELD_NUMBER = 5;
+    private long freeMemory_;
     /**
      * <pre>
-     * 总内存
+     * 可用剩余内存
      * </pre>
      *
-     * <code>int64 totalMemory = 5;</code>
+     * <code>int64 freeMemory = 5;</code>
      */
-    public long getTotalMemory() {
-      return totalMemory_;
+    public long getFreeMemory() {
+      return freeMemory_;
     }
 
     public static final int HASHES_FIELD_NUMBER = 6;
@@ -456,8 +456,8 @@ public final class NodeBaseProto {
       if (cpu_ != 0) {
         output.writeInt32(4, cpu_);
       }
-      if (totalMemory_ != 0L) {
-        output.writeInt64(5, totalMemory_);
+      if (freeMemory_ != 0L) {
+        output.writeInt64(5, freeMemory_);
       }
       for (int i = 0; i < hashes_.size(); i++) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 6, hashes_.getRaw(i));
@@ -485,9 +485,9 @@ public final class NodeBaseProto {
         size += com.google.protobuf.CodedOutputStream
           .computeInt32Size(4, cpu_);
       }
-      if (totalMemory_ != 0L) {
+      if (freeMemory_ != 0L) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt64Size(5, totalMemory_);
+          .computeInt64Size(5, freeMemory_);
       }
       {
         int dataSize = 0;
@@ -521,8 +521,8 @@ public final class NodeBaseProto {
           .equals(other.getAccountAddress());
       result = result && (getCpu()
           == other.getCpu());
-      result = result && (getTotalMemory()
-          == other.getTotalMemory());
+      result = result && (getFreeMemory()
+          == other.getFreeMemory());
       result = result && getHashesList()
           .equals(other.getHashesList());
       result = result && unknownFields.equals(other.unknownFields);
@@ -545,9 +545,9 @@ public final class NodeBaseProto {
       hash = (53 * hash) + getAccountAddress().hashCode();
       hash = (37 * hash) + CPU_FIELD_NUMBER;
       hash = (53 * hash) + getCpu();
-      hash = (37 * hash) + TOTALMEMORY_FIELD_NUMBER;
+      hash = (37 * hash) + FREEMEMORY_FIELD_NUMBER;
       hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
-          getTotalMemory());
+          getFreeMemory());
       if (getHashesCount() > 0) {
         hash = (37 * hash) + HASHES_FIELD_NUMBER;
         hash = (53 * hash) + getHashesList().hashCode();
@@ -697,7 +697,7 @@ public final class NodeBaseProto {
 
         cpu_ = 0;
 
-        totalMemory_ = 0L;
+        freeMemory_ = 0L;
 
         hashes_ = com.google.protobuf.LazyStringArrayList.EMPTY;
         bitField0_ = (bitField0_ & ~0x00000020);
@@ -733,7 +733,7 @@ public final class NodeBaseProto {
         result.address_ = address_;
         result.accountAddress_ = accountAddress_;
         result.cpu_ = cpu_;
-        result.totalMemory_ = totalMemory_;
+        result.freeMemory_ = freeMemory_;
         if (((bitField0_ & 0x00000020) == 0x00000020)) {
           hashes_ = hashes_.getUnmodifiableView();
           bitField0_ = (bitField0_ & ~0x00000020);
@@ -802,8 +802,8 @@ public final class NodeBaseProto {
         if (other.getCpu() != 0) {
           setCpu(other.getCpu());
         }
-        if (other.getTotalMemory() != 0L) {
-          setTotalMemory(other.getTotalMemory());
+        if (other.getFreeMemory() != 0L) {
+          setFreeMemory(other.getFreeMemory());
         }
         if (!other.hashes_.isEmpty()) {
           if (hashes_.isEmpty()) {
@@ -1099,40 +1099,40 @@ public final class NodeBaseProto {
         return this;
       }
 
-      private long totalMemory_ ;
+      private long freeMemory_ ;
       /**
        * <pre>
-       * 总内存
+       * 可用剩余内存
        * </pre>
        *
-       * <code>int64 totalMemory = 5;</code>
+       * <code>int64 freeMemory = 5;</code>
        */
-      public long getTotalMemory() {
-        return totalMemory_;
+      public long getFreeMemory() {
+        return freeMemory_;
       }
       /**
        * <pre>
-       * 总内存
+       * 可用剩余内存
        * </pre>
        *
-       * <code>int64 totalMemory = 5;</code>
+       * <code>int64 freeMemory = 5;</code>
        */
-      public Builder setTotalMemory(long value) {
+      public Builder setFreeMemory(long value) {
 
-        totalMemory_ = value;
+        freeMemory_ = value;
         onChanged();
         return this;
       }
       /**
        * <pre>
-       * 总内存
+       * 可用剩余内存
        * </pre>
        *
-       * <code>int64 totalMemory = 5;</code>
+       * <code>int64 freeMemory = 5;</code>
        */
-      public Builder clearTotalMemory() {
+      public Builder clearFreeMemory() {
 
-        totalMemory_ = 0L;
+        freeMemory_ = 0L;
         onChanged();
         return this;
       }
@@ -1333,12 +1333,12 @@ public final class NodeBaseProto {
       descriptor;
   static {
     String[] descriptorData = {
-      "\n\023node/NodeBase.proto\"x\n\010NodeBase\022\021\n\ttim" +
+      "\n\023node/NodeBase.proto\"w\n\010NodeBase\022\021\n\ttim" +
       "estamp\030\001 \001(\003\022\017\n\007address\030\002 \001(\t\022\026\n\016account" +
-      "Address\030\003 \001(\t\022\013\n\003cpu\030\004 \001(\005\022\023\n\013totalMemor" +
-      "y\030\005 \001(\003\022\016\n\006hashes\030\006 \003(\tB3\n\"cn.aberic.bot" +
-      "her.entity.proto.nodeB\rNodeBaseProtob\006pr" +
-      "oto3"
+      "Address\030\003 \001(\t\022\013\n\003cpu\030\004 \001(\005\022\022\n\nfreeMemory" +
+      "\030\005 \001(\003\022\016\n\006hashes\030\006 \003(\tB3\n\"cn.aberic.both" +
+      "er.entity.proto.nodeB\rNodeBaseProtob\006pro" +
+      "to3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -1357,7 +1357,7 @@ public final class NodeBaseProto {
     internal_static_NodeBase_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_NodeBase_descriptor,
-        new String[] { "Timestamp", "Address", "AccountAddress", "Cpu", "TotalMemory", "Hashes", });
+        new String[] { "Timestamp", "Address", "AccountAddress", "Cpu", "FreeMemory", "Hashes", });
   }
 
   // @@protoc_insertion_point(outer_class_scope)

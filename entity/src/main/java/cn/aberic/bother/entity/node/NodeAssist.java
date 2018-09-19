@@ -26,6 +26,7 @@ package cn.aberic.bother.entity.node;
 
 import cn.aberic.bother.entity.BeanProtoFormat;
 import cn.aberic.bother.entity.proto.node.NodeAssistProto;
+import cn.aberic.bother.tools.Constant;
 import com.google.gson.Gson;
 import com.google.protobuf.GeneratedMessageV3;
 import com.google.protobuf.InvalidProtocolBufferException;
@@ -34,7 +35,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.Comparator;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -54,6 +55,9 @@ public class NodeAssist implements BeanProtoFormat {
 
     /** 新增节点 */
     public void add(NodeBase nodeBase) {
+        if (null == nodeBases) {
+            nodeBases = new LinkedList<>();
+        }
         nodeBases.add(nodeBase);
     }
 
@@ -81,9 +85,22 @@ public class NodeAssist implements BeanProtoFormat {
         return nodeBases.size();
     }
 
-    /** 节点排序 */
-    public void sort(Comparator<NodeBase> c) {
-        nodeBases.sort(c);
+    /** 节点排序，前三个节点位置不变，后续节点重新排序 */
+    public void sort() {
+        if (nodeBases.size() <= 4) {
+            return;
+        }
+        List<NodeBase> nodeBasesTmp = new LinkedList<NodeBase>() {{
+            add(nodeBases.get(0));
+            add(nodeBases.get(1));
+            add(nodeBases.get(2));
+        }};
+        nodeBases.remove(0);
+        nodeBases.remove(0);
+        nodeBases.remove(0);
+        nodeBases.sort((n1, n2) ->
+                (int) ((n1.getCpu() - n2.getCpu()) * Constant.NODE_ELECTION_CPU + (n1.getFreeMemory() - n2.getFreeMemory()) * Constant.NODE_ELECTION_MEMORY));
+        nodeBases.addAll(0, nodeBasesTmp);
     }
 
     @Override

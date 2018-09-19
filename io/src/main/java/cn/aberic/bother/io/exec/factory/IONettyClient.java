@@ -94,7 +94,9 @@ public class IONettyClient implements IOClient {
     @Override
     public void shutdown() {
         shutdown = true;
-        channel.close();
+        if (channel.isActive() || channel.isOpen()) {
+            channel.close();
+        }
     }
 
     @Override

@@ -83,7 +83,7 @@ public class EchoServerHandler extends ChannelInboundHandlerAdapter implements I
 
     // 需要处理所有接收到的数据，所以重写channelRead()方法
     @Override
-    public void channelRead(ChannelHandlerContext ctx, Object msg) {
+    public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         receive(ctx.channel(), (MessageData) msg);
     }
 

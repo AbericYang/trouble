@@ -60,11 +60,9 @@ public class Constant {
     /** 竞选节点下属节点第二级总数上限 */
     public static final int NODE_MAX_COUNT_2 = 1000;
     /** 节点竞选CPU系数 */
-    public static final double NODE_ELECTION_CPU = 0.5;
+    public static final double NODE_ELECTION_CPU = 0.6;
     /** 节点竞选内存系数 */
     public static final double NODE_ELECTION_MEMORY = 0.4;
-    /** 节点竞选Token系数 */
-    public static final double NODE_ELECTION_TOKEN = 0.1;
 
     /** node节点对象本地序列化地址 */
     public final static String NODE_FILE = "/Users/Aberic/Documents/tmp/trouble/node/node.bean";

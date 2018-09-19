@@ -59,7 +59,7 @@ public class NodeElection implements BeanProtoFormat {
     private List<NodeBase> nodeBases;
     /** Hash合约从其它竞选节点获取其两个子节点的而组成的备用节点集合 <= 100 */
     private List<String> addresses;
-    /** 当前Hash合约竞选节点其下属子节点个数集合 */
+    /** 当前Hash合约其他竞选节点其下属子节点个数集合 */
     private Map<String, Integer> nodesCount;
 
     /**
@@ -84,7 +84,7 @@ public class NodeElection implements BeanProtoFormat {
     public String getIdlest() {
         String address = null; // 即将返回的竞选节点地址
         int count = -1; // 即将返回的竞选节点下属子节点个数
-        if (nodesCount.size() == 0) {
+        if (null == nodesCount || nodesCount.size() == 0) {
             return null;
         }
         for (Map.Entry<String, Integer> entry : nodesCount.entrySet()) {

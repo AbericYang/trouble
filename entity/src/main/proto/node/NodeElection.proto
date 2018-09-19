@@ -12,4 +12,5 @@ message NodeElection {
     int32 nodeCount = 2; // 当前Hash合约竞选节点所属子节点总数
     repeated NodeBase nodeBases = 3; // 当前选举节点基本信息集合 <= 50
     repeated string addresses = 4; // 从其它竞选节点获取其两个子节点的而组成的备用节点集合 <= 100
+    map<string, int32> nodesCount = 5; // 当前Hash合约其他竞选节点其下属子节点个数集合
 }

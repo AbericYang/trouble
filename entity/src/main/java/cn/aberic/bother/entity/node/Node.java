@@ -43,6 +43,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 
 /**
@@ -243,8 +244,9 @@ public class Node implements BeanProtoFormat {
         NodeElection election = new NodeElection();
         election.setContractHash(Constant.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH);
         election.setNodeCount(1);
-        election.setAddresses(new ArrayList<>());
-        election.setNodeBases(new ArrayList<NodeBase>() {{
+        election.setNodesCount(new HashMap<>());
+        election.setAddresses(new LinkedList<>());
+        election.setNodeBases(new LinkedList<NodeBase>() {{
             add(nodeBase);
         }});
         // 初始化默认自身为当前Hash的竞选节点

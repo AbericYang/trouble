@@ -46,61 +46,6 @@ import java.util.List;
  */
 public interface IMsgJoinService extends IMsgRequestService {
 
-    /**
-     * 应答加入新节点消息业务处理方案，由{@link IMsgReceiveService}继承并启用该方案
-     *
-     * @param address 当前指定通道的连接地址
-     * @param channel 当前指定通道
-     * @param msgData 协议消息对象
-     */
-    default void join(String address, Channel channel, MessageData msgData) throws InvalidProtocolBufferException {
-        switch (msgData.getProtocol()) {
-            case JOIN: // 接收到加入新节点协议
-                log().debug("接收加入新节点[{}]协议，执行加入方案", address);
-                // 获取请求节点基本信息
-                NodeBase nodeBaseJoin = new NodeBase().protoByteArray2Bean(msgData.getBytes());
-                nodeBaseJoin.setAddress(address);
-                // 遍历当前请求加入新节点的请求合约Hash集合
-                nodeBaseJoin.getHashes().forEach(joinsContractHash -> {
-                    // 跟自身所持有的Hash进行比较，查找其中相同部分
-                    if (Node.obtain().getNodeBase().getHashes().contains(joinsContractHash)) {
-                        join(channel, joinsContractHash, nodeBaseJoin);
-                    } else {
-                        log().debug("自身无此Hash合约，关闭远程连接及心跳允许");
-                        shutdown();
-                    }
-                });
-                break;
-            case JOIN_ASK_ELECTION: // 接收到告知新的接入节点当前Hash合约的竞选节点地址
-                joinAskElection(msgData);
-                break;
-            case JOIN_AS_ELECTION: // 接收到告知新的接入节点准许加入，且为当前Hash合约的竞选节点
-                joinAsElection(msgData);
-                break;
-            case JOIN_AS_ASSIST: // 接收到告知新的接入节点准许加入，且为当前Hash合约竞选节点的协助节点
-                joinAsAssist(address, channel, msgData);
-                break;
-            case JOIN_NEW_ASSIST: // 接收到告知当前Hash合约的竞选节点有新的协助节点加入
-                joinNewAssist(address, channel, msgData);
-                break;
-            case JOIN_NEW_ELECTION: // 接收到告知当前Hash合约的所有竞选节点有新的竞选节点加入
-                joinNewElection(msgData);
-                break;
-            case JOIN_TO_ASSIST: // 接收到告知新的接入节点当前Hash合约的竞选节点的协助节点
-                joinToAssist(msgData);
-                break;
-            case JOIN_FOLLOW_ME: // 接收到告知新的接入节点当前Hash合约的基本信息并要求跟随自己
-                joinFollowMe(channel, msgData);
-                break;
-            case JOIN_FOLLOW_U: // 告知当前Hash合约的协助节点已经加入该协助节点信息
-                joinFollowU(channel, msgData);
-                break;
-            case JOIN_RESULT_TO_UPGRADE_NODE_COUNT: // 接收到告知当前Hash合约的竞选节点更新其下属子节点总数
-                joinResultToUpgradeNodeCount(address, msgData);
-                break;
-        }
-    }
-
     /** 接收到加入新节点协议 */
     default void join(Channel channel, String contractHash, NodeBase nodeBaseJoin) {
         // 判断自身在当前Hash合约中的身份
@@ -146,6 +91,7 @@ public interface IMsgJoinService extends IMsgRequestService {
                         nodeBase -> send(nodeBase.getAddress(), ProtocolStatus.JOIN_NEW_ELECTION, new NodeHash(contractHash, nodeBaseJoin)));
                 // 将自身在当前竞选节点集合中的信息push给当前加入节点
                 push(channel, ProtocolStatus.JOIN_AS_ELECTION, Node.obtain().getNodeElectionMap().get(contractHash));
+                shutdown();
             }
         } else if (Node.obtain().isAssistNode(contractHash)) { // 表示自身为当前Hash合约的协助节点之一
             // 将自己当前竞选中的节点集合以及备用节点集合发回
@@ -180,7 +126,7 @@ public interface IMsgJoinService extends IMsgRequestService {
         NodeElection election = new NodeElection().protoByteArray2Bean(msgData.getBytes());
         Node.obtain().putNodeElection(election.getContractHash(), election);
         // 请求与当前竞选节点集合中的Leader保持长连接
-        sendHeartBeatKeepAsk(election.getNodeBases().get(0).getAddress(), election.getContractHash());
+        sendElectionToLeaderHeartBeatKeepAsk(election.getNodeBases().get(0).getAddress(), election.getContractHash());
         shutdown();
     }
 
@@ -286,6 +232,8 @@ public interface IMsgJoinService extends IMsgRequestService {
             strings.add(nodeHash.getContractHash());
             strings.add(String.valueOf(Node.obtain().getNodeAssistMap().get(nodeHash.getContractHash()).size()));
             send(Node.obtain().getElectionAddress(nodeHash.getContractHash()), ProtocolStatus.JOIN_RESULT_TO_UPGRADE_NODE_COUNT, strings);
+            // 对当前Hash合约下的子节点进行排序
+            Node.obtain().getNodeAssistMap().get(nodeHash.getContractHash()).sort();
         } else { // 如果不是协助节点
             // 将自己的协助节点发回并关闭连接
             nodeHash.setNodeBase(Node.obtain().getNodeBaseAssistMap().get(nodeHash.getContractHash()));

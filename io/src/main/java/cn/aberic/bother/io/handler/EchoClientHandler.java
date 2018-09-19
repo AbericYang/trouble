@@ -89,7 +89,7 @@ public class EchoClientHandler extends SimpleChannelInboundHandler<MessageData> 
     // 第一次使用一个持有3 字节的ByteBuf（Netty 的字节容器），第二次使用一个持有2 字节的ByteBuf。
     // 作为一个面向流的协议，TCP 保证了字节数组将会按照服务器发送它们的顺序被接收。
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, MessageData msgData) {
+    protected void channelRead0(ChannelHandlerContext ctx, MessageData msgData) throws Exception {
         switch (msgData.getProtocol()) {
             case KEEP: // 保持心跳协议-0x01
                 log().debug("保持心跳协议");
