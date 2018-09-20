@@ -66,6 +66,8 @@ public class NodeElection implements BeanProtoFormat {
     private Map<String, Integer> nodesCount;
     /** 当前待打包交易集合 */
     private List<Transaction> transactions;
+    /** 接收到上一区块的本地时间戳 */
+    private long timestamp;
 
     public NodeElection() {}
 
@@ -76,6 +78,7 @@ public class NodeElection implements BeanProtoFormat {
         addresses = new LinkedList<>();
         nodesCount = new HashMap<>();
         transactions = new LinkedList<>();
+        timestamp = 0;
     }
 
     /**
@@ -85,6 +88,15 @@ public class NodeElection implements BeanProtoFormat {
      */
     public String obtainLeaderAddress() {
         return nodeBases.get(0).getAddress();
+    }
+
+    /**
+     * 本竞选节点是否为竞选节点集合中的Leader
+     *
+     * @return 与否
+     */
+    public boolean isLeader() {
+        return nodeBases.get(0).getTimestamp() == Node.obtain().getNodeBase().getTimestamp();
     }
 
     /**
@@ -180,6 +192,13 @@ public class NodeElection implements BeanProtoFormat {
     public void remove(String address) {
         //使用迭代器的remove()方法删除元素
         nodeBases.removeIf(nodeBase -> StringUtils.equals(nodeBase.getAddress(), address));
+        nodesCount.remove(address);
+        addresses.remove(address);
+    }
+
+    public void removeLeader() {
+        String address = nodeBases.get(0).getAddress();
+        nodeBases.remove(0);
         nodesCount.remove(address);
         addresses.remove(address);
     }

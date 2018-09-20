@@ -108,13 +108,47 @@ public interface IMsgElectionService extends IMsgRequestService {
         if (Node.obtain().isElectionNode(strings.get(0))) { // 如果是竞选节点
             // 更新当前作为竞选节点之一请求地址的下属子节点总数
             Node.obtain().getNodeElectionMap().get(strings.get(0)).put(address, Integer.valueOf(strings.get(1)));
-            if (Node.obtain().getNodeElectionMap().get(strings.get(0)).getNodeBases().get(0).getTimestamp() !=
-                    Node.obtain().getNodeBase().getTimestamp()) { // 如果自身不是竞选节点集合中的Leader，关闭连接
+            if (Node.obtain().isElectionNodeLeader(strings.get(0))) { // 如果自身不是竞选节点集合中的Leader，关闭连接
                 shutdown();
             }
         } else { // 如果不是竞选节点
             log().debug("当前节点不是竞选节点，无法更新当前请求节点其下属节点总数");
             shutdown();
+        }
+    }
+
+    /** 申请竞选节点Leader强制更换协议 */
+    default void electionLeaderChangeForceRequest(String contractHash) {
+        long now = System.currentTimeMillis();
+        // 检测是否超出出块时间
+        if (now - Node.obtain().getNodeElectionMap().get(contractHash).getTimestamp() > Constant.NODE_ELECTION_OUT_BLOCK_TIME) { // 如果到了出块时间
+            // 如果当前节点为竞选节点集合中Leader节点的下一节点
+            if (Node.obtain().getNodeElectionMap().get(contractHash).getNodeBases().get(1).getTimestamp() == Node.obtain().getNodeBase().getTimestamp()) {
+                // 将当前Hash合约竞选节点集合中的Leader节点强制移除并广播出去
+                Node.obtain().getNodeElectionMap().get(contractHash).removeLeader();
+                // 广播告知当前Hash合约竞选节点集合中的所有节点强制更换Leader
+                Node.obtain().getNodeElectionMap().get(contractHash).getNodeBases().forEach(nodeBase -> {
+                    IOContext.obtain().send(nodeBase.getAddress(), ProtocolStatus.ELECTION_LEADER_CHANGE_FORCE, contractHash);
+                });
+                shutdown();
+                // TODO: 2018/9/20 执行出块操作
+            }
+        }
+    }
+
+    /** 竞选节点Leader强制更换协议 */
+    default void electionLeaderChangeForce(String address, String contractHash) {
+        long now = System.currentTimeMillis();
+        // 检测是否超出出块时间
+        if (now - Node.obtain().getNodeElectionMap().get(contractHash).getTimestamp() > Constant.NODE_ELECTION_OUT_BLOCK_TIME) { // 如果到了出块时间
+            // 如果当前请求节点为竞选节点集合中Leader节点的下一节点
+            if (StringUtils.equals(Node.obtain().getNodeElectionMap().get(contractHash).getNodeBases().get(1).getAddress(), address)) {
+                // 将当前Hash合约竞选节点集合中的Leader节点强制移除
+                Node.obtain().getNodeElectionMap().get(contractHash).removeLeader();
+                shutdown();
+                // 向新的竞选节点Leader发送保持心跳协议
+                sendElectionToLeaderHeartBeatKeepAsk(address, contractHash);
+            }
         }
     }
 

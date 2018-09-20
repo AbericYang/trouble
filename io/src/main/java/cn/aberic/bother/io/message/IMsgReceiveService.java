@@ -29,6 +29,7 @@ import cn.aberic.bother.entity.block.Transaction;
 import cn.aberic.bother.entity.io.MessageData;
 import cn.aberic.bother.entity.node.Node;
 import cn.aberic.bother.entity.node.NodeBase;
+import cn.aberic.bother.tools.MsgPackTool;
 import com.google.protobuf.InvalidProtocolBufferException;
 import io.netty.channel.Channel;
 
@@ -107,6 +108,12 @@ interface IMsgReceiveService extends IMsgJoinService, IMsgElectionService, IMsgT
                 break;
             case ELECTION_UPGRADE_NODE_COUNT: // 接收到告知当前Hash合约的竞选节点集合更新其下属子节点总数
                 electionUpgradeNodeCount(address, msgData);
+                break;
+            case ELECTION_LEADER_CHANGE_FORCE_REQUEST: // 申请竞选节点Leader强制更换协议
+                electionLeaderChangeForceRequest(MsgPackTool.bytes2String(msgData.getBytes()));
+                break;
+            case ELECTION_LEADER_CHANGE_FORCE: // 竞选节点Leader强制更换协议
+                electionLeaderChangeForce(address, MsgPackTool.bytes2String(msgData.getBytes()));
                 break;
             case TRANSACTION: // 接收到交易提交协议
                 transaction(new Transaction().protoByteArray2Bean(msgData.getBytes()));

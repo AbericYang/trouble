@@ -63,6 +63,10 @@ public class Constant {
     public static final double NODE_ELECTION_CPU = 0.6;
     /** 节点竞选内存系数 */
     public static final double NODE_ELECTION_MEMORY = 0.4;
+    /** 节点出块时间间隔/ms */
+    public static final long NODE_ELECTION_OUT_BLOCK_TIME = 10000;
+    /** 节点强制出块时间间隔/ms */
+    public static final long NODE_ELECTION_FORCE_OUT_BLOCK_TIME = 15000;
 
     /** node节点对象本地序列化地址 */
     public final static String NODE_FILE = "/Users/Aberic/Documents/tmp/trouble/node/node.bean";

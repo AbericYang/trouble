@@ -40,8 +40,7 @@ public interface IMsgTransactionService extends IMsgRequestService {
     /** 接收到交易协议 */
     default void transaction(Transaction transaction) {
         // 判断自身是否为竞选节点集合中的Leader，即出块节点
-        if (Node.obtain().isElectionNodeLeader(transaction.getHash())) { // 如果是出块节点
-            Node.obtain().addTransaction(transaction);
+        if (Node.obtain().isElectionNodeLeader(transaction.getHash())) { // 如果是竞选节点集合中的Leader/出块节点
             IOContext.obtain().syncTransactionElection(transaction);
         } else if (Node.obtain().isElectionNode(transaction.getHash())) { // 如果是竞选节点
             IOContext.obtain().syncTransactionElection(transaction);
@@ -54,7 +53,6 @@ public interface IMsgTransactionService extends IMsgRequestService {
     default void transactionSync(Transaction transaction) {
         // 判断自身是否为竞选节点集合中的Leader，即出块节点
         if (Node.obtain().isElectionNodeLeader(transaction.getHash())) { // 如果是出块节点
-            Node.obtain().addTransaction(transaction);
         } else if (Node.obtain().isElectionNode(transaction.getHash())) { // 如果是竞选节点
             Node.obtain().addTransaction(transaction);
         } else { // 如果是普通节点

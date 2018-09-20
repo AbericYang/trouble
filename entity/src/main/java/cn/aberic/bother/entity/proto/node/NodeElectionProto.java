@@ -245,6 +245,15 @@ public final class NodeElectionProto {
      */
     cn.aberic.bother.entity.proto.block.TransactionProto.TransactionOrBuilder getTransactionsOrBuilder(
             int index);
+
+    /**
+     * <pre>
+     * 接收到上一区块的本地时间戳
+     * </pre>
+     *
+     * <code>int64 timestamp = 7;</code>
+     */
+    long getTimestamp();
   }
   /**
    * <pre>
@@ -268,6 +277,7 @@ public final class NodeElectionProto {
       nodeBases_ = java.util.Collections.emptyList();
       addresses_ = com.google.protobuf.LazyStringArrayList.EMPTY;
       transactions_ = java.util.Collections.emptyList();
+      timestamp_ = 0L;
     }
 
     @Override
@@ -343,6 +353,11 @@ public final class NodeElectionProto {
               }
               transactions_.add(
                   input.readMessage(cn.aberic.bother.entity.proto.block.TransactionProto.Transaction.parser(), extensionRegistry));
+              break;
+            }
+            case 56: {
+
+              timestamp_ = input.readInt64();
               break;
             }
             default: {
@@ -701,6 +716,19 @@ public final class NodeElectionProto {
       return transactions_.get(index);
     }
 
+    public static final int TIMESTAMP_FIELD_NUMBER = 7;
+    private long timestamp_;
+    /**
+     * <pre>
+     * 接收到上一区块的本地时间戳
+     * </pre>
+     *
+     * <code>int64 timestamp = 7;</code>
+     */
+    public long getTimestamp() {
+      return timestamp_;
+    }
+
     private byte memoizedIsInitialized = -1;
     @Override
     public final boolean isInitialized() {
@@ -735,6 +763,9 @@ public final class NodeElectionProto {
           5);
       for (int i = 0; i < transactions_.size(); i++) {
         output.writeMessage(6, transactions_.get(i));
+      }
+      if (timestamp_ != 0L) {
+        output.writeInt64(7, timestamp_);
       }
       unknownFields.writeTo(output);
     }
@@ -778,6 +809,10 @@ public final class NodeElectionProto {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(6, transactions_.get(i));
       }
+      if (timestamp_ != 0L) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt64Size(7, timestamp_);
+      }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
       return size;
@@ -806,6 +841,8 @@ public final class NodeElectionProto {
           other.internalGetNodesCount());
       result = result && getTransactionsList()
           .equals(other.getTransactionsList());
+      result = result && (getTimestamp()
+          == other.getTimestamp());
       result = result && unknownFields.equals(other.unknownFields);
       return result;
     }
@@ -837,6 +874,9 @@ public final class NodeElectionProto {
         hash = (37 * hash) + TRANSACTIONS_FIELD_NUMBER;
         hash = (53 * hash) + getTransactionsList().hashCode();
       }
+      hash = (37 * hash) + TIMESTAMP_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+          getTimestamp());
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
       return hash;
@@ -1017,6 +1057,8 @@ public final class NodeElectionProto {
         } else {
           transactionsBuilder_.clear();
         }
+        timestamp_ = 0L;
+
         return this;
       }
 
@@ -1072,6 +1114,7 @@ public final class NodeElectionProto {
         } else {
           result.transactions_ = transactionsBuilder_.build();
         }
+        result.timestamp_ = timestamp_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -1191,6 +1234,9 @@ public final class NodeElectionProto {
               transactionsBuilder_.addAllMessages(other.transactions_);
             }
           }
+        }
+        if (other.getTimestamp() != 0L) {
+          setTimestamp(other.getTimestamp());
         }
         this.mergeUnknownFields(other.unknownFields);
         onChanged();
@@ -2253,6 +2299,44 @@ public final class NodeElectionProto {
         }
         return transactionsBuilder_;
       }
+
+      private long timestamp_ ;
+      /**
+       * <pre>
+       * 接收到上一区块的本地时间戳
+       * </pre>
+       *
+       * <code>int64 timestamp = 7;</code>
+       */
+      public long getTimestamp() {
+        return timestamp_;
+      }
+      /**
+       * <pre>
+       * 接收到上一区块的本地时间戳
+       * </pre>
+       *
+       * <code>int64 timestamp = 7;</code>
+       */
+      public Builder setTimestamp(long value) {
+
+        timestamp_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <pre>
+       * 接收到上一区块的本地时间戳
+       * </pre>
+       *
+       * <code>int64 timestamp = 7;</code>
+       */
+      public Builder clearTimestamp() {
+
+        timestamp_ = 0L;
+        onChanged();
+        return this;
+      }
       @Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
@@ -2326,15 +2410,15 @@ public final class NodeElectionProto {
   static {
     String[] descriptorData = {
       "\n\027node/NodeElection.proto\032\023node/NodeBase" +
-      ".proto\032\027block/Transaction.proto\"\362\001\n\014Node" +
+      ".proto\032\027block/Transaction.proto\"\205\002\n\014Node" +
       "Election\022\024\n\014contractHash\030\001 \001(\t\022\021\n\tnodeCo" +
       "unt\030\002 \001(\005\022\034\n\tnodeBases\030\003 \003(\0132\t.NodeBase\022" +
       "\021\n\taddresses\030\004 \003(\t\0221\n\nnodesCount\030\005 \003(\0132\035" +
       ".NodeElection.NodesCountEntry\022\"\n\014transac" +
-      "tions\030\006 \003(\0132\014.Transaction\0321\n\017NodesCountE" +
-      "ntry\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002 \001(\005:\0028\001B7\n\"" +
-      "cn.aberic.bother.entity.proto.nodeB\021Node" +
-      "ElectionProtob\006proto3"
+      "tions\030\006 \003(\0132\014.Transaction\022\021\n\ttimestamp\030\007" +
+      " \001(\003\0321\n\017NodesCountEntry\022\013\n\003key\030\001 \001(\t\022\r\n\005" +
+      "value\030\002 \001(\005:\0028\001B7\n\"cn.aberic.bother.enti" +
+      "ty.proto.nodeB\021NodeElectionProtob\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -2355,7 +2439,7 @@ public final class NodeElectionProto {
     internal_static_NodeElection_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_NodeElection_descriptor,
-        new String[] { "ContractHash", "NodeCount", "NodeBases", "Addresses", "NodesCount", "Transactions", });
+        new String[] { "ContractHash", "NodeCount", "NodeBases", "Addresses", "NodesCount", "Transactions", "Timestamp", });
     internal_static_NodeElection_NodesCountEntry_descriptor =
       internal_static_NodeElection_descriptor.getNestedTypes().get(0);
     internal_static_NodeElection_NodesCountEntry_fieldAccessorTable = new

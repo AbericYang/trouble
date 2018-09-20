@@ -52,7 +52,7 @@ interface IMsgRequestService extends IMsgRequestSendService, IMsgRequestPushServ
     }
 
     /**
-     * 在指定地址发送保持心跳协议请求
+     * 请求当前竞选节点Leader保持心跳协议
      *
      * @param address      指定地址
      * @param contractHash 合约Hash

@@ -87,8 +87,11 @@ public interface IMsgJoinService extends IMsgRequestService {
             } else { // 如果不满足，则将该节点当做竞选节点之一
                 Node.obtain().add(contractHash, nodeBaseJoin);
                 // 当前Hash合约竞选节点集合内部广播新节点加入
-                Node.obtain().getNodeElectionMap().get(contractHash).getNodeBases().forEach(
-                        nodeBase -> send(nodeBase.getAddress(), ProtocolStatus.JOIN_NEW_ELECTION, new NodeHash(contractHash, nodeBaseJoin)));
+                Node.obtain().getNodeElectionMap().get(contractHash).getNodeBases().forEach(nodeBase -> {
+                    if (nodeBase.getTimestamp() != Node.obtain().getNodeBase().getTimestamp()) {
+                        send(nodeBase.getAddress(), ProtocolStatus.JOIN_NEW_ELECTION, new NodeHash(contractHash, nodeBaseJoin));
+                    }
+                });
                 // 将自身在当前竞选节点集合中的信息push给当前加入节点
                 push(channel, ProtocolStatus.JOIN_AS_ELECTION, Node.obtain().getNodeElectionMap().get(contractHash));
                 shutdown();

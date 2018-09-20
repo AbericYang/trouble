@@ -99,6 +99,36 @@ public class Node implements BeanProtoFormat {
         return instance;
     }
 
+    private static Node getNode() {
+        Node node;
+        String nodeJsonString = null;
+        try {
+            nodeJsonString = FileTool.getStringFromPath(Constant.NODE_FILE);
+        } catch (IOException e) {
+            FileTool.createFile(Constant.NODE_FILE);
+        }
+        if (StringUtils.isEmpty(nodeJsonString)) {
+            node = new Node();
+        } else {
+            node = JSON.parseObject(nodeJsonString, new TypeReference<Node>() {});
+        }
+        return node;
+    }
+
+    private Node() {
+        nodeBase = new NodeBase();
+        addressElectionMap = new HashMap<>();
+        nodeBaseAssistMap = new HashMap<>();
+        addressMap = new HashMap<>();
+        nodeAssistMap = new HashMap<>();
+        nodeElectionMap = new HashMap<>();
+        NodeElection election = new NodeElection(Constant.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH);
+        election.add(nodeBase);
+        // 初始化默认自身为当前Hash的竞选节点
+        nodeElectionMap.put(Constant.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH, election);
+        FileTool.write(Constant.NODE_FILE, JSON.toJSONString(instance));
+    }
+
     /**
      * 当前节点作为Leader节点时接收新增交易，以作后续打包处理
      *
@@ -229,36 +259,6 @@ public class Node implements BeanProtoFormat {
      */
     public void removeNodeAssistMap(String contractHash) {
         nodeAssistMap.remove(contractHash);
-        FileTool.write(Constant.NODE_FILE, JSON.toJSONString(instance));
-    }
-
-    private static Node getNode() {
-        Node node;
-        String nodeJsonString = null;
-        try {
-            nodeJsonString = FileTool.getStringFromPath(Constant.NODE_FILE);
-        } catch (IOException e) {
-            FileTool.createFile(Constant.NODE_FILE);
-        }
-        if (StringUtils.isEmpty(nodeJsonString)) {
-            node = new Node();
-        } else {
-            node = JSON.parseObject(nodeJsonString, new TypeReference<Node>() {});
-        }
-        return node;
-    }
-
-    private Node() {
-        nodeBase = new NodeBase();
-        addressElectionMap = new HashMap<>();
-        nodeBaseAssistMap = new HashMap<>();
-        addressMap = new HashMap<>();
-        nodeAssistMap = new HashMap<>();
-        nodeElectionMap = new HashMap<>();
-        NodeElection election = new NodeElection(Constant.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH);
-        election.add(nodeBase);
-        // 初始化默认自身为当前Hash的竞选节点
-        nodeElectionMap.put(Constant.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH, election);
         FileTool.write(Constant.NODE_FILE, JSON.toJSONString(instance));
     }
 

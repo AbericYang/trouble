@@ -152,11 +152,21 @@ public class IOContext {
      *
      * @param address 请求地址
      * @param status  消息协议
+     * @param string  请求消息字符串
+     */
+    public void send(String address, ProtocolStatus status, String string) {
+        send(address, new MessageData(status, MsgPackTool.string2Bytes(string)));
+    }
+
+    /**
+     * 作为客户端发起请求协议
+     *
+     * @param address 请求地址
+     * @param status  消息协议
      * @param t       请求对象——继承BeanProtoFormat的对象
      */
     public <T extends BeanProtoFormat> void send(String address, ProtocolStatus status, T t) {
-        MessageData msgData = new MessageData(status, t.bean2ProtoByteArray());
-        send(address, msgData);
+        send(address, new MessageData(status, t.bean2ProtoByteArray()));
     }
 
     /**

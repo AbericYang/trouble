@@ -15,4 +15,5 @@ message NodeElection {
     repeated string addresses = 4; // 从其它竞选节点获取其两个子节点的而组成的备用节点集合 <= 100
     map<string, int32> nodesCount = 5; // 当前Hash合约其他竞选节点其下属子节点个数集合
     repeated Transaction transactions = 6; // 当前待打包交易集合
+    int64 timestamp = 7; // 接收到上一区块的本地时间戳
 }

@@ -24,6 +24,10 @@
 
 package cn.aberic.bother.scheduled;
 
+import cn.aberic.bother.entity.enums.ProtocolStatus;
+import cn.aberic.bother.entity.node.Node;
+import cn.aberic.bother.io.IOContext;
+import cn.aberic.bother.tools.Constant;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -39,13 +43,27 @@ public class ScheduledTasks {
 
     /**
      * fixedDelay = x 表示当前方法执行完毕x ms后，Spring scheduling会再次调用该方法<p>
-     * 选举定时检测方案<p>
+     * 出块超时检测方案<p>
      * 每一次执行就会检查当前出块节点是否到出块时间<p>
      * 如果到出块时间，则发送给竞选节点集合中的协助节点进行催促
      */
     @Scheduled(fixedDelay = 5000)
     public void electionCheck() {
-        log.info("===============>>>>>>>>>> fixedDelay = 5000 <<<<<<<<<<===============");
+        log.debug("===============>>>>>>>>>> 出块超时检测 <<<<<<<<<<===============");
+        long now = System.currentTimeMillis();
+        Node.obtain().getNodeElectionMap().forEach((contractHash, nodeElection) -> {
+            if (now - nodeElection.getTimestamp() > Constant.NODE_ELECTION_OUT_BLOCK_TIME) { // 如果到了出块时间
+                log.debug("===============>>>>>>>>>> 出块超时 <<<<<<<<<<===============");
+                if (!nodeElection.isLeader()) { // 如果自身不是出块节点
+                    // 同步下一节点出块，当前出块节点放弃出块权
+                    IOContext.obtain().send(
+                            nodeElection.getNodeBases().get(1).getAddress(),
+                            ProtocolStatus.ELECTION_LEADER_CHANGE_FORCE_REQUEST,
+                            nodeElection.getContractHash());
+                    log.debug("===============>>>>>>>>>> 出块超时，自身不是出块节点 <<<<<<<<<<===============");
+                }
+            }
+        });
     }
 
 }
