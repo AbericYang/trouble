@@ -28,6 +28,7 @@ import cn.aberic.bother.block.exec.service.IDataExec;
 import cn.aberic.bother.consensus.exec.Proactive;
 import cn.aberic.bother.entity.block.Block;
 import cn.aberic.bother.entity.block.BlockInfo;
+import cn.aberic.bother.entity.block.BlockOut;
 import cn.aberic.bother.entity.enums.ConsensusStatus;
 import cn.aberic.bother.tools.Constant;
 import cn.aberic.bother.storage.FileComponent;
@@ -79,7 +80,7 @@ public class BlockStorage extends BlockAS implements IDataExec {
      *
      * @param block 待同步区块对象
      */
-    public BlockInfo snyc(Block block) {
+    public BlockOut sync(Block block) {
 //        // 获取当前待存储区块高度
 //        int height = block.getHeader().getHeight();
 //        // 根据高度查询是否已存在本地区块对象
@@ -105,8 +106,10 @@ public class BlockStorage extends BlockAS implements IDataExec {
      *
      * @param block 待存储区块对象
      */
-    private BlockInfo save(Block block) {
-        BlockInfo blockInfo = getBlockExec().createOrUpdate(block);
+    private BlockOut save(Block block) {
+        // TODO: 2018/9/20 区块不应该被直接存入，而是被获取到之后再执行存入操作，同时将获取到的区块广播出去
+        BlockOut out = getBlockExec().createOrUpdate(block);
+        BlockInfo blockInfo = out.getBlockInfo();
         String blockIndex = String.format("%s,%s,%s,%s", blockInfo.getNum(), blockInfo.getLine(), blockInfo.getBlockHash(), blockInfo.getHeight());
         getBlockIndexExec().createOrUpdate(blockIndex);
         StringBuilder sb = new StringBuilder();
@@ -115,7 +118,7 @@ public class BlockStorage extends BlockAS implements IDataExec {
             sb.append(",").append(s);
         }
         getBlockTransactionIndexExec().createOrUpdate(sb.toString());
-        return blockInfo;
+        return out;
     }
 
     /**
@@ -150,9 +153,7 @@ public class BlockStorage extends BlockAS implements IDataExec {
             Block blockFromPreFile = null;
             try {
                 blockFromPreFile = getBlockIndexExec().getByHeight(height - 1);
-            } catch (SearchDataNotFoundException e) {
-                e.printStackTrace();
-            } catch (SearchDataTimeoutException e) {
+            } catch (SearchDataNotFoundException | SearchDataTimeoutException e) {
                 e.printStackTrace();
             }
             // 如果待同步区块上一hash与上一区块的当前hash相同

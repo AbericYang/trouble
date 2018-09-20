@@ -26,6 +26,7 @@ package cn.aberic.bother.block.exec.service;
 
 import cn.aberic.bother.entity.block.Block;
 import cn.aberic.bother.entity.block.BlockInfo;
+import cn.aberic.bother.entity.block.BlockOut;
 import cn.aberic.bother.entity.block.Transaction;
 import cn.aberic.bother.tools.DeflaterTool;
 import cn.aberic.bother.tools.FileTool;
@@ -51,7 +52,7 @@ public interface IBlockExec extends IExec<Block> {
      * @param block 区块对象
      */
     @Override
-    default BlockInfo createOrUpdate(Block block) {
+    default BlockOut createOrUpdate(Block block) {
         BlockInfo blockInfo = new BlockInfo();
         int height = 0, line = 0;
         String currentDataHash;
@@ -95,7 +96,7 @@ public interface IBlockExec extends IExec<Block> {
                 }
             }
             List<String> transactionHashList = new ArrayList<>();
-            for (Transaction transaction: block.getBody().getTransactions()) {
+            for (Transaction transaction : block.getBody().getTransactions()) {
                 transactionHashList.add(transaction.getTxHash());
             }
             blockInfo.setHeight(height);
@@ -106,7 +107,7 @@ public interface IBlockExec extends IExec<Block> {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return blockInfo;
+        return new BlockOut(block, blockInfo);
     }
 
     default int getHeight() {

@@ -25,6 +25,7 @@
 package cn.aberic.bother.block.exec.service;
 
 import cn.aberic.bother.entity.block.BlockInfo;
+import cn.aberic.bother.entity.block.BlockOut;
 import cn.aberic.bother.storage.IFile;
 
 /**
@@ -47,6 +48,6 @@ public interface IExec<T> extends IFile<T> {
      *
      * @return 区块在区块文件中的基本信息对象
      */
-    BlockInfo createOrUpdate(T t);
+    BlockOut createOrUpdate(T t);
 
 }

@@ -22,22 +22,17 @@
  * SOFTWARE.
  */
 
-package cn.aberic.bother.block.exec.service;
-
-import cn.aberic.bother.entity.block.BlockOut;
+package cn.aberic.bother.io;
 
 /**
- * 索引文件本地读写公共接口——数据操作层-data manipulation
- * <p>
- * 作者：Aberic on 2018/8/27 21:39
+ * 出块对象
+ *
+ * 作者：Aberic on 2018/09/20 17:19
  * <p>
  * 邮箱：abericyang@gmail.com
  */
-public interface IIndexExec extends IExec<String> {
+public class OutBlock {
 
-    default BlockOut createOrUpdate(String blockInfo) {
-        cou(blockInfo);
-        return null;
-    }
+
 
 }

@@ -22,22 +22,27 @@
  * SOFTWARE.
  */
 
-package cn.aberic.bother.block.exec.service;
+package cn.aberic.bother.entity.block;
 
-import cn.aberic.bother.entity.block.BlockOut;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
- * 索引文件本地读写公共接口——数据操作层-data manipulation
+ * 出块辅助对象
  * <p>
- * 作者：Aberic on 2018/8/27 21:39
+ * 作者：Aberic on 2018/09/20 16:57
  * <p>
  * 邮箱：abericyang@gmail.com
  */
-public interface IIndexExec extends IExec<String> {
+@Setter
+@Getter
+public class BlockOut {
 
-    default BlockOut createOrUpdate(String blockInfo) {
-        cou(blockInfo);
-        return null;
+    private Block block;
+    private BlockInfo blockInfo;
+
+    public BlockOut(Block block, BlockInfo blockInfo) {
+        this.block = block;
+        this.blockInfo = blockInfo;
     }
-
 }

@@ -37,7 +37,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Date;
 
 /**
  * 作者：Aberic on 2018/08/24 12:24
@@ -83,7 +82,7 @@ public class BlockFileTest {
         BlockStorage blockStorage = new BlockStorage(Constant.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH);
         for (int blockCount = 45849; blockCount < 5000000; blockCount++) {
             log.debug("================= blockCount = {} =================", blockCount);
-            blockStorage.snyc(EntityTest.createBlock(blockCount));
+            blockStorage.sync(EntityTest.createBlock(blockCount));
         }
     }
 
