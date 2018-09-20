@@ -43,6 +43,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -133,6 +134,7 @@ public class Node implements BeanProtoFormat {
      * 当前节点作为Leader节点时接收新增交易，以作后续打包处理
      *
      * @param transaction 交易对象
+     *
      * @return 如果不是Leader节点，则不处理本次交易
      */
     public boolean addTransaction(Transaction transaction) {
@@ -145,9 +147,21 @@ public class Node implements BeanProtoFormat {
     }
 
     /**
+     * 通过合约Hash获取当前竞选节点中交易集合
+     *
+     * @param contractHash 合约Hash
+     *
+     * @return 交易集合
+     */
+    public List<Transaction> getTransactions(String contractHash) {
+        return Node.obtain().getNodeElectionMap().get(contractHash).getTransactions();
+    }
+
+    /**
      * 获取当前Hash合约的竞选节点地址
      *
      * @param contractHash 合约Hash
+     *
      * @return 竞选节点地址
      */
     public String getElectionAddress(String contractHash) {
@@ -158,6 +172,7 @@ public class Node implements BeanProtoFormat {
      * 获取当前Hash合约的协助节点地址
      *
      * @param contractHash 合约Hash
+     *
      * @return 协助节点地址
      */
     public String getAssistAddress(String contractHash) {
@@ -266,6 +281,7 @@ public class Node implements BeanProtoFormat {
      * 本节点是否为指定Hash合约竞选节点
      *
      * @param contractHash 合约Hash
+     *
      * @return 与否
      */
     public boolean isElectionNode(String contractHash) {
@@ -276,6 +292,7 @@ public class Node implements BeanProtoFormat {
      * 本节点是否为指定Hash合约竞选节点集合中的Leader
      *
      * @param contractHash 合约Hash
+     *
      * @return 与否
      */
     public boolean isElectionNodeLeader(String contractHash) {
@@ -289,6 +306,7 @@ public class Node implements BeanProtoFormat {
      * 本节点是否为指定Hash合约竞选节点之一的辅助节点
      *
      * @param contractHash 合约Hash
+     *
      * @return 与否
      */
     public boolean isAssistNode(String contractHash) {
@@ -302,6 +320,7 @@ public class Node implements BeanProtoFormat {
      * 本节点是否为指定Hash合约中的节点
      *
      * @param contractHash 指定Hash合约
+     *
      * @return 与否
      */
     public boolean hasNode(String contractHash) {
@@ -312,6 +331,7 @@ public class Node implements BeanProtoFormat {
      * 判断本节点是否有当前Hash合约的协助节点
      *
      * @param contractHash 当前合约Hash
+     *
      * @return 与否
      */
     public boolean hasAssistNode(String contractHash) {
@@ -322,6 +342,7 @@ public class Node implements BeanProtoFormat {
      * 当前Hash合约选举节点基本信息集合添加新节点
      *
      * @param nodeBase 节点基本信息
+     *
      * @return 成功与否
      */
     public boolean add(String contractHash, NodeBase nodeBase) {

@@ -24,11 +24,13 @@
 
 package cn.aberic.bother.io.message;
 
+import cn.aberic.bother.entity.block.BlockOut;
 import cn.aberic.bother.entity.enums.ProtocolStatus;
 import cn.aberic.bother.entity.io.MessageData;
 import cn.aberic.bother.entity.node.Node;
 import cn.aberic.bother.entity.node.NodeBase;
 import cn.aberic.bother.io.IOContext;
+import cn.aberic.bother.io.OutBlock;
 import cn.aberic.bother.tools.Constant;
 import cn.aberic.bother.tools.MsgPackTool;
 import io.netty.channel.Channel;
@@ -131,7 +133,19 @@ public interface IMsgElectionService extends IMsgRequestService {
                     IOContext.obtain().send(nodeBase.getAddress(), ProtocolStatus.ELECTION_LEADER_CHANGE_FORCE, contractHash);
                 });
                 shutdown();
-                // TODO: 2018/9/20 执行出块操作
+                // 执行出块操作
+                OutBlock outBlock = new OutBlock(contractHash);
+                // 生成出块区块
+                BlockOut blockOut = outBlock.out(Node.obtain().getTransactions(contractHash));
+                // 将出块区块在竞选节点集合中进行广播
+                Node.obtain().getNodeElectionMap().get(contractHash).getNodeBases().forEach(nodeBase -> {
+                    IOContext.obtain().broadcastElection(contractHash, new MessageData(ProtocolStatus.BLOCK_OUT, blockOut.bean2ProtoByteArray()));
+                });
+                // 将出块区块广播给协助节点
+                IOContext.obtain().push(Node.obtain().getAssistAddress(contractHash), new MessageData(ProtocolStatus.BLOCK_OUT, blockOut.bean2ProtoByteArray()));
+                // 同步出块区块
+                outBlock.sync();
+                // TODO: 2018/9/20 需要退出当前竞选节点集合并加入到当前竞选节点子节点集合中，当前竞选节点由协助节点代替，且协助节点还得广播区块？还需要生成新的协助节点
             }
         }
     }

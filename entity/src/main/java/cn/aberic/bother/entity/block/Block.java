@@ -40,7 +40,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.nio.charset.Charset;
 
 /**
- * 区块对象——数据操作层-data manipulation
+ * 原始区块对象——数据操作层-data manipulation
  * <p>
  * 作者：Aberic on 2018/8/20 21:21
  * <p>
@@ -82,10 +82,10 @@ public class Block implements BeanProtoFormat {
     @Override
     public byte[] bean2ProtoByteArray() {
         BlockProto.Block.Builder builder = BlockProto.Block.newBuilder();
-        String blockJsonFormat = this.toJsonString();
-        log.debug("blockJsonFormat = {}", blockJsonFormat);
+        String jsonFormat = this.toJsonString();
+        log.debug("jsonFormat = {}", jsonFormat);
         try {
-            JsonFormat.parser().merge(blockJsonFormat, builder);
+            JsonFormat.parser().merge(jsonFormat, builder);
         } catch (InvalidProtocolBufferException e) {
             e.printStackTrace();
         }
@@ -100,8 +100,7 @@ public class Block implements BeanProtoFormat {
 
     @Override
     public Block protoByteArray2Bean(byte[] bytes) throws InvalidProtocolBufferException {
-        String jsonObject = JsonFormat.printer().print(BlockProto.Block.parseFrom(bytes));
-        return new Gson().fromJson(jsonObject, Block.class);
+        return proto2Bean(BlockProto.Block.parseFrom(bytes));
     }
 
 }

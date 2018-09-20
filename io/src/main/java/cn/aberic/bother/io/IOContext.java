@@ -42,7 +42,6 @@ import com.google.common.cache.CacheBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
@@ -209,126 +208,29 @@ public class IOContext {
     }
 
     /**
-     * 广播消息
+     * 作为竞选节点集合的Leader节点广播消息<p>
      * 根据当前Server所在智能合约Hash
      *
      * @param contractHash 当前广播所在智能合约Hash
      * @param msgData      消息体
      */
-    public void broadcast(String contractHash, MessageData msgData) {
-        Node.obtain().getNodeAssistMap().get(contractHash).getNodeBases().forEach(nodeBase -> {
+    public void broadcastElection(String contractHash, MessageData msgData) {
+        Node.obtain().getNodeElectionMap().get(contractHash).getNodeBases().forEach(nodeBase -> {
             Objects.requireNonNull(ioServerCache.getIfPresent(nodeBase.getAddress())).push(msgData);
         });
     }
 
     /**
-     * 广播消息
+     * 作为竞选节点的协助节点广播消息<p>
      * 根据当前Server所在智能合约Hash
-     *
-     * @param contractHash 当前广播所在智能合约Hash
-     * @param status       消息协议
-     * @param t            请求对象——继承BeanProtoFormat的对象
-     */
-    public <T extends BeanProtoFormat> void broadcast(String contractHash, ProtocolStatus status, T t) {
-        broadcast(contractHash, new MessageData(status, t.bean2ProtoByteArray()));
-    }
-
-    /**
-     * 广播空消息
-     * 根据当前Server所在智能合约Hash
-     *
-     * @param contractHash 当前广播所在智能合约Hash
-     * @param status       消息协议
-     */
-    public void broadcast(String contractHash, ProtocolStatus status) {
-        broadcast(contractHash, new MessageData(status, null));
-    }
-
-    /**
-     * 广播消息
-     * 根据当前Server所在智能合约Hash
-     *
-     * @param contractHash 当前广播所在智能合约Hash
-     * @param status       消息协议
-     * @param string       字符串消息
-     */
-    public void broadcast(String contractHash, ProtocolStatus status, String string) {
-        broadcast(contractHash, new MessageData(status, MsgPackTool.string2Bytes(string)));
-    }
-
-    /**
-     * 广播消息
-     * 根据当前Server所在智能合约Hash
-     *
-     * @param contractHash 当前广播所在智能合约Hash
-     * @param status       消息协议
-     * @param stringList   字符串集合消息
-     */
-    public void broadcast(String contractHash, ProtocolStatus status, List<String> stringList) {
-        broadcast(contractHash, new MessageData(status, MsgPackTool.list2Bytes(stringList)));
-    }
-
-    /**
-     * 全组同步消息
-     * 根据当前广播所在智能合约Hash进行消息同步
      *
      * @param contractHash 当前广播所在智能合约Hash
      * @param msgData      消息体
      */
-    public void sync(String contractHash, MessageData msgData) {
-        // 判断是否为辅助节点
-        if (Node.obtain().isAssistNode(contractHash)) {
-            broadcast(contractHash, msgData);
-        } else {
-            log.debug("无当前Hash合约竞选节点下的广播权限");
-        }
-    }
-
-    /**
-     * 全组同步消息
-     * 根据当前广播所在智能合约Hash进行消息同步
-     *
-     * @param contractHash 当前广播所在智能合约Hash
-     * @param status       请求协议
-     * @param t            请求对象——继承BeanProtoFormat的对象
-     */
-    public <T extends BeanProtoFormat> void sync(String contractHash, ProtocolStatus status, T t) {
-        sync(contractHash, new MessageData(status, t.bean2ProtoByteArray()));
-    }
-
-    /**
-     * 全组同步消息
-     * 根据当前广播所在智能合约Hash进行消息同步
-     *
-     * @param contractHash 当前广播所在智能合约Hash
-     * @param status       消息协议
-     */
-    public void sync(String contractHash, ProtocolStatus status) {
-        sync(contractHash, new MessageData(status, null));
-    }
-
-    /**
-     * 全组同步消息
-     * 根据当前广播所在智能合约Hash进行消息同步
-     *
-     * @param contractHash 当前广播所在智能合约Hash
-     * @param status       消息协议
-     * @param string       字符串消息
-     */
-    public void sync(String contractHash, ProtocolStatus status, String string) {
-        sync(contractHash, new MessageData(status, MsgPackTool.string2Bytes(string)));
-    }
-
-    /**
-     * 全组同步消息
-     * 根据当前广播所在智能合约Hash进行消息同步
-     *
-     * @param contractHash 当前广播所在智能合约Hash
-     * @param status       消息协议
-     * @param stringList   字符串集合消息
-     */
-    public void sync(String contractHash, ProtocolStatus status, List<String> stringList) {
-        sync(contractHash, new MessageData(status, MsgPackTool.list2Bytes(stringList)));
+    public void broadcastAssist(String contractHash, MessageData msgData) {
+        Node.obtain().getNodeAssistMap().get(contractHash).getNodeBases().forEach(nodeBase -> {
+            Objects.requireNonNull(ioServerCache.getIfPresent(nodeBase.getAddress())).push(msgData);
+        });
     }
 
     /**

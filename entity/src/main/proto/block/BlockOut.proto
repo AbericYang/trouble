@@ -1,0 +1,13 @@
+syntax = "proto3";
+//生成文件所在包名
+option java_package = "cn.aberic.bother.entity.proto.block";
+//生成的java文件名
+option java_outer_classname = "BlockOutProto";
+
+import "block/Block.proto";
+import "block/BlockInfo.proto";
+
+message BlockOut {
+    Block block = 1; // 原始区块对象
+    BlockInfo blockInfo = 2; // 区块在区块文件中的基本信息
+}

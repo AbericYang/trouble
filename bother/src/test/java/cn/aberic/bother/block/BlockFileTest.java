@@ -82,7 +82,7 @@ public class BlockFileTest {
         BlockStorage blockStorage = new BlockStorage(Constant.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH);
         for (int blockCount = 45849; blockCount < 5000000; blockCount++) {
             log.debug("================= blockCount = {} =================", blockCount);
-            blockStorage.sync(EntityTest.createBlock(blockCount));
+            blockStorage.packOut(EntityTest.createBlock(blockCount));
         }
     }
 

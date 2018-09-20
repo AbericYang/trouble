@@ -1,0 +1,13 @@
+syntax = "proto3";
+//生成文件所在包名
+option java_package = "cn.aberic.bother.entity.proto.block";
+//生成的java文件名
+option java_outer_classname = "BlockInfoProto";
+
+message BlockInfo {
+    int32 height = 1; // 区块高度
+    string blockHash = 2; // 当前区块hash
+    repeated string transactionHashList = 3; // 区块中交易hash集合
+    int32 num = 4; // 区块所在区块文件编号
+    string line = 5; // 区块所在区块文件中的行号
+}

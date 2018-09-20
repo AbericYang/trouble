@@ -41,10 +41,13 @@ public interface IMsgTransactionService extends IMsgRequestService {
     default void transaction(Transaction transaction) {
         // 判断自身是否为竞选节点集合中的Leader，即出块节点
         if (Node.obtain().isElectionNodeLeader(transaction.getHash())) { // 如果是竞选节点集合中的Leader/出块节点
+            // 当前节点正在出块，不接收新交易，但需要将该笔交易同步广播至所有竞选节点集合中
             IOContext.obtain().syncTransactionElection(transaction);
         } else if (Node.obtain().isElectionNode(transaction.getHash())) { // 如果是竞选节点
+            // 将该笔交易同步广播至所有竞选节点集合中
             IOContext.obtain().syncTransactionElection(transaction);
         } else { // 如果是普通节点
+            // 普通节点不参与交易处理，直接将该笔交易发送至当前Hash合约竞选节点
             IOContext.obtain().sendTransactionElection(transaction);
         }
     }
@@ -53,9 +56,12 @@ public interface IMsgTransactionService extends IMsgRequestService {
     default void transactionSync(Transaction transaction) {
         // 判断自身是否为竞选节点集合中的Leader，即出块节点
         if (Node.obtain().isElectionNodeLeader(transaction.getHash())) { // 如果是出块节点
+            log().debug("自身为出块节点，不接受新交易同步");
         } else if (Node.obtain().isElectionNode(transaction.getHash())) { // 如果是竞选节点
+            // 将该笔交易存储待打包交易集合中
             Node.obtain().addTransaction(transaction);
         } else { // 如果是普通节点
+            // 普通节点不参与交易处理，直接将该笔交易发送至当前Hash合约竞选节点
             IOContext.obtain().sendTransactionElection(transaction);
         }
     }

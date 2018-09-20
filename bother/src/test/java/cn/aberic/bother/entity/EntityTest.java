@@ -34,6 +34,7 @@ import cn.aberic.bother.entity.node.NodeBase;
 import cn.aberic.bother.entity.node.NodeElection;
 import cn.aberic.bother.entity.proto.ProtoDemo;
 import cn.aberic.bother.entity.proto.block.BlockHeaderProto;
+import cn.aberic.bother.entity.proto.block.BlockOutProto;
 import cn.aberic.bother.entity.proto.block.BlockProto;
 import cn.aberic.bother.entity.proto.node.NodeProto;
 import com.alibaba.fastjson.JSON;
@@ -57,11 +58,12 @@ public class EntityTest {
 
     public static void main(String[] args) throws InvalidProtocolBufferException {
         // protoDemo();
+        createBlockOutProtobuf();
         // createBlockProtobuf();
         // createConnectSelfProtobuf();
         // createJoinFeedbackProtobuf();
         // createVoteResultProtobuf();
-        createNodeProtobuf();
+        // createNodeProtobuf();
     }
 
     private static void createBlockProtobuf() {
@@ -79,6 +81,27 @@ public class EntityTest {
         log.debug("previousDataHash = {}", header.getPreviousDataHash());
         log.debug("timestamp = {}", header.getTimestamp());
         log.debug("time = {}", header.getTime());
+    }
+
+    private static void createBlockOutProtobuf() throws InvalidProtocolBufferException {
+        BlockOutProto.BlockOut.Builder builder = BlockOutProto.BlockOut.newBuilder();
+        String jsonFormat = new JSONObject(createBlockOut()).toString();
+        log.debug("jsonFormat = {}", jsonFormat);
+        try {
+            JsonFormat.parser().merge(jsonFormat, builder);
+        } catch (InvalidProtocolBufferException e) {
+            e.printStackTrace();
+        }
+        log.debug("==============================================");
+        byte[] bytes = builder.build().toByteArray();
+        log.debug("toByteArray = {}", bytes);
+
+        BlockOutProto.BlockOut blockOut = BlockOutProto.BlockOut.parseFrom(bytes);
+        String jsonObject = JsonFormat.printer().print(blockOut);
+        log.debug("jsonObject = {}", jsonObject);
+        log.debug("Object = {}", JSON.parseObject(jsonObject, new TypeReference<BlockOut>() {}).toJsonString());
+        log.debug("result1 = {}", new BlockOut(null, null).proto2Bean(blockOut).toJsonString());
+        log.debug("result2 = {}", new BlockOut(null, null).protoByteArray2Bean(bytes).toJsonString());
     }
 
     private static void createNodeProtobuf() throws InvalidProtocolBufferException {
@@ -173,6 +196,20 @@ public class EntityTest {
         body.setTransactions(getTransactions(count));
 
         return new Block(header, body);
+    }
+
+    private static BlockOut createBlockOut() {
+        BlockInfo blockInfo = new BlockInfo();
+        blockInfo.setHeight(1);
+        blockInfo.setLine(2);
+        blockInfo.setNum(3);
+        blockInfo.setBlockHash("a");
+        blockInfo.setTransactionHashList(new ArrayList<String>() {{
+            add("x");
+            add("y");
+            add("z");
+        }});
+        return new BlockOut(createBlock(3), blockInfo);
     }
 
     public static Account createAccount() {

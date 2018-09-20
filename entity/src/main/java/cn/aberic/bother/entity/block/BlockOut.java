@@ -24,8 +24,16 @@
 
 package cn.aberic.bother.entity.block;
 
+import cn.aberic.bother.entity.BeanProtoFormat;
+import cn.aberic.bother.entity.proto.block.BlockOutProto;
+import com.google.gson.Gson;
+import com.google.protobuf.GeneratedMessageV3;
+import com.google.protobuf.InvalidProtocolBufferException;
+import com.google.protobuf.util.JsonFormat;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * 出块辅助对象
@@ -34,15 +42,44 @@ import lombok.Setter;
  * <p>
  * 邮箱：abericyang@gmail.com
  */
+@Slf4j
 @Setter
 @Getter
-public class BlockOut {
+@ToString
+public class BlockOut implements BeanProtoFormat  {
 
+    /** 原始区块对象 */
     private Block block;
+    /** 区块在区块文件中的基本信息 */
     private BlockInfo blockInfo;
 
     public BlockOut(Block block, BlockInfo blockInfo) {
         this.block = block;
         this.blockInfo = blockInfo;
     }
+
+    @Override
+    public byte[] bean2ProtoByteArray() {
+        BlockOutProto.BlockOut.Builder builder = BlockOutProto.BlockOut.newBuilder();
+        String jsonFormat = this.toJsonString();
+        log.debug("jsonFormat = {}", jsonFormat);
+        try {
+            JsonFormat.parser().merge(jsonFormat, builder);
+        } catch (InvalidProtocolBufferException e) {
+            e.printStackTrace();
+        }
+        return builder.build().toByteArray();
+    }
+
+    @Override
+    public <M extends GeneratedMessageV3> BlockOut proto2Bean(M m) throws InvalidProtocolBufferException {
+        String jsonObject = JsonFormat.printer().print(m);
+        return new Gson().fromJson(jsonObject, BlockOut.class);
+    }
+
+    @Override
+    public BlockOut protoByteArray2Bean(byte[] bytes) throws InvalidProtocolBufferException {
+        return proto2Bean(BlockOutProto.BlockOut.parseFrom(bytes));
+    }
+
 }

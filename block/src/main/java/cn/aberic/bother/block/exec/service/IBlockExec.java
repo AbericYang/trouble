@@ -28,9 +28,7 @@ import cn.aberic.bother.entity.block.Block;
 import cn.aberic.bother.entity.block.BlockInfo;
 import cn.aberic.bother.entity.block.BlockOut;
 import cn.aberic.bother.entity.block.Transaction;
-import cn.aberic.bother.tools.DeflaterTool;
 import cn.aberic.bother.tools.FileTool;
-import com.alibaba.fastjson.JSON;
 
 import java.io.File;
 import java.io.IOException;
@@ -47,7 +45,7 @@ import java.util.List;
 public interface IBlockExec extends IExec<Block> {
 
     /**
-     * 创建并存储区块文件，如已存在且大小超过24M，则覆盖，否则下一行追加更新
+     * 根据原始区块创建区块出块对象
      *
      * @param block 区块对象
      */
@@ -55,8 +53,7 @@ public interface IBlockExec extends IExec<Block> {
     default BlockOut createOrUpdate(Block block) {
         BlockInfo blockInfo = new BlockInfo();
         int height = 0, line = 0;
-        String currentDataHash;
-        String compressJsonString;
+        String currentDataHash, previousDataHash = "0";
         // 获取最新写入的区块文件
         File blockFile = getLastFile();
         try {
@@ -64,12 +61,6 @@ public interface IBlockExec extends IExec<Block> {
             if (null == blockFile) {
                 // 定义新的区块文件
                 blockFile = createFirstFile();
-                block.getHeader().setHeight(height); // 第一区块高度为0
-                block.getHeader().setPreviousDataHash("0"); // 第一区块上一hash为0
-                currentDataHash = block.calculateHash();
-                block.getHeader().setCurrentDataHash(currentDataHash); // 第一区块当前hash
-                compressJsonString = DeflaterTool.compress(JSON.toJSONString(block));
-                FileTool.writeFirstLine(blockFile, compressJsonString);
             } else {
                 // 获取当前区块文件中的总行数，其值即为上一区块的行数
                 line = FileTool.getFileLineCount(blockFile);
@@ -77,24 +68,14 @@ public interface IBlockExec extends IExec<Block> {
                 Block preBlock = getFromFileByLine(blockFile, line);
                 // 获取上一区块高度，计算并赋值当前区块高度
                 height = preBlock.getHeader().getHeight() + 1;
-                block.getHeader().setHeight(preBlock.getHeader().getHeight() + 1);
                 // 为当前区块赋值上一区块hash
-                block.getHeader().setPreviousDataHash(preBlock.getHeader().getCurrentDataHash());
-                // 为当前区块赋值hash
-                currentDataHash = block.calculateHash();
-                block.getHeader().setCurrentDataHash(currentDataHash);
-                // 重新生成待写入JSON String内容
-                compressJsonString = DeflaterTool.compress(JSON.toJSONString(block));
-                // 计算该内容的字节长度
-                long blockSize = compressJsonString.getBytes().length;
-                // 如果区块文件和待写入对象之和已经大于或等于 64 MB，则开辟新区块文件写入区块对象
-                if (blockFile.length() + blockSize >= 64 * 1000 * 1000) {
-                    blockFile = getNextFileByCurrentFile(blockFile);
-                    FileTool.writeFirstLine(blockFile, compressJsonString);
-                } else {
-                    FileTool.writeAppendLine(blockFile, compressJsonString);
-                }
+                previousDataHash = preBlock.getHeader().getCurrentDataHash();
             }
+            block.getHeader().setPreviousDataHash(previousDataHash);
+            block.getHeader().setHeight(height);
+            // 为当前区块赋值hash
+            currentDataHash = block.calculateHash();
+            block.getHeader().setCurrentDataHash(currentDataHash);
             List<String> transactionHashList = new ArrayList<>();
             for (Transaction transaction : block.getBody().getTransactions()) {
                 transactionHashList.add(transaction.getTxHash());

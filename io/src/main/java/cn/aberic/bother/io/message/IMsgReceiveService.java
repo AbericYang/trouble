@@ -121,7 +121,7 @@ interface IMsgReceiveService extends IMsgJoinService, IMsgElectionService, IMsgT
             case TRANSACTION_SYNC: // 接收到同步交易协议
                 transactionSync(new Transaction().protoByteArray2Bean(msgData.getBytes()));
                 break;
-            case BLOCK: // 区块协议-0x51
+            case BLOCK_OUT: // 接收出块区块协议
                 log().debug("接收区块协议，执行区块同步操作");
                 try {
                     Block block = new Block().protoByteArray2Bean(msgData.getBytes());
