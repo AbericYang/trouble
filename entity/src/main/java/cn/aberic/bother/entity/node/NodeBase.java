@@ -64,12 +64,14 @@ public class NodeBase implements BeanProtoFormat {
     private List<String> hashes;
 
     public NodeBase() {
-        hashes = new ArrayList<>();
-        hashes.add(Constant.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH);
+        timestamp = System.currentTimeMillis();
+        address = "";
         accountAddress = Constant.TOKEN_DEFAULT_SECOND_HASH;
         Runtime r = Runtime.getRuntime();
         cpu = r.availableProcessors();
         freeMemory = r.freeMemory();
+        hashes = new ArrayList<>();
+        hashes.add(Constant.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH);
     }
 
     public NodeBase clear() {
@@ -98,8 +100,7 @@ public class NodeBase implements BeanProtoFormat {
 
     @Override
     public NodeBase protoByteArray2Bean(byte[] bytes) throws InvalidProtocolBufferException {
-        String jsonObject = JsonFormat.printer().print(NodeBaseProto.NodeBase.parseFrom(bytes));
-        return new Gson().fromJson(jsonObject, NodeBase.class);
+        return proto2Bean(NodeBaseProto.NodeBase.parseFrom(bytes));
     }
 
 }

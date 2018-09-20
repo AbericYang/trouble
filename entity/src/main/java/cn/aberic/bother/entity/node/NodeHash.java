@@ -80,8 +80,7 @@ public class NodeHash implements BeanProtoFormat {
 
     @Override
     public NodeHash protoByteArray2Bean(byte[] bytes) throws InvalidProtocolBufferException {
-        String jsonObject = JsonFormat.printer().print(NodeHashProto.NodeHash.parseFrom(bytes));
-        return new Gson().fromJson(jsonObject, NodeHash.class);
+        return proto2Bean(NodeHashProto.NodeHash.parseFrom(bytes));
     }
 
 }

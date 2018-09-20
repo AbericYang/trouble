@@ -24,17 +24,22 @@
 
 package cn.aberic.bother.service;
 
-import cn.aberic.bother.entity.contract.Request;
+import cn.aberic.bother.entity.block.Transaction;
 
 /**
- * 作者：Aberic on 2018/09/12 12:11
+ * 作者：Aberic on 2018/09/20 10:05
  * <p>
  * 邮箱：abericyang@gmail.com
  */
-public interface ContractService {
+public interface TransactionService {
 
-    String invoke(Request request, TransactionService transactionService);
-
-    String query(Request request);
+    /**
+     * 验证当前Hash合约下的交易是否允许执行
+     *
+     * @param contractHash 合约Hash
+     * @param transaction  交易对象
+     * @return 与否
+     */
+    boolean checkBlockVerify(String contractHash, Transaction transaction);
 
 }

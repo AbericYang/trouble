@@ -170,10 +170,23 @@ public interface IMsgJoinService extends IMsgRequestService {
     /** 接收到告知当前Hash合约的所有竞选节点有新的竞选节点加入 */
     default void joinNewElection(MessageData msgData) throws InvalidProtocolBufferException {
         NodeHash nodeHash = new NodeHash().protoByteArray2Bean(msgData.getBytes());
-        Node.obtain().add(nodeHash.getContractHash(), nodeHash.getNodeBase());
-        if (Node.obtain().getNodeElectionMap().get(nodeHash.getContractHash()).getNodeBases().get(0).getTimestamp() !=
-                Node.obtain().getNodeBase().getTimestamp()) { // 如果自身不是竞选节点集合中的Leader，关闭连接
-            shutdown();
+        if (Node.obtain().isElectionNode(nodeHash.getContractHash())) { // 如果自身是竞选节点
+            // 获取当前竞选节点集合中下属子节点总数最少的竞选节点地址
+            String addressIdlest = Node.obtain().getNodeElectionMap().get(nodeHash.getContractHash()).getIdlest();
+            if (addressIdlest != null && addressIdlest.equals("")) { // 节点总数最少也大于等于1000
+                Node.obtain().add(nodeHash.getContractHash(), nodeHash.getNodeBase());
+                if (!Node.obtain().isElectionNodeLeader(nodeHash.getContractHash())) {
+                    shutdown();
+                }
+            } else { // 如果竞选节点集合中最小子节点数存在小于1000的，则拒绝此次请求
+                if (Node.obtain().isElectionNodeLeader(nodeHash.getContractHash())) { // 如果是Leader节点
+                    // 通知新加入节点接入其协助节点
+                    nodeHash.setNodeBase(Node.obtain().getNodeBaseAssistMap().get(nodeHash.getContractHash()));
+                    send(nodeHash.getNodeBase().getAddress(), ProtocolStatus.JOIN_TO_ASSIST, nodeHash);
+                } else { // 如果不是Leader节点，直接关闭本次连接
+                    shutdown();
+                }
+            }
         }
     }
 

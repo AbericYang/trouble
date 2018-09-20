@@ -26,6 +26,7 @@
 package cn.aberic.bother.io;
 
 import cn.aberic.bother.entity.BeanProtoFormat;
+import cn.aberic.bother.entity.block.Transaction;
 import cn.aberic.bother.entity.enums.ProtocolStatus;
 import cn.aberic.bother.entity.io.MessageData;
 import cn.aberic.bother.entity.io.Remote;
@@ -156,6 +157,26 @@ public class IOContext {
     public <T extends BeanProtoFormat> void send(String address, ProtocolStatus status, T t) {
         MessageData msgData = new MessageData(status, t.bean2ProtoByteArray());
         send(address, msgData);
+    }
+
+    /**
+     * 将交易发送至竞选节点，由竞选节点代为转发或处理
+     *
+     * @param transaction 交易对象
+     */
+    public void sendTransactionElection(Transaction transaction) {
+        send(Node.obtain().getElectionAddress(transaction.getHash()), ProtocolStatus.TRANSACTION, transaction);
+    }
+
+    /**
+     * 将交易同步至所有竞选节点
+     *
+     * @param transaction 交易对象
+     */
+    public void syncTransactionElection(Transaction transaction) {
+        Node.obtain().getNodeElectionMap().get(transaction.getHash()).getNodeBases().forEach(nodeBase -> {
+            send(nodeBase.getAddress(), ProtocolStatus.TRANSACTION_SYNC, transaction);
+        });
     }
 
     /**

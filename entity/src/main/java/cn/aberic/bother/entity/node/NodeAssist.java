@@ -124,8 +124,7 @@ public class NodeAssist implements BeanProtoFormat {
 
     @Override
     public NodeAssist protoByteArray2Bean(byte[] bytes) throws InvalidProtocolBufferException {
-        String jsonObject = JsonFormat.printer().print(NodeAssistProto.NodeAssist.parseFrom(bytes));
-        return new Gson().fromJson(jsonObject, NodeAssist.class);
+        return proto2Bean(NodeAssistProto.NodeAssist.parseFrom(bytes));
     }
 
 }

@@ -104,7 +104,7 @@ public class EntityTest {
     }
 
     public static byte[] getBlockBytes() {
-        return createBlock(0).bean2ProtoByteArray();
+        return createBlock(20).bean2ProtoByteArray();
     }
 
     private static void protoDemo() {
@@ -169,6 +169,71 @@ public class EntityTest {
         BlockHeader header = BlockHeader.newInstance().create();
 
         BlockBody body = new BlockBody();
+        body.setTxCount(getTransactions(count).size());
+        body.setTransactions(getTransactions(count));
+
+        return new Block(header, body);
+    }
+
+    public static Account createAccount() {
+        Account account = new Account();
+        account.setCount(new BigDecimal(1));
+        account.setTimestamp(438756873L);
+        account.setJsonAccountInfoString("jshdfkjhsdkhfksdhkjfksdhkjshdfkjhsdkhfksdhkjfksdhkjshdfkjhsdkhfksdhkjfksdhkjshdfkjhsdkhfksdhkjfksdhkjshdfkjhsdkhfksdhkjfksdhkjshdfkjhsdkhfksdhkjfksdhkjshdfkjhsdkhfksdhkjfksdhkjshdfkjhsdkhfksdhkjfksdhkjshdfkjhsdkhfksdhkjfksdhkjshdfkjhsdkhfksdhkjfksdhkjshdfkjhsdkhfksdhkjfksdhkjshdfkjhsdkhfksdhkjfksdhkjshdfkjhsdkhfksdhkjfksdhkjshdfkjhsdkhfksdhkjfksdhk");
+        account.setPubRSAKey("ksdjflkjsdlkfjsldjflksjlksdjflkjsdlkfjsldjflksjlkjlkksdjflkjsdlkfjsldjflksjlkjlkksdjflkjsdlkfjsldjflksjlkjlkksdjflkjsdlkfjsldjflksjlkjlkksdjflkjsdlkfjsldjflksjlkjlkksdjflkjsdlkfjsldjflksjlkjlkksdjflkjsdlkfjsldjflksjlkjlkksdjflkjsdlkfjsldjflksjlkjlkksdjflkjsdlkfjsldjflksjlkjlkksdjflkjsdlkfjsldjflksjlkjlkksdjflkjsdlkfjsldjflksjlkjlkksdjflkjsdlkfjsldjflksjlkjlkksdjflkjsdlkfjsldjflksjlkjlkksdjflkjsdlkfjsldjflksjlkjlkksdjflkjsdlkfjsldjflksjlkjlkksdjflkjsdlkfjsldjflksjlkjlkksdjflkjsdlkfjsldjflksjlkjlkkjlk");
+        account.setAddress("knmlkmldkkflkfskdsknmlkmldkkflkfskdsknmlkmldkkflkfskdsknmlkmldkkflkfskdsknmlkmldkkflkfskdsknmlkmldkkflkfskdsknmlkmldkkflkfskdsknmlkmldkkflkfskdsknmlkmldkkflkfskdsknmlkmldkkflkfskdsknmlkmldkkflkfskdsknmlkmldkkflkfskdsknmlkmldkkflkfskdsknmlkmldkkflkfskdsknmlkmldkkflkfskdsknmlkmldkkflkfskdsknmlkmldkkflkfskdsknmlkmldkkflkfskdsknmlkmldkkflkfskdsknmlkmldkkflkfskdsknmlkmldkkflkfskdsknmlkmldkkflkfskdsknmlkmldkkflkfskdsknmlkmldkkflkfskdsknmlkmldkkflkfskds");
+        account.setPubECCKey("cnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjw");
+        return account;
+    }
+
+    private static void createNode() {
+        List<String> stringList = new ArrayList<>();
+        stringList.add("a");
+        stringList.add("b");
+        stringList.add("c");
+        NodeBase nodeBase = new NodeBase();
+        List<NodeBase> nodeBases = new ArrayList<>();
+        nodeBases.add(nodeBase);
+        nodeBases.add(nodeBase);
+        NodeAssist nodeAssist = new NodeAssist();
+        nodeAssist.setNodeBases(nodeBases);
+        NodeElection nodeElection = new NodeElection();
+        nodeElection.setAddresses(stringList);
+        nodeElection.setNodeBases(nodeBases);
+        nodeElection.setNodeCount(1);
+        nodeElection.setNodesCount(new HashMap<>());
+        nodeElection.setTransactions(getTransactions(5));
+
+        MapListString mapListString = new MapListString();
+        mapListString.setStringList(stringList);
+
+        Map<String, String> addressElectionMap = new HashMap<>();
+        addressElectionMap.put("a", "1");
+        addressElectionMap.put("b", "2");
+        Map<String, NodeBase> nodeBaseAssistMap = new HashMap<>();
+        nodeBaseAssistMap.put("c", new NodeBase());
+        nodeBaseAssistMap.put("d", new NodeBase());
+        Map<String, MapListString> addressMap = new HashMap<>();
+        addressMap.put("g", mapListString);
+        addressMap.put("h", mapListString);
+        Map<String, NodeAssist> nodeAssistMap = new HashMap<>();
+        nodeAssistMap.put("i", nodeAssist);
+        nodeAssistMap.put("j", nodeAssist);
+        Map<String, NodeElection> nodeElectionMap = new HashMap<>();
+        nodeElectionMap.put("k", nodeElection);
+        nodeElectionMap.put("l", nodeElection);
+
+        log.debug("createNode = {}", Node.obtain().toJsonString());
+
+        Node.obtain().setNodeBase(nodeBase);
+        Node.obtain().setAddressElectionMap(addressElectionMap);
+        Node.obtain().setNodeAssistMap(nodeAssistMap);
+        Node.obtain().setAddressMap(addressMap);
+        Node.obtain().setNodeBaseAssistMap(nodeBaseAssistMap);
+        Node.obtain().setNodeElectionMap(nodeElectionMap);
+    }
+
+    private static List<Transaction> getTransactions(int count) {
         List<Transaction> transactions = new ArrayList<>();
         for (int transactionCount = 0; transactionCount < 10; transactionCount++) {
             Transaction transaction = new Transaction();
@@ -203,66 +268,7 @@ public class EntityTest {
 
             transactions.add(transaction);
         }
-        body.setTxCount(transactions.size());
-        body.setTransactions(transactions);
-
-        return new Block(header, body);
-    }
-
-    public static Account createAccount() {
-        Account account = new Account();
-        account.setCount(new BigDecimal(1));
-        account.setTimestamp(438756873L);
-        account.setJsonAccountInfoString("jshdfkjhsdkhfksdhkjfksdhkjshdfkjhsdkhfksdhkjfksdhkjshdfkjhsdkhfksdhkjfksdhkjshdfkjhsdkhfksdhkjfksdhkjshdfkjhsdkhfksdhkjfksdhkjshdfkjhsdkhfksdhkjfksdhkjshdfkjhsdkhfksdhkjfksdhkjshdfkjhsdkhfksdhkjfksdhkjshdfkjhsdkhfksdhkjfksdhkjshdfkjhsdkhfksdhkjfksdhkjshdfkjhsdkhfksdhkjfksdhkjshdfkjhsdkhfksdhkjfksdhkjshdfkjhsdkhfksdhkjfksdhkjshdfkjhsdkhfksdhkjfksdhk");
-        account.setPubRSAKey("ksdjflkjsdlkfjsldjflksjlksdjflkjsdlkfjsldjflksjlkjlkksdjflkjsdlkfjsldjflksjlkjlkksdjflkjsdlkfjsldjflksjlkjlkksdjflkjsdlkfjsldjflksjlkjlkksdjflkjsdlkfjsldjflksjlkjlkksdjflkjsdlkfjsldjflksjlkjlkksdjflkjsdlkfjsldjflksjlkjlkksdjflkjsdlkfjsldjflksjlkjlkksdjflkjsdlkfjsldjflksjlkjlkksdjflkjsdlkfjsldjflksjlkjlkksdjflkjsdlkfjsldjflksjlkjlkksdjflkjsdlkfjsldjflksjlkjlkksdjflkjsdlkfjsldjflksjlkjlkksdjflkjsdlkfjsldjflksjlkjlkksdjflkjsdlkfjsldjflksjlkjlkksdjflkjsdlkfjsldjflksjlkjlkksdjflkjsdlkfjsldjflksjlkjlkkjlk");
-        account.setAddress("knmlkmldkkflkfskdsknmlkmldkkflkfskdsknmlkmldkkflkfskdsknmlkmldkkflkfskdsknmlkmldkkflkfskdsknmlkmldkkflkfskdsknmlkmldkkflkfskdsknmlkmldkkflkfskdsknmlkmldkkflkfskdsknmlkmldkkflkfskdsknmlkmldkkflkfskdsknmlkmldkkflkfskdsknmlkmldkkflkfskdsknmlkmldkkflkfskdsknmlkmldkkflkfskdsknmlkmldkkflkfskdsknmlkmldkkflkfskdsknmlkmldkkflkfskdsknmlkmldkkflkfskdsknmlkmldkkflkfskdsknmlkmldkkflkfskdsknmlkmldkkflkfskdsknmlkmldkkflkfskdsknmlkmldkkflkfskdsknmlkmldkkflkfskds");
-        account.setPubECCKey("cnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjwcnowjodjwoefjoejfokejofjw");
-        return account;
-    }
-
-    private static void createNode() {
-        List<String> stringList = new ArrayList<>();
-        stringList.add("a");
-        stringList.add("b");
-        stringList.add("c");
-        NodeBase nodeBase = new NodeBase();
-        List<NodeBase> nodeBases = new ArrayList<>();
-        nodeBases.add(nodeBase);
-        nodeBases.add(nodeBase);
-        NodeAssist nodeAssist = new NodeAssist();
-        nodeAssist.setNodeBases(nodeBases);
-        NodeElection nodeElection = new NodeElection();
-        nodeElection.setAddresses(stringList);
-        nodeElection.setNodeBases(nodeBases);
-        nodeElection.setNodeCount(1);
-        nodeElection.setNodesCount(new HashMap<>());
-        MapListString mapListString = new MapListString();
-        mapListString.setStringList(stringList);
-
-        Map<String, String> addressElectionMap = new HashMap<>();
-        addressElectionMap.put("a", "1");
-        addressElectionMap.put("b", "2");
-        Map<String, NodeBase> nodeBaseAssistMap = new HashMap<>();
-        nodeBaseAssistMap.put("c", new NodeBase());
-        nodeBaseAssistMap.put("d", new NodeBase());
-        Map<String, MapListString> addressMap = new HashMap<>();
-        addressMap.put("g", mapListString);
-        addressMap.put("h", mapListString);
-        Map<String, NodeAssist> nodeAssistMap = new HashMap<>();
-        nodeAssistMap.put("i", nodeAssist);
-        nodeAssistMap.put("j", nodeAssist);
-        Map<String, NodeElection> nodeElectionMap = new HashMap<>();
-        nodeElectionMap.put("k", nodeElection);
-        nodeElectionMap.put("l", nodeElection);
-
-        log.debug("createNode = {}", Node.obtain().toJsonString());
-
-        Node.obtain().setNodeBase(nodeBase);
-        Node.obtain().setAddressElectionMap(addressElectionMap);
-        Node.obtain().setNodeAssistMap(nodeAssistMap);
-        Node.obtain().setAddressMap(addressMap);
-        Node.obtain().setNodeBaseAssistMap(nodeBaseAssistMap);
-        Node.obtain().setNodeElectionMap(nodeElectionMap);
+        return transactions;
     }
 
     public static <M extends GeneratedMessageV3, N extends BeanProtoFormat> N trans(M m, Class<N> clazz) throws InvalidProtocolBufferException {

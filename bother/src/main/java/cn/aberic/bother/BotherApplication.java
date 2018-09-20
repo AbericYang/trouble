@@ -26,11 +26,14 @@ package cn.aberic.bother;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
+@EnableScheduling
 public class BotherApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(BotherApplication.class, args);
     }
+
 }

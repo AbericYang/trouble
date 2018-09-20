@@ -22,27 +22,30 @@
  * SOFTWARE.
  */
 
-package cn.aberic.bother.service;
+package cn.aberic.bother.scheduled;
 
-import cn.aberic.bother.contract.exec.PublicContractExec;
-import cn.aberic.bother.entity.block.Block;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 
 /**
- * 作者：Aberic on 2018/09/12 12:22
+ * 作者：Aberic on 2018/09/20 12:27
  * <p>
  * 邮箱：abericyang@gmail.com
  */
-public interface BlockService {
+@Component
+@Slf4j
+public class ScheduledTasks {
 
     /**
-     * 验证区块中每一笔提交进来的交易签名
-     * <p>
-     * 验证区块中每一次写入的返回结果
-     *
-     * @param exec 智能合约操作接口
-     *
-     * @return 验证后的区块对象
+     * fixedDelay = x 表示当前方法执行完毕x ms后，Spring scheduling会再次调用该方法<p>
+     * 选举定时检测方案<p>
+     * 每一次执行就会检查当前出块节点是否到出块时间<p>
+     * 如果到出块时间，则发送给竞选节点集合中的协助节点进行催促
      */
-    Block checkBlockVerify(PublicContractExec exec);
+    @Scheduled(fixedDelay = 5000)
+    public void electionCheck() {
+        log.info("===============>>>>>>>>>> fixedDelay = 5000 <<<<<<<<<<===============");
+    }
 
 }

@@ -26,6 +26,7 @@ package cn.aberic.bother.entity.node;
 
 import cn.aberic.bother.entity.BeanProtoFormat;
 import cn.aberic.bother.entity.MapListString;
+import cn.aberic.bother.entity.block.Transaction;
 import cn.aberic.bother.entity.proto.node.NodeProto;
 import cn.aberic.bother.tools.Constant;
 import cn.aberic.bother.tools.FileTool;
@@ -41,9 +42,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.Map;
 
 /**
@@ -98,6 +97,21 @@ public class Node implements BeanProtoFormat {
             }
         }
         return instance;
+    }
+
+    /**
+     * 当前节点作为Leader节点时接收新增交易，以作后续打包处理
+     *
+     * @param transaction 交易对象
+     * @return 如果不是Leader节点，则不处理本次交易
+     */
+    public boolean addTransaction(Transaction transaction) {
+        if (isElectionNodeLeader(transaction.getHash())) { // 如果是Leader节点
+            synchronized (Node.class) {
+                return Node.obtain().getNodeElectionMap().get(transaction.getHash()).addTransaction(transaction);
+            }
+        }
+        return false;
     }
 
     /**
@@ -241,14 +255,8 @@ public class Node implements BeanProtoFormat {
         addressMap = new HashMap<>();
         nodeAssistMap = new HashMap<>();
         nodeElectionMap = new HashMap<>();
-        NodeElection election = new NodeElection();
-        election.setContractHash(Constant.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH);
-        election.setNodeCount(1);
-        election.setNodesCount(new HashMap<>());
-        election.setAddresses(new LinkedList<>());
-        election.setNodeBases(new LinkedList<NodeBase>() {{
-            add(nodeBase);
-        }});
+        NodeElection election = new NodeElection(Constant.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH);
+        election.add(nodeBase);
         // 初始化默认自身为当前Hash的竞选节点
         nodeElectionMap.put(Constant.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH, election);
         FileTool.write(Constant.NODE_FILE, JSON.toJSONString(instance));
@@ -317,19 +325,16 @@ public class Node implements BeanProtoFormat {
      * @return 成功与否
      */
     public boolean add(String contractHash, NodeBase nodeBase) {
-        if (!nodeElectionMap.get(contractHash).full()) {
-            if (addressMap.get(contractHash).getStringList().contains(nodeBase.getAddress())) {
-                return saveForNewElection(contractHash, nodeBase);
-            }
-            if (addressMap.get(contractHash).getStringList().size() < Constant.NODE_BACK_COUNT) {
-                addressMap.get(contractHash).getStringList().add(nodeBase.getAddress());
-            } else {
-                addressMap.get(contractHash).getStringList().remove(0);
-                addressMap.get(contractHash).getStringList().add(nodeBase.getAddress());
-            }
+        if (addressMap.get(contractHash).getStringList().contains(nodeBase.getAddress())) {
             return saveForNewElection(contractHash, nodeBase);
         }
-        return false;
+        if (addressMap.get(contractHash).getStringList().size() < Constant.NODE_BACK_COUNT) {
+            addressMap.get(contractHash).getStringList().add(nodeBase.getAddress());
+        } else {
+            addressMap.get(contractHash).getStringList().remove(0);
+            addressMap.get(contractHash).getStringList().add(nodeBase.getAddress());
+        }
+        return saveForNewElection(contractHash, nodeBase);
     }
 
     private boolean saveForNewElection(String contractHash, NodeBase nodeBase) {

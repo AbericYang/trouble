@@ -26,13 +26,11 @@ package cn.aberic.bother.service.impl;
 
 import cn.aberic.bother.contract.exec.PublicContractExec;
 import cn.aberic.bother.contract.system.PublicContract;
-import cn.aberic.bother.entity.block.Block;
 import cn.aberic.bother.entity.contract.Request;
 import cn.aberic.bother.entity.response.IResponse;
 import cn.aberic.bother.entity.response.Response;
-import cn.aberic.bother.service.BlockService;
 import cn.aberic.bother.service.ContractService;
-import cn.aberic.bother.tools.thread.ThreadTroublePool;
+import cn.aberic.bother.service.TransactionService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -46,21 +44,15 @@ import org.springframework.stereotype.Service;
 public class ContractServiceImpl implements ContractService {
 
     @Override
-    public String invoke(Request request, BlockService blockService) {
+    public String invoke(Request request, TransactionService transactionService) {
         PublicContract contract = new PublicContract();
         PublicContractExec exec = new PublicContractExec();
         exec.setRequest(request);
         Response response = contract.invoke(exec);
-        if (response.isSend()) {
-            Block block = blockService.checkBlockVerify(exec);
-            if (null != block) {
-                // TODO: 2018/9/18 实际应发送至 Leader 节点统一打包，此方法应当返回 Block 对象，并交由 Controller 进行转发
-                new ThreadTroublePool().submit(() -> exec.sendTransaction(blockService.checkBlockVerify(exec)));
-            } else {
-                exec.response(IResponse.ResponseType.FAIL);
-            }
+        if (response.isSend() && transactionService.checkBlockVerify(exec.getContractHash(), exec.getTransaction())) {
+            return response.getResultResponse();
         }
-        return response.getResultResponse();
+        return exec.response(IResponse.ResponseType.FAIL).getResultResponse();
     }
 
     @Override

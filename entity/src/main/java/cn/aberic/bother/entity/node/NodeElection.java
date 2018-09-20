@@ -25,6 +25,7 @@
 package cn.aberic.bother.entity.node;
 
 import cn.aberic.bother.entity.BeanProtoFormat;
+import cn.aberic.bother.entity.block.Transaction;
 import cn.aberic.bother.entity.proto.node.NodeElectionProto;
 import cn.aberic.bother.tools.Constant;
 import com.google.gson.Gson;
@@ -36,6 +37,8 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -61,6 +64,42 @@ public class NodeElection implements BeanProtoFormat {
     private List<String> addresses;
     /** 当前Hash合约其他竞选节点其下属子节点个数集合 */
     private Map<String, Integer> nodesCount;
+    /** 当前待打包交易集合 */
+    private List<Transaction> transactions;
+
+    public NodeElection() {}
+
+    public NodeElection(String contractHash) {
+        this.contractHash = contractHash;
+        this.nodeCount = 0;
+        nodeBases = new LinkedList<>();
+        addresses = new LinkedList<>();
+        nodesCount = new HashMap<>();
+        transactions = new LinkedList<>();
+    }
+
+    /**
+     * 获取当前Hash合约竞选节点集合中的Leader节点地址
+     *
+     * @return Leader节点地址
+     */
+    public String obtainLeaderAddress() {
+        return nodeBases.get(0).getAddress();
+    }
+
+    /**
+     * 当前节点作为Leader节点时接收新增交易，以作后续打包处理
+     *
+     * @param transaction 交易对象
+     * @return 如果不是Leader节点，则不处理本次交易
+     */
+    boolean addTransaction(Transaction transaction) {
+        if (nodeBases.get(0).getTimestamp() == Node.obtain().getNodeBase().getTimestamp()) { // 如果是Leader节点
+            transactions.add(transaction);
+            return true;
+        }
+        return false;
+    }
 
     /**
      * 新增或更新当前Hash合约指定地址竞选节点其下属子节点个数集合
@@ -127,12 +166,10 @@ public class NodeElection implements BeanProtoFormat {
                 return true;
             }
         }
-        if (nodeBases.size() < Constant.NODE_ELECTION_COUNT) {
-            nodeBases.add(nodeBase);
-            nodesCount.put(nodeBase.getAddress(), 0);
-            return true;
-        }
-        return false;
+        nodeBases.add(nodeBase);
+        nodesCount.put(nodeBase.getAddress(), 0);
+        nodeCount += 1;
+        return true;
     }
 
     /**
@@ -177,8 +214,7 @@ public class NodeElection implements BeanProtoFormat {
 
     @Override
     public NodeElection protoByteArray2Bean(byte[] bytes) throws InvalidProtocolBufferException {
-        String jsonObject = JsonFormat.printer().print(NodeElectionProto.NodeElection.parseFrom(bytes));
-        return new Gson().fromJson(jsonObject, NodeElection.class);
+        return proto2Bean(NodeElectionProto.NodeElection.parseFrom(bytes));
     }
 
 }

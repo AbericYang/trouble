@@ -50,6 +50,6 @@ public interface BusinessService {
      * @param request 智能合约请求对象
      * @return 发布结果
      */
-    String publish(Request request, BlockService blockService);
+    String publish(Request request, TransactionService transactionService);
 
 }

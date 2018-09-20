@@ -126,7 +126,7 @@ public class PublicContractExec implements IPublicContractExec, IContractBaseExe
         rwSet.setReads(reads);
         rwSet.setWrites(writes);
         Transaction transaction = new Transaction();
-        transaction.setContractName(getContract().getHash());
+        transaction.setHash(getContract().getHash());
         transaction.setContractName(getContract().getName());
         transaction.setContractVersion(getContract().getVersionName());
         transaction.setCreator(request.getAddress());

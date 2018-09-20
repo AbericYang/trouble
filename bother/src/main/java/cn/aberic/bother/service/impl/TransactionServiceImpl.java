@@ -29,56 +29,61 @@ import cn.aberic.bother.block.BlockStorage;
 import cn.aberic.bother.contract.exec.PublicContractExec;
 import cn.aberic.bother.contract.system.PublicContract;
 import cn.aberic.bother.encryption.key.exec.KeyExec;
-import cn.aberic.bother.entity.block.Block;
 import cn.aberic.bother.entity.block.Transaction;
 import cn.aberic.bother.entity.contract.Account;
 import cn.aberic.bother.entity.contract.Request;
+import cn.aberic.bother.entity.node.Node;
 import cn.aberic.bother.entity.response.IResponse;
 import cn.aberic.bother.entity.response.Response;
-import cn.aberic.bother.service.BlockService;
+import cn.aberic.bother.io.IOContext;
+import cn.aberic.bother.service.TransactionService;
+import cn.aberic.bother.tools.thread.ThreadTroublePool;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.Iterator;
-
 /**
- * 作者：Aberic on 2018/09/12 12:23
+ * 作者：Aberic on 2018/09/20 10:07
  * <p>
  * 邮箱：abericyang@gmail.com
  */
 @Slf4j
-@Service("blockService")
-public class BlockServiceImpl implements BlockService {
+@Service("transactionService")
+public class TransactionServiceImpl implements TransactionService {
 
     @Override
-    public Block checkBlockVerify(PublicContractExec exec) {
-        Block block = exec.getBlock();
-        BlockStorage storage = new BlockStorage(exec.getContractHash());
-        // 获取交易集合
-        Iterator<Transaction> transactions = block.getBody().getTransactions().iterator();
-        Transaction transaction;
-        while (transactions.hasNext()) {
-            transaction = transactions.next();
-            switch (transaction.getRequest().getKey()) {
-                case "openAccount":
-                    if (!KeyExec.obtain().verifyByStrECDSA(transaction.signString(), transaction.getSign(), transaction.getPubECCKey(), "UTF-8") ||
-                            !checkMethod(transaction.getRequest())) {
-                        transactions.remove();
-                    }
-                    break;
-                default:
-                    Account account = JSON.parseObject(storage.get(new BlockAcquire(exec.getContractHash()), transaction.getCreator()), new TypeReference<Account>() {});
-                    if (!KeyExec.obtain().verifyByStrECDSA(transaction.signString(), transaction.getSign(), account.getPubECCKey(), "UTF-8") ||
-                            !checkMethod(transaction.getRequest())) {
-                        transactions.remove();
-                    }
-                    break;
-            }
+    public boolean checkBlockVerify(String contractHash, Transaction transaction) {
+        switch (transaction.getRequest().getKey()) {
+            case "openAccount":
+                if (!KeyExec.obtain().verifyByStrECDSA(transaction.signString(), transaction.getSign(), transaction.getPubECCKey(), "UTF-8") ||
+                        !checkMethod(transaction.getRequest())) {
+                    return false;
+                }
+            default:
+                Account account = JSON.parseObject(new BlockStorage(contractHash).get(new BlockAcquire(contractHash), transaction.getCreator()), new TypeReference<Account>() {});
+                if (!KeyExec.obtain().verifyByStrECDSA(transaction.signString(), transaction.getSign(), account.getPubECCKey(), "UTF-8") ||
+                        !checkMethod(transaction.getRequest())) {
+                    return false;
+                }
         }
-        return block;
+        // 新开线程执行发送交易请求
+        new ThreadTroublePool().submit(() -> {
+            if (Node.obtain().isElectionNodeLeader(transaction.getHash())) { // 如果自身就是出块节点
+                // 存储交易等待出块，并将交易同步至所有竞选节点
+                if (!Node.obtain().addTransaction(transaction)) { // 如果自身已不再是出块节点
+                    // 将交易发送至竞选节点，由竞选节点代为转发或处理
+                    IOContext.obtain().syncTransactionElection(transaction);
+                }
+            } else if (Node.obtain().isElectionNode(transaction.getHash())) { // 如果自身是竞选节点
+                // 将交易同步至所有竞选节点
+                IOContext.obtain().syncTransactionElection(transaction);
+            } else { // 如果是普通节点，直接将交易发送至竞选节点，由竞选节点代为转发或处理
+                IOContext.obtain().sendTransactionElection(transaction);
+            }
+        });
+        return true;
     }
 
     private boolean checkMethod(Request request) {

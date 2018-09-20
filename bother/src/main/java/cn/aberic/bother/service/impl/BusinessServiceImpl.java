@@ -29,16 +29,14 @@ import cn.aberic.bother.contract.system.PublicContract;
 import cn.aberic.bother.encryption.key.bean.Key;
 import cn.aberic.bother.encryption.key.exec.KeyExec;
 import cn.aberic.bother.entity.account.AccountUser;
-import cn.aberic.bother.entity.block.Block;
 import cn.aberic.bother.entity.contract.Account;
 import cn.aberic.bother.entity.contract.AccountInfo;
 import cn.aberic.bother.entity.contract.Request;
 import cn.aberic.bother.entity.response.IResponse;
 import cn.aberic.bother.entity.token.Token;
-import cn.aberic.bother.service.BlockService;
 import cn.aberic.bother.service.BusinessService;
+import cn.aberic.bother.service.TransactionService;
 import cn.aberic.bother.token.TokenManager;
-import cn.aberic.bother.tools.thread.ThreadTroublePool;
 import com.alibaba.fastjson.JSON;
 import com.google.common.hash.Hashing;
 import lombok.extern.slf4j.Slf4j;
@@ -89,11 +87,11 @@ public class BusinessServiceImpl implements BusinessService, IResponse {
     }
 
     @Override
-    public String publish(Request request, BlockService blockService) {
+    public String publish(Request request, TransactionService transactionService) {
         TokenManager tokenManager = new TokenManager();
         Token token = tokenManager.getUnPublish(request.getAddress());
         Account account = token.getAccount();
-        String result = publish(token, account, request, blockService);
+        String result = publish(token, account, request, transactionService);
         tokenManager.clear(account.getAddress());
         return result;
     }
@@ -108,7 +106,7 @@ public class BusinessServiceImpl implements BusinessService, IResponse {
      * @param request 智能合约请求对象
      * @return 发布结果
      */
-    private String publish(Token token, Account account, Request request, BlockService blockService) {
+    private String publish(Token token, Account account, Request request, TransactionService transactionService) {
         PublicContract publicContract = new PublicContract();
         PublicContractExec exec = new PublicContractExec();
         // Token 上链
@@ -122,14 +120,11 @@ public class BusinessServiceImpl implements BusinessService, IResponse {
         request.setValue(JSON.toJSONString(account));
         exec.setRequest(request);
         log.debug("invoke account = {}", publicContract.invoke(exec));
-        Block block = blockService.checkBlockVerify(exec);
-        if (null != block) {
-            new ThreadTroublePool().submit(() -> exec.sendTransaction(blockService.checkBlockVerify(exec)));
-        } else {
-            exec.response(IResponse.ResponseType.FAIL);
+        if (transactionService.checkBlockVerify(exec.getContractHash(), exec.getTransaction())) {
+            return exec.response().getResultResponse();
         }
-//        exec.sendTransaction(exec.getBlock());
-        return response(ResponseType.SUCCESS).getResultResponse();
+        // exec.sendTransaction(exec.getBlock());
+        return exec.response(IResponse.ResponseType.FAIL).getResultResponse();
     }
 
 }

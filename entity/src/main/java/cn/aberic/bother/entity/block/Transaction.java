@@ -24,17 +24,23 @@
 
 package cn.aberic.bother.entity.block;
 
-import cn.aberic.bother.encryption.Hash;
 import cn.aberic.bother.encryption.key.exec.KeyExec;
+import cn.aberic.bother.entity.BeanProtoFormat;
 import cn.aberic.bother.entity.contract.Request;
 import cn.aberic.bother.entity.enums.TransactionStatus;
+import cn.aberic.bother.entity.proto.block.TransactionProto;
 import cn.aberic.bother.tools.DateTool;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.annotation.JSONField;
 import com.google.common.hash.Hashing;
+import com.google.gson.Gson;
+import com.google.protobuf.GeneratedMessageV3;
+import com.google.protobuf.InvalidProtocolBufferException;
+import com.google.protobuf.util.JsonFormat;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
 
 import java.nio.charset.Charset;
 
@@ -45,10 +51,11 @@ import java.nio.charset.Charset;
  * <p>
  * 邮箱：abericyang@gmail.com
  */
+@Slf4j
 @Setter
 @Getter
 @ToString
-public class Transaction {
+public class Transaction implements BeanProtoFormat {
 
     /** 本次写入值链码hash */
     @JSONField(name = "h")
@@ -117,5 +124,34 @@ public class Transaction {
 
     public String getTime() {
         return DateTool.timestampToString(timestamp, "yyyy/MM/dd HH:mm:ss");
+    }
+
+    /**
+     * Block 对象转成 {@link cn.aberic.bother.entity.proto.block.BlockProto.Block} 字节流
+     *
+     * @return proto 字节流
+     */
+    @Override
+    public byte[] bean2ProtoByteArray() {
+        TransactionProto.Transaction.Builder builder = TransactionProto.Transaction.newBuilder();
+        String jsonFormat = this.toJsonString();
+        log.debug("jsonFormat = {}", jsonFormat);
+        try {
+            JsonFormat.parser().merge(jsonFormat, builder);
+        } catch (InvalidProtocolBufferException e) {
+            e.printStackTrace();
+        }
+        return builder.build().toByteArray();
+    }
+
+    @Override
+    public <M extends GeneratedMessageV3> Transaction proto2Bean(M m) throws InvalidProtocolBufferException {
+        String jsonObject = JsonFormat.printer().print(m);
+        return new Gson().fromJson(jsonObject, Transaction.class);
+    }
+
+    @Override
+    public Transaction protoByteArray2Bean(byte[] bytes) throws InvalidProtocolBufferException {
+        return proto2Bean(TransactionProto.Transaction.parseFrom(bytes));
     }
 }

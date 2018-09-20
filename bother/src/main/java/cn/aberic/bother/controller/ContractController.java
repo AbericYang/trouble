@@ -26,8 +26,8 @@
 package cn.aberic.bother.controller;
 
 import cn.aberic.bother.entity.contract.Request;
-import cn.aberic.bother.service.BlockService;
 import cn.aberic.bother.service.ContractService;
+import cn.aberic.bother.service.TransactionService;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -45,11 +45,11 @@ public class ContractController {
     @Resource
     private ContractService contractService;
     @Resource
-    private BlockService blockService;
+    private TransactionService transactionService;
 
     @PostMapping(value = "invoke")
     public String invoke(@RequestBody Request request) {
-        return contractService.invoke(request, blockService);
+        return contractService.invoke(request, transactionService);
     }
 
     @PostMapping(value = "query")

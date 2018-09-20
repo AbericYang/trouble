@@ -25,6 +25,7 @@
 package cn.aberic.bother.io.message;
 
 import cn.aberic.bother.entity.block.Block;
+import cn.aberic.bother.entity.block.Transaction;
 import cn.aberic.bother.entity.io.MessageData;
 import cn.aberic.bother.entity.node.Node;
 import cn.aberic.bother.entity.node.NodeBase;
@@ -38,7 +39,7 @@ import io.netty.channel.Channel;
  * <p>
  * 邮箱：abericyang@gmail.com
  */
-interface IMsgReceiveService extends IMsgJoinService, IMsgElectionService {
+interface IMsgReceiveService extends IMsgJoinService, IMsgElectionService, IMsgTransactionService {
 
     /**
      * 应答消息业务处理方案
@@ -106,6 +107,12 @@ interface IMsgReceiveService extends IMsgJoinService, IMsgElectionService {
                 break;
             case ELECTION_UPGRADE_NODE_COUNT: // 接收到告知当前Hash合约的竞选节点集合更新其下属子节点总数
                 electionUpgradeNodeCount(address, msgData);
+                break;
+            case TRANSACTION: // 接收到交易提交协议
+                transaction(new Transaction().protoByteArray2Bean(msgData.getBytes()));
+                break;
+            case TRANSACTION_SYNC: // 接收到同步交易协议
+                transactionSync(new Transaction().protoByteArray2Bean(msgData.getBytes()));
                 break;
             case BLOCK: // 区块协议-0x51
                 log().debug("接收区块协议，执行区块同步操作");

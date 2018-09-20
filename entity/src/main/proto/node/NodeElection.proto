@@ -5,6 +5,7 @@ option java_package = "cn.aberic.bother.entity.proto.node";
 option java_outer_classname = "NodeElectionProto";
 
 import "node/NodeBase.proto";
+import "block/Transaction.proto";
 
 // 当前节点竞选对象
 message NodeElection {
@@ -13,4 +14,5 @@ message NodeElection {
     repeated NodeBase nodeBases = 3; // 当前选举节点基本信息集合 <= 50
     repeated string addresses = 4; // 从其它竞选节点获取其两个子节点的而组成的备用节点集合 <= 100
     map<string, int32> nodesCount = 5; // 当前Hash合约其他竞选节点其下属子节点个数集合
+    repeated Transaction transactions = 6; // 当前待打包交易集合
 }
