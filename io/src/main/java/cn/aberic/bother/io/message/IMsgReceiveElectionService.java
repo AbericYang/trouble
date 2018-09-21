@@ -24,7 +24,6 @@
 
 package cn.aberic.bother.io.message;
 
-import cn.aberic.bother.entity.block.BlockOut;
 import cn.aberic.bother.entity.enums.ProtocolStatus;
 import cn.aberic.bother.entity.io.MessageData;
 import cn.aberic.bother.entity.node.Node;
@@ -135,8 +134,16 @@ interface IMsgReceiveElectionService extends IMsgRequestService {
                 shutdown();
                 // 执行出块操作
                 new OutBlock(contractHash).publish();
-                // TODO: 2018/9/20 需要退出当前竞选节点集合并加入到当前竞选节点子节点集合中，当前竞选节点由协助节点代替，且协助节点还得广播区块？还需要生成新的协助节点
+            } else { // 如果当前节点不是竞选节点集合中Leader节点的下一节点
+                // 同步下一节点出块，当前出块节点放弃出块权
+                IOContext.obtain().send(
+                        Node.obtain().getNodeElectionMap().get(contractHash).getNodeBases().get(1).getAddress(),
+                        ProtocolStatus.ELECTION_LEADER_CHANGE_FORCE_REQUEST,
+                        contractHash);
             }
+        } else {
+            // 关闭连接
+            shutdown();
         }
     }
 

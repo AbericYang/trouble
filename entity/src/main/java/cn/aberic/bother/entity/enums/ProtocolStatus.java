@@ -78,8 +78,10 @@ public enum ProtocolStatus {
     TRANSACTION("交易协议", (byte) 0x60),
     /** 同步交易协议-0x61 */
     TRANSACTION_SYNC("同步交易协议", (byte) 0x61),
-    /** 接收出块区块协议-0x80 */
-    BLOCK_OUT("接收出块区块协议", (byte) 0x80);
+    /** 竞选节点或协助节点接收出块区块协议-0x80 */
+    BLOCK_OUT("接收出块区块协议", (byte) 0x80),
+    /** 普通节点接收出块区块协议-0x81 */
+    BLOCK_NODE_SYNC("普通节点接收出块区块协议", (byte) 0x81);
 
     /** 协议描述 */
     private String brief;

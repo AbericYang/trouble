@@ -35,6 +35,8 @@ import lombok.Setter;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.List;
+
 /**
  * 出块辅助对象
  * <p>
@@ -59,6 +61,15 @@ public class BlockOut implements BeanProtoFormat {
     public BlockOut(Block block, BlockInfo blockInfo) {
         this.block = block;
         this.blockInfo = blockInfo;
+    }
+
+    /**
+     * 重置交易集合
+     *
+     * @param transactions 新交易集合
+     */
+    public void resetTransactions(List<Transaction> transactions) {
+        block.getBody().setTransactions(transactions);
     }
 
     @Override

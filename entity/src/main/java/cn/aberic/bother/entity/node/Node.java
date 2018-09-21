@@ -303,7 +303,7 @@ public class Node implements BeanProtoFormat {
     }
 
     /**
-     * 本节点是否为指定Hash合约竞选节点之一的辅助节点
+     * 本节点是否为指定Hash合约竞选节点之一的协助节点
      *
      * @param contractHash 合约Hash
      *

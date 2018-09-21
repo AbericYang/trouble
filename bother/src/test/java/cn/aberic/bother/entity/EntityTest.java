@@ -234,7 +234,7 @@ public class EntityTest {
         nodeBases.add(nodeBase);
         NodeAssist nodeAssist = new NodeAssist();
         nodeAssist.setNodeBases(nodeBases);
-        NodeElection nodeElection = new NodeElection();
+        NodeElection nodeElection = new NodeElection("alksjdl");
         nodeElection.setAddresses(stringList);
         nodeElection.setNodeBases(nodeBases);
         nodeElection.setNodeCount(1);

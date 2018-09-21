@@ -64,6 +64,40 @@ public class OutBlock {
     }
 
     /**
+     * 该竞选节点协助节点同步区块
+     *
+     * @param blockOut 出块对象
+     */
+    public void syncAssistNode(BlockOut blockOut) {
+        // 将出块区块广播给协助节点
+        IOContext.obtain().push(Node.obtain().getAssistAddress(contractHash), new MessageData(ProtocolStatus.BLOCK_OUT, blockOut.bean2ProtoByteArray()));
+        // 同步已出快的区块对象到本地
+        storage.sync(blockOut);
+    }
+
+    /**
+     * 该协助节点下属节点同步区块
+     *
+     * @param blockOut 出块对象
+     */
+    public void syncNode(BlockOut blockOut) {
+        // 将出块区块广播给协助节点
+        IOContext.obtain().broadcastAssist(contractHash, new MessageData(ProtocolStatus.BLOCK_NODE_SYNC, blockOut.bean2ProtoByteArray()));
+        // 同步已出快的区块对象到本地
+        storage.sync(blockOut);
+    }
+
+    /**
+     * 普通节点同步区块
+     *
+     * @param blockOut 出块对象
+     */
+    public void sync(BlockOut blockOut) {
+        // 同步已出快的区块对象到本地
+        storage.sync(blockOut);
+    }
+
+    /**
      * 将指定Hash合约下的交易集合打包成出块区块
      *
      * @param transactions 交易集合

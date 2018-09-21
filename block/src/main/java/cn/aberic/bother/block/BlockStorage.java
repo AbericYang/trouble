@@ -99,6 +99,8 @@ public class BlockStorage extends BlockAS implements IDataExec {
      * @param blockOut 待同步区块出块对象
      */
     public void sync(BlockOut blockOut) {
+        // 区块是否可正常写入
+        boolean success = true;
         Block block = blockOut.getBlock();
         BlockInfo blockInfo = blockOut.getBlockInfo();
         // 区块对象被保存本地文件中的压缩字符串
@@ -111,6 +113,7 @@ public class BlockStorage extends BlockAS implements IDataExec {
                 // 如果得到区块文件高度不为0，即最新区块文件应该存在，则说明本地数据同步尚未完成
                 if (0 != block.getHeader().getHeight()) {
                     // TODO: 2018/9/20 同步数据
+                    success = false;
                     log.debug("继续同步数据操作");
                 } else {
                     // 定义新的区块文件
@@ -125,6 +128,7 @@ public class BlockStorage extends BlockAS implements IDataExec {
                 // 如果上一区块高度+1不等于待同步区块高度，则说明本地数据同步尚未完成
                 if (preBlock.getHeader().getHeight() + 1 != block.getHeader().getHeight()) {
                     // TODO: 2018/9/20 同步数据
+                    success = false;
                     log.debug("继续同步数据操作");
                 } else {
                     // 重新生成待写入JSON String内容
@@ -143,14 +147,16 @@ public class BlockStorage extends BlockAS implements IDataExec {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        String blockIndex = String.format("%s,%s,%s,%s", blockInfo.getNum(), blockInfo.getLine(), blockInfo.getBlockHash(), blockInfo.getHeight());
-        getBlockIndexExec().createOrUpdate(blockIndex);
-        StringBuilder sb = new StringBuilder();
-        sb.append(String.format("%s,%s", blockInfo.getNum(), blockInfo.getLine()));
-        for (String s : blockInfo.getTransactionHashList()) {
-            sb.append(",").append(s);
+        if (success) {
+            String blockIndex = String.format("%s,%s,%s,%s", blockInfo.getNum(), blockInfo.getLine(), blockInfo.getBlockHash(), blockInfo.getHeight());
+            getBlockIndexExec().createOrUpdate(blockIndex);
+            StringBuilder sb = new StringBuilder();
+            sb.append(String.format("%s,%s", blockInfo.getNum(), blockInfo.getLine()));
+            for (String s : blockInfo.getTransactionHashList()) {
+                sb.append(",").append(s);
+            }
+            getBlockTransactionIndexExec().createOrUpdate(sb.toString());
         }
-        getBlockTransactionIndexExec().createOrUpdate(sb.toString());
     }
 
     /**
@@ -159,7 +165,6 @@ public class BlockStorage extends BlockAS implements IDataExec {
      * @param height        待存储区块对象高度
      * @param block         待存储区块对象
      * @param blockFromFile 本地已存在区块文件中获取的区块对象
-     *
      * @return 区块存储结果
      */
     private boolean checkVerify(int height, Block block, Block blockFromFile) {

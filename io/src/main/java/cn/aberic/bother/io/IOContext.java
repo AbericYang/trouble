@@ -37,6 +37,7 @@ import cn.aberic.bother.io.exec.factory.*;
 import cn.aberic.bother.io.exec.server.EchoServer;
 import cn.aberic.bother.tools.Constant;
 import cn.aberic.bother.tools.MsgPackTool;
+import cn.aberic.bother.tools.thread.ThreadTroublePool;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import lombok.extern.slf4j.Slf4j;
@@ -183,9 +184,9 @@ public class IOContext {
      * @param transaction 交易对象
      */
     public void syncTransactionElection(Transaction transaction) {
-        Node.obtain().getNodeElectionMap().get(transaction.getHash()).getNodeBases().forEach(nodeBase -> {
-            send(nodeBase.getAddress(), ProtocolStatus.TRANSACTION_SYNC, transaction);
-        });
+        Node.obtain().getNodeElectionMap().get(transaction.getHash()).getNodeBases().forEach(nodeBase ->
+                new ThreadTroublePool().submit(() ->
+                        send(nodeBase.getAddress(), ProtocolStatus.TRANSACTION_SYNC, transaction)));
     }
 
     /**
@@ -215,9 +216,9 @@ public class IOContext {
      * @param msgData      消息体
      */
     public void broadcastElection(String contractHash, MessageData msgData) {
-        Node.obtain().getNodeElectionMap().get(contractHash).getNodeBases().forEach(nodeBase -> {
-            Objects.requireNonNull(ioServerCache.getIfPresent(nodeBase.getAddress())).push(msgData);
-        });
+        Node.obtain().getNodeElectionMap().get(contractHash).getNodeBases().forEach(nodeBase ->
+                new ThreadTroublePool().submit(() ->
+                        Objects.requireNonNull(ioServerCache.getIfPresent(nodeBase.getAddress())).push(msgData)));
     }
 
     /**
@@ -228,9 +229,9 @@ public class IOContext {
      * @param msgData      消息体
      */
     public void broadcastAssist(String contractHash, MessageData msgData) {
-        Node.obtain().getNodeAssistMap().get(contractHash).getNodeBases().forEach(nodeBase -> {
-            Objects.requireNonNull(ioServerCache.getIfPresent(nodeBase.getAddress())).push(msgData);
-        });
+        Node.obtain().getNodeAssistMap().get(contractHash).getNodeBases().forEach(nodeBase ->
+                new ThreadTroublePool().submit(() ->
+                        Objects.requireNonNull(ioServerCache.getIfPresent(nodeBase.getAddress())).push(msgData)));
     }
 
     /**

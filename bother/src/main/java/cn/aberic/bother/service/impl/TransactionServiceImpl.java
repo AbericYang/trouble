@@ -24,23 +24,11 @@
 
 package cn.aberic.bother.service.impl;
 
-import cn.aberic.bother.block.BlockAcquire;
-import cn.aberic.bother.block.BlockStorage;
-import cn.aberic.bother.contract.exec.PublicContractExec;
-import cn.aberic.bother.contract.system.PublicContract;
-import cn.aberic.bother.encryption.key.exec.KeyExec;
+import cn.aberic.bother.contract.common.ContractVerify;
 import cn.aberic.bother.entity.block.Transaction;
-import cn.aberic.bother.entity.contract.Account;
-import cn.aberic.bother.entity.contract.Request;
 import cn.aberic.bother.entity.node.Node;
-import cn.aberic.bother.entity.response.IResponse;
-import cn.aberic.bother.entity.response.Response;
 import cn.aberic.bother.io.IOContext;
 import cn.aberic.bother.service.TransactionService;
-import cn.aberic.bother.tools.thread.ThreadTroublePool;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.TypeReference;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -55,44 +43,24 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     public boolean checkBlockVerify(String contractHash, Transaction transaction) {
-        switch (transaction.getRequest().getKey()) {
-            case "openAccount":
-                if (!KeyExec.obtain().verifyByStrECDSA(transaction.signString(), transaction.getSign(), transaction.getPubECCKey(), "UTF-8") ||
-                        !checkMethod(transaction.getRequest())) {
-                    return false;
-                }
-            default:
-                Account account = JSON.parseObject(new BlockStorage(contractHash).get(new BlockAcquire(contractHash), transaction.getCreator()), new TypeReference<Account>() {});
-                if (!KeyExec.obtain().verifyByStrECDSA(transaction.signString(), transaction.getSign(), account.getPubECCKey(), "UTF-8") ||
-                        !checkMethod(transaction.getRequest())) {
-                    return false;
-                }
+        ContractVerify verify = new ContractVerify(contractHash);
+        if (!verify.verifyTransaction(transaction)) {
+            return false;
         }
-        // 新开线程执行发送交易请求
-        new ThreadTroublePool().submit(() -> {
-            if (Node.obtain().isElectionNodeLeader(transaction.getHash())) { // 如果自身就是出块节点
-                // 存储交易等待出块，并将交易同步至所有竞选节点
-                if (!Node.obtain().addTransaction(transaction)) { // 如果自身已不再是出块节点
-                    // 将交易发送至竞选节点，由竞选节点代为转发或处理
-                    IOContext.obtain().syncTransactionElection(transaction);
-                }
-            } else if (Node.obtain().isElectionNode(transaction.getHash())) { // 如果自身是竞选节点
-                // 将交易同步至所有竞选节点
+        // 执行发送交易请求
+        if (Node.obtain().isElectionNodeLeader(transaction.getHash())) { // 如果自身就是出块节点
+            // 存储交易等待出块，并将交易同步至所有竞选节点
+            if (!Node.obtain().addTransaction(transaction)) { // 如果自身已不再是出块节点
+                // 将交易发送至竞选节点，由竞选节点代为转发或处理
                 IOContext.obtain().syncTransactionElection(transaction);
-            } else { // 如果是普通节点，直接将交易发送至竞选节点，由竞选节点代为转发或处理
-                IOContext.obtain().sendTransactionElection(transaction);
             }
-        });
+        } else if (Node.obtain().isElectionNode(transaction.getHash())) { // 如果自身是竞选节点
+            // 将交易同步至所有竞选节点
+            IOContext.obtain().syncTransactionElection(transaction);
+        } else { // 如果是普通节点，直接将交易发送至竞选节点，由竞选节点代为转发或处理
+            IOContext.obtain().sendTransactionElection(transaction);
+        }
         return true;
-    }
-
-    private boolean checkMethod(Request request) {
-        PublicContract contract = new PublicContract();
-        PublicContractExec exec = new PublicContractExec();
-        exec.setRequest(request);
-        Response response = contract.invoke(exec);
-        JSONObject jsonObject = JSON.parseObject(response.getResultResponse());
-        return jsonObject.getInteger("code") == IResponse.ResponseType.SUCCESS.getCode();
     }
 
 }

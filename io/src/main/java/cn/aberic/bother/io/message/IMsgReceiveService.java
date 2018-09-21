@@ -24,7 +24,6 @@
 
 package cn.aberic.bother.io.message;
 
-import cn.aberic.bother.entity.block.Block;
 import cn.aberic.bother.entity.block.Transaction;
 import cn.aberic.bother.entity.io.MessageData;
 import cn.aberic.bother.tools.MsgPackTool;
@@ -107,8 +106,11 @@ interface IMsgReceiveService extends IMsgReceiveJoinService, IMsgReceiveElection
             case TRANSACTION_SYNC: // 接收到同步交易协议
                 transactionSync(new Transaction().protoByteArray2Bean(msgData.getBytes()));
                 break;
-            case BLOCK_OUT: // 接收出块区块协议
-                blockOut(msgData);
+            case BLOCK_OUT: // 竞选节点或协助节点接收出块区块协议
+                blockOut(address, msgData);
+                break;
+            case BLOCK_NODE_SYNC: // 普通节点接收出块区块协议
+                blockNodeSync(address, msgData);
                 break;
             default: // 非法协议请求直接关闭异常节点连入
                 log().info("关闭协议异常channel");
