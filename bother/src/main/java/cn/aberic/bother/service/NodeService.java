@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2018. Aberic Yang
+ * Copyright (c) 2018 Aberic Yang
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,25 +22,21 @@
  * SOFTWARE.
  */
 
-package cn.aberic.bother;
+package cn.aberic.bother.service;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Bean;
-import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.web.context.request.RequestContextListener;
+/**
+ * 作者：Aberic on 2018/09/21 14:34
+ * <p>
+ * 邮箱：abericyang@gmail.com
+ */
+public interface NodeService {
 
-@SpringBootApplication
-@EnableScheduling
-public class BotherApplication {
-
-    public static void main(String[] args) {
-        SpringApplication.run(BotherApplication.class, args);
-    }
-
-    @Bean
-    public RequestContextListener requestContextListener(){
-        return new RequestContextListener();
-    }
+    /**
+     * 获取当前Hash合约的协助节点地址
+     *
+     * @param contractHash 合约Hash
+     * @return 协助节点地址
+     */
+    String getNodeAssistAddress(String contractHash);
 
 }

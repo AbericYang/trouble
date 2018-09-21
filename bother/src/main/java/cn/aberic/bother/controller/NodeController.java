@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2018. Aberic Yang
+ * Copyright (c) 2018 Aberic Yang
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,25 +22,32 @@
  * SOFTWARE.
  */
 
-package cn.aberic.bother;
+package cn.aberic.bother.controller;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Bean;
-import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.web.context.request.RequestContextListener;
+import cn.aberic.bother.service.NodeService;
+import com.alibaba.fastjson.JSONObject;
+import org.springframework.web.bind.annotation.*;
 
-@SpringBootApplication
-@EnableScheduling
-public class BotherApplication {
+import javax.annotation.Resource;
+import java.util.Map;
 
-    public static void main(String[] args) {
-        SpringApplication.run(BotherApplication.class, args);
-    }
+/**
+ * 作者：Aberic on 2018/09/21 14:33
+ * <p>
+ * 邮箱：abericyang@gmail.com
+ */
+@CrossOrigin
+@RestController
+@RequestMapping("node")
+public class NodeController {
 
-    @Bean
-    public RequestContextListener requestContextListener(){
-        return new RequestContextListener();
+    @Resource
+    private NodeService nodeService;
+
+    @PostMapping(value = "assist/address")
+    public String getNodeAssistAddress(@RequestBody Map<String, Object> request) {
+        JSONObject jsonObject = new JSONObject(request);
+        return nodeService.getNodeAssistAddress(jsonObject.getString("contractHash"));
     }
 
 }

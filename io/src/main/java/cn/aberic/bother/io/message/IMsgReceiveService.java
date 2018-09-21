@@ -27,8 +27,9 @@ package cn.aberic.bother.io.message;
 import cn.aberic.bother.entity.block.Transaction;
 import cn.aberic.bother.entity.io.MessageData;
 import cn.aberic.bother.tools.MsgPackTool;
-import com.google.protobuf.InvalidProtocolBufferException;
 import io.netty.channel.Channel;
+
+import java.io.IOException;
 
 /**
  * 应答消息业务处理接口
@@ -45,7 +46,7 @@ interface IMsgReceiveService extends IMsgReceiveJoinService, IMsgReceiveElection
      * @param channel 当前指定通道
      * @param msgData 协议消息对象
      */
-    default void receive(Channel channel, MessageData msgData) throws InvalidProtocolBufferException {
+    default void receive(Channel channel, MessageData msgData) throws IOException {
         String address = channel.remoteAddress().toString().split(":")[0].split("/")[1];
         log().debug("请求协议：{}，数据ID：{}", msgData.getProtocol().getB(), msgData.getDataId());
         switch (msgData.getProtocol()) {
@@ -107,7 +108,7 @@ interface IMsgReceiveService extends IMsgReceiveJoinService, IMsgReceiveElection
                 transactionSync(new Transaction().protoByteArray2Bean(msgData.getBytes()));
                 break;
             case BLOCK_OUT: // 竞选节点或协助节点接收出块区块协议
-                blockOut(address, msgData);
+                blockOut(channel, address, msgData);
                 break;
             case BLOCK_NODE_SYNC: // 普通节点接收出块区块协议
                 blockNodeSync(address, msgData);

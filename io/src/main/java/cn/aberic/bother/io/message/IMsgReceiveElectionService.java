@@ -128,9 +128,8 @@ interface IMsgReceiveElectionService extends IMsgRequestService {
                 // 将当前Hash合约竞选节点集合中的Leader节点强制移除并广播出去
                 Node.obtain().getNodeElectionMap().get(contractHash).removeLeader();
                 // 广播告知当前Hash合约竞选节点集合中的所有节点强制更换Leader
-                Node.obtain().getNodeElectionMap().get(contractHash).getNodeBases().forEach(nodeBase -> {
-                    IOContext.obtain().send(nodeBase.getAddress(), ProtocolStatus.ELECTION_LEADER_CHANGE_FORCE, contractHash);
-                });
+                Node.obtain().getNodeElectionMap().get(contractHash).getNodeBases().forEach(nodeBase ->
+                        IOContext.obtain().send(nodeBase.getAddress(), ProtocolStatus.ELECTION_LEADER_CHANGE_FORCE, contractHash));
                 shutdown();
                 // 执行出块操作
                 new OutBlock(contractHash).publish();
@@ -152,13 +151,20 @@ interface IMsgReceiveElectionService extends IMsgRequestService {
         long now = System.currentTimeMillis();
         // 检测是否超出出块时间
         if (now - Node.obtain().getNodeElectionMap().get(contractHash).getTimestamp() > Constant.NODE_ELECTION_OUT_BLOCK_TIME) { // 如果到了出块时间
+            // 获取竞选节点集合中Leader节点的下一节点
+            String nextLeaderAddress = Node.obtain().getNodeElectionMap().get(contractHash).getNodeBases().get(1).getAddress();
             // 如果当前请求节点为竞选节点集合中Leader节点的下一节点
-            if (StringUtils.equals(Node.obtain().getNodeElectionMap().get(contractHash).getNodeBases().get(1).getAddress(), address)) {
+            if (StringUtils.equals(nextLeaderAddress, address)) {
                 // 将当前Hash合约竞选节点集合中的Leader节点强制移除
                 Node.obtain().getNodeElectionMap().get(contractHash).removeLeader();
                 shutdown();
                 // 向新的竞选节点Leader发送保持心跳协议
                 sendElectionToLeaderHeartBeatKeepAsk(address, contractHash);
+                // 更新接收到新Leader节点变更的时间戳
+                Node.obtain().getNodeElectionMap().get(contractHash).setTimestamp(System.currentTimeMillis());
+            } else {
+                // 同步下一节点出块，当前出块节点放弃出块权
+                IOContext.obtain().send(nextLeaderAddress, ProtocolStatus.ELECTION_LEADER_CHANGE_FORCE_REQUEST, contractHash);
             }
         }
     }

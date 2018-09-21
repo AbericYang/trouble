@@ -56,6 +56,8 @@ public class NodeElection implements BeanProtoFormat {
 
     /** 当前节点竞选对象所属智能合约Hash */
     private String contractHash;
+    /** 最新更新区块的节点绑定账户地址 */
+    private String lastAccountAddress;
     /** 当前Hash合约竞选节点所属子节点总数 */
     private int nodeCount;
     /** 当前Hash合约竞选节点基本信息集合 <= 50 */
@@ -66,7 +68,7 @@ public class NodeElection implements BeanProtoFormat {
     private Map<String, Integer> nodesCount;
     /** 当前待打包交易集合 */
     private List<Transaction> transactions;
-    /** 接收到上一区块的本地时间戳 */
+    /** 接收到新Leader节点变更的时间戳 */
     private long timestamp;
 
     public NodeElection() {}

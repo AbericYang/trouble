@@ -45,8 +45,8 @@ public class HttpTool {
      * @param address 节点地址
      * @param json    请求json
      */
-    public static void postNode(String address, String json) throws IOException {
-        post(String.format("%s:19022", address), json);
+    public static String postNode(String address, String json) throws IOException {
+        return post(String.format("%s:19022", address), json);
     }
 
     /**
