@@ -5,9 +5,10 @@ option java_package = "cn.aberic.bother.entity.proto.block";
 option java_outer_classname = "BlockHeaderProto";
 
 message BlockHeader {
-    int32 height = 1; // 区块高度
-    string currentDataHash = 2; // 当前区块hash
-    string previousDataHash = 3; // 上一区块hash
-    int64 timestamp = 4; // 当前区块生成时间戳
-    string time = 5; // 交易时间戳转字符串——yyyy/MM/dd HH:mm:ss
+    string hash = 1; // 本次写入值链码hash
+    int32 height = 2; // 区块高度
+    string currentDataHash = 3; // 当前区块hash
+    string previousDataHash = 4; // 上一区块hash
+    int64 timestamp = 5; // 当前区块生成时间戳
+    string time = 6; // 交易时间戳转字符串——yyyy/MM/dd HH:mm:ss
 }

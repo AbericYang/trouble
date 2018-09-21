@@ -41,7 +41,7 @@ import java.util.List;
  * <p>
  * 邮箱：abericyang@gmail.com
  */
-public interface IMsgRequestSendService {
+interface IMsgRequestSendService {
 
     /**
      * 发送连接请求

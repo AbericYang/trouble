@@ -35,7 +35,7 @@ import cn.aberic.bother.io.IOContext;
  * <p>
  * 邮箱：abericyang@gmail.com
  */
-public interface IMsgTransactionService extends IMsgRequestService {
+interface IMsgReceiveTransactionService extends IMsgRequestService {
 
     /** 接收到交易协议 */
     default void transaction(Transaction transaction) {

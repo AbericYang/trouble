@@ -100,8 +100,8 @@ public class EntityTest {
         String jsonObject = JsonFormat.printer().print(blockOut);
         log.debug("jsonObject = {}", jsonObject);
         log.debug("Object = {}", JSON.parseObject(jsonObject, new TypeReference<BlockOut>() {}).toJsonString());
-        log.debug("result1 = {}", new BlockOut(null, null).proto2Bean(blockOut).toJsonString());
-        log.debug("result2 = {}", new BlockOut(null, null).protoByteArray2Bean(bytes).toJsonString());
+        log.debug("result1 = {}", new BlockOut().proto2Bean(blockOut).toJsonString());
+        log.debug("result2 = {}", new BlockOut().protoByteArray2Bean(bytes).toJsonString());
     }
 
     private static void createNodeProtobuf() throws InvalidProtocolBufferException {
@@ -189,7 +189,7 @@ public class EntityTest {
     }
 
     public static Block createBlock(int count) {
-        BlockHeader header = BlockHeader.newInstance().create();
+        BlockHeader header = BlockHeader.newInstance().create("skdjhfkjdhkf");
 
         BlockBody body = new BlockBody();
         body.setTxCount(getTransactions(count).size());
@@ -274,6 +274,7 @@ public class EntityTest {
         List<Transaction> transactions = new ArrayList<>();
         for (int transactionCount = 0; transactionCount < 10; transactionCount++) {
             Transaction transaction = new Transaction();
+            transaction.setHash("skdjhfkjdhkf");
             transaction.setCreator(String.format("haha%s", transactionCount));
             transaction.setErrorMessage(String.format("error message %s", transactionCount));
             transaction.setSign(String.format("sign %s", transactionCount));

@@ -42,6 +42,9 @@ import lombok.ToString;
 @ToString
 public class BlockHeader {
 
+    /** 本次写入值链码hash */
+    @JSONField(name = "h")
+    private String hash;
     /** 区块高度 */
     @JSONField(name = "h")
     private int height;
@@ -73,7 +76,8 @@ public class BlockHeader {
      *
      * @return 区快头部构造
      */
-    public BlockHeader create() {
+    public BlockHeader create(String contractHash) {
+        this.hash = contractHash;
         this.timestamp = System.currentTimeMillis();
         return this;
     }

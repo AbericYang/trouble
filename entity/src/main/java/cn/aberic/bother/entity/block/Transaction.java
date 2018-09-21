@@ -58,7 +58,7 @@ import java.nio.charset.Charset;
 public class Transaction implements BeanProtoFormat {
 
     /** 本次写入值链码hash */
-    @JSONField(name = "h")
+    @JSONField(name = "h", serialize = false)
     private String hash;
     /** 本次写入值所用合约名称 */
     @JSONField(name = "n")
@@ -78,11 +78,7 @@ public class Transaction implements BeanProtoFormat {
     /** 交易时间戳 */
     @JSONField(name = "t")
     private Long timestamp;
-    /**
-     * 交易hash
-     * <p>
-     * 为creator、sign、JSON.toJSONString(readSet)、JSON.toJSONString(writeSet)及timestamp拼接后md5
-     */
+    /** 交易hash */
     @JSONField(name = "txh")
     private String txHash;
     /** 交易状态 */
@@ -92,7 +88,7 @@ public class Transaction implements BeanProtoFormat {
     @JSONField(name = "e")
     private String errorMessage;
     /** 交易时间戳转字符串——yyyy/MM/dd HH:mm:ss */
-    @JSONField(serialize = false)
+    @JSONField(name = "d", serialize = false)
     private String time; // 序列化时不写入
     /** 智能合约请求对象 */
     @JSONField(name = "r")

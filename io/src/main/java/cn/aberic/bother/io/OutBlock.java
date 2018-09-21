@@ -26,6 +26,9 @@ package cn.aberic.bother.io;
 
 import cn.aberic.bother.block.BlockStorage;
 import cn.aberic.bother.entity.block.*;
+import cn.aberic.bother.entity.enums.ProtocolStatus;
+import cn.aberic.bother.entity.io.MessageData;
+import cn.aberic.bother.entity.node.Node;
 
 import java.util.List;
 
@@ -38,41 +41,43 @@ import java.util.List;
  */
 public class OutBlock {
 
+    private String contractHash;
     /** 区块存储操作对象 */
     private BlockStorage storage;
-    /** 出块辅助对象 */
-    private BlockOut blockOut;
 
     public OutBlock(String contractHash) {
+        this.contractHash = contractHash;
         storage = new BlockStorage(contractHash);
+    }
+
+    /** 发布出块 */
+    public void publish() {
+        // 生成出块区块
+        BlockOut blockOut = out(Node.obtain().getTransactions(contractHash));
+        // 将出块区块在竞选节点集合中进行广播
+        Node.obtain().getNodeElectionMap().get(contractHash).getNodeBases().forEach(nodeBase ->
+                IOContext.obtain().broadcastElection(contractHash, new MessageData(ProtocolStatus.BLOCK_OUT, blockOut.bean2ProtoByteArray())));
+        // 将出块区块广播给协助节点
+        IOContext.obtain().push(Node.obtain().getAssistAddress(contractHash), new MessageData(ProtocolStatus.BLOCK_OUT, blockOut.bean2ProtoByteArray()));
+        // 同步已出快的区块对象到本地
+        storage.sync(blockOut);
     }
 
     /**
      * 将指定Hash合约下的交易集合打包成出块区块
      *
      * @param transactions 交易集合
-     *
      * @return 出块区块对象
      */
-    public BlockOut out(List<Transaction> transactions) {
-        BlockHeader header = BlockHeader.newInstance().create();
+    private BlockOut out(List<Transaction> transactions) {
+        BlockHeader header = BlockHeader.newInstance().create(contractHash);
         BlockBody body = new BlockBody();
         body.setTxCount(transactions.size());
         body.setTransactions(transactions);
         // 生成原始区块对象
         Block block = new Block(header, body);
         // 打包原始区块对象并生成区块出块对象
-        blockOut = storage.packOut(block);
-        return blockOut;
-    }
-
-    /**
-     * 同步已出快的区块对象到本地
-     * <p>
-     * 同步指定智能合约账本的区块文件
-     */
-    public void sync() {
-        storage.sync(blockOut);
+        return storage.packOut(block);
     }
 
 }

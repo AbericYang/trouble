@@ -38,7 +38,7 @@ import java.util.List;
  * <p>
  * 邮箱：abericyang@gmail.com
  */
-public interface IMsgRequestPushService {
+interface IMsgRequestPushService {
 
     /**
      * 推送空消息

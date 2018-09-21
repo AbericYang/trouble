@@ -46,7 +46,7 @@ import java.util.List;
  * <p>
  * 邮箱：abericyang@gmail.com
  */
-public interface IMsgElectionService extends IMsgRequestService {
+interface IMsgReceiveElectionService extends IMsgRequestService {
 
     /** 接收到发起选举协议 */
     default void election() {
@@ -134,17 +134,7 @@ public interface IMsgElectionService extends IMsgRequestService {
                 });
                 shutdown();
                 // 执行出块操作
-                OutBlock outBlock = new OutBlock(contractHash);
-                // 生成出块区块
-                BlockOut blockOut = outBlock.out(Node.obtain().getTransactions(contractHash));
-                // 将出块区块在竞选节点集合中进行广播
-                Node.obtain().getNodeElectionMap().get(contractHash).getNodeBases().forEach(nodeBase -> {
-                    IOContext.obtain().broadcastElection(contractHash, new MessageData(ProtocolStatus.BLOCK_OUT, blockOut.bean2ProtoByteArray()));
-                });
-                // 将出块区块广播给协助节点
-                IOContext.obtain().push(Node.obtain().getAssistAddress(contractHash), new MessageData(ProtocolStatus.BLOCK_OUT, blockOut.bean2ProtoByteArray()));
-                // 同步出块区块
-                outBlock.sync();
+                new OutBlock(contractHash).publish();
                 // TODO: 2018/9/20 需要退出当前竞选节点集合并加入到当前竞选节点子节点集合中，当前竞选节点由协助节点代替，且协助节点还得广播区块？还需要生成新的协助节点
             }
         }

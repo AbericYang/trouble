@@ -46,12 +46,15 @@ import lombok.extern.slf4j.Slf4j;
 @Setter
 @Getter
 @ToString
-public class BlockOut implements BeanProtoFormat  {
+public class BlockOut implements BeanProtoFormat {
 
     /** 原始区块对象 */
     private Block block;
     /** 区块在区块文件中的基本信息 */
     private BlockInfo blockInfo;
+
+    public BlockOut() {
+    }
 
     public BlockOut(Block block, BlockInfo blockInfo) {
         this.block = block;

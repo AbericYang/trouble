@@ -97,7 +97,7 @@ public class PublicContractExec implements IPublicContractExec, IContractBaseExe
     }
 
     public Block getBlock() {
-        BlockHeader header = BlockHeader.newInstance().create();
+        BlockHeader header = BlockHeader.newInstance().create(getContractHash());
         BlockBody body = new BlockBody();
         List<Transaction> transactions = new ArrayList<>();
         transactions.add(getTransaction());

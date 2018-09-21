@@ -44,10 +44,28 @@ import java.util.List;
  * <p>
  * 邮箱：abericyang@gmail.com
  */
-public interface IMsgJoinService extends IMsgRequestService {
+interface IMsgReceiveJoinService extends IMsgRequestService {
 
     /** 接收到加入新节点协议 */
-    default void join(Channel channel, String contractHash, NodeBase nodeBaseJoin) {
+    default void join(String address, Channel channel, MessageData msgData) throws InvalidProtocolBufferException {
+        log().debug("接收加入新节点[{}]协议，执行加入方案", address);
+        // 获取请求节点基本信息
+        NodeBase nodeBaseJoin = new NodeBase().protoByteArray2Bean(msgData.getBytes());
+        nodeBaseJoin.setAddress(address);
+        // 遍历当前请求加入新节点的请求合约Hash集合
+        nodeBaseJoin.getHashes().forEach(joinsContractHash -> {
+            // 跟自身所持有的Hash进行比较，查找其中相同部分
+            if (Node.obtain().getNodeBase().getHashes().contains(joinsContractHash)) {
+                joinAssist(channel, joinsContractHash, nodeBaseJoin);
+            } else {
+                log().debug("自身无此Hash合约，关闭远程连接及心跳允许");
+                shutdown();
+            }
+        });
+    }
+
+    /** 接收到加入新节点协议协助方法 */
+    default void joinAssist(Channel channel, String contractHash, NodeBase nodeBaseJoin) {
         // 判断自身在当前Hash合约中的身份
         if (Node.obtain().isElectionNode(contractHash)) { // 表示自身为当前Hash合约的竞选节点之一
             // 检查当前竞选节点集合是否满足Constant.ELECTION_COUNT数量
