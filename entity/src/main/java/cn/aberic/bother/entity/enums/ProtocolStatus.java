@@ -74,6 +74,10 @@ public enum ProtocolStatus {
     ELECTION_LEADER_CHANGE_FORCE_REQUEST("申请竞选节点Leader强制更换协议", (byte) 0x44),
     /** 竞选节点Leader强制更换协议-0x45 */
     ELECTION_LEADER_CHANGE_FORCE("竞选节点Leader强制更换协议", (byte) 0x45),
+    /** 告知当前Hash合约下的协助节点可变更为竞选节点协议-0x46 */
+    ELECTION_LEADER_CHANGE_FOR_ASSIST_NODE("告知当前Hash合约下的协助节点可变更为竞选节点协议", (byte) 0x46),
+    /** 告知当前Hash合约下的节点当前协助节点已经变更协议-0x47 */
+    ELECTION_ASSIST_CHANGE_FOR_NODE("告知当前Hash合约下的节点当前协助节点已经变更协议", (byte) 0x47),
     /** 交易协议-0x60 */
     TRANSACTION("交易协议", (byte) 0x60),
     /** 同步交易协议-0x61 */

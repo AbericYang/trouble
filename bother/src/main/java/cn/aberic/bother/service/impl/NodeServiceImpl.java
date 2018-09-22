@@ -26,6 +26,7 @@ package cn.aberic.bother.service.impl;
 
 import cn.aberic.bother.entity.node.Node;
 import cn.aberic.bother.service.NodeService;
+import cn.aberic.bother.tools.SystemTool;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -52,13 +53,13 @@ public class NodeServiceImpl implements NodeService {
         // 判断自己是否为当前Hash合约竞选节点集合中的Leader
         if (Node.obtain().isElectionNodeLeader(contractHash) &&
                 // 判断当前请求地址是否为当前Hash合约竞选节点集合中的第二顺位节点
-                StringUtils.equals(Node.obtain().getNodeElectionMap().get(contractHash).getNodeBases().get(1).getAddress(), getIpAddr(request))) {
+                StringUtils.equals(Node.obtain().getNodeElectionMap().get(contractHash).getNodeBases().get(1).getAddress(), getIpAddress(request))) {
             return Node.obtain().getAssistAddress(contractHash);
         }
         return null;
     }
 
-    private static String getIpAddr(HttpServletRequest request) {
+    private static String getIpAddress(HttpServletRequest request) {
         String ip = request.getHeader("x-forwarded-for");
         if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
             ip = request.getHeader("Proxy-Client-IP");
@@ -77,7 +78,7 @@ public class NodeServiceImpl implements NodeService {
                     e.printStackTrace();
                 }
                 assert inet != null;
-                ip = inet.getHostAddress();
+                ip = SystemTool.getLocalIp();
             }
         }
         // 对于通过多个代理的情况，第一个IP为客户端真实IP,多个IP按照','分割

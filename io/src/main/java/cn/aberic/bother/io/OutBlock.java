@@ -29,6 +29,7 @@ import cn.aberic.bother.entity.block.*;
 import cn.aberic.bother.entity.enums.ProtocolStatus;
 import cn.aberic.bother.entity.io.MessageData;
 import cn.aberic.bother.entity.node.Node;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
 
@@ -59,6 +60,11 @@ public class OutBlock {
                 IOContext.obtain().broadcastElection(contractHash, new MessageData(ProtocolStatus.BLOCK_OUT, blockOut.bean2ProtoByteArray())));
         // 将出块区块广播给协助节点
         IOContext.obtain().push(Node.obtain().getAssistAddress(contractHash), new MessageData(ProtocolStatus.BLOCK_OUT, blockOut.bean2ProtoByteArray()));
+        // 告知当前Hash合约下的协助节点可变更为竞选节点协议
+        IOContext.obtain().push(
+                Node.obtain().getAssistAddress(contractHash),
+                new MessageData(ProtocolStatus.ELECTION_LEADER_CHANGE_FOR_ASSIST_NODE,
+                        Node.obtain().getNodeElectionMap().get(contractHash).bean2ProtoByteArray()));
         // 同步已出快的区块对象到本地
         storage.sync(blockOut);
     }
@@ -69,8 +75,11 @@ public class OutBlock {
      * @param blockOut 出块对象
      */
     public void syncAssistNode(BlockOut blockOut) {
-        // 将出块区块广播给协助节点
-        IOContext.obtain().push(Node.obtain().getAssistAddress(contractHash), new MessageData(ProtocolStatus.BLOCK_OUT, blockOut.bean2ProtoByteArray()));
+        String assistAddress = Node.obtain().getAssistAddress(contractHash);
+        if (StringUtils.isNotEmpty(assistAddress)) {
+            // 将出块区块广播给协助节点
+            IOContext.obtain().push(Node.obtain().getAssistAddress(contractHash), new MessageData(ProtocolStatus.BLOCK_OUT, blockOut.bean2ProtoByteArray()));
+        }
         // 同步已出快的区块对象到本地
         storage.sync(blockOut);
     }
@@ -101,6 +110,7 @@ public class OutBlock {
      * 将指定Hash合约下的交易集合打包成出块区块
      *
      * @param transactions 交易集合
+     *
      * @return 出块区块对象
      */
     private BlockOut out(List<Transaction> transactions) {

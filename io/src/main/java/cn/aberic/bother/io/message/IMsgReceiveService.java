@@ -26,6 +26,7 @@ package cn.aberic.bother.io.message;
 
 import cn.aberic.bother.entity.block.Transaction;
 import cn.aberic.bother.entity.io.MessageData;
+import cn.aberic.bother.entity.node.NodeElection;
 import cn.aberic.bother.tools.MsgPackTool;
 import io.netty.channel.Channel;
 
@@ -100,6 +101,12 @@ interface IMsgReceiveService extends IMsgReceiveJoinService, IMsgReceiveElection
                 break;
             case ELECTION_LEADER_CHANGE_FORCE: // 竞选节点Leader强制更换协议
                 electionLeaderChangeForce(address, MsgPackTool.bytes2String(msgData.getBytes()));
+                break;
+            case ELECTION_LEADER_CHANGE_FOR_ASSIST_NODE: // 告知当前Hash合约下的协助节点可变更为竞选节点协议
+                electionLeaderChangeForAssistNode(address, new NodeElection().protoByteArray2Bean(msgData.getBytes()));
+                break;
+            case ELECTION_ASSIST_CHANGE_FOR_NODE: // 告知当前Hash合约下的节点当前协助节点已经变更协议
+                electionAssistChangeForNode();
                 break;
             case TRANSACTION: // 接收到交易提交协议
                 transaction(new Transaction().protoByteArray2Bean(msgData.getBytes()));

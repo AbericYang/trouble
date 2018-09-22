@@ -38,7 +38,10 @@ public class SystemTest {
 
     public static void main(String[] args) throws IOException {
         log.debug("is linux = {}", SystemTool.isLinux());
-        info();
+        log.debug("intranet ip = {}", SystemTool.getLocalIp());
+        log.debug("internet ip = {}", SystemTool.getInternetIp());
+        log.debug("is intranet ip = {}", SystemTool.isIntranetIp(SystemTool.getInternetIp()));
+        // info();
     }
 
     private static void info() throws IOException {

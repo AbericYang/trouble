@@ -83,14 +83,17 @@ interface IMsgReceiveJoinService extends IMsgRequestService {
                         // 将自身在当前竞选节点集合中的信息push给当前加入节点
                         push(channel, ProtocolStatus.JOIN_AS_ELECTION, Node.obtain().getNodeElectionMap().get(contractHash));
                         shutdown();
+                        return;
                     } else if (StringUtils.isNotEmpty(addressIdlest)) {
                         // 告知新的接入地址当前Hash合约下其它竞选节点地址
                         push(channel, ProtocolStatus.JOIN_ASK_ELECTION, addressIdlest);
                         shutdown();
+                        return;
                     } else { // 强行新增
                         NodeHash nodeHash = new NodeHash(contractHash, Node.obtain().getNodeBaseAssistMap().get(contractHash));
                         push(channel, ProtocolStatus.JOIN_TO_ASSIST, nodeHash);
                         shutdown();
+                        return;
                     }
                 }
                 // 先判断自己是否有协助节点
@@ -161,12 +164,10 @@ interface IMsgReceiveJoinService extends IMsgRequestService {
         Node.obtain().putAddressElectionMap(nodeHash.getContractHash(), address);
         // 将自身作为当前合约Hash访问的竞选节点指定协助节点
         Node.obtain().putNodeBaseAssistMap(nodeHash.getContractHash(), Node.obtain().getNodeBase());
-        Node.obtain().putAddressMap(nodeHash.getContractHash(), address);
         // 新建协助节点对象
         NodeAssist assist = new NodeAssist();
         // 将自身及当前竞选节点加入当前竞选节点下的节点集合
         assist.add(Node.obtain().getNodeBase().clear());
-        assist.add(nodeHash.getNodeBase());
         Node.obtain().putNodeAssistMap(nodeHash.getContractHash(), assist);
         nodeHash.setNodeBase(Node.obtain().getNodeBase().clear());
         send(channel, ProtocolStatus.JOIN_NEW_ASSIST, nodeHash);
@@ -182,8 +183,9 @@ interface IMsgReceiveJoinService extends IMsgRequestService {
             push(channel, ProtocolStatus.JOIN_TO_ASSIST, nodeHash);
             shutdown();
         } else { // 如果没有，则准许其作为协助节点接入
-            Node.obtain().putNodeBaseAssistMap(nodeHash.getContractHash(), nodeHash.getNodeBase());
-            Node.obtain().putAddressMap(nodeHash.getContractHash(), address);
+            NodeBase nodeBase = nodeHash.getNodeBase();
+            nodeBase.setAddress(address);
+            Node.obtain().putNodeBaseAssistMap(nodeHash.getContractHash(), nodeBase);
             pushKeep(channel);
         }
     }

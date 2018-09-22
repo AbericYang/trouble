@@ -28,6 +28,7 @@ import cn.aberic.bother.entity.enums.ProtocolStatus;
 import cn.aberic.bother.entity.io.MessageData;
 import cn.aberic.bother.entity.node.Node;
 import cn.aberic.bother.entity.node.NodeBase;
+import cn.aberic.bother.entity.node.NodeElection;
 import cn.aberic.bother.io.IOContext;
 import cn.aberic.bother.io.OutBlock;
 import cn.aberic.bother.tools.Constant;
@@ -167,6 +168,21 @@ interface IMsgReceiveElectionService extends IMsgRequestService {
                 IOContext.obtain().send(nextLeaderAddress, ProtocolStatus.ELECTION_LEADER_CHANGE_FORCE_REQUEST, contractHash);
             }
         }
+    }
+
+    /** 告知当前Hash合约下的协助节点可变更为竞选节点协议 */
+    default void electionLeaderChangeForAssistNode(String address, NodeElection election) {
+        election.setTimestamp(System.currentTimeMillis());
+        election.remove("127.0.0.1");
+        election.remove("localhost");
+        Node.obtain().putNodeElection(election.getContractHash(), election);
+        // 请求与当前竞选节点集合中的Leader保持长连接
+        sendElectionToLeaderHeartBeatKeepAsk(election.getNodeBases().get(0).getAddress(), election.getContractHash());
+        shutdown();
+    }
+
+    default void electionAssistChangeForNode() {
+
     }
 
 }

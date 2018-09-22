@@ -43,9 +43,7 @@ interface IMsgReceiveBlockService extends IMsgRequestService {
                 // 该竞选节点协助节点同步区块
                 new OutBlock(contractHash).syncAssistNode(blockOut);
                 // 处理当前Hash合约竞选节点集合中Leader节点的变更业务
-                blockOutAssist(channel, address, contractHash);
-                // 将当前Hash合约竞选节点集合中的Leader节点移除
-                Node.obtain().getNodeElectionMap().get(contractHash).removeLeader();
+                blockOutLeaderChange(channel, address, contractHash);
             }
             // 关闭此链接
             shutdown();
@@ -69,13 +67,17 @@ interface IMsgReceiveBlockService extends IMsgRequestService {
      * @param address      当前Hash合约竞选节点集合的Leader的地址
      * @param contractHash 当前合约Hash
      */
-    default void blockOutAssist(Channel channel, String address, String contractHash) throws IOException {
+    default void blockOutLeaderChange(Channel channel, String address, String contractHash) throws IOException {
         // 判断自身是否为竞选节点集合中下一Leader节点
         if (Node.obtain().getNodeElectionMap().get(contractHash).getNodeBases().get(1).getTimestamp() == Node.obtain().getNodeBase().getTimestamp()) {
             // 向竞选节点集合中的Leader节点发送post请求询问其协助节点地址
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("contractHash", contractHash);
             String leaderAssistNodeAddress = HttpTool.postNode(address, jsonObject.toJSONString());
+            // 获取当前竞选节点集合Leader节点
+            NodeBase oldLeaderNode = Node.obtain().getNodeElectionMap().get(contractHash).getNodeBases().get(0);
+            // 将当前Hash合约竞选节点集合中的Leader节点移除
+            Node.obtain().getNodeElectionMap().get(contractHash).removeLeader();
             if (StringUtils.isEmpty(leaderAssistNodeAddress)) { // 如果没有获取到当前Leader节点的协助节点地址
                 // 判断当前竞选节点集合是否满员
                 if (Node.obtain().getNodeElectionMap().get(contractHash).full()) { // 如果满员
@@ -84,19 +86,20 @@ interface IMsgReceiveBlockService extends IMsgRequestService {
                     // 告知新的接入地址当前Hash合约下其它竞选节点地址
                     send(channel, ProtocolStatus.JOIN_ASK_ELECTION, addressIdlest);
                 } else { // 如果不满员
-                    // 该竞Leader节点置入竞选节点集合末尾继续参与轮流出块
-                    NodeBase nodeBaseJoin = Node.obtain().getNodeElectionMap().get(contractHash).getNodeBases().get(0);
-                    // 新增竞选节点
-                    Node.obtain().add(contractHash, nodeBaseJoin);
+                    // 将原竞选节点集合Leader节点置入竞选节点集合末尾继续参与轮流出块，新增竞选节点
+                    Node.obtain().add(contractHash, oldLeaderNode);
                     // 当前Hash合约竞选节点集合内部广播新节点加入
                     Node.obtain().getNodeElectionMap().get(contractHash).getNodeBases().forEach(
-                            nodeBase -> send(nodeBase.getAddress(), ProtocolStatus.JOIN_NEW_ELECTION, new NodeHash(contractHash, nodeBaseJoin)));
+                            nodeBase -> send(nodeBase.getAddress(), ProtocolStatus.JOIN_NEW_ELECTION, new NodeHash(contractHash, oldLeaderNode)));
                     // 将自身在当前竞选节点集合中的信息push给当前加入节点
-                    // TODO: 2018/9/21
                     send(channel, ProtocolStatus.JOIN_AS_ELECTION, Node.obtain().getNodeElectionMap().get(contractHash));
                 }
+            } else {
+                // 向竞选节点集合中的Leader节点的协助节点发送加入竞选节点集合消息
+                send(leaderAssistNodeAddress, ProtocolStatus.JOIN_AS_ELECTION, Node.obtain().getNodeElectionMap().get(contractHash));
             }
-            // 向竞选节点集合中的Leader节点的协助节点发送加入竞选节点集合消息
+            // 执行出块操作
+            new OutBlock(contractHash).publish();
         }
     }
 
