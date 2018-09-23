@@ -23,32 +23,29 @@
  *
  */
 
-package cn.aberic.bother.io.exec.factory;
+package cn.aberic.bother.io.message;
 
-import cn.aberic.bother.entity.io.Remote;
+import cn.aberic.bother.entity.enums.ProtocolStatus;
+import cn.aberic.bother.entity.io.MessageData;
 import cn.aberic.bother.io.IOContext;
+import cn.aberic.bother.tools.HttpTool;
 
 /**
- * IO 对象获取抽象工厂
- * <p>
- * 作者：Aberic on 2018/9/10 00:55
- * <p>
+ * 作者：Aberic on 2018/9/23 15:49
  * 邮箱：abericyang@gmail.com
  */
-public abstract class IOAbstractFactory implements IOFactory {
+public interface IMsgConnectTest {
 
-    protected abstract IOClient createClient(Remote address) throws Exception;
-
-    @Override
-    public IOExec getOrCreate(Remote remote) throws Exception {
-        if (isClient()) {
-            IOClient ioClient = IOContext.obtain().ioClientGet(remote.getAddress());
-            if (null == ioClient) {
-                ioClient = createClient(remote);
+    default boolean canConnect(String ipAddress) {
+        try {
+            IOContext.obtain().send("127.0.0.1", new MessageData(ProtocolStatus.CLOSE, null));
+            if (HttpTool.nodeTestSuccess(ipAddress)) {
+                return true;
             }
-            return ioClient;
-        } else {
-            return IOContext.obtain().ioServerGet(remote.getAddress());
+        } catch (Exception ignored) {
+
         }
+        return false;
     }
+
 }

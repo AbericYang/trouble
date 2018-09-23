@@ -25,8 +25,10 @@
 package cn.aberic.bother.tools;
 
 import okhttp3.*;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 作者：Aberic on 2018/09/21 14:01
@@ -42,11 +44,11 @@ public class HttpTool {
     /**
      * 向指定地址的节点发起post请求
      *
-     * @param address 节点地址
-     * @param json    请求json
+     * @param ipAddress 节点地址
+     * @param json      请求json
      */
-    public static String postNode(String address, String json) throws IOException {
-        return post(String.format("%s:19022", address), json);
+    public static String postNode(String ipAddress, String json) throws IOException {
+        return post(String.format("%s:19022", ipAddress), json);
     }
 
     /**
@@ -54,6 +56,7 @@ public class HttpTool {
      *
      * @param url  请求url
      * @param json 请求json
+     *
      * @return 请求返回字符串
      */
     public static String post(String url, String json) throws IOException {
@@ -70,6 +73,7 @@ public class HttpTool {
      * 普通get请求
      *
      * @param url 请求url
+     *
      * @return 请求返回字符串
      */
     public static String get(String url) throws IOException {
@@ -78,6 +82,37 @@ public class HttpTool {
                 .build();
         Response response = client.newCall(request).execute();
         return response.body() != null ? response.body().string() : null;
+    }
+
+    /**
+     * 向指定地址的节点发起请求连接测试
+     *
+     * @param ipAddress 节点ip
+     * @param port      节点端口号
+     */
+    public static String get(String ipAddress, int port) throws IOException {
+        Request request = new Request.Builder()
+                .url(String.format("http://%s:%s", ipAddress, port))
+                .build();
+        Response response = client.newCall(request).execute();
+        return response.body() != null ? response.body().string() : null;
+    }
+
+    /**
+     * 向指定地址的节点发起请求连接测试
+     *
+     * @param ipAddress 节点地址
+     *
+     * @return 请求成功与否
+     */
+
+    public static boolean nodeTestSuccess(String ipAddress) {
+        client.newBuilder().connectTimeout(2, TimeUnit.SECONDS).readTimeout(2, TimeUnit.SECONDS).writeTimeout(2, TimeUnit.SECONDS).build();
+        try {
+            return StringUtils.equals(get(ipAddress, 19022), "success");
+        } catch (IOException e) {
+            return false;
+        }
     }
 
 }

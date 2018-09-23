@@ -44,7 +44,7 @@ import java.util.List;
  * <p>
  * 邮箱：abericyang@gmail.com
  */
-interface IMsgReceiveJoinService extends IMsgRequestService {
+interface IMsgReceiveJoinService extends IMsgReceiveJoinResponseService {
 
     /** 接收到加入新节点协议 */
     default void join(String address, Channel channel, MessageData msgData) throws InvalidProtocolBufferException {
@@ -56,7 +56,7 @@ interface IMsgReceiveJoinService extends IMsgRequestService {
         nodeBaseJoin.getHashes().forEach(joinsContractHash -> {
             // 跟自身所持有的Hash进行比较，查找其中相同部分
             if (Node.obtain().getNodeBase().getHashes().contains(joinsContractHash)) {
-                joinAssist(channel, joinsContractHash, nodeBaseJoin);
+                joinAssist(address, channel, joinsContractHash, nodeBaseJoin);
             } else {
                 log().debug("自身无此Hash合约，关闭远程连接及心跳允许");
                 shutdown();
@@ -65,7 +65,7 @@ interface IMsgReceiveJoinService extends IMsgRequestService {
     }
 
     /** 接收到加入新节点协议协助方法 */
-    default void joinAssist(Channel channel, String contractHash, NodeBase nodeBaseJoin) {
+    default void joinAssist(String address, Channel channel, String contractHash, NodeBase nodeBaseJoin) {
         // 判断自身在当前Hash合约中的身份
         if (Node.obtain().isElectionNode(contractHash)) { // 表示自身为当前Hash合约的竞选节点之一
             // 检查当前竞选节点集合是否满足Constant.ELECTION_COUNT数量
@@ -75,14 +75,7 @@ interface IMsgReceiveJoinService extends IMsgRequestService {
                     // 获取当前竞选节点集合中下属子节点总数最少的竞选节点地址
                     String addressIdlest = Node.obtain().getNodeElectionMap().get(contractHash).getIdlest();
                     if (addressIdlest != null && addressIdlest.equals("")) { // 节点总数最少也大于等于1000
-                        // 新增竞选节点
-                        Node.obtain().add(contractHash, nodeBaseJoin);
-                        // 当前Hash合约竞选节点集合内部广播新节点加入
-                        Node.obtain().getNodeElectionMap().get(contractHash).getNodeBases().forEach(
-                                nodeBase -> send(nodeBase.getAddress(), ProtocolStatus.JOIN_NEW_ELECTION, new NodeHash(contractHash, nodeBaseJoin)));
-                        // 将自身在当前竞选节点集合中的信息push给当前加入节点
-                        push(channel, ProtocolStatus.JOIN_AS_ELECTION, Node.obtain().getNodeElectionMap().get(contractHash));
-                        shutdown();
+                        responseJoinAsElection(channel, contractHash, nodeBaseJoin);
                         return;
                     } else if (StringUtils.isNotEmpty(addressIdlest)) {
                         // 告知新的接入地址当前Hash合约下其它竞选节点地址
@@ -90,44 +83,22 @@ interface IMsgReceiveJoinService extends IMsgRequestService {
                         shutdown();
                         return;
                     } else { // 强行新增
-                        NodeHash nodeHash = new NodeHash(contractHash, Node.obtain().getNodeBaseAssistMap().get(contractHash));
-                        push(channel, ProtocolStatus.JOIN_TO_ASSIST, nodeHash);
-                        shutdown();
+                        responseJoinToAssist(channel, contractHash);
                         return;
                     }
                 }
                 // 先判断自己是否有协助节点
                 if (Node.obtain().hasAssistNode(contractHash)) { // 如果有，则将自己的协助节点发回
-                    NodeHash nodeHash = new NodeHash(contractHash, Node.obtain().getNodeBaseAssistMap().get(contractHash));
-                    push(channel, ProtocolStatus.JOIN_TO_ASSIST, nodeHash);
+                    responseJoinToAssist(channel, contractHash);
                     shutdown();
                 } else { // 如果没有，则将此节点当做自身的协助节点
-                    NodeHash nodeHash = new NodeHash(contractHash, Node.obtain().getNodeBase().clear());
-                    push(channel, ProtocolStatus.JOIN_AS_ASSIST, nodeHash);
+                    responseJoinAsAssist(address, channel, contractHash);
                 }
             } else { // 如果不满足，则将该节点当做竞选节点之一
-                Node.obtain().add(contractHash, nodeBaseJoin);
-                // 当前Hash合约竞选节点集合内部广播新节点加入
-                Node.obtain().getNodeElectionMap().get(contractHash).getNodeBases().forEach(nodeBase -> {
-                    if (nodeBase.getTimestamp() != Node.obtain().getNodeBase().getTimestamp()) {
-                        send(nodeBase.getAddress(), ProtocolStatus.JOIN_NEW_ELECTION, new NodeHash(contractHash, nodeBaseJoin));
-                    }
-                });
-                // 将自身在当前竞选节点集合中的信息push给当前加入节点
-                push(channel, ProtocolStatus.JOIN_AS_ELECTION, Node.obtain().getNodeElectionMap().get(contractHash));
-                shutdown();
+                responseJoinAsElection(channel, contractHash, nodeBaseJoin);
             }
         } else if (Node.obtain().isAssistNode(contractHash)) { // 表示自身为当前Hash合约的协助节点之一
-            // 将自己当前竞选中的节点集合以及备用节点集合发回
-            Node node = Node.obtain();
-            // 将无用信息赋空
-            // 使用迭代器的remove()方法删除元素
-            node.getAddressElectionMap().entrySet().removeIf(stringStringEntry -> !StringUtils.equals(stringStringEntry.getKey(), contractHash));
-            node.getAddressMap().entrySet().removeIf(stringStringEntry -> !StringUtils.equals(stringStringEntry.getKey(), contractHash));
-            node.getNodeAssistMap().clear();
-            node.getNodeElectionMap().clear();
-            node.getNodeBase().clear();
-            push(channel, ProtocolStatus.JOIN_FOLLOW_ME, node);
+            responseJoinFollowMe(channel, contractHash);
         } else if (Node.obtain().hasNode(contractHash)) { // 表示自身为当前Hash合约的普通节点
             // 告知新的接入地址当前Hash合约下的竞选节点地址
             push(channel, ProtocolStatus.JOIN_ASK_ELECTION, Node.obtain().getElectionAddress(contractHash));
@@ -179,9 +150,7 @@ interface IMsgReceiveJoinService extends IMsgRequestService {
         NodeHash nodeHash = new NodeHash().protoByteArray2Bean(msgData.getBytes());
         // 判断自身是否已有协助节点
         if (Node.obtain().hasAssistNode(nodeHash.getContractHash())) { // 如果已有，则通知其接入协助节点
-            nodeHash.setNodeBase(Node.obtain().getNodeBaseAssistMap().get(nodeHash.getContractHash()));
-            push(channel, ProtocolStatus.JOIN_TO_ASSIST, nodeHash);
-            shutdown();
+            responseJoinToAssist(channel, nodeHash.getContractHash());
         } else { // 如果没有，则准许其作为协助节点接入
             NodeBase nodeBase = nodeHash.getNodeBase();
             nodeBase.setAddress(address);

@@ -39,13 +39,18 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ClientTest {
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
 
         Remote remote = new Remote();
         remote.setAddress("127.0.0.1");
         IOContext.obtain().startClient(remote);
 
         MessageData msgData = new MessageData(ProtocolStatus.BLOCK_OUT, EntityTest.getBlockBytes());
+        try {
+            IOContext.obtain().send("127.0.0.1", msgData);
+        }catch (Exception e) {
+            log.warn("捕获一下此异常");
+        }
         IOContext.obtain().send("127.0.0.1", msgData);
         IOContext.obtain().join("127.0.0.1");
     }

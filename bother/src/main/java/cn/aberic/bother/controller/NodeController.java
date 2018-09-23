@@ -50,4 +50,9 @@ public class NodeController {
         return nodeService.getNodeAssistAddress(jsonObject.getString("contractHash"));
     }
 
+    @GetMapping(value = "test")
+    public String queryBlockChainInfo() {
+        return "success";
+    }
+
 }

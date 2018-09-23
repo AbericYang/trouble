@@ -97,9 +97,14 @@ public class IOContext {
      *
      * @param remote 远程地址对象
      */
-    public void startClient(Remote remote) throws Exception {
+    public void startClient(Remote remote) {
         log.info("向服务端发起链接 address = {}", remote.getAddress());
-        new EchoClient().createClient(remote);
+        try {
+            new EchoClient().createClient(remote);
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.info("向服务端发起链接 address = {}，发送失败", remote.getAddress());
+        }
     }
 
     public IOServer ioServerGet(String ip) {

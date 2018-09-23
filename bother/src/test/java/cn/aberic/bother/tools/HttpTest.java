@@ -23,32 +23,27 @@
  *
  */
 
-package cn.aberic.bother.io.exec.factory;
+package cn.aberic.bother.tools;
 
-import cn.aberic.bother.entity.io.Remote;
-import cn.aberic.bother.io.IOContext;
+import lombok.extern.slf4j.Slf4j;
+
+import java.io.IOException;
 
 /**
- * IO 对象获取抽象工厂
- * <p>
- * 作者：Aberic on 2018/9/10 00:55
- * <p>
+ * 作者：Aberic on 2018/9/22 13:01
  * 邮箱：abericyang@gmail.com
  */
-public abstract class IOAbstractFactory implements IOFactory {
+@Slf4j
+public class HttpTest {
 
-    protected abstract IOClient createClient(Remote address) throws Exception;
-
-    @Override
-    public IOExec getOrCreate(Remote remote) throws Exception {
-        if (isClient()) {
-            IOClient ioClient = IOContext.obtain().ioClientGet(remote.getAddress());
-            if (null == ioClient) {
-                ioClient = createClient(remote);
-            }
-            return ioClient;
-        } else {
-            return IOContext.obtain().ioServerGet(remote.getAddress());
+    public static void main(String[] args) {
+        try {
+            log.debug(HttpTool.get("http://v.juhe.cn/exp/index?key=key&com=sf&no=575677355677"));
+        } catch (IOException e) {
+            log.warn("get 捕获异常");
         }
+
+        log.debug("result = {}", HttpTool.nodeTestSuccess("127.0.0.1"));
     }
+
 }
