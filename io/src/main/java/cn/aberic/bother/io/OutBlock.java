@@ -64,6 +64,7 @@ public class OutBlock {
         // 将出块区块广播
         if (Node.obtain().isAssistNode(contractHash)) { // 如果自身就是自己的协助节点，将出块区块广播给普通节点
             syncNode(blockOut);
+            Node.obtain().getNodeElectionMap().get(contractHash).setTimestamp(System.currentTimeMillis());
         } else { // 否则将出块区块广播给协助节点，同时设定新的出块节点
             // 广播给协助节点
             syncAssistNode(blockOut);
@@ -74,6 +75,7 @@ public class OutBlock {
                     Node.obtain().getAssistAddress(contractHash),
                     new MessageData(ProtocolStatus.ELECTION_LEADER_CHANGE_FOR_ASSIST_NODE,
                             Node.obtain().getNodeElectionMap().get(contractHash).bean2ProtoByteArray()));
+            Node.obtain().removeNodeElection(contractHash);
         }
     }
 
