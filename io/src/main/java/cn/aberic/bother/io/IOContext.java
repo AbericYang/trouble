@@ -180,7 +180,7 @@ public class IOContext {
      * @param transaction 交易对象
      */
     public void sendTransactionElection(Transaction transaction) {
-        send(Node.obtain().getElectionAddress(transaction.getHash()), ProtocolStatus.TRANSACTION, transaction);
+        new ThreadTroublePool().submit(() -> send(Node.obtain().getElectionAddress(transaction.getHash()), ProtocolStatus.TRANSACTION, transaction));
     }
 
     /**
@@ -234,9 +234,19 @@ public class IOContext {
      * @param msgData      消息体
      */
     public void broadcastAssist(String contractHash, MessageData msgData) {
-        Node.obtain().getNodeAssistMap().get(contractHash).getNodeBases().forEach(nodeBase ->
+        Node.obtain().getNodeAssistMap().get(contractHash).getNodeBases().forEach(nodeBase -> {
+            if (!Node.obtain().isSameAsSelf(nodeBase.getAddress())) {
                 new ThreadTroublePool().submit(() ->
-                        Objects.requireNonNull(ioServerCache.getIfPresent(nodeBase.getAddress())).push(msgData)));
+                        Objects.requireNonNull(ioServerCache.getIfPresent(nodeBase.getAddress())).push(msgData));
+            }
+        });
+    }
+
+    public void shutdown(String ipAddress) {
+        if (null != ioServerCache.getIfPresent(ipAddress)) {
+            ioServerCache.getIfPresent(ipAddress).shutdown();
+        }
+        ioClientCache.getIfPresent(ipAddress).shutdown();
     }
 
     /**

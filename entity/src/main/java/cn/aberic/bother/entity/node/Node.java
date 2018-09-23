@@ -41,8 +41,10 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -103,16 +105,18 @@ public class Node implements BeanProtoFormat {
     private static Node getNode() {
         Node node;
         String nodeJsonString = null;
+        File file = new File(Constant.NODE_FILE);
         try {
-            nodeJsonString = FileTool.getStringFromPath(Constant.NODE_FILE);
+            nodeJsonString = FileTool.getStringFromFile(file);
         } catch (IOException e) {
             FileTool.createFile(Constant.NODE_FILE);
         }
-        if (StringUtils.isEmpty(nodeJsonString)) {
+        if (StringUtils.isBlank(nodeJsonString) || StringUtils.equals(nodeJsonString, "null")) {
             node = new Node();
         } else {
             node = JSON.parseObject(nodeJsonString, new TypeReference<Node>() {});
         }
+        FileTool.write(file, node.toJsonString());
         return node;
     }
 
@@ -123,27 +127,49 @@ public class Node implements BeanProtoFormat {
         addressMap = new HashMap<>();
         nodeAssistMap = new HashMap<>();
         nodeElectionMap = new HashMap<>();
-        NodeElection election = new NodeElection(Constant.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH);
-        election.add(nodeBase);
-        // 初始化默认自身为当前Hash的竞选节点
-        nodeElectionMap.put(Constant.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH, election);
         FileTool.write(Constant.NODE_FILE, JSON.toJSONString(instance));
+    }
+
+    /**
+     * 初始化当前服务器的外网IP地址
+     *
+     * @param contractHash 当前节点竞选对象所属智能合约Hash
+     * @param ipAddress    外网IP地址
+     */
+    public void initAddress(String contractHash, String ipAddress) {
+        if (StringUtils.isBlank(nodeBase.getAddress())) {
+            nodeBase.setAddress(ipAddress);
+            nodeBaseAssistMap.put(contractHash, nodeBase);
+            NodeElection election = new NodeElection(Constant.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH);
+            election.add(nodeBase);
+            // 初始化默认自身为当前Hash的竞选节点
+            nodeElectionMap.put(Constant.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH, election);
+            NodeAssist assist = new NodeAssist();
+            List<NodeBase> nodeBases = new LinkedList<>();
+            nodeBases.add(nodeBase);
+            assist.setNodeBases(nodeBases);
+            nodeAssistMap.put(Constant.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH, assist);
+        }
+    }
+
+    /**
+     * 判断指定地址是否就是本节点地址
+     *
+     * @param ipAddress 指定ip地址
+     *
+     * @return 与否
+     */
+    public boolean isSameAsSelf(String ipAddress) {
+        return StringUtils.equals(ipAddress, nodeBase.getAddress());
     }
 
     /**
      * 当前节点作为Leader节点时接收新增交易，以作后续打包处理
      *
      * @param transaction 交易对象
-     *
-     * @return 如果不是Leader节点，则不处理本次交易
      */
-    public boolean addTransaction(Transaction transaction) {
-        if (isElectionNodeLeader(transaction.getHash())) { // 如果是Leader节点
-            synchronized (Node.class) {
-                return Node.obtain().getNodeElectionMap().get(transaction.getHash()).addTransaction(transaction);
-            }
-        }
-        return false;
+    public void addTransaction(Transaction transaction) {
+        Node.obtain().getNodeElectionMap().get(transaction.getHash()).addTransaction(transaction);
     }
 
     /**

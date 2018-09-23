@@ -126,6 +126,7 @@ interface IMsgReceiveElectionService extends IMsgRequestService {
         if (now - Node.obtain().getNodeElectionMap().get(contractHash).getTimestamp() > Constant.NODE_ELECTION_OUT_BLOCK_TIME) { // 如果到了出块时间
             // 如果当前节点为竞选节点集合中Leader节点的下一节点
             if (Node.obtain().getNodeElectionMap().get(contractHash).getNodeBases().get(1).getTimestamp() == Node.obtain().getNodeBase().getTimestamp()) {
+                log().debug("当前节点为竞选节点集合中Leader节点的下一节点。开始出块");
                 // 将当前Hash合约竞选节点集合中的Leader节点强制移除并广播出去
                 Node.obtain().getNodeElectionMap().get(contractHash).removeLeader();
                 // 广播告知当前Hash合约竞选节点集合中的所有节点强制更换Leader
@@ -135,6 +136,7 @@ interface IMsgReceiveElectionService extends IMsgRequestService {
                 // 执行出块操作
                 new OutBlock(contractHash).publish();
             } else { // 如果当前节点不是竞选节点集合中Leader节点的下一节点
+                log().debug("当前节点不是竞选节点集合中Leader节点的下一节点。同步下一节点出块，当前出块节点放弃出块权");
                 // 同步下一节点出块，当前出块节点放弃出块权
                 IOContext.obtain().send(
                         Node.obtain().getNodeElectionMap().get(contractHash).getNodeBases().get(1).getAddress(),
@@ -156,6 +158,7 @@ interface IMsgReceiveElectionService extends IMsgRequestService {
             String nextLeaderAddress = Node.obtain().getNodeElectionMap().get(contractHash).getNodeBases().get(1).getAddress();
             // 如果当前请求节点为竞选节点集合中Leader节点的下一节点
             if (StringUtils.equals(nextLeaderAddress, address)) {
+                IOContext.obtain().shutdown(Node.obtain().getNodeElectionMap().get(contractHash).obtainLeaderAddress());
                 // 将当前Hash合约竞选节点集合中的Leader节点强制移除
                 Node.obtain().getNodeElectionMap().get(contractHash).removeLeader();
                 shutdown();
@@ -173,8 +176,7 @@ interface IMsgReceiveElectionService extends IMsgRequestService {
     /** 告知当前Hash合约下的协助节点可变更为竞选节点协议 */
     default void electionLeaderChangeForAssistNode(String address, NodeElection election) {
         election.setTimestamp(System.currentTimeMillis());
-        election.remove("127.0.0.1");
-        election.remove("localhost");
+        election.remove(address);
         Node.obtain().putNodeElection(election.getContractHash(), election);
         // 请求与当前竞选节点集合中的Leader保持长连接
         sendElectionToLeaderHeartBeatKeepAsk(election.getNodeBases().get(0).getAddress(), election.getContractHash());

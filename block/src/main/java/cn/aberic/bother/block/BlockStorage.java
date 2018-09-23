@@ -99,6 +99,12 @@ public class BlockStorage extends BlockAS implements IDataExec {
      * @param blockOut 待同步区块出块对象
      */
     public void sync(BlockOut blockOut) {
+        int size = blockOut.getBlock().getBody().getTransactions().size();
+        if (size <= 0) {
+            log.debug("本次出块没有任何交易，不产生区块");
+            return;
+        }
+        log.debug("本次出块交易数 = {}", size);
         // 区块是否可正常写入
         boolean success = true;
         Block block = blockOut.getBlock();
@@ -165,6 +171,7 @@ public class BlockStorage extends BlockAS implements IDataExec {
      * @param height        待存储区块对象高度
      * @param block         待存储区块对象
      * @param blockFromFile 本地已存在区块文件中获取的区块对象
+     *
      * @return 区块存储结果
      */
     private boolean checkVerify(int height, Block block, Block blockFromFile) {

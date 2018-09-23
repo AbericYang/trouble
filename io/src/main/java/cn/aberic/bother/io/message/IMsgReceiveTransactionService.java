@@ -44,6 +44,7 @@ interface IMsgReceiveTransactionService extends IMsgRequestService {
             // 当前节点正在出块，不接收新交易，但需要将该笔交易同步广播至所有竞选节点集合中
             IOContext.obtain().syncTransactionElection(transaction);
         } else if (Node.obtain().isElectionNode(transaction.getHash())) { // 如果是竞选节点
+            Node.obtain().addTransaction(transaction);
             // 将该笔交易同步广播至所有竞选节点集合中
             IOContext.obtain().syncTransactionElection(transaction);
         } else { // 如果是普通节点

@@ -56,17 +56,25 @@ public class OutBlock {
         // 生成出块区块
         BlockOut blockOut = out(Node.obtain().getTransactions(contractHash));
         // 将出块区块在竞选节点集合中进行广播
-        Node.obtain().getNodeElectionMap().get(contractHash).getNodeBases().forEach(nodeBase ->
-                IOContext.obtain().broadcastElection(contractHash, new MessageData(ProtocolStatus.BLOCK_OUT, blockOut.bean2ProtoByteArray())));
-        // 将出块区块广播给协助节点
-        IOContext.obtain().push(Node.obtain().getAssistAddress(contractHash), new MessageData(ProtocolStatus.BLOCK_OUT, blockOut.bean2ProtoByteArray()));
-        // 告知当前Hash合约下的协助节点可变更为竞选节点协议
-        IOContext.obtain().push(
-                Node.obtain().getAssistAddress(contractHash),
-                new MessageData(ProtocolStatus.ELECTION_LEADER_CHANGE_FOR_ASSIST_NODE,
-                        Node.obtain().getNodeElectionMap().get(contractHash).bean2ProtoByteArray()));
-        // 同步已出快的区块对象到本地
-        storage.sync(blockOut);
+        Node.obtain().getNodeElectionMap().get(contractHash).getNodeBases().forEach(nodeBase -> {
+            if (!Node.obtain().isSameAsSelf(nodeBase.getAddress())) {
+                IOContext.obtain().broadcastElection(contractHash, new MessageData(ProtocolStatus.BLOCK_OUT, blockOut.bean2ProtoByteArray()));
+            }
+        });
+        // 将出块区块广播
+        if (Node.obtain().isAssistNode(contractHash)) { // 如果自身就是自己的协助节点，将出块区块广播给普通节点
+            syncNode(blockOut);
+        } else { // 否则将出块区块广播给协助节点，同时设定新的出块节点
+            // 广播给协助节点
+            syncAssistNode(blockOut);
+            // 设定新的出块节点
+            Node.obtain().getNodeElectionMap().put(Node.obtain().getAssistAddress(contractHash), Node.obtain().getNodeElectionMap().get(contractHash));
+            // 告知当前Hash合约下的协助节点可变更为竞选节点协议
+            IOContext.obtain().push(
+                    Node.obtain().getAssistAddress(contractHash),
+                    new MessageData(ProtocolStatus.ELECTION_LEADER_CHANGE_FOR_ASSIST_NODE,
+                            Node.obtain().getNodeElectionMap().get(contractHash).bean2ProtoByteArray()));
+        }
     }
 
     /**
@@ -90,7 +98,7 @@ public class OutBlock {
      * @param blockOut 出块对象
      */
     public void syncNode(BlockOut blockOut) {
-        // 将出块区块广播给协助节点
+        // 将出块区块广播给普通节点
         IOContext.obtain().broadcastAssist(contractHash, new MessageData(ProtocolStatus.BLOCK_NODE_SYNC, blockOut.bean2ProtoByteArray()));
         // 同步已出快的区块对象到本地
         storage.sync(blockOut);

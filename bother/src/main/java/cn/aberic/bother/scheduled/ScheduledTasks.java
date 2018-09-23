@@ -27,6 +27,7 @@ package cn.aberic.bother.scheduled;
 import cn.aberic.bother.entity.enums.ProtocolStatus;
 import cn.aberic.bother.entity.node.Node;
 import cn.aberic.bother.io.IOContext;
+import cn.aberic.bother.io.OutBlock;
 import cn.aberic.bother.tools.Constant;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -52,7 +53,11 @@ public class ScheduledTasks {
         log.debug("===============>>>>>>>>>> 出块超时检测 <<<<<<<<<<===============");
         long now = System.currentTimeMillis();
         Node.obtain().getNodeElectionMap().forEach((contractHash, nodeElection) -> {
-            if (now - nodeElection.getTimestamp() > Constant.NODE_ELECTION_OUT_BLOCK_TIME) { // 如果到了出块时间
+            // 如果当前Hash有且仅有自身为竞选节点
+            if (Node.obtain().getNodeElectionMap().size() == 1 && Node.obtain().isElectionNodeLeader(contractHash)) {
+                // 执行出块操作
+                new OutBlock(contractHash).publish();
+            } else if (now - nodeElection.getTimestamp() > Constant.NODE_ELECTION_OUT_BLOCK_TIME) { // 如果到了出块时间
                 log.debug("===============>>>>>>>>>> 出块超时 <<<<<<<<<<===============");
                 if (!nodeElection.isLeader()) { // 如果自身不是出块节点
                     // 同步下一节点出块，当前出块节点放弃出块权

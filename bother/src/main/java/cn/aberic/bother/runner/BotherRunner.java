@@ -24,12 +24,14 @@
 
 package cn.aberic.bother.runner;
 
+import cn.aberic.bother.entity.node.Node;
 import cn.aberic.bother.tools.Constant;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.hyperic.jni.ArchNotSupportedException;
 import org.hyperic.sigar.Sigar;
 import org.hyperic.sigar.SigarLoader;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.core.io.DefaultResourceLoader;
@@ -51,10 +53,14 @@ import java.io.*;
 @Component
 public class BotherRunner implements ApplicationRunner {
 
+    @Value("${socket.ip}")
+    private String ipAddress;
+
     @Override
     public void run(ApplicationArguments args) throws Exception {
         initDir();
         initSigar();
+        Node.obtain().initAddress(Constant.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH, ipAddress);
         System.out.println();
         System.out.println(" _____   _   _   ____    ");
         System.out.println("| ____| | \\ | | |  _ \\   ");

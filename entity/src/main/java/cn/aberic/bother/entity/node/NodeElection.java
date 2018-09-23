@@ -103,14 +103,11 @@ public class NodeElection implements BeanProtoFormat {
      * 当前节点作为Leader节点时接收新增交易，以作后续打包处理
      *
      * @param transaction 交易对象
-     * @return 如果不是Leader节点，则不处理本次交易
      */
-    boolean addTransaction(Transaction transaction) {
-        if (nodeBases.get(0).getTimestamp() == Node.obtain().getNodeBase().getTimestamp()) { // 如果是Leader节点
+    void addTransaction(Transaction transaction) {
+        synchronized (NodeElection.class) {
             transactions.add(transaction);
-            return true;
         }
-        return false;
     }
 
     /**
@@ -162,6 +159,7 @@ public class NodeElection implements BeanProtoFormat {
      * 当前Hash合约选举节点基本信息集合添加新节点
      *
      * @param nodeBase 节点基本信息
+     *
      * @return 成功与否
      */
     public boolean add(NodeBase nodeBase) {
