@@ -25,10 +25,12 @@
 package cn.aberic.bother.io;
 
 import cn.aberic.bother.block.BlockStorage;
+import cn.aberic.bother.contract.common.ContractVerify;
 import cn.aberic.bother.entity.block.*;
 import cn.aberic.bother.entity.enums.ProtocolStatus;
 import cn.aberic.bother.entity.io.MessageData;
 import cn.aberic.bother.entity.node.Node;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
@@ -40,6 +42,7 @@ import java.util.List;
  * <p>
  * 邮箱：abericyang@gmail.com
  */
+@Slf4j
 public class OutBlock {
 
     private String contractHash;
@@ -112,6 +115,15 @@ public class OutBlock {
      * @param blockOut 出块对象
      */
     public void sync(BlockOut blockOut) {
+        // 验证待同步区块，因为待同步区块中的交易都已经被出块节点验证过，故本地再次验证必须全部通过才会同步
+        ContractVerify verify = new ContractVerify(contractHash);
+        List<Transaction> transactions = blockOut.getBlock().getBody().getTransactions();
+        for (Transaction transaction : transactions) {
+            if (!verify.verifyTransaction(transaction)) {
+                log.debug("同步区块交易有误，当前区块拒绝同步");
+                return;
+            }
+        }
         // 同步已出快的区块对象到本地
         storage.sync(blockOut);
     }
@@ -127,6 +139,7 @@ public class OutBlock {
         BlockHeader header = BlockHeader.newInstance().create(contractHash);
         BlockBody body = new BlockBody();
         body.setTxCount(transactions.size());
+        // TODO: 2018/9/23 验证完交易后方可打包出块
         body.setTransactions(transactions);
         // 生成原始区块对象
         Block block = new Block(header, body);
