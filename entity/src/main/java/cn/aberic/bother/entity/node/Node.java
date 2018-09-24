@@ -43,10 +43,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 节点对象<p>
@@ -149,6 +146,7 @@ public class Node implements BeanProtoFormat {
             nodeBases.add(nodeBase);
             assist.setNodeBases(nodeBases);
             nodeAssistMap.put(Constant.BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH, assist);
+            FileTool.write(Constant.NODE_FILE, JSON.toJSONString(instance));
         }
     }
 
@@ -169,7 +167,13 @@ public class Node implements BeanProtoFormat {
      * @param transaction 交易对象
      */
     public void addTransaction(Transaction transaction) {
-        Node.obtain().getNodeElectionMap().get(transaction.getHash()).addTransaction(transaction);
+        for (Transaction tx : getTransactions(transaction.getHash())) {
+            if (StringUtils.equals(transaction.getTxHash(), tx.getTxHash())) {
+                return;
+            }
+        }
+        nodeElectionMap.get(transaction.getHash()).addTransaction(transaction);
+        FileTool.write(Constant.NODE_FILE, JSON.toJSONString(instance));
     }
 
     /**
@@ -180,7 +184,12 @@ public class Node implements BeanProtoFormat {
      * @return 交易集合
      */
     public List<Transaction> getTransactions(String contractHash) {
-        return Node.obtain().getNodeElectionMap().get(contractHash).getTransactions();
+        return nodeElectionMap.get(contractHash).getTransactions();
+    }
+
+    public void removeTransactions(String contractHash, List<Transaction> transactions) {
+        nodeElectionMap.get(contractHash).removeTransactions(transactions);
+        FileTool.write(Constant.NODE_FILE, JSON.toJSONString(instance));
     }
 
     /**

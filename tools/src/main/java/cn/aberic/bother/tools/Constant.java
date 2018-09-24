@@ -73,8 +73,8 @@ public class Constant {
     // public final static String NODE_FILE = "/data/trouble/node/node.bean";
 
     public final static String BLOCK_DEFAULT_SYSTEM_CONTRACT_HASH = "d11d842aca8ee9b82ea1634791f98e83";
-    public final static String TOKEN_DEFAULT_PUBLIC_HASH = "ce8abde5e540cb13eefe28759e48317a15129265adc4db7ad4e1f84825c006b4";
-    public final static String TOKEN_DEFAULT_SECOND_HASH = "673fe7084b22632c7b20d40ba4aa77a22b2f9361d61d7debde289cab81fe5ad5";
+    public final static String TOKEN_DEFAULT_PUBLIC_HASH = "afdfd18b70c14b88baae768cff89bfbd77ddf85c33adaf945c68f278d64d2045";
+    public final static String TOKEN_DEFAULT_SECOND_HASH = "c501cb5f3217df760a99c633cca4711af68dcf34a61310a774ab59cc3f62621d";
 
     /** 默认区块文件前缀 */
     public final static String BLOCK_FILE_START = "block_file_";

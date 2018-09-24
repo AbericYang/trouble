@@ -81,7 +81,7 @@ public class ContractVerify {
                 }
             default:
                 Account account = JSON.parseObject(new BlockStorage(contractHash).get(new BlockAcquire(contractHash), transaction.getCreator()), new TypeReference<Account>() {});
-                if (!KeyExec.obtain().verifyByStrECDSA(transaction.signString(), transaction.getSign(), account.getPubECCKey(), "UTF-8") ||
+                if (null != account && !KeyExec.obtain().verifyByStrECDSA(transaction.signString(), transaction.getSign(), account.getPubECCKey(), "UTF-8") ||
                         !verifyMethod(transaction.getRequest())) {
                     return false;
                 }

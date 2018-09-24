@@ -30,6 +30,7 @@ import cn.aberic.bother.entity.block.Block;
 import cn.aberic.bother.entity.block.BlockInfo;
 import cn.aberic.bother.entity.block.BlockOut;
 import cn.aberic.bother.entity.enums.ConsensusStatus;
+import cn.aberic.bother.entity.node.Node;
 import cn.aberic.bother.storage.FileComponent;
 import cn.aberic.bother.tools.Constant;
 import cn.aberic.bother.tools.DeflaterTool;
@@ -112,7 +113,7 @@ public class BlockStorage extends BlockAS implements IDataExec {
         // 区块对象被保存本地文件中的压缩字符串
         String compressJsonString;
         // 获取最新写入的区块文件
-        File blockFile = getLastFile();
+        File blockFile = getBlockExec().getLastFile();
         try {
             // 如果最新写入的区块文件为null，则从0开始重新写入
             if (null == blockFile) {
@@ -123,7 +124,8 @@ public class BlockStorage extends BlockAS implements IDataExec {
                     log.debug("继续同步数据操作");
                 } else {
                     // 定义新的区块文件
-                    blockFile = createFirstFile();
+                    blockFile = getBlockExec().createFirstFile();
+                    log.debug("写入区块，区块高度 = {} 与{}文件中", block.getHeader().getHeight(), blockFile.getName());
                     FileTool.writeFirstLine(blockFile, DeflaterTool.compress(JSON.toJSONString(block)));
                 }
             } else {
@@ -132,7 +134,7 @@ public class BlockStorage extends BlockAS implements IDataExec {
                 // 获取上一区块
                 Block preBlock = getBlockExec().getFromFileByLine(blockFile, line);
                 // 如果上一区块高度+1不等于待同步区块高度，则说明本地数据同步尚未完成
-                if (preBlock.getHeader().getHeight() + 1 != block.getHeader().getHeight()) {
+                if (null != preBlock && preBlock.getHeader().getHeight() + 1 != block.getHeader().getHeight()) {
                     // TODO: 2018/9/20 同步数据
                     success = false;
                     log.debug("继续同步数据操作");
@@ -143,10 +145,16 @@ public class BlockStorage extends BlockAS implements IDataExec {
                     long blockSize = compressJsonString.getBytes().length;
                     // 如果区块文件和待写入对象之和已经大于或等于 64 MB，则开辟新区块文件写入区块对象
                     if (blockFile.length() + blockSize >= 64 * 1000 * 1000) {
-                        blockFile = getNextFileByCurrentFile(blockFile);
+                        blockFile = getBlockExec().getNextFileByCurrentFile(blockFile);
+                        log.debug("写入区块，区块高度 = {} 与{}文件中", block.getHeader().getHeight(), blockFile.getName());
                         FileTool.writeFirstLine(blockFile, compressJsonString);
                     } else {
-                        FileTool.writeAppendLine(blockFile, compressJsonString);
+                        log.debug("写入区块，区块高度 = {} 与{}文件中", block.getHeader().getHeight(), blockFile.getName());
+                        if (null != preBlock) {
+                            FileTool.writeAppendLine(blockFile, compressJsonString);
+                        }else {
+                            FileTool.writeFirstLine(blockFile, compressJsonString);
+                        }
                     }
                 }
             }
@@ -162,6 +170,10 @@ public class BlockStorage extends BlockAS implements IDataExec {
                 sb.append(",").append(s);
             }
             getBlockTransactionIndexExec().createOrUpdate(sb.toString());
+            block.getBody().getTransactions().forEach(transaction -> {
+                put(blockOut.getBlockInfo(), transaction.getRwSet().getWrites());
+            });
+            Node.obtain().removeTransactions(contractHash, block.getBody().getTransactions());
         }
     }
 

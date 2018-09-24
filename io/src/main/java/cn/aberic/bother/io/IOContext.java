@@ -191,7 +191,7 @@ public class IOContext {
     public void syncTransactionElection(Transaction transaction) {
         Node.obtain().getNodeElectionMap().get(transaction.getHash()).getNodeBases().forEach(nodeBase ->
                 new ThreadTroublePool().submit(() ->
-                        send(nodeBase.getAddress(), ProtocolStatus.TRANSACTION_SYNC, transaction)));
+                        push(nodeBase.getAddress(), new MessageData(ProtocolStatus.TRANSACTION_SYNC, transaction.bean2ProtoByteArray()))));
     }
 
     /**

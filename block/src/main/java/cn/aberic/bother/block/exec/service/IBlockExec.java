@@ -66,10 +66,12 @@ public interface IBlockExec extends IExec<Block> {
                 line = FileTool.getFileLineCount(blockFile);
                 // 获取上一区块
                 Block preBlock = getFromFileByLine(blockFile, line);
-                // 获取上一区块高度，计算并赋值当前区块高度
-                height = preBlock.getHeader().getHeight() + 1;
-                // 为当前区块赋值上一区块hash
-                previousDataHash = preBlock.getHeader().getCurrentDataHash();
+                if (null != preBlock) {
+                    // 获取上一区块高度，计算并赋值当前区块高度
+                    height = preBlock.getHeader().getHeight() + 1;
+                    // 为当前区块赋值上一区块hash
+                    previousDataHash = preBlock.getHeader().getCurrentDataHash();
+                }
             }
             block.getHeader().setPreviousDataHash(previousDataHash);
             block.getHeader().setHeight(height);

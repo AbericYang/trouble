@@ -94,7 +94,7 @@ public class OutBlock {
             IOContext.obtain().push(Node.obtain().getAssistAddress(contractHash), new MessageData(ProtocolStatus.BLOCK_OUT, blockOut.bean2ProtoByteArray()));
         }
         // 同步已出快的区块对象到本地
-        storage.sync(blockOut);
+        sync(blockOut);
     }
 
     /**
@@ -106,7 +106,7 @@ public class OutBlock {
         // 将出块区块广播给普通节点
         IOContext.obtain().broadcastAssist(contractHash, new MessageData(ProtocolStatus.BLOCK_NODE_SYNC, blockOut.bean2ProtoByteArray()));
         // 同步已出快的区块对象到本地
-        storage.sync(blockOut);
+        sync(blockOut);
     }
 
     /**

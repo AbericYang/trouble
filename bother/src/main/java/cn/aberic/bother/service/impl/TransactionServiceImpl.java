@@ -48,7 +48,9 @@ public class TransactionServiceImpl implements TransactionService {
             return false;
         }
         // 执行发送交易请求
-        if (Node.obtain().isElectionNode(transaction.getHash())) { // 如果自身是竞选节点
+        if (Node.obtain().getNodeElectionMap().size() == 1 && Node.obtain().isElectionNodeLeader(contractHash)) { // 如果当前Hash有且仅有自身为竞选节点
+            Node.obtain().addTransaction(transaction);
+        } else if (Node.obtain().isElectionNode(transaction.getHash())) { // 如果自身是竞选节点
             // 将交易同步至所有竞选节点
             IOContext.obtain().syncTransactionElection(transaction);
         } else { // 如果是普通节点，直接将交易发送至竞选节点，由竞选节点代为转发或处理

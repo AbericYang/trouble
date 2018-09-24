@@ -37,10 +37,7 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 当前节点竞选对象
@@ -107,6 +104,21 @@ public class NodeElection implements BeanProtoFormat {
     void addTransaction(Transaction transaction) {
         synchronized (NodeElection.class) {
             transactions.add(transaction);
+        }
+    }
+
+    void removeTransactions(List<Transaction> txs) {
+        Iterator<Transaction> it = transactions.iterator();
+        try {
+            txs.forEach(transaction -> {
+                while (it.hasNext()) {
+                    if (StringUtils.equals(it.next().getTxHash(), transaction.getTxHash())) {
+                        it.remove();
+                    }
+                }
+            });
+        } catch (Exception ignored) {
+
         }
     }
 

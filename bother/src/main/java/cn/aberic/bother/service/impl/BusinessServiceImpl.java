@@ -114,16 +114,17 @@ public class BusinessServiceImpl implements BusinessService, IResponse {
         token.setAccount(null);
         request.setValue(JSON.toJSONString(token));
         exec.setRequest(request);
-        log.debug("invoke token = {}", publicContract.invoke(exec));
+        log.debug("invoke token = {}", publicContract.invoke(exec).getResultResponse());
+        exec.put(request.getKey(), request.getValue());
         // 账户上链
         request.setKey(account.getAddress());
         request.setValue(JSON.toJSONString(account));
         exec.setRequest(request);
-        log.debug("invoke account = {}", publicContract.invoke(exec));
+        log.debug("invoke account = {}", publicContract.invoke(exec).getResultResponse());
+        exec.put(request.getKey(), request.getValue());
         if (transactionService.checkBlockVerify(exec.getContractHash(), exec.getTransaction())) {
             return exec.response().getResultResponse();
         }
-        // exec.sendTransaction(exec.getBlock());
         return exec.response(IResponse.ResponseType.FAIL).getResultResponse();
     }
 

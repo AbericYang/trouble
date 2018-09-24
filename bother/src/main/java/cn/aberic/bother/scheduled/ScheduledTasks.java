@@ -55,8 +55,10 @@ public class ScheduledTasks {
         Node.obtain().getNodeElectionMap().forEach((contractHash, nodeElection) -> {
             // 如果当前Hash有且仅有自身为竞选节点
             if (Node.obtain().getNodeElectionMap().size() == 1 && Node.obtain().isElectionNodeLeader(contractHash)) {
-                // 执行出块操作
-                new OutBlock(contractHash).publish();
+                if (Node.obtain().getTransactions(contractHash).size() > 0) {
+                    // 执行出块操作
+                    new OutBlock(contractHash).publish();
+                }
             } else if (now - nodeElection.getTimestamp() > Constant.NODE_ELECTION_OUT_BLOCK_TIME) { // 如果到了出块时间
                 log.debug("===============>>>>>>>>>> 出块超时 <<<<<<<<<<===============");
                 if (!nodeElection.isLeader()) { // 如果自身不是出块节点
