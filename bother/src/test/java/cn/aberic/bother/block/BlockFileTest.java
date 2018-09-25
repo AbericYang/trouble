@@ -93,7 +93,7 @@ public class BlockFileTest {
         FileTool.createFirstFile(fileJsonPath);
         FileTool.createFirstFile(fileProtoPath);
         FileTool.writeFirstLine(new File(fileJsonPath), DeflaterTool.compress(JSON.toJSONString(block)));
-        Files.write(EntityTest.getBlockBytes(), new File(fileProtoPath));
+        Files.write(EntityTest.getBlockOutBytes(), new File(fileProtoPath));
     }
 
 }

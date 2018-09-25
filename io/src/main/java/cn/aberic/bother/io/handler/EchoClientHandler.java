@@ -25,6 +25,9 @@
 package cn.aberic.bother.io.handler;
 
 import cn.aberic.bother.entity.io.MessageData;
+import cn.aberic.bother.entity.node.Node;
+import cn.aberic.bother.entity.node.NodeAssist;
+import cn.aberic.bother.entity.node.NodeElection;
 import cn.aberic.bother.io.IOContext;
 import cn.aberic.bother.io.exec.factory.IOClient;
 import cn.aberic.bother.io.message.IMsgService;
@@ -35,7 +38,10 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
+
+import java.util.Map;
 
 /**
  * 作者：Aberic on 2018/9/9 19:37
@@ -123,12 +129,30 @@ public class EchoClientHandler extends SimpleChannelInboundHandler<MessageData> 
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-        IOContext.obtain().ioClientRemove(ctx.channel().remoteAddress().toString().split(":")[0].split("/")[1]);
+        String address = ctx.channel().remoteAddress().toString().split(":")[0].split("/")[1];
+        IOContext.obtain().ioClientRemove(address);
         log.info("关闭连接 time = {}", DateTool.getCurrent("yyyy/MM/dd HH:mm:ss"));
-        super.channelInactive(ctx);
         if (!ioClient.isShutdown() && keepHeartBeat) {
-            ioClient.doConnect();
+            if (canConnect(address)) { // 如果此地址还能连接成功
+                ioClient.doConnect();
+            } else { // 如果此地址不能连接成功
+                boolean exec = false;
+                for (Map.Entry<String, NodeElection> entry : Node.obtain().getNodeElectionMap().entrySet()) {
+                    if (!entry.getValue().isLeader() && StringUtils.equals(address, entry.getValue().getNodeBases().get(0).getAddress())) {
+                        // TODO: 2018/9/25 通知其它节点当前Hash竞选节点集合中的第二顺位节点其Leader节点无法连接
+                        exec = true;
+                    }
+                }
+                if (!exec) {
+                    for (Map.Entry<String, NodeAssist> entry: Node.obtain().getNodeAssistMap().entrySet()) {
+                        if (!Node.obtain().isAssistNode(entry.getKey()) && StringUtils.equals(address, Node.obtain().getAssistAddress(entry.getKey()))) {
+                            // TODO: 2018/9/25 通知当前Hash竞选节点其协助节点无法连接
+                        }
+                    }
+                }
+            }
         }
+        super.channelInactive(ctx);
     }
 
     @Override

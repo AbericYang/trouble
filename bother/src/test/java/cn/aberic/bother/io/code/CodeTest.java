@@ -71,7 +71,7 @@ public class CodeTest {
         }
 
         public byte[] get(Block block) {
-            MessageData messageData = new MessageData(ProtocolStatus.BLOCK_OUT, EntityTest.getBlockBytes());
+            MessageData messageData = new MessageData(ProtocolStatus.BLOCK_OUT, EntityTest.getBlockOutBytes());
             messageData.setDataId(createDataId());
             return createData(messageData.getBytes());
         }

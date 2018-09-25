@@ -45,7 +45,7 @@ public class ClientTest {
         remote.setAddress("127.0.0.1");
         IOContext.obtain().startClient(remote);
 
-        MessageData msgData = new MessageData(ProtocolStatus.BLOCK_OUT, EntityTest.getBlockBytes());
+        MessageData msgData = new MessageData(ProtocolStatus.BLOCK_OUT, EntityTest.getBlockOutBytes());
         try {
             IOContext.obtain().send("127.0.0.1", msgData);
         }catch (Exception e) {

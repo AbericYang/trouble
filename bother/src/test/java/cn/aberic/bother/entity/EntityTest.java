@@ -126,8 +126,8 @@ public class EntityTest {
         log.debug("result2 = {}", Node.obtain().protoByteArray2Bean(bytes).toJsonString());
     }
 
-    public static byte[] getBlockBytes() {
-        return createBlock(20).bean2ProtoByteArray();
+    public static byte[] getBlockOutBytes() {
+        return createBlockOut().bean2ProtoByteArray();
     }
 
     private static void protoDemo() {
