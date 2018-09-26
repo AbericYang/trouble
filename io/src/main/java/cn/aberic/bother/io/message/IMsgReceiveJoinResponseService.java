@@ -49,7 +49,8 @@ public interface IMsgReceiveJoinResponseService extends IMsgRequestService {
             // 将自身在当前竞选节点集合中的信息push给当前加入节点
             push(channel, ProtocolStatus.JOIN_AS_ELECTION, Node.obtain().getNodeElectionMap().get(contractHash));
             shutdown();
-        } else {
+        } else { // 强行新增
+            responseJoinToAssist(channel, contractHash);
             shutdown();
         }
     }
@@ -60,7 +61,7 @@ public interface IMsgReceiveJoinResponseService extends IMsgRequestService {
             NodeHash nodeHash = new NodeHash(contractHash, Node.obtain().getNodeBase().clear());
             push(channel, ProtocolStatus.JOIN_AS_ASSIST, nodeHash);
         } else {
-            shutdown();
+            responseJoinFollowMe(channel, contractHash);
         }
     }
 

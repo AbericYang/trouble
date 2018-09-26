@@ -84,14 +84,15 @@ interface IMsgReceiveJoinService extends IMsgReceiveJoinResponseService {
                         return;
                     } else { // 强行新增
                         responseJoinToAssist(channel, contractHash);
+                        shutdown();
                         return;
                     }
                 }
-                // 先判断自己是否有协助节点
-                if (Node.obtain().hasAssistNode(contractHash)) { // 如果有，则将自己的协助节点发回
+                // 先判断自己是否是自己的协助节点
+                if (!Node.obtain().isAssistNode(contractHash)) { // 如果不是，则将自己的协助节点发回
                     responseJoinToAssist(channel, contractHash);
                     shutdown();
-                } else { // 如果没有，则将此节点当做自身的协助节点
+                } else { // 如果是，则将此节点当做自身的协助节点
                     responseJoinAsAssist(address, channel, contractHash);
                 }
             } else { // 如果不满足，则将该节点当做竞选节点之一

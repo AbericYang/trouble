@@ -32,6 +32,7 @@ import cn.aberic.bother.entity.node.NodeElection;
 import cn.aberic.bother.io.IOContext;
 import cn.aberic.bother.io.exec.factory.IOClient;
 import cn.aberic.bother.io.message.IMsgService;
+import cn.aberic.bother.tools.Constant;
 import cn.aberic.bother.tools.DateTool;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
@@ -157,6 +158,8 @@ public class EchoClientHandler extends SimpleChannelInboundHandler<MessageData> 
                                 send(Node.obtain().getElectionAddress(entry.getKey()), ProtocolStatus.ELECTION_LEADER_ASSIST_CAN_NOT_CONNECTED, entry.getKey());
                             }catch (Exception e) {
                                 log.warn("协助节点和竞选节点都无法连接");
+                                IOContext.obtain().join(Constant.ANCHOR_IP);
+                                Node.obtain().getAddressMap().get(entry.getKey()).getStringList().forEach(ipAddress -> IOContext.obtain().join(ipAddress));
                             }
                             break;
                         }
@@ -169,6 +172,8 @@ public class EchoClientHandler extends SimpleChannelInboundHandler<MessageData> 
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
+        String address = ctx.channel().remoteAddress().toString().split(":")[0].split("/")[1];
+        IOContext.obtain().ioClientRemove(address);
         // 在发生异常时，记录错误并关闭Channel
         cause.printStackTrace();
         ctx.close();

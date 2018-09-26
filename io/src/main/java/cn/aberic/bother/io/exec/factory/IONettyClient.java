@@ -27,6 +27,7 @@ package cn.aberic.bother.io.exec.factory;
 
 import cn.aberic.bother.entity.io.MessageData;
 import cn.aberic.bother.entity.io.Remote;
+import cn.aberic.bother.io.IOContext;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
@@ -69,6 +70,7 @@ public class IONettyClient implements IOClient {
             if (futureListener.isSuccess()) {
                 log.info("与服务器建立连接成功");
                 channel = futureListener.channel();
+                IOContext.obtain().ioClientPut(remote.getAddress(), this);
             } else {
                 log.info("与服务器建立连接失败，{}秒后再次尝试", DEFAULT_HEARTBEAT_TRY_AGAIN_PERIOD);
                 futureListener.channel().eventLoop().schedule(this::doConnect, DEFAULT_HEARTBEAT_TRY_AGAIN_PERIOD, TimeUnit.SECONDS);

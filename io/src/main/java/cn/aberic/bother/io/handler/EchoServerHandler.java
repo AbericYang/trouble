@@ -127,6 +127,8 @@ public class EchoServerHandler extends ChannelInboundHandlerAdapter implements I
     // 重写exceptionCaught()方法允许对Throwable的任何子类型做出反应，在这里记录了异常并关闭了连接
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
+        String address = ctx.channel().remoteAddress().toString().split(":")[0].split("/")[1];
+        IOContext.obtain().ioServerRemove(address);
         // 打印异常栈跟踪
         cause.printStackTrace();
         // 关闭该Channel

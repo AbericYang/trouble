@@ -26,12 +26,15 @@ package cn.aberic.bother.scheduled;
 
 import cn.aberic.bother.entity.enums.ProtocolStatus;
 import cn.aberic.bother.entity.node.Node;
+import cn.aberic.bother.entity.node.NodeAssist;
 import cn.aberic.bother.io.IOContext;
 import cn.aberic.bother.io.OutBlock;
 import cn.aberic.bother.tools.Constant;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+
+import java.util.Map;
 
 /**
  * 作者：Aberic on 2018/09/20 12:27
@@ -71,6 +74,22 @@ public class ScheduledTasks {
                 }
             }
         });
+    }
+
+    /**
+     * fixedDelay = x 表示当前方法执行完毕x ms后，Spring scheduling会再次调用该方法<p>
+     * 断线检查，作为普通节点如果与协助节点断开后的处理方案
+     */
+    @Scheduled(fixedDelay = 10000)
+    public void disconnectCheck() {
+        // 作为所遍历Hash合约的协助节点，检查被遍历Hash合约的竞选节点是否可用
+        for (Map.Entry<String, NodeAssist> entry: Node.obtain().getNodeAssistMap().entrySet()) {
+            if (null == IOContext.obtain().ioClientGet(Node.obtain().getElectionAddress(entry.getKey()))) {
+                // TODO: 2018/9/26 寻找其它备用节点的竞选节点，并告知其竞选节点，自身成为新的竞选节点
+                // TODO: 2018/9/26 广播给当前节点下的所有子节点并选举出新的协助节点
+            }
+        }
+        // TODO: 2018/9/26
     }
 
 }
