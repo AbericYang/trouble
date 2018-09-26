@@ -78,6 +78,10 @@ public enum ProtocolStatus {
     ELECTION_LEADER_CHANGE_FOR_ASSIST_NODE("告知当前Hash合约下的协助节点可变更为竞选节点协议", (byte) 0x46),
     /** 告知当前Hash合约下的节点当前协助节点已经变更协议-0x47 */
     ELECTION_ASSIST_CHANGE_FOR_NODE("告知当前Hash合约下的节点当前协助节点已经变更协议", (byte) 0x47),
+    /** 请求当前协助节点保持心跳协议-0x48 */
+    ELECTION_TO_ASSIST_HEART_KEEP_ASK("请求当前协助节点保持心跳协议", (byte) 0x48),
+    /** 告知当前Hash合约下的竞选节点当前协助节点无法连接协议-0x49 */
+    ELECTION_LEADER_ASSIST_CAN_NOT_CONNECTED("告知当前Hash合约下的竞选节点当前协助节点无法连接协议", (byte) 0x49),
     /** 交易协议-0x60 */
     TRANSACTION("交易协议", (byte) 0x60),
     /** 同步交易协议-0x61 */

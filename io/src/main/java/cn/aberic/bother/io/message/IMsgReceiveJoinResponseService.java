@@ -36,7 +36,7 @@ import org.apache.commons.lang3.StringUtils;
  * 作者：Aberic on 2018/9/22 20:43
  * 邮箱：abericyang@gmail.com
  */
-public interface IMsgReceiveJoinResponseService extends IMsgRequestService, IMsgConnectTest {
+public interface IMsgReceiveJoinResponseService extends IMsgRequestService {
 
     /** 告知新的接入节点准许加入，且为当前Hash合约的竞选节点 */
     default void responseJoinAsElection(Channel channel, String contractHash, NodeBase nodeBaseJoin) {

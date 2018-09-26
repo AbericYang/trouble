@@ -71,14 +71,6 @@ public class OutBlock {
         } else { // 否则将出块区块广播给协助节点，同时设定新的出块节点
             // 广播给协助节点
             syncAssistNode(blockOut);
-            // 设定新的出块节点
-            Node.obtain().getNodeElectionMap().put(Node.obtain().getAssistAddress(contractHash), Node.obtain().getNodeElectionMap().get(contractHash));
-            // 告知当前Hash合约下的协助节点可变更为竞选节点协议
-            IOContext.obtain().push(
-                    Node.obtain().getAssistAddress(contractHash),
-                    new MessageData(ProtocolStatus.ELECTION_LEADER_CHANGE_FOR_ASSIST_NODE,
-                            Node.obtain().getNodeElectionMap().get(contractHash).bean2ProtoByteArray()));
-            Node.obtain().removeNodeElection(contractHash);
         }
     }
 
@@ -92,6 +84,14 @@ public class OutBlock {
         if (StringUtils.isNotEmpty(assistAddress)) {
             // 将出块区块广播给协助节点
             IOContext.obtain().push(Node.obtain().getAssistAddress(contractHash), new MessageData(ProtocolStatus.BLOCK_OUT, blockOut.bean2ProtoByteArray()));
+            // 设定新的出块节点
+            Node.obtain().getNodeElectionMap().put(Node.obtain().getAssistAddress(contractHash), Node.obtain().getNodeElectionMap().get(contractHash));
+            // 告知当前Hash合约下的协助节点可变更为竞选节点协议
+            IOContext.obtain().push(
+                    Node.obtain().getAssistAddress(contractHash),
+                    new MessageData(ProtocolStatus.ELECTION_LEADER_CHANGE_FOR_ASSIST_NODE,
+                            Node.obtain().getNodeElectionMap().get(contractHash).bean2ProtoByteArray()));
+            Node.obtain().removeNodeElection(contractHash);
         }
         // 同步已出快的区块对象到本地
         sync(blockOut);

@@ -62,6 +62,8 @@ public class NodeBase implements BeanProtoFormat {
     private long freeMemory;
     /** 节点执行合约的Hash列表 */
     private List<String> hashes;
+    /** 节点是否可作为服务端接收请求 */
+    private boolean reversible;
 
     public NodeBase() {
         timestamp = System.currentTimeMillis();

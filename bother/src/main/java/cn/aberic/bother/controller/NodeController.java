@@ -50,6 +50,11 @@ public class NodeController {
         return nodeService.getNodeAssistAddress(jsonObject.getString("contractHash"));
     }
 
+    @PostMapping(value = "assist/change")
+    public String assistChangeForNode(@RequestBody Map<String, Object> request) {
+        return nodeService.assistChangeForNode(new JSONObject(request));
+    }
+
     @GetMapping(value = "test")
     public String queryBlockChainInfo() {
         return "success";

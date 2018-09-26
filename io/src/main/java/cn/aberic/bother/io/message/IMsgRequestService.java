@@ -35,7 +35,7 @@ import org.slf4j.Logger;
  * <p>
  * 邮箱：abericyang@gmail.com
  */
-interface IMsgRequestService extends IMsgRequestSendService, IMsgRequestPushService {
+interface IMsgRequestService extends IMsgRequestSendService, IMsgRequestPushService, IMsgConnectTest {
 
     Logger log();
 
@@ -59,6 +59,16 @@ interface IMsgRequestService extends IMsgRequestSendService, IMsgRequestPushServ
      */
     default void sendElectionToLeaderHeartBeatKeepAsk(String address, String contractHash) {
         send(address, ProtocolStatus.ELECTION_TO_LEADER_HEART_KEEP_ASK, contractHash);
+    }
+
+    /**
+     * 请求当前协助节点保持心跳协议
+     *
+     * @param address      指定地址
+     * @param contractHash 合约Hash
+     */
+    default void sendElectionToAssistHeartKeepAsk(String address, String contractHash) {
+        send(address, ProtocolStatus.ELECTION_TO_ASSIST_HEART_KEEP_ASK, contractHash);
     }
 
     /**

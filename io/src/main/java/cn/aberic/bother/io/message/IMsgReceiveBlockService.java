@@ -67,7 +67,7 @@ interface IMsgReceiveBlockService extends IMsgRequestService {
      * @param address      当前Hash合约竞选节点集合的Leader的地址
      * @param contractHash 当前合约Hash
      */
-    default void blockOutLeaderChange(Channel channel, String address, String contractHash) throws IOException {
+    default void blockOutLeaderChange(Channel channel, String address, String contractHash) {
         // 判断自身是否为竞选节点集合中下一Leader节点
         if (Node.obtain().getNodeElectionMap().get(contractHash).getNodeBases().get(1).getTimestamp() == Node.obtain().getNodeBase().getTimestamp()) {
             // 向竞选节点集合中的Leader节点发送post请求询问其协助节点地址

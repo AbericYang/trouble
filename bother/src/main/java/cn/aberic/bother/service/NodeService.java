@@ -24,12 +24,15 @@
 
 package cn.aberic.bother.service;
 
+import cn.aberic.bother.entity.response.IResponse;
+import com.alibaba.fastjson.JSONObject;
+
 /**
  * 作者：Aberic on 2018/09/21 14:34
  * <p>
  * 邮箱：abericyang@gmail.com
  */
-public interface NodeService {
+public interface NodeService extends IResponse {
 
     /**
      * 获取当前Hash合约的协助节点地址
@@ -38,5 +41,12 @@ public interface NodeService {
      * @return 协助节点地址
      */
     String getNodeAssistAddress(String contractHash);
+
+    /**
+     * 成为新的协助节点
+     *
+     * @return 结果
+     */
+    String assistChangeForNode(JSONObject jsonObject);
 
 }

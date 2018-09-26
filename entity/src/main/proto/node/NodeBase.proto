@@ -12,4 +12,5 @@ message NodeBase {
     int32 cpu = 4; // CPU个数
     int64 freeMemory = 5; // 可用剩余内存
     repeated string hashes = 6; // 节点执行合约的Hash列表
+    bool reversible = 7; // 节点是否可作为服务端接收请求
 }

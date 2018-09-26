@@ -24,6 +24,7 @@
 
 package cn.aberic.bother.io.handler;
 
+import cn.aberic.bother.entity.enums.ProtocolStatus;
 import cn.aberic.bother.entity.io.MessageData;
 import cn.aberic.bother.entity.node.Node;
 import cn.aberic.bother.entity.node.NodeAssist;
@@ -137,16 +138,27 @@ public class EchoClientHandler extends SimpleChannelInboundHandler<MessageData> 
                 ioClient.doConnect();
             } else { // 如果此地址不能连接成功
                 boolean exec = false;
+                // 优先遍历查看竞选节点集合情况
                 for (Map.Entry<String, NodeElection> entry : Node.obtain().getNodeElectionMap().entrySet()) {
+                    // 如果自身并非当前Hash的竞选节点集合中的Leader节点，且当前断开连接的地址就是Leader节点
                     if (!entry.getValue().isLeader() && StringUtils.equals(address, entry.getValue().getNodeBases().get(0).getAddress())) {
-                        // TODO: 2018/9/25 通知其它节点当前Hash竞选节点集合中的第二顺位节点其Leader节点无法连接
+                        // 通知其它节点当前Hash竞选节点集合中的第二顺位节点其Leader节点无法连接
+                        // 同步下一节点出块，当前出块节点放弃出块权
+                        send(entry.getValue().getNodeBases().get(1).getAddress(), ProtocolStatus.ELECTION_LEADER_CHANGE_FORCE_REQUEST, entry.getKey());
                         exec = true;
                     }
                 }
                 if (!exec) {
+                    // 如竞选集合情况无误，则再次判协助节点情况
                     for (Map.Entry<String, NodeAssist> entry: Node.obtain().getNodeAssistMap().entrySet()) {
                         if (!Node.obtain().isAssistNode(entry.getKey()) && StringUtils.equals(address, Node.obtain().getAssistAddress(entry.getKey()))) {
-                            // TODO: 2018/9/25 通知当前Hash竞选节点其协助节点无法连接
+                            // 通知当前Hash竞选节点其协助节点无法连接
+                            try {
+                                send(Node.obtain().getElectionAddress(entry.getKey()), ProtocolStatus.ELECTION_LEADER_ASSIST_CAN_NOT_CONNECTED, entry.getKey());
+                            }catch (Exception e) {
+                                log.warn("协助节点和竞选节点都无法连接");
+                            }
+                            break;
                         }
                     }
                 }

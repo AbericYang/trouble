@@ -27,6 +27,7 @@ package cn.aberic.bother.io.message;
 import cn.aberic.bother.entity.block.Transaction;
 import cn.aberic.bother.entity.io.MessageData;
 import cn.aberic.bother.entity.node.NodeElection;
+import cn.aberic.bother.entity.node.NodeHash;
 import cn.aberic.bother.tools.MsgPackTool;
 import io.netty.channel.Channel;
 
@@ -79,7 +80,7 @@ interface IMsgReceiveService extends IMsgReceiveJoinService, IMsgReceiveElection
                 joinFollowMe(channel, msgData);
                 break;
             case JOIN_FOLLOW_U: // 告知当前Hash合约的协助节点已经加入该协助节点信息
-                joinFollowU(channel, msgData);
+                joinFollowU(address, channel, msgData);
                 break;
             case JOIN_RESULT_TO_UPGRADE_NODE_COUNT: // 接收到告知当前Hash合约的竞选节点更新其下属子节点总数
                 joinResultToUpgradeNodeCount(address, msgData);
@@ -96,17 +97,23 @@ interface IMsgReceiveService extends IMsgReceiveJoinService, IMsgReceiveElection
             case ELECTION_UPGRADE_NODE_COUNT: // 接收到告知当前Hash合约的竞选节点集合更新其下属子节点总数
                 electionUpgradeNodeCount(address, msgData);
                 break;
-            case ELECTION_LEADER_CHANGE_FORCE_REQUEST: // 申请竞选节点Leader强制更换协议
+            case ELECTION_LEADER_CHANGE_FORCE_REQUEST: // 接收到申请竞选节点Leader强制更换协议
                 electionLeaderChangeForceRequest(MsgPackTool.bytes2String(msgData.getBytes()));
                 break;
-            case ELECTION_LEADER_CHANGE_FORCE: // 竞选节点Leader强制更换协议
+            case ELECTION_LEADER_CHANGE_FORCE: // 接收到竞选节点Leader强制更换协议
                 electionLeaderChangeForce(address, MsgPackTool.bytes2String(msgData.getBytes()));
                 break;
-            case ELECTION_LEADER_CHANGE_FOR_ASSIST_NODE: // 告知当前Hash合约下的协助节点可变更为竞选节点协议
+            case ELECTION_LEADER_CHANGE_FOR_ASSIST_NODE: // 接收到告知当前Hash合约下的协助节点可变更为竞选节点协议
                 electionLeaderChangeForAssistNode(address, new NodeElection().protoByteArray2Bean(msgData.getBytes()));
                 break;
-            case ELECTION_ASSIST_CHANGE_FOR_NODE: // 告知当前Hash合约下的节点当前协助节点已经变更协议
-                electionAssistChangeForNode();
+            case ELECTION_ASSIST_CHANGE_FOR_NODE: // 接收到告知当前Hash合约下的节点当前协助节点已经变更协议
+                electionAssistChangeForNode(address, new NodeHash().protoByteArray2Bean(msgData.getBytes()));
+                break;
+            case ELECTION_TO_ASSIST_HEART_KEEP_ASK: // 接收到请求当前协助节点保持心跳协议
+                electionToAssistHeartKeepAsk(channel, address, MsgPackTool.bytes2String(msgData.getBytes()));
+                break;
+            case ELECTION_LEADER_ASSIST_CAN_NOT_CONNECTED: // 接收到告知当前Hash合约下的竞选节点当前协助节点无法连接协议
+                electionLeaderAssistCanNotConnected(address, channel, MsgPackTool.bytes2String(msgData.getBytes()));
                 break;
             case TRANSACTION: // 接收到交易提交协议
                 transaction(new Transaction().protoByteArray2Bean(msgData.getBytes()));

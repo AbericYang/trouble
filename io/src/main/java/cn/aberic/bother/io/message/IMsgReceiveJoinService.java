@@ -102,6 +102,7 @@ interface IMsgReceiveJoinService extends IMsgReceiveJoinResponseService {
         } else if (Node.obtain().hasNode(contractHash)) { // 表示自身为当前Hash合约的普通节点
             // 告知新的接入地址当前Hash合约下的竞选节点地址
             push(channel, ProtocolStatus.JOIN_ASK_ELECTION, Node.obtain().getElectionAddress(contractHash));
+            shutdown();
         } else {
             log().debug("怪事，关闭远程连接及心跳允许");
             shutdown();
@@ -225,13 +226,20 @@ interface IMsgReceiveJoinService extends IMsgReceiveJoinResponseService {
     }
 
     /** 告知当前Hash合约的协助节点已经加入该协助节点信息 */
-    default void joinFollowU(Channel channel, MessageData msgData) throws InvalidProtocolBufferException {
+    default void joinFollowU(String address, Channel channel, MessageData msgData) throws InvalidProtocolBufferException {
         // 获取当前NodeHash
         NodeHash nodeHash = new NodeHash().protoByteArray2Bean(msgData.getBytes());
         // 判断自己是否是当前Hash合约的协助节点
         if (Node.obtain().isAssistNode(nodeHash.getContractHash())) { // 如果是协助节点
+            NodeBase nodeBase = nodeHash.getNodeBase();
+            if (canConnect(address)) {
+                nodeBase.setReversible(true);
+            } else {
+                nodeBase.setReversible(false);
+            }
+            nodeBase.setAddress(address);
             // 将此新节点加入到协助节点所管理的下属节点集合中
-            Node.obtain().getNodeAssistMap().get(nodeHash.getContractHash()).add(nodeHash.getNodeBase());
+            Node.obtain().getNodeAssistMap().get(nodeHash.getContractHash()).add(nodeBase);
             // 通知当前竞选节点更新下属节点数量
             List<String> strings = new ArrayList<>();
             strings.add(nodeHash.getContractHash());

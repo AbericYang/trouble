@@ -25,8 +25,12 @@
 package cn.aberic.bother.service.impl;
 
 import cn.aberic.bother.entity.node.Node;
+import cn.aberic.bother.entity.node.NodeAssist;
 import cn.aberic.bother.service.NodeService;
 import cn.aberic.bother.tools.SystemTool;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.TypeReference;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -57,6 +61,16 @@ public class NodeServiceImpl implements NodeService {
             return Node.obtain().getAssistAddress(contractHash);
         }
         return null;
+    }
+
+    @Override
+    public String assistChangeForNode(JSONObject jsonObject) {
+        String contractHash = jsonObject.getString("contractHash");
+        NodeAssist assist = JSON.parseObject(jsonObject.getString("assist"), new TypeReference<NodeAssist>() {});
+        assist.sort();
+        Node.obtain().putNodeAssistMap(contractHash, assist);
+        Node.obtain().putNodeBaseAssistMap(contractHash, Node.obtain().getNodeBase());
+        return response().getResultResponse();
     }
 
     private static String getIpAddress(HttpServletRequest request) {

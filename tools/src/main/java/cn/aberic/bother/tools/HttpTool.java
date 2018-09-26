@@ -47,7 +47,7 @@ public class HttpTool {
      * @param ipAddress 节点地址
      * @param json      请求json
      */
-    public static String postNode(String ipAddress, String json) throws IOException {
+    public static String postNode(String ipAddress, String json) {
         return post(String.format("%s:19022", ipAddress), json);
     }
 
@@ -59,14 +59,19 @@ public class HttpTool {
      *
      * @return 请求返回字符串
      */
-    public static String post(String url, String json) throws IOException {
+    public static String post(String url, String json) {
         RequestBody body = RequestBody.create(JSON, json);
         Request request = new Request.Builder()
                 .url(url)
                 .post(body)
                 .build();
-        Response response = client.newCall(request).execute();
-        return response.body() != null ? response.body().string() : null;
+        Response response;
+        try {
+            response = client.newCall(request).execute();
+            return response.body() != null ? response.body().string() : null;
+        } catch (IOException e) {
+            return null;
+        }
     }
 
     /**
