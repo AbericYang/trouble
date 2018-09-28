@@ -25,11 +25,14 @@
 package cn.aberic.bother.scheduled;
 
 import cn.aberic.bother.entity.enums.ProtocolStatus;
+import cn.aberic.bother.entity.io.MessageData;
 import cn.aberic.bother.entity.node.Node;
 import cn.aberic.bother.entity.node.NodeAssist;
+import cn.aberic.bother.entity.node.NodeBase;
 import cn.aberic.bother.io.IOContext;
 import cn.aberic.bother.io.OutBlock;
 import cn.aberic.bother.tools.Constant;
+import cn.aberic.bother.tools.MsgPackTool;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -83,13 +86,22 @@ public class ScheduledTasks {
     @Scheduled(fixedDelay = 10000)
     public void disconnectCheck() {
         // 作为所遍历Hash合约的协助节点，检查被遍历Hash合约的竞选节点是否可用
-        for (Map.Entry<String, NodeAssist> entry: Node.obtain().getNodeAssistMap().entrySet()) {
+        for (Map.Entry<String, NodeAssist> entry : Node.obtain().getNodeAssistMap().entrySet()) {
             if (null == IOContext.obtain().ioClientGet(Node.obtain().getElectionAddress(entry.getKey()))) {
-                // TODO: 2018/9/26 寻找其它备用节点的竞选节点，并告知其竞选节点，自身成为新的竞选节点
-                // TODO: 2018/9/26 广播给当前节点下的所有子节点并选举出新的协助节点
+                // 广播给当前Hash合约下的所有子节点，竞选节点无法连接
+                IOContext.obtain().broadcastAssist(entry.getKey(), new MessageData(ProtocolStatus.ELECTION_LEADER_DEAD, MsgPackTool.string2Bytes(entry.getKey())));
+                // 作为客户端向当前备选节点发送请求加入协议
+                IOContext.obtain().join(Constant.ANCHOR_IP);
+                Node.obtain().getAddressMap().get(entry.getKey()).getStringList().forEach(ipAddress -> IOContext.obtain().join(ipAddress));
             }
         }
-        // TODO: 2018/9/26
+        for (Map.Entry<String, NodeBase> entry : Node.obtain().getNodeBaseAssistMap().entrySet()) {
+            if (null == IOContext.obtain().ioClientGet(Node.obtain().getAssistAddress(entry.getKey()))) {
+                // 作为客户端向当前备选节点发送请求加入协议
+                IOContext.obtain().join(Constant.ANCHOR_IP);
+                Node.obtain().getAddressMap().get(entry.getKey()).getStringList().forEach(ipAddress -> IOContext.obtain().join(ipAddress));
+            }
+        }
     }
 
 }

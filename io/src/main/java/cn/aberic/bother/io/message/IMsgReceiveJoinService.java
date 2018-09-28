@@ -112,6 +112,7 @@ interface IMsgReceiveJoinService extends IMsgReceiveJoinResponseService {
 
     /** 接收到告知新的接入节点当前Hash合约的竞选节点地址 */
     default void joinAskElection(MessageData msgData) {
+        // TODO: 2018/9/28 判断自身是否已经加入后再执行加入操作
         // 作为客户端向当前Hash合约竞选节点发送请求加入协议
         send(MsgPackTool.bytes2String(msgData.getBytes()), ProtocolStatus.JOIN, Node.obtain().getNodeBase());
         shutdown();
@@ -119,6 +120,7 @@ interface IMsgReceiveJoinService extends IMsgReceiveJoinResponseService {
 
     /** 接收到告知新的接入节点准许加入，且为当前Hash合约的竞选节点 */
     default void joinAsElection(MessageData msgData) throws InvalidProtocolBufferException {
+        // TODO: 2018/9/28 判断自身是否已经加入后再执行加入操作
         // 获取当前竞选节点集合的基本信息
         NodeElection election = new NodeElection().protoByteArray2Bean(msgData.getBytes());
         Node.obtain().putNodeElection(election.getContractHash(), election);
@@ -129,6 +131,7 @@ interface IMsgReceiveJoinService extends IMsgReceiveJoinResponseService {
 
     /** 接收到告知新的接入节点准许加入，且为当前Hash合约竞选节点的协助节点 */
     default void joinAsAssist(String address, Channel channel, MessageData msgData) throws InvalidProtocolBufferException {
+        // TODO: 2018/9/28 判断自身是否已经加入后再执行加入操作
         // 获取当前NodeHash
         NodeHash nodeHash = new NodeHash().protoByteArray2Bean(msgData.getBytes());
         // 在成为当前Hash合约竞选节点的辅助节点之前，需要先将自身初始化时的默认值或过往值移除
@@ -186,6 +189,7 @@ interface IMsgReceiveJoinService extends IMsgReceiveJoinResponseService {
 
     /** 接收到告知新的接入节点当前Hash合约的竞选节点的协助节点 */
     default void joinToAssist(MessageData msgData) throws InvalidProtocolBufferException {
+        // TODO: 2018/9/28 判断自身是否已经加入后再执行加入操作
         // 获取当前Hash合约协助节点对象
         NodeHash nodeHash = new NodeHash().protoByteArray2Bean(msgData.getBytes());
         // 赋值当前合约Hash访问的竞选节点指定协助节点
@@ -199,6 +203,7 @@ interface IMsgReceiveJoinService extends IMsgReceiveJoinResponseService {
 
     /** 接收到告知新的接入节点当前Hash合约的基本信息并要求跟随自己 */
     default void joinFollowMe(Channel channel, MessageData msgData) throws InvalidProtocolBufferException {
+        // TODO: 2018/9/28 判断自身是否已经加入后再执行加入操作
         Node nodeAssist = Node.obtain().getFromBytes(msgData.getBytes());
         if (nodeAssist.getAddressMap().size() != 1) { // 如果给定的合约Hash不为1，则再次请求锚节点加入
             send(Constant.ANCHOR_IP, ProtocolStatus.JOIN, Node.obtain().getNodeBase());

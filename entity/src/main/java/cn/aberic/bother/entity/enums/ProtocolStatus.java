@@ -82,6 +82,8 @@ public enum ProtocolStatus {
     ELECTION_TO_ASSIST_HEART_KEEP_ASK("请求当前协助节点保持心跳协议", (byte) 0x48),
     /** 告知当前Hash合约下的竞选节点当前协助节点无法连接协议-0x49 */
     ELECTION_LEADER_ASSIST_CAN_NOT_CONNECTED("告知当前Hash合约下的竞选节点当前协助节点无法连接协议", (byte) 0x49),
+    /** 告知当前Hash合约下的子节点集合当前竞选节点无法连接协议-0x50 */
+    ELECTION_LEADER_DEAD("告知当前Hash合约下的子节点集合当前竞选节点无法连接协议", (byte) 0x50),
     /** 交易协议-0x60 */
     TRANSACTION("交易协议", (byte) 0x60),
     /** 同步交易协议-0x61 */
